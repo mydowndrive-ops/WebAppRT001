@@ -1574,6 +1574,9 @@ function renderDashboard() {
     });
   }
 
+  // Capaian Iuran Berdasarkan Nama Jalan
+  renderDashboardStreetKpi();
+
   // Recent Transactions Table
   const tbodyRecent = document.getElementById('tbody-recent-tx');
   if (tbodyRecent) {
@@ -1656,6 +1659,136 @@ function renderDashboard() {
 
   // Render Charts
   renderExecutiveCharts(fin);
+}
+
+/**
+ * Computes compliance and payment stats per street for the active selected period
+ */
+function computeStreetStats() {
+  const currentMonthPayments = state.payments.filter(
+    p => !p.category && p.month === state.selectedMonth && p.year === state.selectedYear
+  );
+  const paidResidentIds = new Set(currentMonthPayments.map(p => p.residentId));
+
+  const streetDefinitions = [
+    { name: 'Jl. Citarum II', blocks: 'Blok B6, B7' },
+    { name: 'Jl. Citarum IVA', blocks: 'Blok B6, B7' },
+    { name: 'Jl. Citarum VIIIB', blocks: 'Blok B3' },
+    { name: 'Jl. Citarum VIIIC', blocks: 'Blok B3, B4, B6' },
+    { name: 'Jl. Citarum IX', blocks: 'Blok B4' }
+  ];
+
+  return streetDefinitions.map(def => {
+    const residentsOnStreet = state.residents.filter(r => r.street === def.name);
+    const totalWarga = residentsOnStreet.length;
+    const paidWarga = residentsOnStreet.filter(r => paidResidentIds.has(r.id)).length;
+    const unpaidWarga = Math.max(0, totalWarga - paidWarga);
+    const percent = totalWarga > 0 ? Math.round((paidWarga / totalWarga) * 100) : 0;
+    const totalCollected = paidWarga * state.mandatoryDues;
+    const totalTarget = totalWarga * state.mandatoryDues;
+
+    return {
+      name: def.name,
+      blocks: def.blocks,
+      totalWarga,
+      paidWarga,
+      unpaidWarga,
+      percent,
+      totalCollected,
+      totalTarget
+    };
+  });
+}
+
+/**
+ * Renders executive street-by-street collection compliance cards on Dashboard
+ */
+function renderDashboardStreetKpi() {
+  const grid = document.getElementById('dashboard-street-grid');
+  if (!grid) return;
+
+  const periodBadge = document.getElementById('dash-street-period-badge');
+  if (periodBadge) {
+    periodBadge.innerHTML = `<i class="fa-solid fa-calendar-check text-gold"></i> Periode ${MONTH_NAMES[state.selectedMonth]} ${state.selectedYear}`;
+  }
+
+  const streetStats = computeStreetStats();
+  grid.innerHTML = '';
+
+  streetStats.forEach(item => {
+    const tier = item.percent >= 75 ? 'tier-high' : item.percent >= 40 ? 'tier-mid' : 'tier-low';
+    const tierIcon = item.percent >= 75 ? 'fa-circle-check' : item.percent >= 40 ? 'fa-clock' : 'fa-triangle-exclamation';
+
+    const card = document.createElement('div');
+    card.className = 'street-card glass-panel';
+    card.innerHTML = `
+      <div>
+        <div class="street-card-top">
+          <div class="street-icon-title">
+            <div class="street-icon-box">
+              <i class="fa-solid fa-road"></i>
+            </div>
+            <div class="street-info">
+              <h4>${item.name}</h4>
+              <span class="street-sub"><i class="fa-solid fa-map-pin"></i> ${item.blocks} • ${item.totalWarga} KK</span>
+            </div>
+          </div>
+          <span class="street-percent-badge ${tier}">
+            <i class="fa-solid ${tierIcon}"></i> ${item.percent}%
+          </span>
+        </div>
+
+        <div class="street-progress-wrap">
+          <div class="street-progress-bar">
+            <div class="street-progress-fill ${tier}" style="width: ${item.percent}%"></div>
+          </div>
+        </div>
+
+        <div class="street-stats-grid">
+          <div class="street-stat-item">
+            <span class="stat-caption">Sudah Bayar</span>
+            <span class="stat-figure text-emerald">${item.paidWarga} KK</span>
+          </div>
+          <div class="street-stat-item">
+            <span class="stat-caption">Belum Bayar</span>
+            <span class="stat-figure ${item.unpaidWarga > 0 ? 'text-rose' : 'text-emerald'}">${item.unpaidWarga} KK</span>
+          </div>
+        </div>
+
+        <div class="street-nominal-row">
+          <span class="nom-label">Dana Terkumpul</span>
+          <span class="nom-val">${formatRupiah(item.totalCollected)} <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/ ${formatRupiah(item.totalTarget)}</span></span>
+        </div>
+      </div>
+
+      <button class="btn-street-jump" data-jump-street="${item.name}">
+        <i class="fa-solid fa-list-check"></i> Buka Checklist Jalan Ini
+      </button>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function jumpToChecklistStreet(streetName) {
+  document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+  const chkView = document.getElementById('view-checklist');
+  if (chkView) chkView.classList.add('active');
+
+  document.querySelectorAll('.sidebar-menu .menu-item, .bottom-nav .bnav-item').forEach(m => m.classList.remove('active'));
+  document.querySelectorAll('[data-target="checklist"]').forEach(m => m.classList.add('active'));
+
+  const pageTitle = document.getElementById('page-title');
+  const pageSub = document.getElementById('page-subtitle');
+  if (pageTitle) pageTitle.textContent = 'Checklist Iuran Wajib Bulanan';
+  if (pageSub) pageSub.textContent = `Penyaringan: ${streetName}`;
+
+  const streetSelect = document.getElementById('filter-street');
+  if (streetSelect) streetSelect.value = streetName;
+  const searchInput = document.getElementById('checklist-search');
+  if (searchInput) searchInput.value = '';
+
+  renderChecklist();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /**
@@ -1764,6 +1897,7 @@ function renderChecklist() {
 
   const searchTerm = (document.getElementById('checklist-search')?.value || '').toLowerCase();
   const blockFilter = document.getElementById('filter-block')?.value || 'ALL';
+  const streetFilter = document.getElementById('filter-street')?.value || 'ALL';
   const statusFilter = document.getElementById('filter-status')?.value || 'ALL';
 
   tbody.innerHTML = '';
@@ -1779,8 +1913,10 @@ function renderChecklist() {
     // Check match search & filters
     const matchSearch = resident.name.toLowerCase().includes(searchTerm) ||
                         resident.block.toLowerCase().includes(searchTerm) ||
-                        resident.houseNo.toLowerCase().includes(searchTerm);
+                        resident.houseNo.toLowerCase().includes(searchTerm) ||
+                        (resident.street && resident.street.toLowerCase().includes(searchTerm));
     const matchBlock = blockFilter === 'ALL' || resident.block === blockFilter;
+    const matchStreet = streetFilter === 'ALL' || resident.street === streetFilter;
 
     const paymentRecord = currentMonthPayments.find(p => p.residentId === resident.id);
     const isPaid = !!paymentRecord;
@@ -1793,7 +1929,7 @@ function renderChecklist() {
       totalCollected += Number(paymentRecord.amount);
     }
 
-    if (!matchSearch || !matchBlock || !matchStatus) return;
+    if (!matchSearch || !matchBlock || !matchStreet || !matchStatus) return;
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -2983,8 +3119,18 @@ function setupDelegatedEvents() {
 
   // Checklist search and filter inputs
   document.getElementById('checklist-search')?.addEventListener('input', renderChecklist);
+  document.getElementById('filter-street')?.addEventListener('change', renderChecklist);
   document.getElementById('filter-block')?.addEventListener('change', renderChecklist);
   document.getElementById('filter-status')?.addEventListener('change', renderChecklist);
+
+  // Jump to street from Dashboard Street KPI card
+  document.addEventListener('click', e => {
+    const jumpBtn = e.target.closest('[data-jump-street]');
+    if (jumpBtn) {
+      const streetName = jumpBtn.getAttribute('data-jump-street');
+      jumpToChecklistStreet(streetName);
+    }
+  });
 
   // Expense search & filter
   document.getElementById('expense-search')?.addEventListener('input', renderExpenses);

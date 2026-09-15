@@ -215,6 +215,21 @@
           </div>
         </div>
 
+        <!-- Capaian Iuran Berdasarkan Nama Jalan -->
+        <div class="section-title-bar mt-4">
+          <div>
+            <h3><i class="fa-solid fa-road text-gold"></i> Capaian Iuran Berdasarkan Nama Jalan</h3>
+            <p>Prosentase warga yang sudah membayar iuran wajib bulanan per ruas jalan RT.001</p>
+          </div>
+          <div class="street-header-badge" id="dash-street-period-badge">
+            <i class="fa-solid fa-calendar-check text-gold"></i> Periode Ini
+          </div>
+        </div>
+
+        <div class="street-cards-grid" id="dashboard-street-grid">
+          <!-- Dynamically populated street cards -->
+        </div>
+
         <!-- 6 Pos Anggaran Cards Grid -->
         <div class="section-title-bar">
           <div>
@@ -313,6 +328,15 @@
           </div>
 
           <div class="filter-group">
+            <select id="filter-street" class="custom-select">
+              <option value="ALL">Semua Ruas Jalan (5 Ruas)</option>
+              <option value="Jl. Citarum II">Jl. Citarum II (35 KK)</option>
+              <option value="Jl. Citarum IVA">Jl. Citarum IVA (19 KK)</option>
+              <option value="Jl. Citarum VIIIB">Jl. Citarum VIIIB (15 KK)</option>
+              <option value="Jl. Citarum VIIIC">Jl. Citarum VIIIC (30 KK)</option>
+              <option value="Jl. Citarum IX">Jl. Citarum IX (13 KK)</option>
+            </select>
+
             <select id="filter-block" class="custom-select">
               <option value="ALL">Semua Blok (B3, B4, B6, B7)</option>
               <option value="Blok B3">Blok B3</option>
