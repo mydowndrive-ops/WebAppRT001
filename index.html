@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RT-FinSmart Pro | Keuangan Eksekutif RT.001 RW.013</title>
+  <meta name="description" content="Sistem Manajemen Keuangan Eksekutif RT.001 RW.013 - Auto Split Pos Anggaran, Checklist Cepat & Laporan Akuntansi Berkelas">
+  <meta name="theme-color" content="#0b0f19">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- Chart.js for Executive Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container" id="app">
+    <!-- Sidebar Navigation for Desktop -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-wrapper">
+          <div class="logo-img-wrapper">
+            <img src="assets/logo.png" alt="Logo RT.001" class="logo-img">
+          </div>
+          <div class="logo-text">
+            <h2>RT-FinSmart<span class="badge-pro">PRO</span></h2>
+            <p>RT.001 / RW.013 • Jl. Citarum II</p>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <a href="#dashboard" class="menu-item active" data-target="dashboard" data-role-req="B1">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard Eksekutif</span>
+        </a>
+        <a href="#checklist" class="menu-item" data-target="checklist" data-role-req="B1">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Checklist Iuran Wajib</span>
+          <span class="counter-badge" id="sidebar-unpaid-badge">0</span>
+        </a>
+        <a href="#pos-anggaran" class="menu-item" data-target="pos-anggaran" data-role-req="B1">
+          <i class="fa-solid fa-wallet"></i>
+          <span>6 Pos Anggaran & SHR</span>
+        </a>
+        <a href="#pengeluaran" class="menu-item" data-target="pengeluaran" data-role-req="B1">
+          <i class="fa-solid fa-money-bill-transfer"></i>
+          <span>Pengeluaran Kas</span>
+        </a>
+        <a href="#jimpitan" class="menu-item" data-target="jimpitan" data-role-req="B2">
+          <i class="fa-solid fa-moon text-gold"></i>
+          <span>Uang Jimpitan Ronda</span>
+          <span class="counter-badge" id="sidebar-jimpitan-badge" style="background: rgba(16, 185, 129, 0.25); color: #34d399;">Minggu</span>
+        </a>
+        <a href="#warga" class="menu-item" data-target="warga" data-role-req="B1">
+          <i class="fa-solid fa-users-gear"></i>
+          <span>Data Warga</span>
+        </a>
+        <a href="#laporan" class="menu-item" data-target="laporan" data-role-req="B1">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          <span>Laporan & Pembukuan</span>
+        </a>
+        <a href="#pengaturan" class="menu-item" data-target="pengaturan" data-role-req="B1">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Pengaturan Pos & Sistem</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-card" id="btn-open-switch-account" title="Klik untuk berganti akun (B1 / B2)">
+          <div class="user-avatar" id="sidebar-user-avatar">
+            <i class="fa-solid fa-user-shield text-gold"></i>
+          </div>
+          <div class="user-info">
+            <h4 id="sidebar-user-name">B1 - Bendahara 1</h4>
+            <span class="user-role" id="sidebar-user-role">Full Control Keuangan</span>
+          </div>
+          <span class="role-badge role-badge-b1" id="sidebar-role-badge">B1</span>
+        </div>
+        <div class="apk-badge-box" id="apk-info-trigger">
+          <i class="fa-brands fa-android"></i>
+          <div>
+            <strong>Mode Aplikasi Mobile</strong>
+            <p>Siap Ekspor ke .APK</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Executive Header Bar -->
+      <header class="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div class="page-title-group">
+            <h1 id="page-title">Dashboard Eksekutif</h1>
+            <p id="page-subtitle">Ringkasan Arus Kas & Pos Anggaran Terkini</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Live Period Selector -->
+          <div class="period-selector-pill">
+            <i class="fa-regular fa-calendar-days"></i>
+            <select id="global-month-select">
+              <option value="1">Januari</option>
+              <option value="2">Februari</option>
+              <option value="3">Maret</option>
+              <option value="4">April</option>
+              <option value="5">Mei</option>
+              <option value="6">Juni</option>
+              <option value="7">Juli</option>
+              <option value="8">Agustus</option>
+              <option value="9">September</option>
+              <option value="10">Oktober</option>
+              <option value="11">November</option>
+              <option value="12">Desember</option>
+            </select>
+            <select id="global-year-select">
+              <option value="2025">2025</option>
+              <option value="2026" selected>2026</option>
+              <option value="2027">2027</option>
+            </select>
+          </div>
+
+          <button class="btn btn-gold" id="btn-quick-pay" title="Catat Cepat">
+            <i class="fa-solid fa-bolt"></i>
+            <span>Bayar Cepat</span>
+          </button>
+
+          <button class="btn btn-outline" id="btn-backup-data" title="Cadangkan Data">
+            <i class="fa-solid fa-cloud-arrow-down"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- View: Dashboard Section -->
+      <section class="view-section active" id="view-dashboard">
+        <!-- Hero Balance Card (High Corporate Aesthetics) -->
+        <div class="hero-card-grid">
+          <div class="hero-balance-card glass-panel luxury-gold-glow">
+            <div class="hero-card-top">
+              <div>
+                <span class="card-eyebrow">TOTAL KAS TERKONSOLIDASI</span>
+                <h2 class="total-balance-value" id="dash-total-balance">Rp 0</h2>
+              </div>
+              <div class="badge-status-live">
+                <span class="pulse-dot"></span> LIVE SALDO
+              </div>
+            </div>
+
+            <div class="hero-stats-row">
+              <div class="stat-box">
+                <span class="stat-label"><i class="fa-solid fa-arrow-trend-up text-emerald"></i> Total Pemasukan</span>
+                <span class="stat-val text-emerald" id="dash-total-income">Rp 0</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-box">
+                <span class="stat-label"><i class="fa-solid fa-arrow-trend-down text-rose"></i> Total Pengeluaran</span>
+                <span class="stat-val text-rose" id="dash-total-expense">Rp 0</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat-box">
+                <span class="stat-label"><i class="fa-solid fa-hand-holding-dollar text-gold"></i> Iuran Wajib Periode Ini</span>
+                <span class="stat-val text-gold" id="dash-month-mandatory">Rp 0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Collection Progress Card -->
+          <div class="collection-kpi-card glass-panel">
+            <div class="kpi-header">
+              <h3><i class="fa-solid fa-chart-simple text-gold"></i> Capaian Iuran Bulan Ini</h3>
+              <span class="kpi-percent-badge" id="dash-collection-percent">0%</span>
+            </div>
+            
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="dash-progress-fill" style="width: 0%"></div>
+            </div>
+
+            <div class="kpi-detail-grid">
+              <div class="kpi-mini-card bg-emerald-subtle">
+                <i class="fa-solid fa-circle-check text-emerald"></i>
+                <div>
+                  <h4 id="dash-paid-count">0 KK</h4>
+                  <p>Sudah Bayar</p>
+                </div>
+              </div>
+              <div class="kpi-mini-card bg-rose-subtle">
+                <i class="fa-solid fa-clock text-rose"></i>
+                <div>
+                  <h4 id="dash-unpaid-count">0 KK</h4>
+                  <p>Belum Bayar</p>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-full btn-emerald" id="btn-goto-checklist">
+              <i class="fa-solid fa-list-check"></i> Buka Checklist Iuran Sekarang
+            </button>
+          </div>
+        </div>
+
+        <!-- 6 Pos Anggaran Cards Grid -->
+        <div class="section-title-bar">
+          <div>
+            <h3><i class="fa-solid fa-layer-group text-gold"></i> Realokasi Otomatis 6 Pos Anggaran Utama</h3>
+            <p>Setiap iuran Rp 50.000 otomatis dialokasikan ke masing-masing pos di bawah ini</p>
+          </div>
+          <button class="btn btn-sm btn-outline" id="btn-goto-pos">
+            <span>Rincian & Transaksi Pos</span> <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <div class="pos-cards-grid" id="dashboard-pos-grid">
+          <!-- Dynamically populated pos cards -->
+        </div>
+
+        <!-- Charts & Activity Row -->
+        <div class="dashboard-analytics-grid">
+          <div class="chart-card glass-panel">
+            <div class="card-header-flex">
+              <div>
+                <h3><i class="fa-solid fa-chart-line text-emerald"></i> Tren Arus Kas Bulanan</h3>
+                <p>Pemasukan vs Pengeluaran 6 Bulan Terakhir</p>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="cashflowChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card glass-panel">
+            <div class="card-header-flex">
+              <div>
+                <h3><i class="fa-solid fa-chart-pie text-gold"></i> Komposisi Saldo per Pos</h3>
+                <p>Distribusi Saldo Aktif Antar Pos Anggaran</p>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="posDistributionChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions Table -->
+        <div class="recent-transactions-card glass-panel">
+          <div class="card-header-flex">
+            <div>
+              <h3><i class="fa-solid fa-clock-rotate-left text-gold"></i> Transaksi Kas Terkini</h3>
+              <p>Riwayat transaksi iuran warga, iuran lain (SHR), dan pengeluaran</p>
+            </div>
+            <button class="btn btn-sm btn-outline" id="btn-view-all-tx">Lihat Semua di Laporan</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="luxury-table" id="table-recent-tx">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Keterangan Transaksi</th>
+                  <th>Pos Anggaran</th>
+                  <th>Tipe</th>
+                  <th>Nominal</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-recent-tx">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Checklist Iuran Wajib Section -->
+      <section class="view-section" id="view-checklist">
+        <div class="view-header-banner glass-panel">
+          <div class="banner-text">
+            <h2><i class="fa-solid fa-list-check text-gold"></i> Checklist Iuran Wajib Cepat</h2>
+            <p>Cukup <strong>centang kotak</strong> pada nama warga yang membayar. Sistem akan secara otomatis memecah nominal <strong>Rp 50.000</strong> ke 6 Pos Anggaran secara *real-time*!</p>
+          </div>
+
+          <div class="banner-actions">
+            <button class="btn btn-emerald" id="btn-batch-pay-all">
+              <i class="fa-solid fa-check-double"></i> Tandai Semua yang Tampil Lunas
+            </button>
+            <button class="btn btn-outline" id="btn-export-checklist-pdf">
+              <i class="fa-solid fa-print"></i> Cetak Lembar Checklist
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter and Search Toolbar -->
+        <div class="filter-toolbar glass-panel">
+          <div class="search-input-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="checklist-search" placeholder="Cari nama warga, nomor rumah, atau blok...">
+          </div>
+
+          <div class="filter-group">
+            <select id="filter-block" class="custom-select">
+              <option value="ALL">Semua Blok (B6 & B7)</option>
+              <option value="Blok B6">Blok B6</option>
+              <option value="Blok B7">Blok B7</option>
+            </select>
+
+            <select id="filter-status" class="custom-select">
+              <option value="ALL">Semua Status</option>
+              <option value="UNPAID">Belum Lunas</option>
+              <option value="PAID">Sudah Lunas</option>
+            </select>
+          </div>
+
+          <div class="checklist-summary-pill">
+            <span>Terkumpul: <strong class="text-emerald" id="chk-total-collected">Rp 0</strong></span>
+            <span class="separator">|</span>
+            <span>Target: <strong id="chk-total-target">Rp 0</strong></span>
+          </div>
+        </div>
+
+        <!-- Checklist Table -->
+        <div class="checklist-table-card glass-panel">
+          <div class="table-responsive">
+            <table class="luxury-table checklist-table" id="table-checklist">
+              <thead>
+                <tr>
+                  <th style="width: 60px; text-align: center;">Status</th>
+                  <th>No. Rumah / Blok</th>
+                  <th>Nama Kepala Keluarga / Warga</th>
+                  <th>Nominal Iuran</th>
+                  <th>Rincian Split Pos</th>
+                  <th>Tanggal Bayar</th>
+                  <th style="text-align: right;">Kwitansi & WA</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-checklist">
+                <!-- Dynamically generated with smooth checkboxes -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: 6 Pos Anggaran & SHR Section -->
+      <section class="view-section" id="view-pos-anggaran">
+        <div class="view-header-banner glass-panel">
+          <div class="banner-text">
+            <h2><i class="fa-solid fa-wallet text-gold"></i> Rekapitulasi Pos Anggaran & Iuran Lain-lain</h2>
+            <p>Pantau saldo masuk, keluar, dan sisa dana di tiap pos anggaran serta iuran insidental (SHR, Donasi, dll).</p>
+          </div>
+
+          <div class="banner-actions">
+            <button class="btn btn-gold" id="btn-add-other-dues">
+              <i class="fa-solid fa-plus-circle"></i> Input Iuran Lain-lain (SHR / Donasi)
+            </button>
+            <button class="btn btn-rose" id="btn-add-expense-pos">
+              <i class="fa-solid fa-money-bill-wave"></i> Catat Pengeluaran Pos
+            </button>
+          </div>
+        </div>
+
+        <!-- Pos Details Grid -->
+        <div class="pos-full-grid" id="pos-full-details-container">
+          <!-- Dynamically populated with pos cards showing In/Out/Balance & transactions -->
+        </div>
+      </section>
+
+      <!-- View: Pengeluaran Kas Section -->
+      <section class="view-section" id="view-pengeluaran">
+        <div class="view-header-banner glass-panel">
+          <div class="banner-text">
+            <h2><i class="fa-solid fa-money-bill-transfer text-rose"></i> Manajemen Pengeluaran Kas RT</h2>
+            <p>Catat setiap pengeluaran kas dengan memilih pos anggaran terkait untuk menjaga transparansi dan akuntabilitas.</p>
+          </div>
+
+          <div class="banner-actions">
+            <button class="btn btn-rose" id="btn-open-expense-modal">
+              <i class="fa-solid fa-plus"></i> Tambah Pengeluaran Baru
+            </button>
+          </div>
+        </div>
+
+        <!-- Expenses List Card -->
+        <div class="expenses-table-card glass-panel">
+          <div class="filter-toolbar mb-3">
+            <div class="search-input-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="expense-search" placeholder="Cari keterangan pengeluaran, penanggung jawab...">
+            </div>
+            <div class="filter-group">
+              <select id="filter-expense-pos" class="custom-select">
+                <option value="ALL">Semua Pos Anggaran</option>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="luxury-table" id="table-expenses">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Keterangan / Keperluan</th>
+                  <th>Pos Pembebanan</th>
+                  <th>Penanggung Jawab / Penerima</th>
+                  <th>Nominal Pengeluaran</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-expenses">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Data Warga Section -->
+      <section class="view-section" id="view-warga">
+        <div class="view-header-banner glass-panel">
+          <div class="banner-text">
+            <h2><i class="fa-solid fa-users-gear text-gold"></i> Database Warga RT.001 / RW.013</h2>
+            <p>Kelola data kepala keluarga, nomor rumah, kontak WhatsApp untuk pengiriman kwitansi digital.</p>
+          </div>
+
+          <div class="banner-actions">
+            <button class="btn btn-gold" id="btn-sync-warga-sheet" title="Tarik pembaruan data langsung dari Google Sheets">
+              <i class="fa-solid fa-arrows-rotate"></i> Sinkron Google Sheets
+            </button>
+            <button class="btn btn-emerald" id="btn-add-warga">
+              <i class="fa-solid fa-user-plus"></i> Tambah Warga Baru
+            </button>
+            <button class="btn btn-outline" id="btn-export-warga-csv">
+              <i class="fa-solid fa-file-csv"></i> Ekspor CSV
+            </button>
+          </div>
+        </div>
+
+        <div class="warga-table-card glass-panel">
+          <div class="filter-toolbar mb-3">
+            <div class="search-input-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="warga-search" placeholder="Cari nama, no. rumah, blok, nomor WA...">
+            </div>
+            <div class="filter-group">
+              <select id="filter-warga-status" class="custom-select">
+                <option value="ALL">Semua Domisili</option>
+                <option value="Tetap">Warga Tetap</option>
+                <option value="Kontrak">Warga Kontrak / Kost</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="luxury-table" id="table-warga">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Blok & No Rumah</th>
+                  <th>Nama Lengkap</th>
+                  <th>Status Domisili</th>
+                  <th>No. WhatsApp</th>
+                  <th>Jumlah Jiwa</th>
+                  <th>Status Iuran</th>
+                  <th style="text-align: right;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-warga">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Laporan & Pembukuan Section -->
+      <section class="view-section" id="view-laporan">
+        <div class="view-header-banner glass-panel">
+          <div class="banner-text">
+            <h2><i class="fa-solid fa-file-invoice-dollar text-gold"></i> Laporan Keuangan & Pembukuan Kas</h2>
+            <p>Laporan akuntansi transparan siap cetak untuk rapat warga, musyawarah RT, dan arsip pertanggungjawaban.</p>
+          </div>
+
+          <div class="banner-actions">
+            <button class="btn btn-emerald" id="btn-print-report">
+              <i class="fa-solid fa-print"></i> Cetak Laporan Resmi (PDF)
+            </button>
+            <button class="btn btn-outline" id="btn-export-report-excel">
+              <i class="fa-solid fa-file-excel"></i> Ekspor Excel/CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Report Options Pill -->
+        <div class="report-options-bar glass-panel">
+          <div class="radio-tab-group">
+            <label class="radio-pill active">
+              <input type="radio" name="reportType" value="monthly" checked>
+              <span>Laporan Bulanan</span>
+            </label>
+            <label class="radio-pill">
+              <input type="radio" name="reportType" value="annual">
+              <span>Laporan Tahunan (Neraca)</span>
+            </label>
+            <label class="radio-pill">
+              <input type="radio" name="reportType" value="ledger">
+              <span>Buku Kas Umum Lengkap</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Printable Financial Report Container -->
+        <div class="printable-report-card glass-panel" id="printable-report-area">
+          <div class="report-letterhead">
+            <div class="letterhead-logo">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div class="letterhead-text">
+              <h2>PENGURUS RUKUN TETANGGA 001 / RUKUN WARGA 013</h2>
+              <p>LAPORAN PERTANGGUNGJAWABAN KEUANGAN KAS & POS ANGGARAN</p>
+              <h4 id="report-period-title">Periode: September 2026</h4>
+            </div>
+          </div>
+          <div class="letterhead-divider"></div>
+
+          <!-- Report Summary Cards -->
+          <div class="report-summary-boxes">
+            <div class="rep-box">
+              <span>SALDO AWAL</span>
+              <strong id="rep-initial-balance">Rp 0</strong>
+            </div>
+            <div class="rep-box text-emerald">
+              <span>TOTAL PEMASUKAN</span>
+              <strong id="rep-total-in">Rp 0</strong>
+            </div>
+            <div class="rep-box text-rose">
+              <span>TOTAL PENGELUARAN</span>
+              <strong id="rep-total-out">Rp 0</strong>
+            </div>
+            <div class="rep-box text-gold">
+              <span>SALDO AKHIR</span>
+              <strong id="rep-final-balance">Rp 0</strong>
+            </div>
+          </div>
+
+          <!-- Breakdown per Pos Anggaran in Report -->
+          <h4 class="report-section-heading"><i class="fa-solid fa-pie-chart"></i> Rincian Realisasi Tiap Pos Anggaran</h4>
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama Pos Anggaran</th>
+                <th>Porsi / Tarif</th>
+                <th>Penerimaan</th>
+                <th>Pengeluaran</th>
+                <th>Sisa Saldo Pos</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-report-pos">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+
+          <!-- Detailed Ledger Transactions in Report -->
+          <h4 class="report-section-heading mt-4"><i class="fa-solid fa-list-ol"></i> Rincian Buku Kas Masuk & Keluar</h4>
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Keterangan Transaksi</th>
+                <th>Pos Terkait</th>
+                <th>Penerimaan (Debet)</th>
+                <th>Pengeluaran (Kredit)</th>
+                <th>Saldo Berjalan</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-report-ledger">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+
+          <div class="report-signatures">
+            <div class="sig-box">
+              <p>Mengetahui,</p>
+              <p><strong>Ketua RT.001 / RW.013</strong></p>
+              <div class="sig-space"></div>
+              <p><u>( ........................................ )</u></p>
+            </div>
+            <div class="sig-box">
+              <p id="sig-date-text">Jakarta, 15 September 2026</p>
+              <p><strong>Bendahara RT.001</strong></p>
+              <div class="sig-space"></div>
+              <p><u>( ........................................ )</u></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Pengaturan Pos & Sistem Section -->
+      <section class="view-section" id="view-pengaturan">
+        <div class="view-header-banner glass-panel">
+          <div class="banner-text">
+            <h2><i class="fa-solid fa-sliders text-gold"></i> Pengaturan Pos Anggaran & Konfigurasi Sistem</h2>
+            <p>Atur nominal iuran wajib (misal jika ada kenaikan) dan alokasi split pembagian ke masing-masing pos anggaran.</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+          <!-- Budget Split Settings -->
+          <div class="settings-card glass-panel">
+            <div class="settings-card-header">
+              <h3><i class="fa-solid fa-calculator text-emerald"></i> Konfigurasi Iuran Wajib & Auto-Split</h3>
+              <p>Atur nominal total iuran wajib dan pembagian ke 6 pos anggaran.</p>
+            </div>
+
+            <form id="form-budget-settings">
+              <div class="form-group mb-3">
+                <label for="set-mandatory-amount">Nominal Total Iuran Wajib per Warga (Rp):</label>
+                <div class="input-with-prefix">
+                  <span class="prefix">Rp</span>
+                  <input type="number" id="set-mandatory-amount" value="50000" min="10000" step="1000" required>
+                </div>
+                <small class="text-muted">Nominal default saat warga dicentang bayar iuran bulanan.</small>
+              </div>
+
+              <hr class="form-divider">
+              <h4>Pembagian Nominal ke 6 Pos Anggaran Utama:</h4>
+              <p class="text-xs text-muted mb-3">Pastikan total penjumlahan seluruh pos sama dengan nominal iuran wajib di atas.</p>
+
+              <div id="pos-allocation-inputs" class="pos-input-list">
+                <!-- Dynamically generated allocation fields -->
+              </div>
+
+              <div class="allocation-total-bar" id="allocation-total-bar">
+                <span>Total Alokasi Pos: <strong id="total-allocated-sum">Rp 50.000</strong></span>
+                <span id="allocation-match-status" class="badge-success">✓ Sesuai (100%)</span>
+              </div>
+
+              <div class="mt-4">
+                <button type="submit" class="btn btn-emerald btn-full">
+                  <i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan Pos Anggaran
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- System Data & Backup Controls -->
+          <div class="settings-card glass-panel">
+            <div class="settings-card-header">
+              <h3><i class="fa-solid fa-database text-gold"></i> Cadangan Data & Pemulihan (Backup/Restore)</h3>
+              <p>Amankan data keuangan RT Anda ke file JSON atau pulihkan data kapan saja.</p>
+            </div>
+
+            <div class="backup-actions-list">
+              <div class="backup-action-item">
+                <div class="action-info">
+                  <h4><i class="fa-solid fa-download text-emerald"></i> Cadangkan Database (Backup JSON)</h4>
+                  <p>Unduh seluruh data warga, transaksi, saldo pos, dan riwayat pembayaran ke file lokal di perangkat Anda.</p>
+                </div>
+                <button class="btn btn-outline" id="btn-do-backup">Unduh Backup</button>
+              </div>
+
+              <div class="backup-action-item">
+                <div class="action-info">
+                  <h4><i class="fa-solid fa-upload text-gold"></i> Pulihkan Database (Restore JSON)</h4>
+                  <p>Unggah file backup JSON untuk mengembalikan seluruh data keuangan.</p>
+                </div>
+                <label class="btn btn-outline file-input-btn">
+                  Pilih File
+                  <input type="file" id="file-restore-input" accept=".json" style="display:none;">
+                </label>
+              </div>
+
+              <div class="backup-action-item">
+                <div class="action-info">
+                  <h4><i class="fa-solid fa-rotate-left text-rose"></i> Muat Ulang Data Sampel RT.001</h4>
+                  <p>Reset data kembali ke data contoh bawaan RT.001 RW.013 untuk simulasi.</p>
+                </div>
+                <button class="btn btn-outline btn-outline-rose" id="btn-reset-demo">Reset Demo</button>
+              </div>
+            </div>
+
+            <!-- APK Guide Trigger -->
+            <div class="apk-guide-card mt-4">
+              <div class="apk-icon-circle">
+                <i class="fa-brands fa-android"></i>
+              </div>
+              <div>
+                <h4>Ingin Mengubah Web Ini Menjadi File .APK?</h4>
+                <p>Aplikasi ini 100% PWA Ready. Anda dapat menginstall langsung di HP atau meng-generate file .apk mandiri secara gratis.</p>
+                <button class="btn btn-sm btn-gold mt-2" id="btn-open-apk-guide">
+                  <i class="fa-solid fa-book-open"></i> Buka Panduan Lengkap APK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Uang Jimpitan Ronda Section -->
+      <section class="view-section" id="view-jimpitan">
+        <div class="section-page-header">
+          <div>
+            <h2><i class="fa-solid fa-moon text-gold"></i> Pengelolaan Uang Jimpitan Ronda</h2>
+            <p>Perolehan & Pengeluaran Kas Ronda Malam Minggu • Input Setiap Hari Minggu</p>
+          </div>
+          <div class="header-actions-row">
+            <button class="btn btn-emerald" id="btn-add-jimpitan-income">
+              <i class="fa-solid fa-plus"></i> Catat Perolehan Jimpitan
+            </button>
+            <button class="btn btn-outline" id="btn-add-jimpitan-expense">
+              <i class="fa-solid fa-minus"></i> Catat Pengeluaran Ronda
+            </button>
+          </div>
+        </div>
+
+        <!-- Jimpitan Summary KPI Cards -->
+        <div class="jimpitan-stats-grid">
+          <div class="jimpitan-stat-card">
+            <div class="jimpitan-icon-box" style="background: rgba(16,185,129,0.18);">
+              <i class="fa-solid fa-coins text-emerald" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">TOTAL PEROLEHAN</p>
+              <h3 id="jimp-total-income" style="font-size:1.3rem; font-family:var(--font-heading); color:var(--emerald-400);">Rp 0</h3>
+              <small id="jimp-income-count" style="color:var(--text-muted);">0 pertemuan tercatat</small>
+            </div>
+          </div>
+          <div class="jimpitan-stat-card">
+            <div class="jimpitan-icon-box" style="background: rgba(244,63,94,0.15);">
+              <i class="fa-solid fa-cart-shopping text-rose" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">TOTAL PENGELUARAN</p>
+              <h3 id="jimp-total-expense" style="font-size:1.3rem; font-family:var(--font-heading); color:var(--rose-400);">Rp 0</h3>
+              <small id="jimp-expense-count" style="color:var(--text-muted);">0 pos pengeluaran</small>
+            </div>
+          </div>
+          <div class="jimpitan-stat-card" style="border-color: rgba(245,158,11,0.3);">
+            <div class="jimpitan-icon-box" style="background: rgba(245,158,11,0.18);">
+              <i class="fa-solid fa-vault text-gold" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">SALDO KAS JIMPITAN</p>
+              <h3 id="jimp-saldo" style="font-size:1.3rem; font-family:var(--font-heading); color:var(--gold-400);">Rp 0</h3>
+              <small style="color:var(--text-muted);">Pemasukan − Pengeluaran</small>
+            </div>
+          </div>
+          <div class="jimpitan-stat-card">
+            <div class="jimpitan-icon-box" style="background: rgba(99,102,241,0.18);">
+              <i class="fa-solid fa-calendar-week" style="color:#a5b4fc; font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">PEROLEHAN TERAKHIR</p>
+              <h3 id="jimp-last-date" style="font-size:1rem; font-family:var(--font-heading); color:var(--text-primary);">Belum ada data</h3>
+              <small id="jimp-last-amount" style="color:var(--text-muted);">-</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jimpitan Tables Row -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+          <!-- Pemasukan Jimpitan Table -->
+          <div class="glass-panel" style="padding: 1.5rem; border-radius: var(--radius-lg);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+              <h3 style="font-size:1rem; font-family:var(--font-heading); display:flex; align-items:center; gap:.5rem;">
+                <i class="fa-solid fa-arrow-trend-up text-emerald"></i> Riwayat Perolehan Jimpitan
+              </h3>
+              <button class="btn btn-sm btn-outline" id="btn-export-jimpitan-csv"><i class="fa-solid fa-download"></i> CSV</button>
+            </div>
+            <div class="table-wrapper" style="max-height:380px; overflow-y:auto;">
+              <table class="data-table" id="table-jimpitan-income">
+                <thead>
+                  <tr><th>Tanggal</th><th>Regu</th><th>Koordinator</th><th>Perolehan</th><th>Ket.</th><th></th></tr>
+                </thead>
+                <tbody id="tbody-jimpitan-income">
+                  <tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2.5rem;"><i class="fa-solid fa-moon" style="opacity:.3; font-size:2rem;"></i><br>Belum ada catatan perolehan jimpitan.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Pengeluaran Jimpitan Table -->
+          <div class="glass-panel" style="padding: 1.5rem; border-radius: var(--radius-lg);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+              <h3 style="font-size:1rem; font-family:var(--font-heading); display:flex; align-items:center; gap:.5rem;">
+                <i class="fa-solid fa-arrow-trend-down text-rose"></i> Riwayat Pengeluaran Kas Ronda
+              </h3>
+            </div>
+            <div class="table-wrapper" style="max-height:380px; overflow-y:auto;">
+              <table class="data-table" id="table-jimpitan-expense">
+                <thead>
+                  <tr><th>Tanggal</th><th>Keterangan</th><th>Nominal</th><th></th></tr>
+                </thead>
+                <tbody id="tbody-jimpitan-expense">
+                  <tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:2.5rem;"><i class="fa-solid fa-cart-shopping" style="opacity:.3; font-size:2rem;"></i><br>Belum ada catatan pengeluaran.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Mobile Bottom Navigation Bar (App Experience) -->
+    <nav class="mobile-bottom-nav">
+      <a href="#dashboard" class="bnav-item active" data-target="dashboard">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="#checklist" class="bnav-item" data-target="checklist">
+        <i class="fa-solid fa-list-check"></i>
+        <span>Checklist</span>
+      </a>
+      <a href="#jimpitan" class="bnav-item" data-target="jimpitan">
+        <i class="fa-solid fa-moon"></i>
+        <span>Jimpitan</span>
+      </a>
+      <a href="#pengeluaran" class="bnav-item" data-target="pengeluaran">
+        <i class="fa-solid fa-money-bill-transfer"></i>
+        <span>Pengeluaran</span>
+      </a>
+      <a href="#laporan" class="bnav-item" data-target="laporan">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+        <span>Laporan</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Modal: Quick Pay / Custom Pay -->
+  <div class="modal-backdrop" id="modal-quick-pay">
+    <div class="modal-content glass-panel luxury-modal">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-bolt text-gold"></i> Pembayaran Iuran Warga</h3>
+        <button class="modal-close" data-close="modal-quick-pay">&times;</button>
+      </div>
+      <form id="form-quick-pay">
+        <div class="form-group mb-3">
+          <label for="qp-resident-select">Pilih Warga:</label>
+          <select id="qp-resident-select" class="custom-select" required>
+            <!-- Dynamically populated with residents -->
+          </select>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="qp-period-months">Pilih Periode Pembayaran:</label>
+          <div class="multi-month-container" id="qp-months-container">
+            <!-- Checkbox months -->
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="qp-nominal-per-month">Nominal Iuran per Bulan:</label>
+          <div class="input-with-prefix">
+            <span class="prefix">Rp</span>
+            <input type="number" id="qp-nominal-per-month" value="50000" step="1000" required>
+          </div>
+        </div>
+
+        <div class="qp-summary-box mb-3">
+          <span>Total Tagihan:</span>
+          <strong id="qp-total-calc" class="text-emerald">Rp 50.000</strong>
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="qp-payment-method">Metode Pembayaran:</label>
+          <select id="qp-payment-method" class="custom-select">
+            <option value="Tunai / Cash">Tunai / Cash (Bendahara)</option>
+            <option value="Transfer Bank / QRIS">Transfer Bank / QRIS RT</option>
+          </select>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" data-close="modal-quick-pay">Batal</button>
+          <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-check"></i> Konfirmasi Pembayaran</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Input Iuran Lain-lain (SHR, Donasi, dll) -->
+  <div class="modal-backdrop" id="modal-other-dues">
+    <div class="modal-content glass-panel luxury-modal">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-hand-holding-dollar text-gold"></i> Input Iuran Lain-lain (SHR / Donasi)</h3>
+        <button class="modal-close" data-close="modal-other-dues">&times;</button>
+      </div>
+      <form id="form-other-dues">
+        <div class="form-group mb-3">
+          <label for="od-category">Kategori Iuran Tambahan:</label>
+          <select id="od-category" class="custom-select" required>
+            <option value="SHR">SHR (Sumbangan Hari Raya Idul Fitri/Idul Adha)</option>
+            <option value="Iuran Ronda">Iuran Ronda / Keamanan Malam</option>
+            <option value="Pembangunan">Iuran Pembangunan Fasilitas Umum / Balai RT</option>
+            <option value="Donasi Bencana">Donasi / Bantuan Bencana</option>
+            <option value="Sukarela">Iuran Sukarela Lain-lain</option>
+          </select>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="od-resident-select">Pemberi / Nama Warga:</label>
+          <select id="od-resident-select" class="custom-select" required>
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="od-amount">Nominal Pembayaran (Rp):</label>
+          <div class="input-with-prefix">
+            <span class="prefix">Rp</span>
+            <input type="number" id="od-amount" placeholder="Contoh: 100000" min="5000" step="1000" required>
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="od-date">Tanggal Transaksi:</label>
+          <input type="date" id="od-date" class="custom-input" required>
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="od-notes">Keterangan / Catatan:</label>
+          <input type="text" id="od-notes" class="custom-input" placeholder="Contoh: Pembayaran SHR 1447H">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" data-close="modal-other-dues">Batal</button>
+          <button type="submit" class="btn btn-gold"><i class="fa-solid fa-plus-circle"></i> Simpan Pemasukan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Catat Pengeluaran Kas -->
+  <div class="modal-backdrop" id="modal-expense">
+    <div class="modal-content glass-panel luxury-modal">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-money-bill-wave text-rose"></i> Catat Pengeluaran Kas RT</h3>
+        <button class="modal-close" data-close="modal-expense">&times;</button>
+      </div>
+      <form id="form-expense">
+        <div class="form-group mb-3">
+          <label for="exp-pos-select">Bebankan ke Pos Anggaran:</label>
+          <select id="exp-pos-select" class="custom-select" required>
+            <!-- Populated dynamically with 6 pos + SHR -->
+          </select>
+          <small class="text-muted" id="exp-available-saldo-hint">Sisa Saldo Tersedia di Pos Ini: Rp 0</small>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="exp-amount">Nominal Pengeluaran (Rp):</label>
+          <div class="input-with-prefix">
+            <span class="prefix">Rp</span>
+            <input type="number" id="exp-amount" min="1000" step="500" required placeholder="Contoh: 350000">
+          </div>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="exp-date">Tanggal Pengeluaran:</label>
+          <input type="date" id="exp-date" class="custom-input" required>
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="exp-title">Keperluan / Keterangan Pengeluaran:</label>
+          <input type="text" id="exp-title" class="custom-input" placeholder="Contoh: Honor 2 Petugas Pengangkut Sampah Bulan Sept" required>
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="exp-recipient">Penerima Dana / Penanggung Jawab:</label>
+          <input type="text" id="exp-recipient" class="custom-input" placeholder="Contoh: Bpk. Sugeng (Petugas Kebersihan)" required>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" data-close="modal-expense">Batal</button>
+          <button type="submit" class="btn btn-rose"><i class="fa-solid fa-floppy-disk"></i> Catat Pengeluaran</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Tambah / Edit Warga -->
+  <div class="modal-backdrop" id="modal-warga">
+    <div class="modal-content glass-panel luxury-modal">
+      <div class="modal-header">
+        <h3 id="modal-warga-title"><i class="fa-solid fa-user-plus text-emerald"></i> Tambah Data Warga Baru</h3>
+        <button class="modal-close" data-close="modal-warga">&times;</button>
+      </div>
+      <form id="form-warga">
+        <input type="hidden" id="warga-edit-id">
+
+        <div class="form-group mb-3">
+          <label for="warga-name">Nama Lengkap Kepala Keluarga / Warga:</label>
+          <input type="text" id="warga-name" class="custom-input" placeholder="Contoh: Bpk. Hendra Gunawan" required>
+        </div>
+
+        <div class="form-row-2 mb-3">
+          <div class="form-group">
+            <label for="warga-block">Blok / Gang:</label>
+            <select id="warga-block" class="custom-select" required>
+              <option value="Blok B6">Blok B6</option>
+              <option value="Blok B7">Blok B7</option>
+              <option value="Blok Lainnya">+ Tambah Blok Baru</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="warga-house-no">Nomor Rumah:</label>
+            <input type="text" id="warga-house-no" class="custom-input" placeholder="Contoh: No. 12A" required>
+          </div>
+        </div>
+
+        <div class="form-row-2 mb-3">
+          <div class="form-group">
+            <label for="warga-phone">Nomor WhatsApp (Aktif):</label>
+            <input type="tel" id="warga-phone" class="custom-input" placeholder="Contoh: 081234567890" required>
+            <small class="text-muted">Untuk pengiriman otomatis kwitansi digital via WhatsApp</small>
+          </div>
+          <div class="form-group">
+            <label for="warga-domicile">Status Domisili:</label>
+            <select id="warga-domicile" class="custom-select">
+              <option value="Tetap">Warga Tetap (Rumah Pribadi)</option>
+              <option value="Kontrak">Warga Kontrak / Kost</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="warga-family-members">Jumlah Jiwa dalam Rumah:</label>
+          <input type="number" id="warga-family-members" class="custom-input" value="4" min="1">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" data-close="modal-warga">Batal</button>
+          <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-save"></i> Simpan Data Warga</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Digital Receipt (Kwitansi Digital Estetik) -->
+  <div class="modal-backdrop" id="modal-receipt">
+    <div class="modal-content glass-panel luxury-modal receipt-modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-receipt text-gold"></i> Kwitansi Digital Resmi</h3>
+        <button class="modal-close" data-close="modal-receipt">&times;</button>
+      </div>
+
+      <!-- Printable Digital Receipt Card -->
+      <div class="digital-receipt-card" id="printable-receipt-card">
+        <div class="receipt-header">
+          <div class="receipt-logo">
+            <i class="fa-solid fa-building-columns"></i>
+          </div>
+          <div class="receipt-title">
+            <h3>RUKUN TETANGGA 001 / RW 013</h3>
+            <p>BUKTI PEMBAYARAN IURAN RESMI</p>
+          </div>
+        </div>
+        <div class="receipt-divider"></div>
+
+        <div class="receipt-meta-grid">
+          <div>
+            <span class="meta-label">No. Transaksi:</span>
+            <strong id="rcp-no">RT01-202609-0012</strong>
+          </div>
+          <div style="text-align: right;">
+            <span class="meta-label">Tanggal:</span>
+            <strong id="rcp-date">15 September 2026</strong>
+          </div>
+        </div>
+
+        <div class="receipt-resident-box">
+          <div class="res-avatar"><i class="fa-solid fa-user-check"></i></div>
+          <div>
+            <span class="meta-label">Diterima Dari:</span>
+            <h4 id="rcp-name">Bpk. Bambang Sutrisno</h4>
+            <p id="rcp-address">Blok A No. 05 (Warga Tetap)</p>
+          </div>
+        </div>
+
+        <div class="receipt-breakdown">
+          <div class="breakdown-title">RINCIAN ALOKASI IURAN:</div>
+          <div id="rcp-split-list">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+
+        <div class="receipt-total-bar">
+          <span>TOTAL DIBAYAR:</span>
+          <strong id="rcp-total-amount">Rp 50.000</strong>
+        </div>
+
+        <div class="receipt-footer-stamp">
+          <div class="status-stamp">
+            <i class="fa-solid fa-stamp"></i> LUNAS TERVERIFIKASI
+          </div>
+          <div class="qr-placeholder">
+            <i class="fa-solid fa-qrcode"></i>
+            <small>Scan Validasi RT.001</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="receipt-actions mt-3">
+        <button class="btn btn-outline" id="btn-print-receipt">
+          <i class="fa-solid fa-print"></i> Cetak Kwitansi
+        </button>
+        <button class="btn btn-emerald" id="btn-share-receipt-wa">
+          <i class="fa-brands fa-whatsapp"></i> Kirim ke WhatsApp Warga
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Ganti Akun B1 / B2 -->
+  <div class="modal-backdrop" id="modal-switch-account">
+    <div class="modal-content glass-panel luxury-modal" style="max-width:420px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-user-shield text-gold"></i> Ganti Akun Bendahara</h3>
+        <button class="modal-close" data-close="modal-switch-account">&times;</button>
+      </div>
+
+      <div style="padding: 1rem 0;">
+        <p style="color:var(--text-secondary); font-size:.9rem; margin-bottom:1.25rem; text-align:center;">
+          Pilih akun yang ingin diaktifkan, lalu masukkan PIN untuk konfirmasi.
+        </p>
+
+        <!-- Account Selector Cards -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+          <div class="account-select-card" id="acc-card-b1" data-account="b1">
+            <div class="acc-icon-circle" style="background:rgba(245,158,11,0.2);">
+              <i class="fa-solid fa-crown" style="color:var(--gold-400);"></i>
+            </div>
+            <h4>B1 – Bendahara 1</h4>
+            <p>Full Control</p>
+            <span class="role-badge role-badge-b1">SUPER ADMIN</span>
+          </div>
+          <div class="account-select-card" id="acc-card-b2" data-account="b2">
+            <div class="acc-icon-circle" style="background:rgba(16,185,129,0.2);">
+              <i class="fa-solid fa-moon" style="color:var(--emerald-400);"></i>
+            </div>
+            <h4>B2 – Bendahara 2</h4>
+            <p>Koordinator Jimpitan</p>
+            <span class="role-badge role-badge-b2">JIMPITAN</span>
+          </div>
+        </div>
+
+        <!-- PIN Input -->
+        <div class="form-group" id="switch-pin-group">
+          <label class="form-label"><i class="fa-solid fa-lock text-gold"></i> PIN Akun <span id="switch-target-label">(B1 atau B2)</span></label>
+          <input type="password" class="form-input" id="switch-pin-input" placeholder="Masukkan PIN 4 digit" maxlength="4" inputmode="numeric">
+          <small id="switch-pin-error" style="color:var(--rose-400); display:none; margin-top:4px;"><i class="fa-solid fa-triangle-exclamation"></i> PIN salah, coba lagi.</small>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-outline" data-close="modal-switch-account">Batal</button>
+        <button class="btn btn-gold" id="btn-confirm-switch-account"><i class="fa-solid fa-right-to-bracket"></i> Masuk ke Akun</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Tambah Perolehan Jimpitan -->
+  <div class="modal-backdrop" id="modal-add-jimpitan-income">
+    <div class="modal-content glass-panel luxury-modal" style="max-width:500px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-coins text-emerald"></i> Catat Perolehan Jimpitan</h3>
+        <button class="modal-close" data-close="modal-add-jimpitan-income">&times;</button>
+      </div>
+      <form id="form-jimpitan-income" style="padding:1rem 0;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Tanggal (Hari Minggu)</label>
+            <input type="date" class="form-input" id="jimp-income-date" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Regu / Kelompok Ronda</label>
+            <select class="form-input" id="jimp-income-regu">
+              <option value="Regu 1">Regu 1</option>
+              <option value="Regu 2">Regu 2</option>
+              <option value="Regu 3">Regu 3</option>
+              <option value="Regu 4">Regu 4</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nama Koordinator Ronda</label>
+          <input type="text" class="form-input" id="jimp-income-koordinator" placeholder="Nama koordinator / penanggung jawab ronda">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Total Perolehan Jimpitan (Rp)</label>
+          <input type="number" class="form-input" id="jimp-income-amount" placeholder="Contoh: 75000" min="0" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Catatan Kondisi Ronda</label>
+          <textarea class="form-input" id="jimp-income-notes" rows="2" placeholder="Kondisi ronda, jumlah personil, kejadian penting..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-emerald btn-full"><i class="fa-solid fa-floppy-disk"></i> Simpan Perolehan Jimpitan</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Tambah Pengeluaran Kas Jimpitan -->
+  <div class="modal-backdrop" id="modal-add-jimpitan-expense">
+    <div class="modal-content glass-panel luxury-modal" style="max-width:500px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-cart-shopping text-rose"></i> Catat Pengeluaran Kas Ronda</h3>
+        <button class="modal-close" data-close="modal-add-jimpitan-expense">&times;</button>
+      </div>
+      <form id="form-jimpitan-expense" style="padding:1rem 0;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Tanggal Pengeluaran</label>
+            <input type="date" class="form-input" id="jimp-expense-date" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kategori</label>
+            <select class="form-input" id="jimp-expense-category">
+              <option value="Konsumsi Ronda">Konsumsi Ronda (Kopi, Teh, Gorengan)</option>
+              <option value="Perlengkapan Pos">Perlengkapan Pos Ronda (Senter, Baterai)</option>
+              <option value="Perbaikan Pos">Perbaikan / Perawatan Pos Ronda</option>
+              <option value="Lain-lain">Lain-lain</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Keterangan Pengeluaran</label>
+          <input type="text" class="form-input" id="jimp-expense-desc" placeholder="Detail pengeluaran kas ronda" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nominal Pengeluaran (Rp)</label>
+          <input type="number" class="form-input" id="jimp-expense-amount" placeholder="Contoh: 35000" min="0" required>
+        </div>
+        <button type="submit" class="btn btn-outline-rose btn-full"><i class="fa-solid fa-floppy-disk"></i> Simpan Pengeluaran</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: APK Build & Install Guide -->
+  <div class="modal-backdrop" id="modal-apk-guide">
+    <div class="modal-content glass-panel luxury-modal guide-modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-brands fa-android text-emerald"></i> Panduan Membuat File .APK</h3>
+        <button class="modal-close" data-close="modal-apk-guide">&times;</button>
+      </div>
+      
+      <div class="guide-body">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-info">
+            <h4>Cara Termudah 1-Menit (PWABuilder):</h4>
+            <p>1. Buka situs resmi <strong>PWABuilder.com</strong> di browser Anda.</p>
+            <p>2. Masukkan URL hosting web ini (misal via Vercel / GitHub Pages / Firebase Hosting).</p>
+            <p>3. Klik <strong>Generate Android App</strong> ➔ Unduh file <code>.apk</code> siap install di semua HP Android pengurus RT!</p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-info">
+            <h4>Install Langsung Sebagai Aplikasi Native (PWA Standalone):</h4>
+            <p>Buka web ini di Google Chrome di HP Anda, lalu tekan titik tiga (⋮) di pojok kanan atas, kemudian pilih <strong>"Tambahkan ke Layar Utama" / "Install Aplikasi"</strong>. Aplikasi akan terpasang di menu HP tanpa perlu mendownload dari Play Store.</p>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-info">
+            <h4>Build APK Profesional (Capacitor / Android Studio):</h4>
+            <p>Jalankan perintah <code>npx @capacitor/cli create</code> lalu copy file html/css/js ke folder <code>www</code>, dan jalankan <code>npx cap build android</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions mt-3">
+        <button class="btn btn-gold btn-full" data-close="modal-apk-guide">Mengerti, Tutup Panduan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Main JavaScript Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
