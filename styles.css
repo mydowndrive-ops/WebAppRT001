@@ -2316,6 +2316,16 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-muted);
 }
 
+.bnav-item.menu-item-locked {
+  opacity: 0.3;
+  pointer-events: none;
+  filter: grayscale(0.8);
+}
+
+.bnav-item.menu-item-locked::after {
+  display: none;
+}
+
 /* Account Select Cards in Switch Modal */
 .account-select-card {
   background: var(--bg-card);

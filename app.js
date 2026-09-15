@@ -1494,6 +1494,25 @@ function formatDateIndo(dateStr) {
   }).format(date);
 }
 
+function formatDateLong(dateStr) {
+  return formatDateIndo(dateStr);
+}
+
+function formatCurrency(number) {
+  return formatRupiah(number);
+}
+
+// Modal helper functions
+function openModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) modal.classList.add('active');
+}
+
+function closeModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) modal.classList.remove('active');
+}
+
 const MONTH_NAMES = [
   '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
@@ -2705,6 +2724,11 @@ function setupNavigation() {
 }
 
 function navigateToView(viewId) {
+  // If B2 attempts to navigate to B1-only page, redirect to jimpitan
+  if (state.currentUser === 'b2' && B1_ONLY_TARGETS.includes(viewId)) {
+    viewId = 'jimpitan';
+  }
+
   // Hide all sections
   document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
   // Deactivate all nav links
@@ -2725,7 +2749,8 @@ function navigateToView(viewId) {
     'pengeluaran': { title: 'Pengeluaran Kas RT', sub: 'Pencatatan Biaya Operasional & Pembebanan Pos' },
     'warga': { title: 'Data Warga RT.001', sub: 'Daftar Kepala Keluarga, Kontak WA & Status Domisili' },
     'laporan': { title: 'Laporan & Pembukuan', sub: 'Laporan Pertanggungjawaban Keuangan Siap Cetak' },
-    'pengaturan': { title: 'Pengaturan Pos & Sistem', sub: 'Konfigurasi Iuran, Split Anggaran & Cadangan Database' }
+    'pengaturan': { title: 'Pengaturan Pos & Sistem', sub: 'Konfigurasi Iuran, Split Anggaran & Cadangan Database' },
+    'jimpitan': { title: 'Uang Jimpitan Ronda', sub: 'Perolehan & Pengeluaran Kas Ronda Malam Minggu' }
   };
 
   if (titles[viewId]) {
@@ -2741,6 +2766,7 @@ function navigateToView(viewId) {
   if (viewId === 'laporan') renderReport();
   if (viewId === 'pengaturan') renderSettings();
   if (viewId === 'dashboard') renderDashboard();
+  if (viewId === 'jimpitan') renderJimpitan();
 }
 
 function setupModalEventListeners() {
@@ -3271,18 +3297,18 @@ function registerServiceWorker() {
 // ==================== MASTER RENDER & INIT ====================
 
 function renderAll() {
-  populateBlockFilterOptions();
-  renderDashboard();
-  renderChecklist();
-  renderPosDetails();
-  renderExpenses();
-  renderResidents();
-  renderReport();
-  renderSettings();
-  renderJimpitan();
-  populateResidentSelects();
-  applyRBAC();
-  updateUserProfileUI();
+  try { populateBlockFilterOptions(); } catch (e) { console.error('Error populateBlockFilterOptions', e); }
+  try { renderDashboard(); } catch (e) { console.error('Error renderDashboard', e); }
+  try { renderChecklist(); } catch (e) { console.error('Error renderChecklist', e); }
+  try { renderPosDetails(); } catch (e) { console.error('Error renderPosDetails', e); }
+  try { renderExpenses(); } catch (e) { console.error('Error renderExpenses', e); }
+  try { renderResidents(); } catch (e) { console.error('Error renderResidents', e); }
+  try { renderReport(); } catch (e) { console.error('Error renderReport', e); }
+  try { renderSettings(); } catch (e) { console.error('Error renderSettings', e); }
+  try { renderJimpitan(); } catch (e) { console.error('Error renderJimpitan', e); }
+  try { populateResidentSelects(); } catch (e) { console.error('Error populateResidentSelects', e); }
+  try { applyRBAC(); } catch (e) { console.error('Error applyRBAC', e); }
+  try { updateUserProfileUI(); } catch (e) { console.error('Error updateUserProfileUI', e); }
 }
 
 // ==================== SESSION MANAGEMENT ====================
@@ -3410,6 +3436,7 @@ function setupLoginPortal() {
       saveState();
       hideLoginOverlay();
       renderAll();
+      navigateToView(selectedRole === 'b2' ? 'jimpitan' : 'dashboard');
       const label = selectedRole === 'b1' ? 'Bendahara 1 – Full Control' : 'Bendahara 2 – Koordinator Jimpitan';
       showToast(`✅ Selamat datang, ${label}!`, 'success');
     } else {
@@ -3523,6 +3550,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     hideLoginOverlay();
     renderAll();
+    navigateToView(state.currentUser === 'b2' ? 'jimpitan' : 'dashboard');
   } else {
     showLoginOverlay();
     // Still render the app in the background (hidden) so it's ready
@@ -3539,7 +3567,7 @@ const B1_ONLY_TARGETS = ['dashboard', 'checklist', 'pos-anggaran', 'pengeluaran'
 function applyRBAC() {
   const isB2 = state.currentUser === 'b2';
 
-  // Sidebar menu items
+  // Sidebar and bottom nav menu items
   document.querySelectorAll('[data-role-req]').forEach(el => {
     const req = el.getAttribute('data-role-req');
     if (req === 'B1' && isB2) {
@@ -3553,18 +3581,7 @@ function applyRBAC() {
   if (isB2) {
     const activeSection = document.querySelector('.view-section.active');
     if (activeSection && activeSection.id !== 'view-jimpitan') {
-      // Switch to Jimpitan view
-      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-      const jimpView = document.getElementById('view-jimpitan');
-      if (jimpView) jimpView.classList.add('active');
-
-      document.querySelectorAll('.menu-item, .bnav-item').forEach(m => m.classList.remove('active'));
-      document.querySelectorAll('[data-target="jimpitan"]').forEach(m => m.classList.add('active'));
-
-      const pageTitle = document.getElementById('page-title');
-      const pageSub = document.getElementById('page-subtitle');
-      if (pageTitle) pageTitle.textContent = 'Uang Jimpitan Ronda';
-      if (pageSub) pageSub.textContent = 'Perolehan & Pengeluaran Kas Ronda Malam Minggu';
+      navigateToView('jimpitan');
     }
   }
 
@@ -3630,9 +3647,11 @@ function setupAccountSwitcher() {
     const correctPin = state.accountPins[selectedTargetAccount];
     if (enteredPin === correctPin) {
       state.currentUser = selectedTargetAccount;
+      setSession(selectedTargetAccount);
       saveState();
       closeModal('modal-switch-account');
       renderAll();
+      navigateToView(selectedTargetAccount === 'b2' ? 'jimpitan' : 'dashboard');
       const label = selectedTargetAccount === 'b1' ? 'B1 (Bendahara 1 – Full Control)' : 'B2 (Bendahara 2 – Koordinator Jimpitan)';
       showToast(`✅ Berhasil masuk sebagai ${label}`, 'success');
     } else {

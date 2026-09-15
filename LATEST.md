@@ -67,6 +67,12 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
    - Dilengkapi `manifest.json` dan `sw.js` (Service Worker) siap pasang (*installable*) di Android / iOS / Desktop.
    - Navigasi mobile bawah (*bottom navigation*) dan tombol cepat keluar di mobile header.
 
+7. **Perbaikan Multi-Role & Switch Account (B1 / B2)**:
+   - Menambahkan fungsi helper `formatCurrency`, `formatDateLong`, `openModal`, dan `closeModal` yang sebelumnya belum terdefinisi sehingga menyebabkan eksekusi `renderAll()` terhenti sebelum `applyRBAC()` & `updateUserProfileUI()`.
+   - Menambahkan sinkronisasi `sessionStorage` saat berganti akun di modal switch account (`#modal-switch-account`).
+   - Otomatis mengarahkan akun B2 ke tampilan Jimpitan Ronda (`#view-jimpitan`) dan mengunci menu khusus B1 (desktop sidebar & mobile bottom nav) dengan visual gembok.
+   - Sidebar footer dinamis menampilkan profil aktif: **B1 – Bendahara 1** (Full Control Keuangan) atau **B2 – Bendahara 2** (Koordinator Jimpitan Ronda) dengan avatar dan badge yang sesuai.
+
 ---
 
 ## 📁 Struktur Berkas Penting
