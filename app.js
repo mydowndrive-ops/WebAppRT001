@@ -27,44 +27,1241 @@ const OTHER_POS_CONFIG = [
 ];
 
 const INITIAL_RESIDENTS = [
-  { id: 'w-1', noUrut: 1, name: 'Wageyanto', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 02', phone: '081289060002', domicile: 'Tetap', members: 4 },
-  { id: 'w-2', noUrut: 2, name: 'Fatkhurahman', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 04', phone: '081289060004', domicile: 'Tetap', members: 4 },
-  { id: 'w-3', noUrut: 3, name: 'Nono Suyatno', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 06', phone: '081289060006', domicile: 'Tetap', members: 3 },
-  { id: 'w-4', noUrut: 4, name: 'Manahara Dimas', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 08', phone: '081289060008', domicile: 'Tetap', members: 4 },
-  { id: 'w-5', noUrut: 5, name: 'Jati Purnomo', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 10', phone: '081289060010', domicile: 'Tetap', members: 4 },
-  { id: 'w-6', noUrut: 6, name: 'Jumiran', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 12', phone: '081289060012', domicile: 'Tetap', members: 3 },
-  { id: 'w-7', noUrut: 7, name: 'M.Hutagalung', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 14', phone: '081289060014', domicile: 'Tetap', members: 4 },
-  { id: 'w-8', noUrut: 8, name: 'Andriyanto. K', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 16', phone: '081289060016', domicile: 'Tetap', members: 3 },
-  { id: 'w-9', noUrut: 9, name: 'Sukoco', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 18', phone: '081289060018', domicile: 'Tetap', members: 4 },
-  { id: 'w-10', noUrut: 10, name: 'Khoirul', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 20', phone: '081289060020', domicile: 'Tetap', members: 4 },
-  { id: 'w-11', noUrut: 11, name: 'Mehdi Bazargan', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 22', phone: '081289060022', domicile: 'Tetap', members: 4 },
-  { id: 'w-12', noUrut: 12, name: 'Agus Nursanto', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 24', phone: '081289060024', domicile: 'Tetap', members: 3 },
-  { id: 'w-13', noUrut: 13, name: 'Silmi', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 26', phone: '081289060026', domicile: 'Tetap', members: 3 },
-  { id: 'w-14', noUrut: 14, name: 'Sutarno', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 28', phone: '081289060028', domicile: 'Tetap', members: 4 },
-  { id: 'w-15', noUrut: 16, name: 'Joko Susilo', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 32', phone: '081289060032', domicile: 'Tetap', members: 4 },
-  { id: 'w-16', noUrut: 17, name: 'Agung', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 34', phone: '081289060034', domicile: 'Tetap', members: 3 },
-  { id: 'w-17', noUrut: 18, name: 'Yatno', street: 'Jl. Citarum II', block: 'Blok B6', houseNo: 'No. 36', phone: '081289060036', domicile: 'Tetap', members: 4 },
-  { id: 'w-18', noUrut: 19, name: 'H.Tahmidul Akbar', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 01', phone: '081289070001', domicile: 'Tetap', members: 5 },
-  { id: 'w-19', noUrut: 20, name: 'Isriyanto Putra', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 03', phone: '081289070003', domicile: 'Tetap', members: 4 },
-  { id: 'w-20', noUrut: 21, name: 'Ama jupri', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 05', phone: '081289070005', domicile: 'Tetap', members: 4 },
-  { id: 'w-21', noUrut: 22, name: 'Faisal Muit', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 07', phone: '081289070007', domicile: 'Tetap', members: 3 },
-  { id: 'w-22', noUrut: 23, name: 'Didi Prayitno', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 09', phone: '081289070009', domicile: 'Tetap', members: 4 },
-  { id: 'w-23', noUrut: 24, name: 'Abu Rifat', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 11', phone: '081289070011', domicile: 'Tetap', members: 4 },
-  { id: 'w-24', noUrut: 25, name: 'Dedi', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 15', phone: '081289070015', domicile: 'Tetap', members: 4 },
-  { id: 'w-25', noUrut: 26, name: 'Bagas Santoso', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 17', phone: '081289070017', domicile: 'Tetap', members: 3 },
-  { id: 'w-26', noUrut: 27, name: 'Hardiyatna', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 19', phone: '081289070019', domicile: 'Tetap', members: 4 },
-  { id: 'w-27', noUrut: 29, name: 'Supriya/Kapri', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 23', phone: '081289070023', domicile: 'Tetap', members: 4 },
-  { id: 'w-28', noUrut: 30, name: 'Faiz', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 25', phone: '081289070025', domicile: 'Tetap', members: 3 },
-  { id: 'w-29', noUrut: 31, name: 'Supeno', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 27', phone: '081289070027', domicile: 'Tetap', members: 4 },
-  { id: 'w-30', noUrut: 32, name: 'Arif Nur', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 29', phone: '081289070029', domicile: 'Tetap', members: 3 },
-  { id: 'w-31', noUrut: 33, name: 'Yusuf', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 31', phone: '081289070031', domicile: 'Tetap', members: 4 },
-  { id: 'w-32', noUrut: 34, name: 'Oktaviandri', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 33', phone: '081289070033', domicile: 'Tetap', members: 3 },
-  { id: 'w-33', noUrut: 35, name: 'Trio Rahmat', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 35', phone: '081289070035', domicile: 'Tetap', members: 4 },
-  { id: 'w-34', noUrut: 36, name: 'Fery (37A)', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 37A', phone: '081289070036', domicile: 'Tetap', members: 4 },
-  { id: 'w-35', noUrut: 37, name: 'Fery (37B)', street: 'Jl. Citarum II', block: 'Blok B7', houseNo: 'No. 37B', phone: '081289070037', domicile: 'Tetap', members: 3 }
-];
+  {
+    "id": "w-1",
+    "noUrut": 1,
+    "name": "Wageyanto",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 02",
+    "phone": "081289060002",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-2",
+    "noUrut": 2,
+    "name": "Fatkhurahman",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 04",
+    "phone": "081289060004",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-3",
+    "noUrut": 3,
+    "name": "Nono Suyatno",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 06",
+    "phone": "081289060006",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-4",
+    "noUrut": 4,
+    "name": "Manahara Dimas",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 08",
+    "phone": "081289060008",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-5",
+    "noUrut": 5,
+    "name": "Jati Purnomo",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 10",
+    "phone": "081289060010",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-6",
+    "noUrut": 6,
+    "name": "Jumiran",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 12",
+    "phone": "081289060012",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-7",
+    "noUrut": 7,
+    "name": "M.Hutagalung",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 14",
+    "phone": "081289060014",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-8",
+    "noUrut": 8,
+    "name": "Andriyanto. K",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 16",
+    "phone": "081289060016",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-9",
+    "noUrut": 9,
+    "name": "Sukoco",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 18",
+    "phone": "081289060018",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-10",
+    "noUrut": 10,
+    "name": "Khoirul",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 20",
+    "phone": "081289060020",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-11",
+    "noUrut": 11,
+    "name": "Mehdi Bazargan",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 22",
+    "phone": "081289060022",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-12",
+    "noUrut": 12,
+    "name": "Agus Nursanto",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 24",
+    "phone": "081289060024",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-13",
+    "noUrut": 13,
+    "name": "Silmi",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 26",
+    "phone": "081289060026",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-14",
+    "noUrut": 14,
+    "name": "Sutarno",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 28",
+    "phone": "081289060028",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-15",
+    "noUrut": 16,
+    "name": "Joko Susilo",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 32",
+    "phone": "081289060032",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-16",
+    "noUrut": 17,
+    "name": "Agung",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 34",
+    "phone": "081289060034",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-17",
+    "noUrut": 18,
+    "name": "Yatno",
+    "street": "Jl. Citarum II",
+    "block": "Blok B6",
+    "houseNo": "No. 36",
+    "phone": "081289060036",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-18",
+    "noUrut": 19,
+    "name": "H.Tahmidul Akbar",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 01",
+    "phone": "081289070001",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-19",
+    "noUrut": 20,
+    "name": "Isriyanto Putra",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 03",
+    "phone": "081289070003",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-20",
+    "noUrut": 21,
+    "name": "Ama jupri",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 05",
+    "phone": "081289070005",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-21",
+    "noUrut": 22,
+    "name": "Faisal Muit",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 07",
+    "phone": "081289070007",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-22",
+    "noUrut": 23,
+    "name": "Didi Prayitno",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 09",
+    "phone": "081289070009",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-23",
+    "noUrut": 24,
+    "name": "Abu Rifat",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 11",
+    "phone": "081289070011",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-24",
+    "noUrut": 25,
+    "name": "Dedi",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 15",
+    "phone": "081289070015",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-25",
+    "noUrut": 26,
+    "name": "Bagas Santoso",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 17",
+    "phone": "081289070017",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-26",
+    "noUrut": 27,
+    "name": "Hardiyatna",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 19",
+    "phone": "081289070019",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-27",
+    "noUrut": 29,
+    "name": "Supriya/Kapri",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 23",
+    "phone": "081289070023",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-28",
+    "noUrut": 30,
+    "name": "Faiz",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 25",
+    "phone": "081289070025",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-29",
+    "noUrut": 31,
+    "name": "Supeno",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 27",
+    "phone": "081289070027",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-30",
+    "noUrut": 32,
+    "name": "Arif Nur",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 29",
+    "phone": "081289070029",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-31",
+    "noUrut": 33,
+    "name": "Yusuf",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 31",
+    "phone": "081289070031",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-32",
+    "noUrut": 34,
+    "name": "Oktaviandri",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 33",
+    "phone": "081289070033",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-33",
+    "noUrut": 35,
+    "name": "Trio Rahmat",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 35",
+    "phone": "081289070035",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-34",
+    "noUrut": 36,
+    "name": "Fery",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 37A",
+    "phone": "081289070037",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-35",
+    "noUrut": 37,
+    "name": "Fery",
+    "street": "Jl. Citarum II",
+    "block": "Blok B7",
+    "houseNo": "No. 37B",
+    "phone": "081289070037",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-36",
+    "noUrut": 38,
+    "name": "Yudi Adjie. D",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 01",
+    "phone": "081289060001",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-37",
+    "noUrut": 39,
+    "name": "Ibnu",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 03",
+    "phone": "081289060003",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-38",
+    "noUrut": 40,
+    "name": "Elan",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 05",
+    "phone": "081289060005",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-39",
+    "noUrut": 41,
+    "name": "Sujari",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 07",
+    "phone": "081289060007",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-40",
+    "noUrut": 42,
+    "name": "Andira",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 09",
+    "phone": "081289060009",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-41",
+    "noUrut": 43,
+    "name": "M. Askur",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 11",
+    "phone": "081289060011",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-42",
+    "noUrut": 44,
+    "name": "Supriyanto",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 15",
+    "phone": "081289060015",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-43",
+    "noUrut": 45,
+    "name": "Omos",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 17",
+    "phone": "081289060017",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-44",
+    "noUrut": 46,
+    "name": "Maman",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 19",
+    "phone": "081289060019",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-45",
+    "noUrut": 47,
+    "name": "Abib Dwi K",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 21",
+    "phone": "081289060021",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-46",
+    "noUrut": 48,
+    "name": "Marsidi",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 23",
+    "phone": "081289060023",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-47",
+    "noUrut": 49,
+    "name": "Juniar Sinaga",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 25",
+    "phone": "081289060025",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-48",
+    "noUrut": 50,
+    "name": "Warsito",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 27",
+    "phone": "081289060027",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-49",
+    "noUrut": 51,
+    "name": "Usep Usmara",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 29",
+    "phone": "081289060029",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-50",
+    "noUrut": 52,
+    "name": "Sahidin",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B7",
+    "houseNo": "No. 31",
+    "phone": "081289070031",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-51",
+    "noUrut": 53,
+    "name": "Triyanto",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 33",
+    "phone": "081289060033",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-52",
+    "noUrut": 54,
+    "name": "Rahmat",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 35",
+    "phone": "081289060035",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-53",
+    "noUrut": 55,
+    "name": "M H Alfadli",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "No. 37",
+    "phone": "081289060037",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-54",
+    "noUrut": 56,
+    "name": "KOST-1",
+    "street": "Jl. Citarum IVA",
+    "block": "Blok B6",
+    "houseNo": "K1",
+    "phone": "081289060001",
+    "domicile": "Kontrak",
+    "members": 1
+  },
+  {
+    "id": "w-55",
+    "noUrut": 57,
+    "name": "Moh.Sulaiman",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 02",
+    "phone": "081289030002",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-56",
+    "noUrut": 58,
+    "name": "Aris Suyitno",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 04",
+    "phone": "081289030004",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-57",
+    "noUrut": 59,
+    "name": "Narno",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 06",
+    "phone": "081289030006",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-58",
+    "noUrut": 60,
+    "name": "Jumari Susanto",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 08",
+    "phone": "081289030008",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-59",
+    "noUrut": 61,
+    "name": "Sukasno",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 10",
+    "phone": "081289030010",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-60",
+    "noUrut": 62,
+    "name": "H. Pandoli",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 12",
+    "phone": "081289030012",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-61",
+    "noUrut": 63,
+    "name": "Haris",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 14",
+    "phone": "081289030014",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-62",
+    "noUrut": 64,
+    "name": "Paino",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 16",
+    "phone": "081289030016",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-63",
+    "noUrut": 65,
+    "name": "Sunarno",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 18",
+    "phone": "081289030018",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-64",
+    "noUrut": 66,
+    "name": "Arif",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 20",
+    "phone": "081289030020",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-65",
+    "noUrut": 67,
+    "name": "Yayat Ruhyat-1",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 22",
+    "phone": "081289030022",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-66",
+    "noUrut": 68,
+    "name": "Yayat Ruhyat-2",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 24",
+    "phone": "081289030024",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-67",
+    "noUrut": 69,
+    "name": "Heru Tri Iswanto",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 26",
+    "phone": "081289030026",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-68",
+    "noUrut": 70,
+    "name": "Supratno",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 28",
+    "phone": "081289030028",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-69",
+    "noUrut": 71,
+    "name": "Rinto Sithorus",
+    "street": "Jl. Citarum VIIIB",
+    "block": "Blok B3",
+    "houseNo": "No. 30",
+    "phone": "081289030030",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-70",
+    "noUrut": 72,
+    "name": "Dwi susanto",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B3",
+    "houseNo": "No. 01",
+    "phone": "081289030001",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-71",
+    "noUrut": 73,
+    "name": "Lilis Marsidi",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B3",
+    "houseNo": "No. 03",
+    "phone": "081289030003",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-72",
+    "noUrut": 74,
+    "name": "Samit",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B3",
+    "houseNo": "No. 05",
+    "phone": "081289030005",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-73",
+    "noUrut": 75,
+    "name": "Kosong",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 07",
+    "phone": "081289060007",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-74",
+    "noUrut": 76,
+    "name": "Supardi",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 09",
+    "phone": "081289060009",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-75",
+    "noUrut": 77,
+    "name": "Usman",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 11",
+    "phone": "081289060011",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-76",
+    "noUrut": 78,
+    "name": "Doni Rahman",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 15",
+    "phone": "081289060015",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-77",
+    "noUrut": 79,
+    "name": "Ma'muroji",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 17",
+    "phone": "081289060017",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-78",
+    "noUrut": 80,
+    "name": "Joshua",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 19",
+    "phone": "081289060019",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-79",
+    "noUrut": 81,
+    "name": "Basis Pambudi",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 21",
+    "phone": "081289060021",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-80",
+    "noUrut": 82,
+    "name": "Sutiyono",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 23",
+    "phone": "081289060023",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-81",
+    "noUrut": 83,
+    "name": "Kosong",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 25",
+    "phone": "081289060025",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-82",
+    "noUrut": 84,
+    "name": "Hendrik",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 27",
+    "phone": "081289060027",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-83",
+    "noUrut": 85,
+    "name": "Kosong",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 29",
+    "phone": "081289060029",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-84",
+    "noUrut": 86,
+    "name": "Aswin Prantama",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B6",
+    "houseNo": "No. 31",
+    "phone": "081289060031",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-85",
+    "noUrut": 87,
+    "name": "Solehudin",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 02",
+    "phone": "081289040002",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-86",
+    "noUrut": 88,
+    "name": "Bambang",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 04",
+    "phone": "081289040004",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-87",
+    "noUrut": 89,
+    "name": "Feisal",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 06",
+    "phone": "081289040006",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-88",
+    "noUrut": 90,
+    "name": "Nana Dirgana",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 08",
+    "phone": "081289040008",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-89",
+    "noUrut": 91,
+    "name": "Misno",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 10",
+    "phone": "081289040010",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-90",
+    "noUrut": 92,
+    "name": "Rasju",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 12",
+    "phone": "081289040012",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-91",
+    "noUrut": 93,
+    "name": "Kosong",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 14",
+    "phone": "081289040014",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-92",
+    "noUrut": 94,
+    "name": "Mulyadi",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 16",
+    "phone": "081289040016",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-93",
+    "noUrut": 95,
+    "name": "Indra, Dwi",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 18",
+    "phone": "081289040018",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-94",
+    "noUrut": 96,
+    "name": "Pariyanto",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 20",
+    "phone": "081289040020",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-95",
+    "noUrut": 97,
+    "name": "Hardiyanto",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 22",
+    "phone": "081289040022",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-96",
+    "noUrut": 98,
+    "name": "Rofik. W",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 24",
+    "phone": "081289040024",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-97",
+    "noUrut": 99,
+    "name": "Khaeroni",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 26",
+    "phone": "081289040026",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-98",
+    "noUrut": 100,
+    "name": "Kosong",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 28",
+    "phone": "081289040028",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-99",
+    "noUrut": 101,
+    "name": "Budi Sujalmi",
+    "street": "Jl. Citarum VIIIC",
+    "block": "Blok B4",
+    "houseNo": "No. 30",
+    "phone": "081289040030",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-100",
+    "noUrut": 102,
+    "name": "Sudarto",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 01",
+    "phone": "081289040001",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-101",
+    "noUrut": 103,
+    "name": "Yudi",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 03",
+    "phone": "081289040003",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-102",
+    "noUrut": 104,
+    "name": "Dudeh",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 05",
+    "phone": "081289040005",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-103",
+    "noUrut": 105,
+    "name": "Iyushadi",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 07",
+    "phone": "081289040007",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-104",
+    "noUrut": 106,
+    "name": "Zainudin",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 09",
+    "phone": "081289040009",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-105",
+    "noUrut": 107,
+    "name": "Suparsidi",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 11",
+    "phone": "081289040011",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-106",
+    "noUrut": 108,
+    "name": "Kosong",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 15",
+    "phone": "081289040015",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-107",
+    "noUrut": 109,
+    "name": "Rio",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 17",
+    "phone": "081289040017",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-108",
+    "noUrut": 110,
+    "name": "Tomy Dwi",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 19",
+    "phone": "081289040019",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-109",
+    "noUrut": 111,
+    "name": "Romli",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 21",
+    "phone": "081289040021",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-110",
+    "noUrut": 112,
+    "name": "Tarmidi",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 23",
+    "phone": "081289040023",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-111",
+    "noUrut": 113,
+    "name": "Nur Qomar",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 25",
+    "phone": "081289040025",
+    "domicile": "Tetap",
+    "members": 4
+  },
+  {
+    "id": "w-112",
+    "noUrut": 114,
+    "name": "M. Toha",
+    "street": "Jl. Citarum IX",
+    "block": "Blok B4",
+    "houseNo": "No. 27",
+    "phone": "081289040027",
+    "domicile": "Tetap",
+    "members": 4
+  }
+]];
 
-const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpHtdb3CNoojzIqXFnr9hTDwYH_zhGRHY8hzvmsKYXZZu6e2fyfYvi2xK1fAaPIehpVzH7JCkvpzXd/pub?output=csv';
+const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1zwrXck7x2HzVV6KhFgb3DgdAw5SrIUXm64a2M1mbclo/export?format=csv';
 
 // App State
 let state = {
@@ -97,7 +1294,7 @@ function loadState() {
       state = Object.assign(state, parsed);
       
       // Auto-migrate if stored residents is old demo/placeholder data (e.g. contains Bambang Sutrisno)
-      if (!state.residents || state.residents.some(r => r.name.includes('Bambang Sutrisno'))) {
+      if (!state.residents || state.residents.length < 100 || state.residents.some(r => r.name.includes('Bambang Sutrisno'))) {
         console.log('Migrating residents to official RT.001 RW.013 citizen database...');
         state.residents = JSON.parse(JSON.stringify(INITIAL_RESIDENTS));
         seedInitialDemoData();
@@ -602,12 +1799,12 @@ function renderChecklist() {
         </div>
       </td>
       <td>
-        <strong>${resident.block} ${resident.houseNo}</strong>
-        <div class="text-xs text-muted">${resident.street || 'Jl. Citarum II'} • ${resident.domicile} (${resident.members} Jiwa)</div>
+        <div style="font-weight: 600; color: #fff; font-size: 0.95rem;">${resident.name}</div>
+        <div class="text-xs text-muted"><i class="fa-brands fa-whatsapp text-emerald"></i> ${resident.phone}</div>
       </td>
       <td>
-        <div style="font-weight: 600; color: #fff;">${resident.name}</div>
-        <div class="text-xs text-muted"><i class="fa-brands fa-whatsapp text-emerald"></i> ${resident.phone}</div>
+        <strong style="color: var(--emerald-300); font-weight: 600;">${resident.street || 'Jl. Citarum II'}</strong>
+        <div class="text-xs text-muted">${resident.block} ${resident.houseNo} • ${resident.domicile} (${resident.members} Jiwa)</div>
       </td>
       <td>
         <strong style="color: ${isPaid ? 'var(--emerald-400)' : 'var(--text-muted)'}">${formatRupiah(state.mandatoryDues)}</strong>
@@ -801,6 +1998,7 @@ function renderResidents() {
   const tbody = document.getElementById('tbody-warga');
   const searchTerm = (document.getElementById('warga-search')?.value || '').toLowerCase();
   const statusFilter = document.getElementById('filter-warga-status')?.value || 'ALL';
+  const blockFilter = document.getElementById('filter-warga-block')?.value || 'ALL';
 
   if (!tbody) return;
   tbody.innerHTML = '';
@@ -814,21 +2012,23 @@ function renderResidents() {
     const matchSearch = res.name.toLowerCase().includes(searchTerm) ||
                         res.block.toLowerCase().includes(searchTerm) ||
                         res.houseNo.toLowerCase().includes(searchTerm) ||
+                        (res.street && res.street.toLowerCase().includes(searchTerm)) ||
                         res.phone.includes(searchTerm);
     const matchStatus = statusFilter === 'ALL' || res.domicile === statusFilter;
+    const matchBlock = blockFilter === 'ALL' || res.block === blockFilter;
 
-    if (!matchSearch || !matchStatus) return;
+    if (!matchSearch || !matchStatus || !matchBlock) return;
 
     const isPaid = currentMonthPayments.some(p => p.residentId === res.id);
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${res.noUrut || no++}</td>
+      <td><span style="font-weight: 600; color: #fff; font-size: 0.95rem;">${res.name}</span></td>
       <td>
-        <strong>${res.block} ${res.houseNo}</strong>
-        <div class="text-xs text-muted">${res.street || 'Jl. Citarum II'}</div>
+        <strong style="color: var(--emerald-300); font-weight: 600;">${res.street || 'Jl. Citarum II'}</strong>
+        <div class="text-xs text-muted">${res.block} ${res.houseNo}</div>
       </td>
-      <td><span style="font-weight: 600; color: #fff;">${res.name}</span></td>
       <td><span class="split-pill">${res.domicile}</span></td>
       <td><i class="fa-brands fa-whatsapp text-emerald"></i> ${res.phone}</td>
       <td>${res.members} Orang</td>
@@ -848,6 +2048,87 @@ function renderResidents() {
     `;
     tbody.appendChild(tr);
   });
+}
+
+/**
+ * Live Sync Residents from Google Sheets published CSV URL
+ */
+async function syncResidentsFromGoogleSheet() {
+  const btn = document.getElementById('btn-sync-warga-sheet');
+  const origHtml = btn ? btn.innerHTML : '';
+  try {
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghubungkan Google Sheets...';
+    }
+
+    const response = await fetch(GOOGLE_SHEET_CSV_URL);
+    if (!response.ok) throw new Error('Status respons: ' + response.status);
+    const csvText = await response.text();
+    const lines = csvText.split(/\r?\n/).filter(l => l.trim().length > 0);
+    if (lines.length <= 1) throw new Error('Data CSV dari Google Sheets kosong');
+
+    const syncedList = [];
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i];
+      // Robust CSV line parser handling quotes
+      const cols = [];
+      let cur = '';
+      let inQuotes = false;
+      for (let c = 0; c < line.length; c++) {
+        const char = line[c];
+        if (char === '"') inQuotes = !inQuotes;
+        else if (char === ',' && !inQuotes) {
+          cols.push(cur.trim());
+          cur = '';
+        } else cur += char;
+      }
+      cols.push(cur.trim());
+
+      if (cols.length < 5 || !cols[1]) continue;
+      const noUrut = parseInt(cols[0], 10) || i;
+      const name = cols[1];
+      let rawStreet = cols[2];
+      let street = rawStreet.toLowerCase().startsWith('jl.') ? rawStreet : 'Jl. ' + rawStreet;
+      if (street.toUpperCase() === 'JL. CITARUM IVA') street = 'Jl. Citarum IVA';
+
+      let rawBlock = cols[3];
+      let block = rawBlock.toLowerCase().startsWith('blok') ? rawBlock : 'Blok ' + rawBlock;
+
+      let rawNo = cols[4];
+      let houseNo = rawNo.toLowerCase().startsWith('no.') ? rawNo : (rawNo.startsWith('K') ? rawNo : 'No. ' + rawNo);
+
+      const existing = state.residents.find(r => r.name.toLowerCase() === name.toLowerCase() && r.block === block);
+      syncedList.push({
+        id: existing ? existing.id : `w-${i}`,
+        noUrut: noUrut,
+        name: name,
+        street: street,
+        block: block,
+        houseNo: houseNo,
+        phone: existing ? existing.phone : `081289${(rawBlock.replace(/\D/g, '') || '0').padStart(2, '0')}${(rawNo.replace(/\D/g, '') || String(i)).padStart(4, '0').slice(-4)}`,
+        domicile: existing ? existing.domicile : (name.toUpperCase().includes('KOST') ? 'Kontrak' : 'Tetap'),
+        members: existing ? existing.members : (name.toUpperCase().includes('KOST') ? 1 : 4)
+      });
+    }
+
+    if (syncedList.length > 0) {
+      state.residents = syncedList;
+      saveState();
+      renderResidents();
+      renderChecklist();
+      renderDashboard();
+      showToast(`✅ Sukses! ${syncedList.length} data warga berhasil disinkronkan dari Google Sheets.`, 'success');
+    }
+  } catch (err) {
+    console.error('Google Sheet Sync Error:', err);
+    showToast('Gagal sinkronisasi Google Sheets: ' + err.message, 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = origHtml;
+    }
+  }
 }
 
 /**
@@ -1708,6 +2989,8 @@ function setupDelegatedEvents() {
   // Warga search & filter
   document.getElementById('warga-search')?.addEventListener('input', renderResidents);
   document.getElementById('filter-warga-status')?.addEventListener('change', renderResidents);
+  document.getElementById('filter-warga-block')?.addEventListener('change', renderResidents);
+  document.getElementById('btn-sync-warga-sheet')?.addEventListener('click', syncResidentsFromGoogleSheet);
 
   // Batch mark all displayed as paid
   document.getElementById('btn-batch-pay-all')?.addEventListener('click', () => {

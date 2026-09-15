@@ -314,7 +314,9 @@
 
           <div class="filter-group">
             <select id="filter-block" class="custom-select">
-              <option value="ALL">Semua Blok (B6 & B7)</option>
+              <option value="ALL">Semua Blok (B3, B4, B6, B7)</option>
+              <option value="Blok B3">Blok B3</option>
+              <option value="Blok B4">Blok B4</option>
               <option value="Blok B6">Blok B6</option>
               <option value="Blok B7">Blok B7</option>
             </select>
@@ -340,8 +342,8 @@
               <thead>
                 <tr>
                   <th style="width: 60px; text-align: center;">Status</th>
-                  <th>No. Rumah / Blok</th>
                   <th>Nama Kepala Keluarga / Warga</th>
+                  <th>Alamat (Jalan / Blok & No)</th>
                   <th>Nominal Iuran</th>
                   <th>Rincian Split Pos</th>
                   <th>Tanggal Bayar</th>
@@ -458,6 +460,13 @@
               <input type="text" id="warga-search" placeholder="Cari nama, no. rumah, blok, nomor WA...">
             </div>
             <div class="filter-group">
+              <select id="filter-warga-block" class="custom-select">
+                <option value="ALL">Semua Blok (B3, B4, B6, B7)</option>
+                <option value="Blok B3">Blok B3</option>
+                <option value="Blok B4">Blok B4</option>
+                <option value="Blok B6">Blok B6</option>
+                <option value="Blok B7">Blok B7</option>
+              </select>
               <select id="filter-warga-status" class="custom-select">
                 <option value="ALL">Semua Domisili</option>
                 <option value="Tetap">Warga Tetap</option>
@@ -471,8 +480,8 @@
               <thead>
                 <tr>
                   <th>No</th>
-                  <th>Blok & No Rumah</th>
                   <th>Nama Lengkap</th>
+                  <th>Alamat (Jalan / Blok & No)</th>
                   <th>Status Domisili</th>
                   <th>No. WhatsApp</th>
                   <th>Jumlah Jiwa</th>
