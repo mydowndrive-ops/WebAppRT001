@@ -3285,6 +3285,223 @@ function renderAll() {
   updateUserProfileUI();
 }
 
+// ==================== SESSION MANAGEMENT ====================
+
+const LOGIN_SESSION_KEY = 'RT001_LOGIN_SESSION_V1';
+
+function isLoggedIn() {
+  return sessionStorage.getItem(LOGIN_SESSION_KEY) !== null;
+}
+
+function setSession(role) {
+  sessionStorage.setItem(LOGIN_SESSION_KEY, role);
+}
+
+function clearSession() {
+  sessionStorage.removeItem(LOGIN_SESSION_KEY);
+}
+
+function showLoginOverlay() {
+  const overlay = document.getElementById('login-overlay');
+  if (overlay) {
+    overlay.classList.remove('fade-out');
+    overlay.style.display = 'flex';
+  }
+  document.getElementById('app').style.visibility = 'hidden';
+}
+
+function hideLoginOverlay() {
+  const overlay = document.getElementById('login-overlay');
+  if (overlay) {
+    overlay.classList.add('fade-out');
+    // After animation, hide from layout
+    setTimeout(() => {
+      if (overlay.classList.contains('fade-out')) {
+        overlay.style.display = 'none';
+      }
+    }, 600);
+  }
+  document.getElementById('app').style.visibility = 'visible';
+}
+
+// ==================== LOGIN PORTAL LOGIC ====================
+
+function setupLoginPortal() {
+  let selectedRole = null;
+
+  const overlay      = document.getElementById('login-overlay');
+  const pinInput     = document.getElementById('login-pin-input');
+  const eyeBtn       = document.getElementById('login-eye-btn');
+  const eyeIcon      = document.getElementById('login-eye-icon');
+  const checkShowPin = document.getElementById('login-toggle-show-pin');
+  const errorMsg     = document.getElementById('login-error-msg');
+  const roleLabel    = document.getElementById('login-selected-role-label');
+  const submitBtn    = document.getElementById('btn-login-submit');
+  const showForgot   = document.getElementById('btn-show-forgot');
+  const backBtn      = document.getElementById('btn-back-to-login');
+  const mainView     = document.getElementById('login-main-view');
+  const forgotView   = document.getElementById('login-forgot-view');
+  const cardB1       = document.getElementById('login-card-b1');
+  const cardB2       = document.getElementById('login-card-b2');
+  const copyEmailBtn = document.getElementById('btn-copy-reset-email');
+
+  // ---- Role card selection ----
+  function selectRole(role) {
+    selectedRole = role;
+    cardB1.classList.remove('selected-b1', 'selected-b2');
+    cardB2.classList.remove('selected-b1', 'selected-b2');
+    if (role === 'b1') {
+      cardB1.classList.add('selected-b1');
+      roleLabel.textContent = 'Bendahara 1 (B1)';
+      roleLabel.style.color = 'var(--gold-400)';
+    } else {
+      cardB2.classList.add('selected-b2');
+      roleLabel.textContent = 'Bendahara 2 (B2)';
+      roleLabel.style.color = 'var(--emerald-400)';
+    }
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (pinInput) { pinInput.value = ''; pinInput.focus(); }
+  }
+
+  if (cardB1) cardB1.addEventListener('click', () => selectRole('b1'));
+  if (cardB2) cardB2.addEventListener('click', () => selectRole('b2'));
+
+  // ---- Password visibility helper (syncs Eye Icon and Tik Checkbox) ----
+  function setPinVisibility(visible) {
+    if (pinInput) pinInput.type = visible ? 'text' : 'password';
+    if (eyeIcon) eyeIcon.className = visible ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+    if (checkShowPin) checkShowPin.checked = visible;
+  }
+
+  // Eye icon button toggle
+  if (eyeBtn) {
+    eyeBtn.addEventListener('click', () => {
+      const isCurrentlyHidden = pinInput ? pinInput.type === 'password' : false;
+      setPinVisibility(isCurrentlyHidden);
+    });
+  }
+
+  // Tik Checkbox toggle
+  if (checkShowPin) {
+    checkShowPin.addEventListener('change', () => {
+      setPinVisibility(checkShowPin.checked);
+    });
+  }
+
+  // ---- Login submit ----
+  function attemptLogin() {
+    if (!selectedRole) {
+      showToast('Pilih akun Bendahara 1 atau Bendahara 2 terlebih dahulu.', 'warning');
+      cardB1.style.animation = 'none';
+      cardB2.style.animation = 'none';
+      requestAnimationFrame(() => {
+        cardB1.style.animation = '';
+        cardB2.style.animation = '';
+      });
+      return;
+    }
+    const enteredPin = pinInput.value.trim();
+    const correctPin = state.accountPins[selectedRole];
+
+    if (enteredPin === correctPin) {
+      // Successful login
+      state.currentUser = selectedRole;
+      setSession(selectedRole);
+      saveState();
+      hideLoginOverlay();
+      renderAll();
+      const label = selectedRole === 'b1' ? 'Bendahara 1 – Full Control' : 'Bendahara 2 – Koordinator Jimpitan';
+      showToast(`✅ Selamat datang, ${label}!`, 'success');
+    } else {
+      // Wrong PIN
+      if (errorMsg) {
+        errorMsg.style.display = 'flex';
+        errorMsg.style.animation = 'none';
+        requestAnimationFrame(() => { errorMsg.style.animation = ''; });
+      }
+      pinInput.value = '';
+      pinInput.focus();
+    }
+  }
+
+  if (submitBtn) submitBtn.addEventListener('click', attemptLogin);
+  if (pinInput) {
+    pinInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') attemptLogin();
+    });
+  }
+
+  // ---- Forgot PIN toggle & actions ----
+  if (showForgot) {
+    showForgot.addEventListener('click', () => {
+      if (mainView) mainView.style.display = 'none';
+      if (forgotView) forgotView.style.display = 'block';
+    });
+  }
+
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      if (forgotView) forgotView.style.display = 'none';
+      if (mainView) mainView.style.display = 'block';
+    });
+  }
+
+  if (copyEmailBtn) {
+    copyEmailBtn.addEventListener('click', () => {
+      const email = 'rt001rw013.grahaasri@gmail.com';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email).then(() => {
+          showToast('📋 Alamat email disalin ke clipboard!', 'success');
+        }).catch(() => {
+          showToast(`Email Admin: ${email}`, 'info');
+        });
+      } else {
+        showToast(`Email Admin: ${email}`, 'info');
+      }
+    });
+  }
+}
+
+// ==================== LOGOUT ====================
+
+function doLogout() {
+  if (confirm('Yakin ingin keluar dari sistem? Anda perlu memasukkan PIN kembali.')) {
+    clearSession();
+    showLoginOverlay();
+    // Reset login form state
+    const pinInput     = document.getElementById('login-pin-input');
+    const eyeIcon      = document.getElementById('login-eye-icon');
+    const checkShowPin = document.getElementById('login-toggle-show-pin');
+    const errorMsg     = document.getElementById('login-error-msg');
+    const mainView     = document.getElementById('login-main-view');
+    const forgotView   = document.getElementById('login-forgot-view');
+    const cardB1       = document.getElementById('login-card-b1');
+    const cardB2       = document.getElementById('login-card-b2');
+    const roleLabel    = document.getElementById('login-selected-role-label');
+
+    if (pinInput) {
+      pinInput.value = '';
+      pinInput.type = 'password';
+    }
+    if (eyeIcon) eyeIcon.className = 'fa-regular fa-eye';
+    if (checkShowPin) checkShowPin.checked = false;
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (mainView) mainView.style.display = 'block';
+    if (forgotView) forgotView.style.display = 'none';
+    if (cardB1) cardB1.classList.remove('selected-b1', 'selected-b2');
+    if (cardB2) cardB2.classList.remove('selected-b1', 'selected-b2');
+    if (roleLabel) { roleLabel.textContent = 'Pilih akun dahulu'; roleLabel.style.color = ''; }
+    showToast('Anda telah keluar dari sistem.', 'info');
+  }
+}
+
+function setupLogout() {
+  document.getElementById('btn-logout')?.addEventListener('click', doLogout);
+  document.getElementById('btn-top-logout')?.addEventListener('click', doLogout);
+}
+
+// ==================== INIT ====================
+
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
   setupNavigation();
@@ -3293,8 +3510,24 @@ document.addEventListener('DOMContentLoaded', () => {
   setupBackupAndRestore();
   setupAccountSwitcher();
   setupJimpitanEvents();
+  setupLoginPortal();
+  setupLogout();
   registerServiceWorker();
-  renderAll();
+
+  // Check session → show login or main app
+  if (isLoggedIn()) {
+    // Restore role from session
+    const sessionRole = sessionStorage.getItem(LOGIN_SESSION_KEY);
+    if (sessionRole === 'b1' || sessionRole === 'b2') {
+      state.currentUser = sessionRole;
+    }
+    hideLoginOverlay();
+    renderAll();
+  } else {
+    showLoginOverlay();
+    // Still render the app in the background (hidden) so it's ready
+    renderAll();
+  }
 });
 
 

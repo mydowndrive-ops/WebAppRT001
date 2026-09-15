@@ -25,6 +25,141 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+  <!-- ==================== LOGIN PORTAL OVERLAY ==================== -->
+  <div id="login-overlay" class="login-overlay">
+    <!-- Animated Background Orbs -->
+    <div class="login-orb login-orb-1"></div>
+    <div class="login-orb login-orb-2"></div>
+    <div class="login-orb login-orb-3"></div>
+    <div class="login-orb login-orb-4"></div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+      <!-- Header: Logo + Brand -->
+      <div class="login-brand">
+        <div class="login-logo-ring">
+          <img src="assets/logo.png" alt="Logo RT.001" class="login-logo-img">
+        </div>
+        <div class="login-brand-text">
+          <h1 class="login-title">RT-FinSmart <span class="login-pro-badge">PRO</span></h1>
+          <p class="login-subtitle">Sistem Keuangan Eksekutif</p>
+          <span class="login-rt-chip">
+            <i class="fa-solid fa-location-dot"></i> RT.001 / RW.013 – Graha Asri
+          </span>
+        </div>
+      </div>
+
+      <div class="login-divider"></div>
+
+      <!-- Role Selector -->
+      <div class="login-section" id="login-main-view">
+        <p class="login-section-title">
+          <i class="fa-solid fa-users-gear"></i> Pilih Akun Bendahara
+        </p>
+        <div class="login-role-grid">
+          <button class="login-role-card" id="login-card-b1" data-role="b1">
+            <div class="login-role-icon gold-icon">
+              <i class="fa-solid fa-crown"></i>
+            </div>
+            <span class="login-role-name">Bendahara 1</span>
+            <span class="login-role-desc">Full Control</span>
+            <span class="login-role-pill b1-pill">SUPER ADMIN</span>
+          </button>
+          <button class="login-role-card" id="login-card-b2" data-role="b2">
+            <div class="login-role-icon emerald-icon">
+              <i class="fa-solid fa-moon"></i>
+            </div>
+            <span class="login-role-name">Bendahara 2</span>
+            <span class="login-role-desc">Koordinator Jimpitan</span>
+            <span class="login-role-pill b2-pill">JIMPITAN</span>
+          </button>
+        </div>
+
+        <!-- PIN Input -->
+        <div class="login-form-group">
+          <label class="login-label">
+            <i class="fa-solid fa-lock"></i>
+            Masukkan PIN &mdash; <span id="login-selected-role-label" class="login-role-hint">Pilih akun dahulu</span>
+          </label>
+          <div class="login-input-wrapper">
+            <input
+              type="password"
+              id="login-pin-input"
+              class="login-pin-input"
+              placeholder="● ● ● ●"
+              maxlength="8"
+              autocomplete="off"
+              inputmode="numeric"
+            >
+            <button type="button" class="login-eye-btn" id="login-eye-btn" title="Tampilkan/Sembunyikan PIN">
+              <i class="fa-regular fa-eye" id="login-eye-icon"></i>
+            </button>
+          </div>
+          <div class="login-options-row">
+            <label class="login-checkbox-label" for="login-toggle-show-pin">
+              <input type="checkbox" id="login-toggle-show-pin" class="login-checkbox">
+              <span class="custom-tick"><i class="fa-solid fa-check"></i></span>
+              <span>Tampilkan Password</span>
+            </label>
+            <span class="login-hint-badge"><i class="fa-solid fa-circle-info"></i> PIN: 1111 / 2222</span>
+          </div>
+
+          <div class="login-error" id="login-error-msg" style="display:none;">
+            <i class="fa-solid fa-circle-xmark"></i> PIN salah. Silakan coba lagi.
+          </div>
+        </div>
+
+        <button class="login-submit-btn" id="btn-login-submit">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>MASUK KE SISTEM</span>
+        </button>
+
+        <button class="login-forgot-link" id="btn-show-forgot">
+          <i class="fa-solid fa-key"></i> Lupa PIN?
+        </button>
+      </div>
+
+      <!-- Forgot Password View (hidden by default) -->
+      <div class="login-section" id="login-forgot-view" style="display:none;">
+        <div class="forgot-icon-wrap">
+          <i class="fa-solid fa-envelope-open-text"></i>
+        </div>
+        <h3 class="forgot-title">Reset PIN</h3>
+        <p class="forgot-desc">
+          Hubungi Administrator RT untuk mereset PIN akun Anda. Klik tombol di bawah untuk mengirim email permintaan reset:
+        </p>
+        <div class="forgot-email-row">
+          <div class="forgot-email-display">
+            <i class="fa-solid fa-at"></i>
+            <span id="forgot-email-text">rt001rw013.grahaasri@gmail.com</span>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-gold" id="btn-copy-reset-email" title="Salin Email">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+        </div>
+        <a
+          href="mailto:rt001rw013.grahaasri@gmail.com?subject=Reset%20PIN%20RT-FinSmart%20PRO&body=Yth.%20Administrator%20RT.001%2C%0A%0ASaya%20membutuhkan%20reset%20PIN%20untuk%20akun%20saya%20di%20aplikasi%20RT-FinSmart%20PRO.%0A%0ANama%20%3A%20%5BIsi%20Nama%20Anda%5D%0AAkun%20%20%3A%20%5BB1%20%2F%20B2%5D%0A%0AMohon%20bantuannya.%20Terima%20kasih."
+          class="login-submit-btn"
+          target="_blank"
+          style="text-decoration:none; display:flex; justify-content:center; align-items:center; gap:.5rem;"
+        >
+          <i class="fa-solid fa-paper-plane"></i> Kirim Email Reset PIN
+        </a>
+        <button class="login-forgot-link" id="btn-back-to-login">
+          <i class="fa-solid fa-arrow-left"></i> Kembali ke Login
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <div class="login-card-footer">
+        <i class="fa-solid fa-shield-halved"></i>
+        Data tersimpan aman di perangkat Anda
+      </div>
+    </div>
+  </div>
+  <!-- ==================== END LOGIN PORTAL ==================== -->
+
   <div class="app-container" id="app">
     <!-- Sidebar Navigation for Desktop -->
     <aside class="sidebar" id="sidebar">
@@ -88,6 +223,11 @@
           </div>
           <span class="role-badge role-badge-b1" id="sidebar-role-badge">B1</span>
         </div>
+        <!-- Logout Button -->
+        <button class="sidebar-logout-btn" id="btn-logout" title="Keluar dari sistem">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Keluar</span>
+        </button>
         <div class="apk-badge-box" id="apk-info-trigger">
           <i class="fa-brands fa-android"></i>
           <div>
@@ -144,6 +284,11 @@
 
           <button class="btn btn-outline" id="btn-backup-data" title="Cadangkan Data">
             <i class="fa-solid fa-cloud-arrow-down"></i>
+          </button>
+
+          <button class="btn btn-outline-rose" id="btn-top-logout" title="Keluar dari Sistem">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span class="hide-mobile">Keluar</span>
           </button>
         </div>
       </header>
