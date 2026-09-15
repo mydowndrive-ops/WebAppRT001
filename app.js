@@ -1259,7 +1259,7 @@ const INITIAL_RESIDENTS = [
     "domicile": "Tetap",
     "members": 4
   }
-]];
+];
 
 const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1zwrXck7x2HzVV6KhFgb3DgdAw5SrIUXm64a2M1mbclo/export?format=csv';
 
@@ -1297,6 +1297,9 @@ function loadState() {
       if (!state.residents || state.residents.length < 100 || state.residents.some(r => r.name.includes('Bambang Sutrisno'))) {
         console.log('Migrating residents to official RT.001 RW.013 citizen database...');
         state.residents = JSON.parse(JSON.stringify(INITIAL_RESIDENTS));
+        seedInitialDemoData();
+        saveState();
+      } else if (!state.payments || state.payments.length === 0) {
         seedInitialDemoData();
         saveState();
       }
@@ -1659,6 +1662,7 @@ function renderDashboard() {
  * Initializes and updates Chart.js Executive Charts
  */
 function renderExecutiveCharts(fin) {
+  if (typeof Chart === 'undefined') return;
   // 1. Cashflow Trend Chart
   const ctxCashflow = document.getElementById('cashflowChart');
   if (ctxCashflow) {
