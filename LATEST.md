@@ -88,6 +88,16 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
      - Di sidebar dan header kanan admin, tersedia tombol **"🌐 Web Warga"** untuk meninjau halaman publik sewaktu-waktu. Saat admin membuka halaman publik, muncul bilah hijau atas (**Mode Pengurus Aktif**) dengan tombol **Kembali ke Dashboard** dan **Keluar**.
      - Tombol **"Keluar (Logout)"** otomatis mengembalikan pengguna ke halaman publik warga dengan aman.
 
+9. **Desain Halaman Muka Premium: Dark Luxury Emerald (Hijau Zamrud Mewah & Profesional)**:
+   - **Palet Warna Eksklusif**: Latar belakang deep emerald gelap (`#02120b` s.d. `#052417`), kombinasi tipografi emas berkilau (`#f59e0b` / `#fbbf24`), serta aksen hijau zamrud bercahaya (`#10b981` / `#34d399`).
+   - **Elemen Visual & Animasi Interaktif**:
+     - *Ambient Aurora Glow Orbs* dengan efek mengambang dinamis (*float animation*) di latar belakang hero.
+     - *Luxury Logo Ring*: Frame logo melingkar mewah dengan pulsing glow radial dan badge resmi.
+     - *Dark Frosted Glassmorphism*: Kartu-kartu agenda, metrik transparansi, dan rute jalan menggunakan `backdrop-filter: blur(18px)`, gradasi border emerald tipis, dan efek sorot kursor hover.
+     - *Live Quick Ticker*: Pills info singkat beranimasi (*71 KK Terdata, Kas Transparan, Siskamling 24 Jam, Warga Rukun*).
+     - *Kartu Pengurus Eksekutif*: Foto pengurus dengan ring bercahaya, badge jabatan, dan tombol integrasi direct WhatsApp.
+
+
 ---
 
 ## 📁 Struktur Berkas Penting
