@@ -3844,6 +3844,62 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 1.75rem;
 }
 
+/* Profil Wilayah Narasi & Motto Callout */
+.public-tentang-header {
+  max-width: 920px;
+  margin-bottom: 2.75rem;
+}
+
+.public-section-desc-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  margin-top: 0.5rem;
+}
+
+.public-tentang-header .public-section-desc {
+  font-size: 1.04rem;
+  color: #cbd5e1;
+  line-height: 1.75;
+  text-align: center;
+}
+
+.public-tentang-callout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 0.65rem auto 0;
+  padding: 0.85rem 1.6rem;
+  background: rgba(8, 36, 26, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 9999px;
+  color: #f1f5f9;
+  font-size: 0.98rem;
+  font-weight: 600;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 0 14px rgba(245, 158, 11, 0.1);
+  line-height: 1.5;
+  max-width: 860px;
+}
+
+.public-tentang-callout i {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .public-tentang-callout {
+    border-radius: 16px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.4rem;
+  }
+}
+
 /* Grid 2 Column */
 .public-grid-2 {
   display: grid;
