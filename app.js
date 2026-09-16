@@ -3730,11 +3730,38 @@ function setupLogout() {
   document.getElementById('btn-top-logout')?.addEventListener('click', doLogout);
 }
 
+/**
+ * 1-Click Smooth Scroll to Top Luxury Feature
+ */
+function setupScrollToTop() {
+  const btnScrollTop = document.getElementById('btn-scroll-top');
+  if (!btnScrollTop) return;
+
+  const handleScroll = () => {
+    // Show button when scrolled down > 260px
+    if (window.scrollY > 260 || document.documentElement.scrollTop > 260 || document.body.scrollTop > 260) {
+      btnScrollTop.classList.add('visible');
+    } else {
+      btnScrollTop.classList.remove('visible');
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  btnScrollTop.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+}
+
 // ==================== INIT ====================
 
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
   setupNavigation();
+  setupScrollToTop();
   setupModalEventListeners();
   setupDelegatedEvents();
   setupBackupAndRestore();
