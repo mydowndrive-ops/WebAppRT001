@@ -28,12 +28,12 @@
 
   <!-- ==================== PUBLIC PORTAL (LANDING PAGE WARGA - DARK LUXURY EMERALD) ==================== -->
   <div id="portal-public" class="portal-public-page">
-    <!-- Top Admin Bar (visible only when logged in as B1/B2) -->
+    <!-- Top Admin Bar (visible only when logged in as Admin 1 / Admin 2) -->
     <div id="admin-public-bar" class="admin-public-bar" style="display: none;">
       <div class="admin-public-bar-content">
         <div class="admin-bar-info">
           <span class="admin-bar-badge"><i class="fa-solid fa-crown text-gold"></i> Mode Pengurus Aktif</span>
-          <span>Masuk sebagai: <strong id="admin-bar-role-name">Bendahara 1 (B1)</strong></span>
+          <span>Masuk sebagai: <strong id="admin-bar-role-name">Admin 1</strong></span>
         </div>
         <div class="admin-bar-actions">
           <button type="button" class="admin-bar-btn admin-bar-return" id="btn-return-to-admin">
@@ -62,8 +62,9 @@
         <!-- Desktop Menu -->
         <div class="public-menu-desktop">
           <a href="#tentang" class="public-nav-link"><i class="fa-solid fa-compass"></i> Tentang</a>
+          <a href="#demografi" class="public-nav-link"><i class="fa-solid fa-chart-pie"></i> Statistik Warga</a>
           <a href="#kegiatan" class="public-nav-link"><i class="fa-regular fa-calendar-check"></i> Kegiatan</a>
-          <a href="#layanan" class="public-nav-link"><i class="fa-solid fa-chart-pie"></i> Layanan &amp; Kas</a>
+          <a href="#layanan" class="public-nav-link"><i class="fa-solid fa-vault"></i> Layanan &amp; Kas</a>
           <a href="#pengurus" class="public-nav-link"><i class="fa-solid fa-users"></i> Pengurus</a>
           <button type="button" class="public-btn-login" id="btn-open-login-nav">
             <i class="fa-solid fa-crown text-gold"></i>
@@ -80,12 +81,13 @@
       <!-- Mobile Dropdown Menu -->
       <div id="public-mobile-menu" class="public-menu-mobile">
         <a href="#tentang" class="public-mobile-link"><i class="fa-solid fa-compass text-emerald"></i> Tentang Wilayah</a>
+        <a href="#demografi" class="public-mobile-link"><i class="fa-solid fa-chart-pie text-emerald"></i> Statistik Demografi</a>
         <a href="#kegiatan" class="public-mobile-link"><i class="fa-regular fa-calendar-check text-emerald"></i> Agenda Kegiatan</a>
-        <a href="#layanan" class="public-mobile-link"><i class="fa-solid fa-chart-pie text-emerald"></i> Layanan &amp; Kas Warga</a>
+        <a href="#layanan" class="public-mobile-link"><i class="fa-solid fa-vault text-emerald"></i> Layanan &amp; Kas Warga</a>
         <a href="#pengurus" class="public-mobile-link"><i class="fa-solid fa-users text-emerald"></i> Struktur Pengurus</a>
         <button type="button" class="public-btn-login-mobile" id="btn-open-login-mobile">
           <i class="fa-solid fa-crown text-gold"></i>
-          <span>Portal Pengurus (B1 / B2)</span>
+          <span>Portal Pengurus (Admin 1 / Admin 2)</span>
         </button>
       </div>
     </nav>
@@ -97,29 +99,27 @@
       <div class="public-hero-orb public-hero-orb-2"></div>
       <div class="public-hero-orb public-hero-orb-3"></div>
 
+      <!-- Watermark Background Logo RT -->
+      <div class="public-hero-watermark" aria-hidden="true">
+        <img src="assets/logo.png" alt="" class="public-hero-watermark-img">
+      </div>
+
       <div class="public-hero-container">
-        <!-- Luxury Floating Logo Ring -->
-        <div class="public-hero-logo-box">
-          <div class="public-logo-luxury-ring">
-            <img src="assets/logo.png" alt="Logo RT.001" class="public-hero-logo">
-          </div>
-        </div>
 
-        <div class="public-hero-badge">
-          <i class="fa-solid fa-crown text-gold"></i>
-          <span>PAGUYUBAN WARGA RT.001 / RW.013 &bull; GRAHA ASRI</span>
-        </div>
-
-        <h1 class="public-hero-title">
-          Melayani dengan Hati,<br>
-          <span class="text-gradient-emerald">Membangun dalam Kebersamaan</span>
+        <!-- Header Utama H1 dengan Efek Denyut / Pulse -->
+        <h1 class="public-hero-title public-hero-h1-pulse">
+          Web PORTAL DIGITAL RT.001 RW.013
         </h1>
 
-        <p class="public-hero-subtitle">
-          RUKUN TETANGGA 001 / RW 013 &ndash; PERUMAHAN GRAHA ASRI
-        </p>
-        <p class="public-hero-desc">
-          Sektor Graha Jababeka, Desa Simpangan, Kec. Cikarang Utara, Kab. Bekasi, Jawa Barat
+        <!-- Sub-Header H2 Dua Baris -->
+        <h2 class="public-hero-subtitle-h2">
+          <span class="public-hero-h2-row">Perumahan Graha Asri-Sektor Graha Jababeka-Desa Simpangan</span>
+          <span class="public-hero-h2-row">Kecamatan Cikarang Utara-Kabupaten Bekasi-17530</span>
+        </h2>
+
+        <!-- Slogan / Motto RT -->
+        <p class="public-hero-slogan">
+          <span class="text-gradient-emerald">&ldquo;Melayani dengan Hati, Membangun dalam Kebersamaan&rdquo;</span>
         </p>
 
         <!-- Quick Ticker Feature Pills -->
@@ -149,7 +149,7 @@
           </a>
           <button type="button" class="public-btn-hero-secondary" id="btn-open-login-hero">
             <i class="fa-solid fa-key text-gold"></i>
-            <span>Portal Pengurus (B1 / B2)</span>
+            <span>Portal Pengurus (Admin 1 / Admin 2)</span>
           </button>
         </div>
       </div>
@@ -158,46 +158,40 @@
     <!-- TENTANG KAMI -->
     <section id="tentang" class="public-section public-bg-dark">
       <div class="public-container">
-        <div class="public-grid-2">
-          <div>
-            <div class="public-section-badge">
-              <i class="fa-solid fa-compass text-gold"></i> Profil Wilayah
-            </div>
-            <h2 class="public-section-title">Harmonis, Aman, &amp; Transparan</h2>
-            <p class="public-section-text">
-              RT.001 RW.013 merupakan salah satu rukun tetangga percontohan di Perumahan Graha Asri Sektor Graha Jababeka, Desa Simpangan. Kami berkomitmen mewujudkan lingkungan yang asri, aman, berdaya gotong royong tinggi, dan mengedepankan keterbukaan keuangan digital demi kesejahteraan bersama seluruh warga.
-            </p>
+        <!-- Section Header Terpusat & Rapi -->
+        <div class="public-section-header">
+          <div class="public-section-badge">
+            <i class="fa-solid fa-compass text-gold"></i> Profil Wilayah
+          </div>
+          <h2 class="public-section-title">Harmonis, Aman, &amp; Transparan</h2>
+          <p class="public-section-desc">
+            RT.001 RW.013 merupakan salah satu rukun tetangga percontohan di Perumahan Graha Asri Sektor Graha Jababeka, Desa Simpangan. Kami berkomitmen mewujudkan lingkungan yang asri, aman, berdaya gotong royong tinggi, dan mengedepankan keterbukaan keuangan digital demi kesejahteraan bersama seluruh warga.
+          </p>
+        </div>
 
-            <div class="public-roads-card">
-              <div class="public-roads-header">
-                <h3 class="public-roads-title"><i class="fa-solid fa-map-location-dot text-emerald"></i> Cakupan 5 Jalur Wilayah</h3>
-                <span class="public-roads-badge">71 KK Aktif</span>
+        <div class="public-grid-2 public-tentang-grid">
+          <!-- PETA DENAH CAKUPAN WILAYAH RT.001 (KOLOM KIRI) -->
+          <div class="public-map-card">
+            <div class="public-map-header">
+              <div class="public-map-title">
+                <i class="fa-solid fa-map-location-dot text-emerald"></i>
+                <span>Peta Cakupan Wilayah RT.001</span>
               </div>
-              <div class="public-roads-list">
-                <div class="public-road-item">
-                  <div class="public-road-icon"><i class="fa-solid fa-road text-emerald"></i></div>
-                  <div class="public-road-info">
-                    <strong>Jl. Citarum II &amp; IVA</strong>
-                    <span>Blok B6 &bull; Blok B7</span>
-                  </div>
-                  <span class="public-road-tag">Area Siskamling 1</span>
-                </div>
-                <div class="public-road-item">
-                  <div class="public-road-icon"><i class="fa-solid fa-road text-emerald"></i></div>
-                  <div class="public-road-info">
-                    <strong>Jl. Citarum VIIIB</strong>
-                    <span>Blok B3</span>
-                  </div>
-                  <span class="public-road-tag">Portal Terpadu</span>
-                </div>
-                <div class="public-road-item">
-                  <div class="public-road-icon"><i class="fa-solid fa-road text-emerald"></i></div>
-                  <div class="public-road-info">
-                    <strong>Jl. Citarum VIIIC &amp; IX</strong>
-                    <span>Blok B3 &bull; Blok B4</span>
-                  </div>
-                  <span class="public-road-tag">Area Siskamling 2</span>
-                </div>
+              <span class="public-map-badge"><i class="fa-solid fa-draw-polygon"></i> Garis Putus Merah</span>
+            </div>
+            <div class="public-map-wrapper" id="map-preview-trigger" title="Klik untuk memperbesar peta">
+              <img src="assets/peta-wilayah-rt001.jpg" alt="Peta Satelit Cakupan Wilayah RT.001 RW.013" class="public-map-img" id="img-peta-wilayah">
+              <div class="public-map-overlay-badge">
+                <i class="fa-solid fa-circle-dot text-rose"></i> Area RT.001 (71 KK)
+              </div>
+              <button type="button" class="public-map-zoom-btn" id="btn-zoom-peta">
+                <i class="fa-solid fa-up-right-and-down-left-from-center"></i> Perbesar Peta
+              </button>
+            </div>
+            <div class="public-map-footer">
+              <div class="public-map-legend">
+                <span class="legend-dot border-rose-dashed"></span>
+                <span><strong>Cakupan Resmi:</strong> Wilayah hukum RT.001 berada di dalam batas garis putus-putus merah (Jl. Citarum II, IVA, VIIIB, VIIIC, &amp; IX).</span>
               </div>
             </div>
           </div>
@@ -230,6 +224,215 @@
               <div class="public-feature-body">
                 <h4>Manajemen Kas &amp; Pembukuan Digital</h4>
                 <p>Pengelolaan iuran 71 KK dengan auto-split 6 pos anggaran, pencatatan jimpitan ronda, dan laporan akuntansi yang terverifikasi.</p>
+              </div>
+            </div>
+
+            <!-- DAFTAR JALUR JALAN RESMI RT.001 -->
+            <div class="public-roads-overview">
+              <div class="public-roads-overview-header">
+                <div class="roads-overview-title">
+                  <i class="fa-solid fa-signs-post text-gold"></i>
+                  <span>5 Jalur Jalan Wilayah RT.001</span>
+                </div>
+                <span class="roads-overview-badge">
+                  <i class="fa-solid fa-house-chimney text-emerald"></i> 71 KK Aktif
+                </span>
+              </div>
+
+              <div class="public-roads-list">
+                <div class="public-road-item">
+                  <div class="public-road-icon">
+                    <i class="fa-solid fa-road text-emerald"></i>
+                  </div>
+                  <div class="public-road-info">
+                    <strong>Jl. Citarum II &amp; IVA</strong>
+                    <span>Blok B6 &bull; Blok B7 &bull; Pos Siskamling 1</span>
+                  </div>
+                </div>
+
+                <div class="public-road-item">
+                  <div class="public-road-icon">
+                    <i class="fa-solid fa-road text-cyan"></i>
+                  </div>
+                  <div class="public-road-info">
+                    <strong>Jl. Citarum VIIIB</strong>
+                    <span>Blok B3 &bull; Akses Portal Terpadu</span>
+                  </div>
+                </div>
+
+                <div class="public-road-item">
+                  <div class="public-road-icon">
+                    <i class="fa-solid fa-road text-gold"></i>
+                  </div>
+                  <div class="public-road-info">
+                    <strong>Jl. Citarum VIIIC &amp; IX</strong>
+                    <span>Blok B3 &bull; Blok B4 &bull; Pos Siskamling 2</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATISTIK DEMOGRAFI WARGA -->
+    <section id="demografi" class="public-section public-bg-darker">
+      <div class="public-container">
+        <div class="public-section-header">
+          <div class="public-section-badge">
+            <i class="fa-solid fa-chart-column text-gold"></i> Data &amp; Statistik Penduduk
+          </div>
+          <h2 class="public-section-title">Demografi &amp; Profil Kependudukan</h2>
+          <p class="public-section-desc">
+            Visualisasi data kependudukan RT.001 RW.013 secara transparan mencakup gender, kelompok usia, dan kategori remaja.
+          </p>
+          <div class="demografi-header-actions">
+            <span class="demografi-last-updated" id="demografi-updated-badge">
+              <i class="fa-solid fa-clock-rotate-left text-emerald"></i> Terakhir diperbarui: 16 September 2026
+            </span>
+          </div>
+        </div>
+
+        <!-- Metric KPI Cards Grid -->
+        <div class="demografi-kpi-grid">
+          <!-- Total Penduduk -->
+          <div class="demografi-kpi-card glass-panel border-emerald">
+            <div class="demografi-kpi-icon bg-emerald-glow">
+              <i class="fa-solid fa-users text-emerald"></i>
+            </div>
+            <div class="demografi-kpi-content">
+              <span class="demografi-kpi-label">Total Penduduk</span>
+              <h3 class="demografi-kpi-val" id="val-total-jiwa">284 <span class="unit">Jiwa</span></h3>
+              <span class="demografi-kpi-sub" id="val-total-kk">Dari 71 Kepala Keluarga (KK)</span>
+            </div>
+          </div>
+
+          <!-- Laki-laki -->
+          <div class="demografi-kpi-card glass-panel border-cyan">
+            <div class="demografi-kpi-icon bg-cyan-glow">
+              <i class="fa-solid fa-mars text-cyan"></i>
+            </div>
+            <div class="demografi-kpi-content">
+              <span class="demografi-kpi-label">Laki-laki</span>
+              <h3 class="demografi-kpi-val text-cyan" id="val-pria">138 <span class="unit">Jiwa</span></h3>
+              <span class="demografi-kpi-sub" id="pct-pria">48.6% dari total warga</span>
+            </div>
+          </div>
+
+          <!-- Perempuan -->
+          <div class="demografi-kpi-card glass-panel border-pink">
+            <div class="demografi-kpi-icon bg-pink-glow">
+              <i class="fa-solid fa-venus text-pink"></i>
+            </div>
+            <div class="demografi-kpi-content">
+              <span class="demografi-kpi-label">Perempuan</span>
+              <h3 class="demografi-kpi-val text-pink" id="val-wanita">146 <span class="unit">Jiwa</span></h3>
+              <span class="demografi-kpi-sub" id="pct-wanita">51.4% dari total warga</span>
+            </div>
+          </div>
+
+          <!-- Remaja (L & P) -->
+          <div class="demografi-kpi-card glass-panel border-purple">
+            <div class="demografi-kpi-icon bg-purple-glow">
+              <i class="fa-solid fa-user-group text-purple"></i>
+            </div>
+            <div class="demografi-kpi-content">
+              <span class="demografi-kpi-label">Remaja (L &amp; P)</span>
+              <h3 class="demografi-kpi-val text-purple" id="val-remaja-total">50 <span class="unit">Jiwa</span></h3>
+              <span class="demografi-kpi-sub" id="sub-remaja">24 Putra &bull; 26 Putri</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Age Quick Pills Row -->
+        <div class="demografi-age-pills">
+          <div class="demografi-age-pill">
+            <i class="fa-solid fa-baby text-emerald"></i>
+            <span>Usia 0–5 Thn (Balita): <strong id="pill-balita">28</strong> Jiwa</span>
+          </div>
+          <div class="demografi-age-pill">
+            <i class="fa-solid fa-child text-cyan"></i>
+            <span>Usia 6–13 Thn (Anak): <strong id="pill-anak">42</strong> Jiwa</span>
+          </div>
+          <div class="demografi-age-pill">
+            <i class="fa-solid fa-graduation-cap text-purple"></i>
+            <span>Usia 14–20 Thn (Remaja): <strong id="pill-remaja">50</strong> Jiwa</span>
+          </div>
+          <div class="demografi-age-pill">
+            <i class="fa-solid fa-briefcase text-gold"></i>
+            <span>Usia 21–50 Thn (Dewasa): <strong id="pill-dewasa">124</strong> Jiwa</span>
+          </div>
+          <div class="demografi-age-pill">
+            <i class="fa-solid fa-person-cane text-amber"></i>
+            <span>Usia &gt; 50 Thn (Lansia): <strong id="pill-lansia">40</strong> Jiwa</span>
+          </div>
+        </div>
+
+        <!-- Two Interactive Charts Row -->
+        <div class="demografi-charts-grid">
+          <!-- Chart 1: Komposisi Gender & Remaja -->
+          <div class="demografi-chart-card glass-panel">
+            <div class="demografi-chart-header">
+              <h4 class="demografi-chart-title">
+                <i class="fa-solid fa-venus-mars text-cyan"></i> Komposisi Gender &amp; Remaja
+              </h4>
+              <p class="demografi-chart-subtitle">Distribusi Laki-laki, Perempuan, dan proporsi Remaja Putra/Putri</p>
+            </div>
+            <div class="demografi-canvas-wrap">
+              <canvas id="chartDemografiGender"></canvas>
+            </div>
+            <div class="demografi-chart-legend-custom" id="legend-gender-summary">
+              <div class="demografi-legend-item">
+                <span class="demografi-legend-dot" style="background:#06b6d4;"></span>
+                <span>Laki-laki (Pria)</span>
+              </div>
+              <div class="demografi-legend-item">
+                <span class="demografi-legend-dot" style="background:#f472b6;"></span>
+                <span>Perempuan (Wanita)</span>
+              </div>
+              <div class="demografi-legend-item">
+                <span class="demografi-legend-dot" style="background:#a855f7;"></span>
+                <span>Remaja Putra</span>
+              </div>
+              <div class="demografi-legend-item">
+                <span class="demografi-legend-dot" style="background:#ec4899;"></span>
+                <span>Remaja Putri</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart 2: Distribusi Kelompok Usia -->
+          <div class="demografi-chart-card glass-panel">
+            <div class="demografi-chart-header">
+              <h4 class="demografi-chart-title">
+                <i class="fa-solid fa-chart-simple text-gold"></i> Distribusi Kelompok Usia
+              </h4>
+              <p class="demografi-chart-subtitle">Rentang Balita (0-5), Anak (6-13), Remaja (14-20), Dewasa, &amp; Lansia (&gt;50)</p>
+            </div>
+            <div class="demografi-canvas-wrap">
+              <canvas id="chartDemografiUsia"></canvas>
+            </div>
+            <div class="demografi-chart-legend-custom" id="legend-usia-summary">
+              <div class="demografi-legend-item">
+                <span class="demografi-legend-dot" style="background:#10b981;"></span>
+                <span>0-5 Thn (Balita)</span>
+              </div>
+              <div class="demografi-legend-item">
+                <span class="demografi-legend-dot" style="background:#06b6d4;"></span>
+                <span>6-13 Thn (Anak)</span>
+              </div>
+              <div class="demografi-legend-item">
+                <span class="demografi-legend-dot" style="background:#a855f7;"></span>
+                <span>14-20 Thn (Remaja)</span>
+              </div>
+              <div class="demografi-legend-item">
+                <span class="demografi-legend-dot" style="background:#3b82f6;"></span>
+                <span>21-50 Thn (Dewasa)</span>
+              </div>
+              <div class="demografi-legend-item">
+                <span class="demografi-legend-dot" style="background:#f59e0b;"></span>
+                <span>&gt;50 Thn (Lansia)</span>
               </div>
             </div>
           </div>
@@ -363,21 +566,7 @@
             </div>
             <h3 id="public-stat-jimpitan" class="text-emerald">Rp 0</h3>
             <p>Saldo Kas Jimpitan Ronda</p>
-            <span class="public-stat-tag"><i class="fa-solid fa-circle-check text-emerald"></i> Bendahara 2 Aktif</span>
-          </div>
-        </div>
-
-        <div class="public-cta-card">
-          <div class="public-cta-text">
-            <div class="public-cta-pill"><i class="fa-solid fa-lock text-gold"></i> Akses Khusus Pengurus RT</div>
-            <h4>Ingin Meninjau Matriks Checklist atau Mencetak Laporan?</h4>
-            <p>Bendahara 1 dan Bendahara 2 dapat masuk ke portal eksekutif RT-FinSmart PRO dengan PIN otentikasi untuk mencatat iuran, pengeluaran, serta ekspor pembukuan.</p>
-          </div>
-          <div class="public-cta-action">
-            <button type="button" class="public-btn-cta" id="btn-open-login-layanan">
-              <i class="fa-solid fa-arrow-right-to-bracket"></i>
-              <span>Masuk Sistem Pengurus</span>
-            </button>
+            <span class="public-stat-tag"><i class="fa-solid fa-circle-check text-emerald"></i> Admin 2 Aktif</span>
           </div>
         </div>
       </div>
@@ -437,7 +626,7 @@
               </div>
               <span class="public-officer-badge">BEN</span>
             </div>
-            <h4>Bendahara 1 &amp; 2</h4>
+            <h4>Admin 1 &amp; Admin 2</h4>
             <p class="public-officer-role">Keuangan &amp; Kas Jimpitan</p>
             <p class="public-officer-note">Penerimaan Iuran Wajib, 6 Pos Kas &amp; Jimpitan Ronda</p>
             <a href="https://wa.me/?text=Halo%20Bendahara%20RT.001%20RW.013%2C%20saya%20ingin%20konfirmasi%20pembayaran%20iuran%20kas%20warga%3A" target="_blank" class="public-officer-wa">
@@ -502,7 +691,7 @@
           <div class="public-footer-portal-box">
             <div class="public-footer-portal-inner">
               <h5><i class="fa-solid fa-crown text-gold"></i> Portal Pengurus RT</h5>
-              <p>Khusus Bendahara 1 &amp; Bendahara 2 untuk mengelola pembukuan eksekutif, checklist iuran, dan jimpitan ronda.</p>
+              <p>Khusus Admin 1 &amp; Admin 2 untuk mengelola pembukuan eksekutif, checklist iuran, dan jimpitan ronda.</p>
               <button type="button" class="public-btn-footer-login" id="btn-open-login-footer">
                 <i class="fa-solid fa-lock"></i>
                 <span>Masuk RT-FinSmart PRO</span>
@@ -554,14 +743,14 @@
       <!-- Role Selector -->
       <div class="login-section" id="login-main-view">
         <p class="login-section-title">
-          <i class="fa-solid fa-users-gear"></i> Pilih Akun Bendahara
+          <i class="fa-solid fa-users-gear"></i> Pilih Akun Admin
         </p>
         <div class="login-role-grid">
           <button class="login-role-card" id="login-card-b1" data-role="b1">
             <div class="login-role-icon gold-icon">
               <i class="fa-solid fa-crown"></i>
             </div>
-            <span class="login-role-name">Bendahara 1</span>
+            <span class="login-role-name">Admin 1</span>
             <span class="login-role-desc">Full Control</span>
             <span class="login-role-pill b1-pill">SUPER ADMIN</span>
           </button>
@@ -569,7 +758,7 @@
             <div class="login-role-icon emerald-icon">
               <i class="fa-solid fa-moon"></i>
             </div>
-            <span class="login-role-name">Bendahara 2</span>
+            <span class="login-role-name">Admin 2</span>
             <span class="login-role-desc">Koordinator Jimpitan</span>
             <span class="login-role-pill b2-pill">JIMPITAN</span>
           </button>
@@ -638,7 +827,7 @@
           </button>
         </div>
         <a
-          href="mailto:rt001rw013.grahaasri@gmail.com?subject=Reset%20PIN%20RT-FinSmart%20PRO&body=Yth.%20Administrator%20RT.001%2C%0A%0ASaya%20membutuhkan%20reset%20PIN%20untuk%20akun%20saya%20di%20aplikasi%20RT-FinSmart%20PRO.%0A%0ANama%20%3A%20%5BIsi%20Nama%20Anda%5D%0AAkun%20%20%3A%20%5BB1%20%2F%20B2%5D%0A%0AMohon%20bantuannya.%20Terima%20kasih."
+          href="mailto:rt001rw013.grahaasri@gmail.com?subject=Reset%20PIN%20RT-FinSmart%20PRO&body=Yth.%20Administrator%20RT.001%2C%0A%0ASaya%20membutuhkan%20reset%20PIN%20untuk%20akun%20saya%20di%20aplikasi%20RT-FinSmart%20PRO.%0A%0ANama%20%3A%20%5BIsi%20Nama%20Anda%5D%0AAkun%20%20%3A%20%5BAdmin%201%20%2F%20Admin%202%5D%0A%0AMohon%20bantuannya.%20Terima%20kasih."
           class="login-submit-btn"
           target="_blank"
           style="text-decoration:none; display:flex; justify-content:center; align-items:center; gap:.5rem;"
@@ -712,15 +901,15 @@
       </nav>
 
       <div class="sidebar-footer">
-        <div class="user-profile-card" id="btn-open-switch-account" title="Klik untuk berganti akun (B1 / B2)">
+        <div class="user-profile-card" id="btn-open-switch-account" title="Klik untuk berganti akun (Admin 1 / Admin 2)">
           <div class="user-avatar" id="sidebar-user-avatar">
             <i class="fa-solid fa-user-shield text-gold"></i>
           </div>
           <div class="user-info">
-            <h4 id="sidebar-user-name">B1 - Bendahara 1</h4>
+            <h4 id="sidebar-user-name">Admin 1</h4>
             <span class="user-role" id="sidebar-user-role">Full Control Keuangan</span>
           </div>
-          <span class="role-badge role-badge-b1" id="sidebar-role-badge">B1</span>
+          <span class="role-badge role-badge-b1" id="sidebar-role-badge">Admin 1</span>
         </div>
         <!-- View Public Web Button -->
         <button class="sidebar-web-btn" id="btn-sidebar-view-public" title="Buka Halaman Web Profil Warga">
@@ -784,6 +973,11 @@
           <button class="btn btn-gold" id="btn-quick-pay" title="Catat Cepat">
             <i class="fa-solid fa-bolt"></i>
             <span>Bayar Cepat</span>
+          </button>
+
+          <button class="btn btn-outline-emerald" id="btn-top-open-demografi" title="Kelola & Update Data Demografi Warga (Khusus Admin 1)">
+            <i class="fa-solid fa-users-gear text-emerald"></i>
+            <span class="hide-mobile">Data Demografi</span>
           </button>
 
           <button class="btn btn-outline" id="btn-backup-data" title="Cadangkan Data">
@@ -1124,6 +1318,9 @@
             </button>
             <button class="btn btn-emerald" id="btn-add-warga">
               <i class="fa-solid fa-user-plus"></i> Tambah Warga Baru
+            </button>
+            <button class="btn btn-gold" id="btn-open-demografi-modal-admin" title="Kelola dan update data statistik demografi kependudukan (Khusus Admin 1)">
+              <i class="fa-solid fa-users-gear"></i> Kelola Demografi
             </button>
             <button class="btn btn-outline" id="btn-export-warga-csv">
               <i class="fa-solid fa-file-csv"></i> Ekspor CSV
@@ -1815,11 +2012,11 @@
     </div>
   </div>
 
-  <!-- Modal: Ganti Akun B1 / B2 -->
+  <!-- Modal: Ganti Akun Admin 1 / Admin 2 -->
   <div class="modal-backdrop" id="modal-switch-account">
     <div class="modal-content glass-panel luxury-modal" style="max-width:420px;">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-user-shield text-gold"></i> Ganti Akun Bendahara</h3>
+        <h3><i class="fa-solid fa-user-shield text-gold"></i> Ganti Akun Admin</h3>
         <button class="modal-close" data-close="modal-switch-account">&times;</button>
       </div>
 
@@ -1834,7 +2031,7 @@
             <div class="acc-icon-circle" style="background:rgba(245,158,11,0.2);">
               <i class="fa-solid fa-crown" style="color:var(--gold-400);"></i>
             </div>
-            <h4>B1 – Bendahara 1</h4>
+            <h4>Admin 1</h4>
             <p>Full Control</p>
             <span class="role-badge role-badge-b1">SUPER ADMIN</span>
           </div>
@@ -1842,7 +2039,7 @@
             <div class="acc-icon-circle" style="background:rgba(16,185,129,0.2);">
               <i class="fa-solid fa-moon" style="color:var(--emerald-400);"></i>
             </div>
-            <h4>B2 – Bendahara 2</h4>
+            <h4>Admin 2</h4>
             <p>Koordinator Jimpitan</p>
             <span class="role-badge role-badge-b2">JIMPITAN</span>
           </div>
@@ -1850,7 +2047,7 @@
 
         <!-- PIN Input -->
         <div class="form-group" id="switch-pin-group">
-          <label class="form-label"><i class="fa-solid fa-lock text-gold"></i> PIN Akun <span id="switch-target-label">(B1 atau B2)</span></label>
+          <label class="form-label"><i class="fa-solid fa-lock text-gold"></i> PIN Akun <span id="switch-target-label">(Admin 1 atau Admin 2)</span></label>
           <input type="password" class="form-input" id="switch-pin-input" placeholder="Masukkan PIN 4 digit" maxlength="4" inputmode="numeric">
           <small id="switch-pin-error" style="color:var(--rose-400); display:none; margin-top:4px;"><i class="fa-solid fa-triangle-exclamation"></i> PIN salah, coba lagi.</small>
         </div>
@@ -1977,6 +2174,150 @@
 
       <div class="modal-actions mt-3">
         <button class="btn btn-gold btn-full" data-close="modal-apk-guide">Mengerti, Tutup Panduan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Editor Data Demografi Kependudukan -->
+  <div class="modal-backdrop" id="modal-demografi-editor">
+    <div class="modal-content glass-panel luxury-modal" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-users-gear text-gold"></i> Kelola &amp; Update Database Demografi</h3>
+        <button class="modal-close" data-close="modal-demografi-editor">&times;</button>
+      </div>
+      
+      <div class="demografi-modal-tabs">
+        <button type="button" class="demografi-tab-btn active" id="tab-btn-form"><i class="fa-solid fa-pen-ruler"></i> Formulir Manual</button>
+        <button type="button" class="demografi-tab-btn" id="tab-btn-json"><i class="fa-solid fa-code"></i> Mode JSON Fleksibel</button>
+      </div>
+
+      <!-- Tab 1: Form Manual -->
+      <form id="form-demografi-manual" class="demografi-tab-pane active">
+        <div class="form-row-2 mb-3">
+          <div class="form-group">
+            <label for="edit-total-kk">Total Kepala Keluarga (KK):</label>
+            <input type="number" id="edit-total-kk" min="1" value="71" required class="custom-input">
+          </div>
+          <div class="form-group">
+            <label for="edit-last-updated">Tanggal Pembaruan:</label>
+            <input type="text" id="edit-last-updated" value="16 September 2026" required class="custom-input">
+          </div>
+        </div>
+
+        <div class="demografi-form-section-title">
+          <i class="fa-solid fa-venus-mars text-cyan"></i> 1. Kategori Gender (Jenis Kelamin)
+        </div>
+        <div class="form-row-2 mb-3">
+          <div class="form-group">
+            <label for="edit-gender-laki">Jumlah Laki-laki (Jiwa):</label>
+            <input type="number" id="edit-gender-laki" min="0" value="138" required class="custom-input demografi-input-calc">
+          </div>
+          <div class="form-group">
+            <label for="edit-gender-perempuan">Jumlah Perempuan (Jiwa):</label>
+            <input type="number" id="edit-gender-perempuan" min="0" value="146" required class="custom-input demografi-input-calc">
+          </div>
+        </div>
+
+        <div class="demografi-form-section-title">
+          <i class="fa-solid fa-user-group text-purple"></i> 2. Kategori Remaja (Laki-laki &amp; Perempuan)
+        </div>
+        <div class="form-row-2 mb-3">
+          <div class="form-group">
+            <label for="edit-remaja-laki">Remaja Putra (Laki-laki):</label>
+            <input type="number" id="edit-remaja-laki" min="0" value="24" required class="custom-input demografi-input-calc">
+          </div>
+          <div class="form-group">
+            <label for="edit-remaja-perempuan">Remaja Putri (Perempuan):</label>
+            <input type="number" id="edit-remaja-perempuan" min="0" value="26" required class="custom-input demografi-input-calc">
+          </div>
+        </div>
+
+        <div class="demografi-form-section-title">
+          <i class="fa-solid fa-cake-candles text-gold"></i> 3. Kategori Kelompok Usia
+        </div>
+        <div class="form-row-3 mb-3">
+          <div class="form-group">
+            <label for="edit-usia-0-5">Usia 0–5 Thn (Balita):</label>
+            <input type="number" id="edit-usia-0-5" min="0" value="28" required class="custom-input demografi-input-calc">
+          </div>
+          <div class="form-group">
+            <label for="edit-usia-6-13">Usia 6–13 Thn (Anak):</label>
+            <input type="number" id="edit-usia-6-13" min="0" value="42" required class="custom-input demografi-input-calc">
+          </div>
+          <div class="form-group">
+            <label for="edit-usia-14-20">Usia 14–20 Thn (Remaja):</label>
+            <input type="number" id="edit-usia-14-20" min="0" value="50" required class="custom-input demografi-input-calc">
+          </div>
+        </div>
+        <div class="form-row-2 mb-3">
+          <div class="form-group">
+            <label for="edit-usia-21-50">Usia 21–50 Thn (Dewasa Produktif):</label>
+            <input type="number" id="edit-usia-21-50" min="0" value="124" required class="custom-input demografi-input-calc">
+          </div>
+          <div class="form-group">
+            <label for="edit-usia-diatas-50">Usia &gt; 50 Thn (Lansia / Senior):</label>
+            <input type="number" id="edit-usia-diatas-50" min="0" value="40" required class="custom-input demografi-input-calc">
+          </div>
+        </div>
+
+        <div class="demografi-live-summary glass-panel mb-4">
+          <div class="summary-item">
+            <span>Total Jiwa (Gender):</span>
+            <strong id="live-total-gender">284 Jiwa</strong>
+          </div>
+          <div class="summary-item">
+            <span>Total Jiwa (Kelompok Usia):</span>
+            <strong id="live-total-usia">284 Jiwa</strong>
+          </div>
+          <div class="summary-item">
+            <span>Total Remaja (L+P):</span>
+            <strong id="live-total-remaja">50 Jiwa</strong>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" id="btn-reset-demografi">
+            <i class="fa-solid fa-rotate-left"></i> Reset Default
+          </button>
+          <button type="submit" class="btn btn-emerald">
+            <i class="fa-solid fa-floppy-disk"></i> Simpan &amp; Terapkan Grafik
+          </button>
+        </div>
+      </form>
+
+      <!-- Tab 2: JSON Editor Mode -->
+      <div id="pane-demografi-json" class="demografi-tab-pane" style="display:none;">
+        <p class="modal-help-text" style="color:#94a3b8; font-size:0.86rem; margin-bottom:0.75rem;">
+          Database tersimpan dalam format JSON fleksibel. Anda dapat mengedit, mencadangkan, atau menempelkan struktur data JSON kependudukan langsung di sini:
+        </p>
+        <textarea id="json-demografi-input" rows="11" class="custom-textarea font-mono" style="width:100%; font-size: 0.85rem; background:rgba(15,23,42,0.85); color:#e2e8f0; border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:0.75rem;"></textarea>
+        <div class="modal-actions mt-3">
+          <button type="button" class="btn btn-outline" id="btn-copy-demografi-json">
+            <i class="fa-solid fa-copy"></i> Salin JSON
+          </button>
+          <button type="button" class="btn btn-emerald" id="btn-apply-demografi-json">
+            <i class="fa-solid fa-check"></i> Terapkan JSON
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Preview Peta Wilayah HD -->
+  <div class="modal-backdrop" id="modal-peta-wilayah">
+    <div class="modal-content glass-panel luxury-modal" style="max-width: 900px; padding: 1.5rem;">
+      <div class="modal-header" style="margin-bottom: 0.85rem;">
+        <h3><i class="fa-solid fa-map-location-dot text-emerald"></i> Peta Satelit Cakupan Wilayah RT.001 / RW.013</h3>
+        <button class="modal-close" data-close="modal-peta-wilayah">&times;</button>
+      </div>
+      <div class="peta-lightbox-wrap" style="text-align: center; overflow: hidden; border-radius: 12px; border: 2px solid rgba(16, 185, 129, 0.3); background: #000;">
+        <img src="assets/peta-wilayah-rt001.jpg" alt="Denah Satelit RT.001" style="width: 100%; height: auto; max-height: 72vh; object-fit: contain; display: block; margin: 0 auto;">
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+        <span style="font-size: 0.85rem; color: #cbd5e1;">
+          <i class="fa-solid fa-circle-info text-gold"></i> Wilayah hukum RT.001 berada di dalam batas garis merah putus-putus.
+        </span>
+        <button type="button" class="btn btn-outline" data-close="modal-peta-wilayah">Tutup Peta</button>
       </div>
     </div>
   </div>

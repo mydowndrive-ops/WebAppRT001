@@ -1265,7 +1265,7 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1zwrXck7x2H
 
 // App State
 let state = {
-  currentUser: 'b1', // 'b1' = Bendahara 1 (Full Control), 'b2' = Bendahara 2 (Jimpitan Only)
+  currentUser: 'b1', // 'b1' = Admin 1 (Full Control), 'b2' = Admin 2 (Jimpitan Only)
   accountPins: { b1: '1111', b2: '2222' }, // Default PINs
   mandatoryDues: 50000,
   posConfig: JSON.parse(JSON.stringify(DEFAULT_POS_CONFIG)),
@@ -3347,7 +3347,7 @@ function showPublicPortal() {
   if (isLoggedIn()) {
     if (adminBar) adminBar.style.display = 'block';
     if (adminRoleEl) {
-      adminRoleEl.textContent = state.currentUser === 'b2' ? 'Bendahara 2 (B2 - Jimpitan)' : 'Bendahara 1 (B1 - Super Admin)';
+      adminRoleEl.textContent = state.currentUser === 'b2' ? 'Admin 2 (Jimpitan)' : 'Admin 1 (Super Admin)';
     }
   } else {
     if (adminBar) adminBar.style.display = 'none';
@@ -3463,11 +3463,11 @@ function setupLoginPortal() {
     cardB2.classList.remove('selected-b1', 'selected-b2');
     if (role === 'b1') {
       cardB1.classList.add('selected-b1');
-      roleLabel.textContent = 'Bendahara 1 (B1)';
+      roleLabel.textContent = 'Admin 1';
       roleLabel.style.color = 'var(--gold-400)';
     } else {
       cardB2.classList.add('selected-b2');
-      roleLabel.textContent = 'Bendahara 2 (B2)';
+      roleLabel.textContent = 'Admin 2';
       roleLabel.style.color = 'var(--emerald-400)';
     }
     if (errorMsg) errorMsg.style.display = 'none';
@@ -3505,7 +3505,7 @@ function setupLoginPortal() {
   // ---- Login submit ----
   function attemptLogin() {
     if (!selectedRole) {
-      showToast('Pilih akun Bendahara 1 atau Bendahara 2 terlebih dahulu.', 'warning');
+      showToast('Pilih akun Admin 1 atau Admin 2 terlebih dahulu.', 'warning');
       return;
     }
     const enteredPin = pinInput.value.trim();
@@ -3519,7 +3519,7 @@ function setupLoginPortal() {
       hideLoginOverlay();
       showAdminApp();
       navigateToView(selectedRole === 'b2' ? 'jimpitan' : 'dashboard');
-      const label = selectedRole === 'b1' ? 'Bendahara 1 – Full Control' : 'Bendahara 2 – Koordinator Jimpitan';
+      const label = selectedRole === 'b1' ? 'Admin 1 – Full Control' : 'Admin 2 – Koordinator Jimpitan';
       showToast(`✅ Selamat datang, ${label}!`, 'success');
     } else {
       // Wrong PIN
@@ -3654,7 +3654,7 @@ function doLogout() {
     if (errorMsg) errorMsg.style.display = 'none';
     if (mainView) mainView.style.display = 'block';
     if (forgotView) forgotView.style.display = 'none';
-    if (roleLabel) { roleLabel.textContent = 'Bendahara 1 (B1)'; roleLabel.style.color = 'var(--gold-400)'; }
+    if (roleLabel) { roleLabel.textContent = 'Admin 1'; roleLabel.style.color = 'var(--gold-400)'; }
     showToast('Anda telah keluar dari sistem. Menampilkan portal publik warga.', 'info');
   }
 }
@@ -3677,6 +3677,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupLoginPortal();
   setupLogout();
   registerServiceWorker();
+  initDemografi();
 
   // Check session → if logged in, go to admin dashboard; else show public landing page
   if (isLoggedIn()) {
@@ -3694,9 +3695,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// ==================== B1 / B2 RBAC ACCESS CONTROL ====================
+// ==================== ADMIN 1 / ADMIN 2 RBAC ACCESS CONTROL ====================
 
-// Pages only B1 can access
+// Pages only Admin 1 can access
 const B1_ONLY_TARGETS = ['dashboard', 'checklist', 'pos-anggaran', 'pengeluaran', 'warga', 'laporan', 'pengaturan'];
 
 function applyRBAC() {
@@ -3712,7 +3713,7 @@ function applyRBAC() {
     }
   });
 
-  // If B2 user is on a B1-only section, redirect them to jimpitan
+  // If Admin 2 user is on an Admin 1-only section, redirect them to jimpitan
   if (isB2) {
     const activeSection = document.querySelector('.view-section.active');
     if (activeSection && activeSection.id !== 'view-jimpitan') {
@@ -3720,9 +3721,15 @@ function applyRBAC() {
     }
   }
 
-  // Quick-pay button: hide for B2
+  // Quick-pay button: hide for Admin 2
   const qpBtn = document.getElementById('btn-quick-pay');
   if (qpBtn) qpBtn.style.display = isB2 ? 'none' : '';
+
+  // Demografi edit buttons: hide for Admin 2 (only Admin 1 can edit)
+  const demoTopBtn = document.getElementById('btn-top-open-demografi');
+  if (demoTopBtn) demoTopBtn.style.display = isB2 ? 'none' : '';
+  const demoWargaBtn = document.getElementById('btn-open-demografi-modal-admin');
+  if (demoWargaBtn) demoWargaBtn.style.display = isB2 ? 'none' : '';
 }
 
 function updateUserProfileUI() {
@@ -3733,14 +3740,14 @@ function updateUserProfileUI() {
   const avatarEl = document.getElementById('sidebar-user-avatar');
 
   if (isB2) {
-    if (nameEl) nameEl.textContent = 'B2 – Bendahara 2';
+    if (nameEl) nameEl.textContent = 'Admin 2';
     if (roleEl) roleEl.textContent = 'Koordinator Jimpitan Ronda';
-    if (badgeEl) { badgeEl.textContent = 'B2'; badgeEl.className = 'role-badge role-badge-b2'; }
+    if (badgeEl) { badgeEl.textContent = 'Admin 2'; badgeEl.className = 'role-badge role-badge-b2'; }
     if (avatarEl) avatarEl.innerHTML = '<i class="fa-solid fa-moon" style="color:var(--emerald-400);"></i>';
   } else {
-    if (nameEl) nameEl.textContent = 'B1 – Bendahara 1';
+    if (nameEl) nameEl.textContent = 'Admin 1';
     if (roleEl) roleEl.textContent = 'Full Control Keuangan';
-    if (badgeEl) { badgeEl.textContent = 'B1'; badgeEl.className = 'role-badge role-badge-b1'; }
+    if (badgeEl) { badgeEl.textContent = 'Admin 1'; badgeEl.className = 'role-badge role-badge-b1'; }
     if (avatarEl) avatarEl.innerHTML = '<i class="fa-solid fa-user-shield" style="color:var(--gold-400);"></i>';
   }
 }
@@ -3753,7 +3760,7 @@ function setupAccountSwitcher() {
     selectedTargetAccount = null;
     document.getElementById('switch-pin-input').value = '';
     document.getElementById('switch-pin-error').style.display = 'none';
-    document.getElementById('switch-target-label').textContent = '(B1 atau B2)';
+    document.getElementById('switch-target-label').textContent = '(Admin 1 atau Admin 2)';
     document.querySelectorAll('.account-select-card').forEach(c => c.classList.remove('selected'));
     openModal('modal-switch-account');
   });
@@ -3765,7 +3772,7 @@ function setupAccountSwitcher() {
       card.classList.add('selected');
       selectedTargetAccount = card.dataset.account;
       document.getElementById('switch-target-label').textContent =
-        selectedTargetAccount === 'b1' ? '(Akun B1 - Bendahara 1)' : '(Akun B2 - Bendahara 2)';
+        selectedTargetAccount === 'b1' ? '(Akun Admin 1)' : '(Akun Admin 2)';
       document.getElementById('switch-pin-input').value = '';
       document.getElementById('switch-pin-error').style.display = 'none';
       document.getElementById('switch-pin-input').focus();
@@ -3775,7 +3782,7 @@ function setupAccountSwitcher() {
   // Confirm switch
   document.getElementById('btn-confirm-switch-account')?.addEventListener('click', () => {
     if (!selectedTargetAccount) {
-      showToast('Silakan pilih akun (B1 atau B2) terlebih dahulu.', 'warning');
+      showToast('Silakan pilih akun (Admin 1 atau Admin 2) terlebih dahulu.', 'warning');
       return;
     }
     const enteredPin = document.getElementById('switch-pin-input').value.trim();
@@ -3787,7 +3794,7 @@ function setupAccountSwitcher() {
       closeModal('modal-switch-account');
       renderAll();
       navigateToView(selectedTargetAccount === 'b2' ? 'jimpitan' : 'dashboard');
-      const label = selectedTargetAccount === 'b1' ? 'B1 (Bendahara 1 – Full Control)' : 'B2 (Bendahara 2 – Koordinator Jimpitan)';
+      const label = selectedTargetAccount === 'b1' ? 'Admin 1 (Full Control)' : 'Admin 2 (Koordinator Jimpitan)';
       showToast(`✅ Berhasil masuk sebagai ${label}`, 'success');
     } else {
       document.getElementById('switch-pin-error').style.display = 'block';
@@ -3801,7 +3808,7 @@ function setupAccountSwitcher() {
     if (e.key === 'Enter') document.getElementById('btn-confirm-switch-account').click();
   });
 
-  // Intercept navigation to B1-only pages when user is B2
+  // Intercept navigation to Admin 1-only pages when user is Admin 2
   document.addEventListener('click', e => {
     const navItem = e.target.closest('[data-target]');
     if (!navItem || state.currentUser !== 'b2') return;
@@ -3809,7 +3816,7 @@ function setupAccountSwitcher() {
     if (B1_ONLY_TARGETS.includes(target)) {
       e.preventDefault();
       e.stopPropagation();
-      showToast('🔒 Akun B2 hanya berwenang pada menu Uang Jimpitan Ronda.', 'warning');
+      showToast('🔒 Akun Admin 2 hanya berwenang pada menu Uang Jimpitan Ronda.', 'warning');
     }
   }, true);
 }
@@ -4007,5 +4014,493 @@ function setupJimpitanEvents() {
     link.download = `Laporan_Jimpitan_RT001_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     showToast('Laporan jimpitan berhasil diekspor ke CSV!', 'success');
+  });
+}
+
+// ==================== MODUL STATISTIK DEMOGRAFI WARGA RT.001 RW.013 ====================
+const DEMOGRAFI_STORAGE_KEY = 'rt_demografi_data_v1';
+
+const DEFAULT_DEMOGRAFI_DATA = {
+  lastUpdated: '16 September 2026',
+  totalKK: 71,
+  totalJiwa: 284,
+  gender: {
+    lakiLaki: 138,
+    perempuan: 146
+  },
+  remaja: {
+    total: 50,
+    lakiLaki: 24,
+    perempuan: 26
+  },
+  usia: {
+    balita0_5: 28,      // Usia 0 - 5 tahun
+    anak6_13: 42,       // Usia 6 - 13 tahun
+    remaja14_20: 50,    // Usia 14 - 20 tahun
+    dewasa21_50: 124,   // Usia 21 - 50 tahun
+    lansiaDiatas50: 40  // Usia diatas 50 tahun
+  }
+};
+
+let demografiData = null;
+let chartDemografiGenderInstance = null;
+let chartDemografiUsiaInstance = null;
+
+function loadDemografiData() {
+  try {
+    const raw = localStorage.getItem(DEMOGRAFI_STORAGE_KEY);
+    if (raw) {
+      demografiData = JSON.parse(raw);
+      if (!demografiData.gender || !demografiData.usia || !demografiData.remaja) {
+        demografiData = JSON.parse(JSON.stringify(DEFAULT_DEMOGRAFI_DATA));
+      }
+    } else {
+      demografiData = JSON.parse(JSON.stringify(DEFAULT_DEMOGRAFI_DATA));
+    }
+  } catch (err) {
+    console.error('Error loading demografi data:', err);
+    demografiData = JSON.parse(JSON.stringify(DEFAULT_DEMOGRAFI_DATA));
+  }
+  return demografiData;
+}
+
+function saveDemografiData(data) {
+  demografiData = data;
+  try {
+    localStorage.setItem(DEMOGRAFI_STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.error('Error saving demografi data to localStorage:', e);
+  }
+  renderDemografiUI();
+}
+
+function renderDemografiUI() {
+  if (!demografiData) loadDemografiData();
+  const d = demografiData;
+
+  // 1. KPI Badges & Values
+  const elTotalJiwa = document.getElementById('val-total-jiwa');
+  if (elTotalJiwa) elTotalJiwa.innerHTML = `${d.totalJiwa} <span class="unit">Jiwa</span>`;
+
+  const elTotalKK = document.getElementById('val-total-kk');
+  if (elTotalKK) elTotalKK.textContent = `Dari ${d.totalKK || 71} Kepala Keluarga (KK)`;
+
+  const elPria = document.getElementById('val-pria');
+  if (elPria) elPria.innerHTML = `${d.gender.lakiLaki} <span class="unit">Jiwa</span>`;
+
+  const elPctPria = document.getElementById('pct-pria');
+  if (elPctPria) {
+    const pct = d.totalJiwa > 0 ? ((d.gender.lakiLaki / d.totalJiwa) * 100).toFixed(1) : 0;
+    elPctPria.textContent = `${pct}% dari total warga`;
+  }
+
+  const elWanita = document.getElementById('val-wanita');
+  if (elWanita) elWanita.innerHTML = `${d.gender.perempuan} <span class="unit">Jiwa</span>`;
+
+  const elPctWanita = document.getElementById('pct-wanita');
+  if (elPctWanita) {
+    const pct = d.totalJiwa > 0 ? ((d.gender.perempuan / d.totalJiwa) * 100).toFixed(1) : 0;
+    elPctWanita.textContent = `${pct}% dari total warga`;
+  }
+
+  const elRemajaTotal = document.getElementById('val-remaja-total');
+  const remTotal = d.remaja.total || (d.remaja.lakiLaki + d.remaja.perempuan);
+  if (elRemajaTotal) elRemajaTotal.innerHTML = `${remTotal} <span class="unit">Jiwa</span>`;
+
+  const elSubRemaja = document.getElementById('sub-remaja');
+  if (elSubRemaja) elSubRemaja.textContent = `${d.remaja.lakiLaki} Putra • ${d.remaja.perempuan} Putri`;
+
+  // 2. Age Quick Pills
+  const elPillBalita = document.getElementById('pill-balita');
+  if (elPillBalita) elPillBalita.textContent = d.usia.balita0_5;
+
+  const elPillAnak = document.getElementById('pill-anak');
+  if (elPillAnak) elPillAnak.textContent = d.usia.anak6_13;
+
+  const elPillRemaja = document.getElementById('pill-remaja');
+  if (elPillRemaja) elPillRemaja.textContent = d.usia.remaja14_20;
+
+  const elPillDewasa = document.getElementById('pill-dewasa');
+  if (elPillDewasa) elPillDewasa.textContent = d.usia.dewasa21_50;
+
+  const elPillLansia = document.getElementById('pill-lansia');
+  if (elPillLansia) elPillLansia.textContent = d.usia.lansiaDiatas50;
+
+  // 3. Date updated badge
+  const elBadgeDate = document.getElementById('demografi-updated-badge');
+  if (elBadgeDate) {
+    elBadgeDate.innerHTML = `<i class="fa-solid fa-clock-rotate-left text-emerald"></i> Terakhir diperbarui: ${d.lastUpdated || '16 September 2026'}`;
+  }
+
+  // 4. Render or Update Charts
+  renderDemografiCharts();
+}
+
+function renderDemografiCharts() {
+  if (typeof Chart === 'undefined') return;
+  const d = demografiData;
+  if (!d) return;
+
+  // ---- Chart 1: Gender & Remaja Breakdown (Doughnut Chart) ----
+  const ctxGender = document.getElementById('chartDemografiGender');
+  if (ctxGender) {
+    const remLaki = d.remaja.lakiLaki;
+    const remPerempuan = d.remaja.perempuan;
+
+    const labels = [
+      'Laki-laki (Total)',
+      'Perempuan (Total)',
+      'Remaja Putra',
+      'Remaja Putri'
+    ];
+    const dataValues = [
+      d.gender.lakiLaki,
+      d.gender.perempuan,
+      remLaki,
+      remPerempuan
+    ];
+    const bgColors = [
+      '#06b6d4', // Cyan
+      '#f472b6', // Pink
+      '#a855f7', // Purple
+      '#ec4899'  // Magenta
+    ];
+
+    if (chartDemografiGenderInstance) {
+      chartDemografiGenderInstance.data.datasets[0].data = dataValues;
+      chartDemografiGenderInstance.update();
+    } else {
+      chartDemografiGenderInstance = new Chart(ctxGender, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: dataValues,
+            backgroundColor: bgColors,
+            borderColor: '#061812',
+            borderWidth: 3,
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(3, 24, 16, 0.95)',
+              borderColor: 'rgba(16, 185, 129, 0.4)',
+              borderWidth: 1,
+              titleFont: { family: 'Plus Jakarta Sans', weight: 'bold' },
+              bodyFont: { family: 'Plus Jakarta Sans' },
+              padding: 10,
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw || 0;
+                  const total = d.totalJiwa || 1;
+                  const pct = ((val / total) * 100).toFixed(1);
+                  return ` ${context.label}: ${val} Jiwa (${pct}%)`;
+                }
+              }
+            }
+          },
+          cutout: '62%'
+        }
+      });
+    }
+  }
+
+  // ---- Chart 2: Distribusi Kelompok Usia (Bar Chart) ----
+  const ctxUsia = document.getElementById('chartDemografiUsia');
+  if (ctxUsia) {
+    const usiaLabels = [
+      '0–5 Thn (Balita)',
+      '6–13 Thn (Anak)',
+      '14–20 Thn (Remaja)',
+      '21–50 Thn (Dewasa)',
+      '> 50 Thn (Lansia)'
+    ];
+    const usiaValues = [
+      d.usia.balita0_5,
+      d.usia.anak6_13,
+      d.usia.remaja14_20,
+      d.usia.dewasa21_50,
+      d.usia.lansiaDiatas50
+    ];
+    const usiaColors = [
+      '#10b981', // Balita - Emerald
+      '#06b6d4', // Anak - Cyan
+      '#a855f7', // Remaja - Purple
+      '#3b82f6', // Dewasa - Blue
+      '#f59e0b'  // Lansia - Gold/Amber
+    ];
+
+    if (chartDemografiUsiaInstance) {
+      chartDemografiUsiaInstance.data.datasets[0].data = usiaValues;
+      chartDemografiUsiaInstance.update();
+    } else {
+      chartDemografiUsiaInstance = new Chart(ctxUsia, {
+        type: 'bar',
+        data: {
+          labels: usiaLabels,
+          datasets: [{
+            label: 'Jumlah Jiwa',
+            data: usiaValues,
+            backgroundColor: usiaColors,
+            borderRadius: 8,
+            borderSkipped: false,
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(3, 24, 16, 0.95)',
+              borderColor: 'rgba(245, 158, 11, 0.4)',
+              borderWidth: 1,
+              padding: 10,
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw || 0;
+                  const total = d.totalJiwa || 1;
+                  const pct = ((val / total) * 100).toFixed(1);
+                  return ` Jumlah: ${val} Jiwa (${pct}%)`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: {
+                color: '#94a3b8',
+                font: { family: 'Plus Jakarta Sans', size: 11 },
+                stepSize: 10
+              },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  }
+}
+
+function openDemografiModal() {
+  const modal = document.getElementById('modal-demografi-editor');
+  if (!modal) return;
+
+  const d = demografiData || loadDemografiData();
+
+  // Fill form inputs
+  const elKK = document.getElementById('edit-total-kk');
+  if (elKK) elKK.value = d.totalKK || 71;
+
+  const elDate = document.getElementById('edit-last-updated');
+  if (elDate) elDate.value = d.lastUpdated || '16 September 2026';
+
+  const elLaki = document.getElementById('edit-gender-laki');
+  if (elLaki) elLaki.value = d.gender.lakiLaki;
+
+  const elPerempuan = document.getElementById('edit-gender-perempuan');
+  if (elPerempuan) elPerempuan.value = d.gender.perempuan;
+
+  const elRemLaki = document.getElementById('edit-remaja-laki');
+  if (elRemLaki) elRemLaki.value = d.remaja.lakiLaki;
+
+  const elRemPerempuan = document.getElementById('edit-remaja-perempuan');
+  if (elRemPerempuan) elRemPerempuan.value = d.remaja.perempuan;
+
+  const elU0 = document.getElementById('edit-usia-0-5');
+  if (elU0) elU0.value = d.usia.balita0_5;
+
+  const elU6 = document.getElementById('edit-usia-6-13');
+  if (elU6) elU6.value = d.usia.anak6_13;
+
+  const elU14 = document.getElementById('edit-usia-14-20');
+  if (elU14) elU14.value = d.usia.remaja14_20;
+
+  const elU21 = document.getElementById('edit-usia-21-50');
+  if (elU21) elU21.value = d.usia.dewasa21_50;
+
+  const elU50 = document.getElementById('edit-usia-diatas-50');
+  if (elU50) elU50.value = d.usia.lansiaDiatas50;
+
+  // Fill JSON textarea
+  const elJson = document.getElementById('json-demografi-input');
+  if (elJson) elJson.value = JSON.stringify(d, null, 2);
+
+  // Recalculate live summary
+  recalcDemografiLiveSummary();
+
+  // Show form tab by default
+  switchDemografiTab('form');
+
+  modal.classList.add('active');
+}
+
+function recalcDemografiLiveSummary() {
+  const pria = parseInt(document.getElementById('edit-gender-laki')?.value) || 0;
+  const wanita = parseInt(document.getElementById('edit-gender-perempuan')?.value) || 0;
+  const liveGender = document.getElementById('live-total-gender');
+  if (liveGender) liveGender.textContent = `${pria + wanita} Jiwa`;
+
+  const remL = parseInt(document.getElementById('edit-remaja-laki')?.value) || 0;
+  const remP = parseInt(document.getElementById('edit-remaja-perempuan')?.value) || 0;
+  const liveRemaja = document.getElementById('live-total-remaja');
+  if (liveRemaja) liveRemaja.textContent = `${remL + remP} Jiwa`;
+
+  const u0 = parseInt(document.getElementById('edit-usia-0-5')?.value) || 0;
+  const u6 = parseInt(document.getElementById('edit-usia-6-13')?.value) || 0;
+  const u14 = parseInt(document.getElementById('edit-usia-14-20')?.value) || 0;
+  const u21 = parseInt(document.getElementById('edit-usia-21-50')?.value) || 0;
+  const u50 = parseInt(document.getElementById('edit-usia-diatas-50')?.value) || 0;
+  const liveUsia = document.getElementById('live-total-usia');
+  if (liveUsia) liveUsia.textContent = `${u0 + u6 + u14 + u21 + u50} Jiwa`;
+}
+
+function switchDemografiTab(tab) {
+  const tabBtnForm = document.getElementById('tab-btn-form');
+  const tabBtnJson = document.getElementById('tab-btn-json');
+  const paneForm = document.getElementById('form-demografi-manual');
+  const paneJson = document.getElementById('pane-demografi-json');
+
+  if (tab === 'json') {
+    tabBtnForm?.classList.remove('active');
+    tabBtnJson?.classList.add('active');
+    if (paneForm) paneForm.style.display = 'none';
+    if (paneJson) paneJson.style.display = 'block';
+
+    const currentFromForm = getDemografiFromInputs();
+    const elJson = document.getElementById('json-demografi-input');
+    if (elJson) elJson.value = JSON.stringify(currentFromForm, null, 2);
+  } else {
+    tabBtnJson?.classList.remove('active');
+    tabBtnForm?.classList.add('active');
+    if (paneJson) paneJson.style.display = 'none';
+    if (paneForm) paneForm.style.display = 'block';
+  }
+}
+
+function getDemografiFromInputs() {
+  const pria = parseInt(document.getElementById('edit-gender-laki')?.value) || 0;
+  const wanita = parseInt(document.getElementById('edit-gender-perempuan')?.value) || 0;
+  const remL = parseInt(document.getElementById('edit-remaja-laki')?.value) || 0;
+  const remP = parseInt(document.getElementById('edit-remaja-perempuan')?.value) || 0;
+
+  return {
+    lastUpdated: document.getElementById('edit-last-updated')?.value || '16 September 2026',
+    totalKK: parseInt(document.getElementById('edit-total-kk')?.value) || 71,
+    totalJiwa: pria + wanita,
+    gender: {
+      lakiLaki: pria,
+      perempuan: wanita
+    },
+    remaja: {
+      total: remL + remP,
+      lakiLaki: remL,
+      perempuan: remP
+    },
+    usia: {
+      balita0_5: parseInt(document.getElementById('edit-usia-0-5')?.value) || 0,
+      anak6_13: parseInt(document.getElementById('edit-usia-6-13')?.value) || 0,
+      remaja14_20: parseInt(document.getElementById('edit-usia-14-20')?.value) || 0,
+      dewasa21_50: parseInt(document.getElementById('edit-usia-21-50')?.value) || 0,
+      lansiaDiatas50: parseInt(document.getElementById('edit-usia-diatas-50')?.value) || 0
+    }
+  };
+}
+
+function initDemografi() {
+  loadDemografiData();
+  renderDemografiUI();
+
+  // Open modal button (Khusus Dashboard Admin 1)
+  const handleOpenDemografiAdmin = (e) => {
+    e?.preventDefault();
+    if (state.currentUser !== 'b1') {
+      showToast('⚠️ Pengeditan data demografi hanya dapat diakses oleh Admin 1.', 'warning');
+      return;
+    }
+    openDemografiModal();
+  };
+
+  document.getElementById('btn-open-demografi-modal-admin')?.addEventListener('click', handleOpenDemografiAdmin);
+  document.getElementById('btn-top-open-demografi')?.addEventListener('click', handleOpenDemografiAdmin);
+
+  // Tab buttons in modal
+  document.getElementById('tab-btn-form')?.addEventListener('click', () => switchDemografiTab('form'));
+  document.getElementById('tab-btn-json')?.addEventListener('click', () => switchDemografiTab('json'));
+
+  // Live calculation on input change
+  document.querySelectorAll('.demografi-input-calc').forEach(input => {
+    input.addEventListener('input', recalcDemografiLiveSummary);
+  });
+
+  // Submit manual form
+  const formManual = document.getElementById('form-demografi-manual');
+  if (formManual) {
+    formManual.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const updated = getDemografiFromInputs();
+      saveDemografiData(updated);
+      document.getElementById('modal-demografi-editor')?.classList.remove('active');
+      showToast('✅ Data statistik kependudukan berhasil diperbarui!', 'success');
+    });
+  }
+
+  // Reset to default
+  document.getElementById('btn-reset-demografi')?.addEventListener('click', () => {
+    if (confirm('Apakah Anda yakin ingin mengatur ulang data kependudukan ke nilai default?')) {
+      const defaultData = JSON.parse(JSON.stringify(DEFAULT_DEMOGRAFI_DATA));
+      saveDemografiData(defaultData);
+      document.getElementById('modal-demografi-editor')?.classList.remove('active');
+      showToast('Data kependudukan berhasil direset ke default.', 'info');
+    }
+  });
+
+  // Apply JSON button
+  document.getElementById('btn-apply-demografi-json')?.addEventListener('click', () => {
+    const raw = document.getElementById('json-demografi-input')?.value;
+    try {
+      const parsed = JSON.parse(raw);
+      if (!parsed.gender || !parsed.usia || !parsed.remaja) {
+        throw new Error('Format JSON harus memiliki objek gender, usia, dan remaja.');
+      }
+      saveDemografiData(parsed);
+      document.getElementById('modal-demografi-editor')?.classList.remove('active');
+      showToast('✅ Database JSON berhasil diterapkan dan grafik diperbarui!', 'success');
+    } catch (err) {
+      alert('Gagal memproses JSON: ' + err.message);
+    }
+  });
+
+  // Copy JSON button
+  document.getElementById('btn-copy-demografi-json')?.addEventListener('click', () => {
+    const raw = document.getElementById('json-demografi-input')?.value;
+    if (raw && navigator.clipboard) {
+      navigator.clipboard.writeText(raw).then(() => {
+        showToast('JSON kependudukan berhasil disalin ke clipboard!', 'success');
+      });
+    }
+  });
+
+  // Modal Preview Peta Wilayah HD
+  const openPetaModal = () => {
+    document.getElementById('modal-peta-wilayah')?.classList.add('active');
+  };
+  document.getElementById('map-preview-trigger')?.addEventListener('click', openPetaModal);
+  document.getElementById('btn-zoom-peta')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openPetaModal();
   });
 }
