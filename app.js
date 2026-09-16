@@ -2681,6 +2681,64 @@ function populateMonthCheckboxes(targetContainerId) {
   }
 }
 
+/**
+ * Dynamically populates the year selector dropdowns up to 10 years into the future
+ */
+function populateGlobalYearSelect() {
+  const yearSel = document.getElementById('global-year-select');
+  if (!yearSel) return;
+
+  const currentYear = new Date().getFullYear();
+  // Collect all years recorded in transactions (payments, expenses, etc.)
+  const recordedYears = [
+    ...(state.payments || []).map(p => Number(p.year)),
+    ...(state.expenses || []).map(e => e.date ? new Date(e.date).getFullYear() : null)
+  ].filter(y => !isNaN(y) && y > 2000);
+
+  // Dynamic range: at least from 2024 (or earliest recorded data), up to currentYear + 10
+  const startYear = Math.min(2024, currentYear - 2, ...recordedYears);
+  const endYear = Math.max(currentYear + 10, ...recordedYears);
+
+  const activeYear = state.selectedYear || currentYear;
+
+  // Populate navbar year selector
+  const existingOptions = Array.from(yearSel.options).map(o => Number(o.value));
+  const needsRebuild = existingOptions.length === 0 || existingOptions[0] !== startYear || existingOptions[existingOptions.length - 1] !== endYear;
+
+  if (needsRebuild) {
+    yearSel.innerHTML = '';
+    for (let y = startYear; y <= endYear; y++) {
+      const opt = document.createElement('option');
+      opt.value = y;
+      opt.textContent = `${y}`;
+      if (y === activeYear) {
+        opt.selected = true;
+      }
+      yearSel.appendChild(opt);
+    }
+  }
+  yearSel.value = activeYear;
+
+  // Also sync modal quick-pay year select if present
+  const qpYearSel = document.getElementById('qp-year-select');
+  if (qpYearSel) {
+    const qpExisting = Array.from(qpYearSel.options).map(o => Number(o.value));
+    if (qpExisting.length === 0 || qpExisting[0] !== startYear || qpExisting[qpExisting.length - 1] !== endYear) {
+      qpYearSel.innerHTML = '';
+      for (let y = startYear; y <= endYear; y++) {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.textContent = `Tahun ${y}`;
+        if (y === activeYear) {
+          opt.selected = true;
+        }
+        qpYearSel.appendChild(opt);
+      }
+    }
+    qpYearSel.value = activeYear;
+  }
+}
+
 // ==================== EVENT LISTENERS & NAVIGATION ====================
 
 function setupNavigation() {
@@ -2705,6 +2763,9 @@ function setupNavigation() {
   // Global Period Selectors
   const monthSel = document.getElementById('global-month-select');
   const yearSel = document.getElementById('global-year-select');
+
+  // Populate dynamic year options (up to 10 years ahead)
+  populateGlobalYearSelect();
 
   if (monthSel) {
     monthSel.value = state.selectedMonth;
@@ -2791,8 +2852,11 @@ function setupModalEventListeners() {
 
   // Quick Pay Modal Trigger
   document.getElementById('btn-quick-pay')?.addEventListener('click', () => {
+    populateGlobalYearSelect();
     populateResidentSelects();
     populateMonthCheckboxes('qp-months-container');
+    const qpYear = document.getElementById('qp-year-select');
+    if (qpYear) qpYear.value = state.selectedYear;
     document.getElementById('modal-quick-pay')?.classList.add('active');
   });
 
@@ -2800,6 +2864,7 @@ function setupModalEventListeners() {
   document.getElementById('form-quick-pay')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const residentId = document.getElementById('qp-resident-select').value;
+    const targetYear = Number(document.getElementById('qp-year-select')?.value) || state.selectedYear;
     const nominal = Number(document.getElementById('qp-nominal-per-month').value) || state.mandatoryDues;
     const method = document.getElementById('qp-payment-method').value;
     const selectedMonthCheckboxes = document.querySelectorAll('input[name="qpMonth"]:checked');
@@ -2820,14 +2885,14 @@ function setupModalEventListeners() {
     selectedMonthCheckboxes.forEach(cb => {
       const m = Number(cb.value);
       // Check if already paid
-      const exists = state.payments.find(p => !p.category && p.residentId === residentId && p.month === m && p.year === state.selectedYear);
+      const exists = state.payments.find(p => !p.category && p.residentId === residentId && p.month === m && p.year === targetYear);
       if (!exists) {
-        const refNo = `RT01-${state.selectedYear}${String(m).padStart(2, '0')}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+        const refNo = `RT01-${targetYear}${String(m).padStart(2, '0')}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
         state.payments.push({
           id: `pay-${Date.now()}-${m}`,
           residentId: residentId,
           month: m,
-          year: state.selectedYear,
+          year: targetYear,
           amount: nominal,
           date: new Date().toISOString().split('T')[0],
           method: method,
@@ -2839,7 +2904,7 @@ function setupModalEventListeners() {
 
     saveState();
     document.getElementById('modal-quick-pay')?.classList.remove('active');
-    showToast(`Sukses mencatat ${countPaid} bulan pembayaran untuk ${resident ? resident.name : 'warga'}!`, 'success');
+    showToast(`Sukses mencatat ${countPaid} bulan pembayaran (Tahun ${targetYear}) untuk ${resident ? resident.name : 'warga'}!`, 'success');
     renderAll();
   });
 
@@ -3297,6 +3362,7 @@ function registerServiceWorker() {
 // ==================== MASTER RENDER & INIT ====================
 
 function renderAll() {
+  try { populateGlobalYearSelect(); } catch (e) { console.error('Error populateGlobalYearSelect', e); }
   try { populateBlockFilterOptions(); } catch (e) { console.error('Error populateBlockFilterOptions', e); }
   try { renderDashboard(); } catch (e) { console.error('Error renderDashboard', e); }
   try { renderChecklist(); } catch (e) { console.error('Error renderChecklist', e); }
