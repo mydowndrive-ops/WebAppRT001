@@ -3571,16 +3571,17 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0.95;
 }
 
-/* Bagian 2: RT.001 RW.013 (FOKUS UTAMA - Megah, Extra Bold, 24K Liquid Gold Shimmer) */
+/* Bagian 2: RT.001 RW.013 (FOKUS UTAMA - Megah, Extra Bold, 24K Liquid Gold Shimmer + Denyut Elegan) */
 .hero-title-highlight {
   font-size: clamp(2.35rem, 6.4vw, 4.3rem);
   font-weight: 900;
   line-height: 1.08;
   letter-spacing: 0.035em;
   display: inline-block;
+  transform-origin: center center;
 }
 
-/* Efek Mewah Opsi A: Liquid Champagne Gold Shimmer (Sapuan Kilau Emas 24K) */
+/* Efek Mewah: Liquid Champagne Gold Shimmer + Breathing Pulse Glow */
 .public-hero-gold-shimmer {
   /* Rich 24K Liquid Champagne Gold Multi-Stop Metallic Palette */
   background: linear-gradient(
@@ -3599,16 +3600,31 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: liquidGoldSweep 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  filter: drop-shadow(0 0 28px rgba(212, 175, 55, 0.45)) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.9));
+  /* Multi-animation: Sapuan kilatan emas + Denyut napas ritmis */
+  animation: liquidGoldSweep 5.5s cubic-bezier(0.4, 0, 0.2, 1) infinite,
+             goldBreathingPulse 3.6s ease-in-out infinite;
+  will-change: transform, filter, background-position;
 }
 
+/* Animasi 1: Sapuan Cahaya Emas 24K */
 @keyframes liquidGoldSweep {
   0% {
     background-position: 180% center;
   }
   35%, 100% {
     background-position: -80% center;
+  }
+}
+
+/* Animasi 2: Efek Denyut Berpendar (Breathing Pulse) */
+@keyframes goldBreathingPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.4)) drop-shadow(0 4px 14px rgba(0, 0, 0, 0.85));
+  }
+  50% {
+    transform: scale(1.038);
+    filter: drop-shadow(0 0 38px rgba(251, 191, 36, 0.85)) drop-shadow(0 0 55px rgba(212, 175, 55, 0.5)) drop-shadow(0 4px 18px rgba(0, 0, 0, 0.95));
   }
 }
 
