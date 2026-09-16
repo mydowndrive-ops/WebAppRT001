@@ -3311,7 +3311,7 @@ function renderAll() {
   try { updateUserProfileUI(); } catch (e) { console.error('Error updateUserProfileUI', e); }
 }
 
-// ==================== SESSION MANAGEMENT ====================
+// ==================== SESSION & PORTAL MANAGEMENT (OPSI A) ====================
 
 const LOGIN_SESSION_KEY = 'RT001_LOGIN_SESSION_V1';
 
@@ -3327,27 +3327,111 @@ function clearSession() {
   sessionStorage.removeItem(LOGIN_SESSION_KEY);
 }
 
+/**
+ * Tampilkan Portal Publik (Landing Page Warga)
+ */
+function showPublicPortal() {
+  const publicPortal = document.getElementById('portal-public');
+  const adminApp     = document.getElementById('app');
+  const adminBar     = document.getElementById('admin-public-bar');
+  const adminRoleEl  = document.getElementById('admin-bar-role-name');
+
+  if (publicPortal) publicPortal.style.display = 'block';
+  if (adminApp) {
+    adminApp.style.display = 'none';
+    adminApp.style.visibility = 'hidden';
+  }
+  hideLoginOverlay();
+
+  // Jika sedang login, tampilkan floating bar admin di atas portal publik
+  if (isLoggedIn()) {
+    if (adminBar) adminBar.style.display = 'block';
+    if (adminRoleEl) {
+      adminRoleEl.textContent = state.currentUser === 'b2' ? 'Bendahara 2 (B2 - Jimpitan)' : 'Bendahara 1 (B1 - Super Admin)';
+    }
+  } else {
+    if (adminBar) adminBar.style.display = 'none';
+  }
+
+  // Update metrik live di landing page warga
+  updatePublicStats();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/**
+ * Tampilkan Aplikasi Pengurus (RT-FinSmart PRO Admin App)
+ */
+function showAdminApp() {
+  const publicPortal = document.getElementById('portal-public');
+  const adminApp     = document.getElementById('app');
+  const adminBar     = document.getElementById('admin-public-bar');
+
+  if (publicPortal) publicPortal.style.display = 'none';
+  if (adminBar) adminBar.style.display = 'none';
+  if (adminApp) {
+    adminApp.style.display = 'flex';
+    adminApp.style.visibility = 'visible';
+  }
+  hideLoginOverlay();
+  renderAll();
+}
+
+/**
+ * Update statistik dinamis pada section Transparansi & Data Digital di halaman publik
+ */
+function updatePublicStats() {
+  // 1. Jumlah KK
+  const totalResidents = state.residents ? state.residents.length : 71;
+  const residentsEl = document.getElementById('public-stat-residents');
+  if (residentsEl) residentsEl.textContent = totalResidents;
+
+  // 2. Total Saldo Kas Terkonsolidasi
+  try {
+    const fin = computeFinancials();
+    const balanceEl = document.getElementById('public-stat-balance');
+    if (balanceEl) balanceEl.textContent = formatCurrency(fin.totalConsolidatedBalance || 0);
+  } catch (err) {
+    console.warn('Gagal menghitung saldo konsolidasi publik:', err);
+  }
+
+  // 3. Saldo Kas Jimpitan Ronda
+  try {
+    const jIn = (state.jimpitanIncomes || []).reduce((sum, r) => sum + Number(r.amount || 0), 0);
+    const jEx = (state.jimpitanExpenses || []).reduce((sum, r) => sum + Number(r.amount || 0), 0);
+    const jBal = jIn - jEx;
+    const jimpEl = document.getElementById('public-stat-jimpitan');
+    if (jimpEl) jimpEl.textContent = formatCurrency(jBal);
+  } catch (err) {
+    console.warn('Gagal menghitung saldo jimpitan publik:', err);
+  }
+}
+
+/**
+ * Tampilkan Modal Login Eksekutif Glassmorphism
+ */
 function showLoginOverlay() {
   const overlay = document.getElementById('login-overlay');
   if (overlay) {
     overlay.classList.remove('fade-out');
     overlay.style.display = 'flex';
+    const pinInput = document.getElementById('login-pin-input');
+    if (pinInput) setTimeout(() => pinInput.focus(), 150);
   }
-  document.getElementById('app').style.visibility = 'hidden';
 }
 
+/**
+ * Tutup Modal Login Eksekutif
+ */
 function hideLoginOverlay() {
   const overlay = document.getElementById('login-overlay');
   if (overlay) {
     overlay.classList.add('fade-out');
-    // After animation, hide from layout
     setTimeout(() => {
       if (overlay.classList.contains('fade-out')) {
         overlay.style.display = 'none';
       }
-    }, 600);
+    }, 280);
   }
-  document.getElementById('app').style.visibility = 'visible';
 }
 
 // ==================== LOGIN PORTAL LOGIC ====================
@@ -3370,6 +3454,7 @@ function setupLoginPortal() {
   const cardB1       = document.getElementById('login-card-b1');
   const cardB2       = document.getElementById('login-card-b2');
   const copyEmailBtn = document.getElementById('btn-copy-reset-email');
+  const closeBtn     = document.getElementById('btn-close-login-overlay');
 
   // ---- Role card selection ----
   function selectRole(role) {
@@ -3391,6 +3476,9 @@ function setupLoginPortal() {
 
   if (cardB1) cardB1.addEventListener('click', () => selectRole('b1'));
   if (cardB2) cardB2.addEventListener('click', () => selectRole('b2'));
+
+  // Default selection to B1 for quick entry
+  selectRole('b1');
 
   // ---- Password visibility helper (syncs Eye Icon and Tik Checkbox) ----
   function setPinVisibility(visible) {
@@ -3418,12 +3506,6 @@ function setupLoginPortal() {
   function attemptLogin() {
     if (!selectedRole) {
       showToast('Pilih akun Bendahara 1 atau Bendahara 2 terlebih dahulu.', 'warning');
-      cardB1.style.animation = 'none';
-      cardB2.style.animation = 'none';
-      requestAnimationFrame(() => {
-        cardB1.style.animation = '';
-        cardB2.style.animation = '';
-      });
       return;
     }
     const enteredPin = pinInput.value.trim();
@@ -3435,7 +3517,7 @@ function setupLoginPortal() {
       setSession(selectedRole);
       saveState();
       hideLoginOverlay();
-      renderAll();
+      showAdminApp();
       navigateToView(selectedRole === 'b2' ? 'jimpitan' : 'dashboard');
       const label = selectedRole === 'b1' ? 'Bendahara 1 – Full Control' : 'Bendahara 2 – Koordinator Jimpitan';
       showToast(`✅ Selamat datang, ${label}!`, 'success');
@@ -3457,6 +3539,64 @@ function setupLoginPortal() {
       if (e.key === 'Enter') attemptLogin();
     });
   }
+
+  // ---- Tombol Tutup Overlay Login (Kembali ke Web Warga) ----
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      hideLoginOverlay();
+    });
+  }
+
+  // ---- Tombol-Tombol Pembuka Login dari Halaman Publik ----
+  const loginTriggers = [
+    'btn-open-login-nav',
+    'btn-open-login-mobile',
+    'btn-open-login-hero',
+    'btn-open-login-layanan',
+    'btn-open-login-footer'
+  ];
+  loginTriggers.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('click', () => {
+        // Tutup menu mobile jika sedang terbuka
+        const mobMenu = document.getElementById('public-mobile-menu');
+        if (mobMenu) mobMenu.classList.remove('active');
+        showLoginOverlay();
+      });
+    }
+  });
+
+  // ---- Mobile Hamburger Menu on Public Navbar ----
+  const mobBtn = document.getElementById('public-menu-btn');
+  const mobMenu = document.getElementById('public-mobile-menu');
+  if (mobBtn && mobMenu) {
+    mobBtn.addEventListener('click', () => {
+      mobMenu.classList.toggle('active');
+    });
+    // Tutup menu saat salah satu link diklik
+    document.querySelectorAll('.public-mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        mobMenu.classList.remove('active');
+      });
+    });
+  }
+
+  // ---- Tombol Navigasi Admin Bar (di Halaman Publik) ----
+  document.getElementById('btn-return-to-admin')?.addEventListener('click', () => {
+    showAdminApp();
+  });
+  document.getElementById('btn-bar-logout')?.addEventListener('click', () => {
+    doLogout();
+  });
+
+  // ---- Tombol dari Sidebar & Top Header untuk Melihat Web Profil Warga ----
+  document.getElementById('btn-sidebar-view-public')?.addEventListener('click', () => {
+    showPublicPortal();
+  });
+  document.getElementById('btn-top-view-public')?.addEventListener('click', () => {
+    showPublicPortal();
+  });
 
   // ---- Forgot PIN toggle & actions ----
   if (showForgot) {
@@ -3492,9 +3632,10 @@ function setupLoginPortal() {
 // ==================== LOGOUT ====================
 
 function doLogout() {
-  if (confirm('Yakin ingin keluar dari sistem? Anda perlu memasukkan PIN kembali.')) {
+  if (confirm('Yakin ingin keluar dari sistem? Anda perlu memasukkan PIN kembali untuk mengakses RT-FinSmart PRO.')) {
     clearSession();
-    showLoginOverlay();
+    state.currentUser = null;
+    showPublicPortal();
     // Reset login form state
     const pinInput     = document.getElementById('login-pin-input');
     const eyeIcon      = document.getElementById('login-eye-icon');
@@ -3502,8 +3643,6 @@ function doLogout() {
     const errorMsg     = document.getElementById('login-error-msg');
     const mainView     = document.getElementById('login-main-view');
     const forgotView   = document.getElementById('login-forgot-view');
-    const cardB1       = document.getElementById('login-card-b1');
-    const cardB2       = document.getElementById('login-card-b2');
     const roleLabel    = document.getElementById('login-selected-role-label');
 
     if (pinInput) {
@@ -3515,10 +3654,8 @@ function doLogout() {
     if (errorMsg) errorMsg.style.display = 'none';
     if (mainView) mainView.style.display = 'block';
     if (forgotView) forgotView.style.display = 'none';
-    if (cardB1) cardB1.classList.remove('selected-b1', 'selected-b2');
-    if (cardB2) cardB2.classList.remove('selected-b1', 'selected-b2');
-    if (roleLabel) { roleLabel.textContent = 'Pilih akun dahulu'; roleLabel.style.color = ''; }
-    showToast('Anda telah keluar dari sistem.', 'info');
+    if (roleLabel) { roleLabel.textContent = 'Bendahara 1 (B1)'; roleLabel.style.color = 'var(--gold-400)'; }
+    showToast('Anda telah keluar dari sistem. Menampilkan portal publik warga.', 'info');
   }
 }
 
@@ -3541,20 +3678,18 @@ document.addEventListener('DOMContentLoaded', () => {
   setupLogout();
   registerServiceWorker();
 
-  // Check session → show login or main app
+  // Check session → if logged in, go to admin dashboard; else show public landing page
   if (isLoggedIn()) {
-    // Restore role from session
     const sessionRole = sessionStorage.getItem(LOGIN_SESSION_KEY);
     if (sessionRole === 'b1' || sessionRole === 'b2') {
       state.currentUser = sessionRole;
     }
-    hideLoginOverlay();
-    renderAll();
+    showAdminApp();
     navigateToView(state.currentUser === 'b2' ? 'jimpitan' : 'dashboard');
   } else {
-    showLoginOverlay();
-    // Still render the app in the background (hidden) so it's ready
-    renderAll();
+    showPublicPortal();
+    // Render the app in background so it's ready when user logs in
+    try { renderAll(); } catch (e) { console.error('Error pre-rendering admin data', e); }
   }
 });
 

@@ -73,6 +73,21 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
    - Otomatis mengarahkan akun B2 ke tampilan Jimpitan Ronda (`#view-jimpitan`) dan mengunci menu khusus B1 (desktop sidebar & mobile bottom nav) dengan visual gembok.
    - Sidebar footer dinamis menampilkan profil aktif: **B1 – Bendahara 1** (Full Control Keuangan) atau **B2 – Bendahara 2** (Koordinator Jimpitan Ronda) dengan avatar dan badge yang sesuai.
 
+8. **Portal Publik Warga & Integrasi Terpadu Satu Pintu (Opsi A)**:
+   - **Halaman Depan Utama (`#portal-public`)**: Website profil publik resmi RT.001 / RW.013 Graha Asri yang ramah warga dan tamu:
+     - **Navbar Sticky**: Dilengkapi logo resmi, menu navigasi anchor (Tentang, Kegiatan, Layanan & Kas, Pengurus), tombol **Portal Pengurus** (masuk PIN), dan menu responsif mobile hamburger.
+     - **Hero Section**: Tagline *"Melayani dengan Hati, Membangun dalam Kebersamaan"*, logo RT resolusi tinggi, tombol cepat info kas, dan tombol akses bendahara.
+     - **Tentang Lingkungan**: Menampilkan profil RT dan cakupan 5 rute jalan (Jl. Citarum II, IVA, VIIIB, VIIIC, IX).
+     - **Agenda Warga**: Program rutin Ronda/Siskamling, pengajian bapak & ibu, Qurban & Halal Bihalal, serta solidaritas sosial warga.
+     - **Transparansi & Digitalisasi RT**: Widget kartu metrik live terhubung langsung ke database lokal (`state.residents` jumlah KK, total saldo kas terhimpun, dan kas jimpitan ronda).
+     - **Struktur Pengurus**: Menampilkan Ketua RT, Sekretaris, Bendahara, dan Humas lengkap dengan tombol kontak langsung ke WhatsApp.
+   - **Alur Masuk & Keluar Mulus (Seamless Two-Way Navigation)**:
+     - Tombol **"Portal Pengurus"** di beranda publik membuka Modal Login Glassmorphism.
+     - Tombol silang `X` (`#btn-close-login-overlay`) pada login overlay memungkinkan warga kembali ke beranda tanpa terjebak.
+     - Setelah login (PIN B1/B2), sistem langsung membuka dashboard eksekutif RT-FinSmart PRO.
+     - Di sidebar dan header kanan admin, tersedia tombol **"🌐 Web Warga"** untuk meninjau halaman publik sewaktu-waktu. Saat admin membuka halaman publik, muncul bilah hijau atas (**Mode Pengurus Aktif**) dengan tombol **Kembali ke Dashboard** dan **Keluar**.
+     - Tombol **"Keluar (Logout)"** otomatis mengembalikan pengguna ke halaman publik warga dengan aman.
+
 ---
 
 ## 📁 Struktur Berkas Penting

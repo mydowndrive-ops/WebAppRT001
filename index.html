@@ -26,6 +26,396 @@
 </head>
 <body>
 
+  <!-- ==================== PUBLIC PORTAL (LANDING PAGE WARGA) ==================== -->
+  <div id="portal-public" class="portal-public-page">
+    <!-- Top Admin Bar (visible only when logged in as B1/B2) -->
+    <div id="admin-public-bar" class="admin-public-bar" style="display: none;">
+      <div class="admin-public-bar-content">
+        <div class="admin-bar-info">
+          <span class="admin-bar-badge"><i class="fa-solid fa-crown"></i> Mode Pengurus Aktif</span>
+          <span>Masuk sebagai: <strong id="admin-bar-role-name">Bendahara 1 (B1)</strong></span>
+        </div>
+        <div class="admin-bar-actions">
+          <button type="button" class="admin-bar-btn admin-bar-return" id="btn-return-to-admin">
+            <i class="fa-solid fa-chart-pie"></i> Kembali ke Dashboard
+          </button>
+          <button type="button" class="admin-bar-btn admin-bar-logout" id="btn-bar-logout">
+            <i class="fa-solid fa-right-from-bracket"></i> Keluar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NAVBAR STICKY -->
+    <nav class="public-navbar">
+      <div class="public-nav-container">
+        <a href="#portal-public" class="public-brand">
+          <img src="assets/logo.png" alt="Logo RT.001" class="public-logo-img">
+          <div class="public-brand-title">
+            <span class="public-brand-main">RT.001 / RW.013</span>
+            <span class="public-brand-sub">Graha Asri – Cikarang</span>
+          </div>
+        </a>
+
+        <!-- Desktop Menu -->
+        <div class="public-menu-desktop">
+          <a href="#tentang" class="public-nav-link">Tentang</a>
+          <a href="#kegiatan" class="public-nav-link">Kegiatan</a>
+          <a href="#layanan" class="public-nav-link">Layanan & Kas</a>
+          <a href="#pengurus" class="public-nav-link">Pengurus</a>
+          <button type="button" class="public-btn-login" id="btn-open-login-nav">
+            <i class="fa-solid fa-lock"></i>
+            <span>Portal Pengurus</span>
+          </button>
+        </div>
+
+        <!-- Mobile Hamburger Button -->
+        <button id="public-menu-btn" class="public-hamburger-btn" aria-label="Toggle Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Dropdown Menu -->
+      <div id="public-mobile-menu" class="public-menu-mobile">
+        <a href="#tentang" class="public-mobile-link">Tentang Wilayah</a>
+        <a href="#kegiatan" class="public-mobile-link">Agenda Kegiatan</a>
+        <a href="#layanan" class="public-mobile-link">Layanan & Kas Warga</a>
+        <a href="#pengurus" class="public-mobile-link">Struktur Pengurus</a>
+        <button type="button" class="public-btn-login-mobile" id="btn-open-login-mobile">
+          <i class="fa-solid fa-lock"></i>
+          <span>Portal Pengurus (B1 / B2)</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- HERO HEADER -->
+    <header class="public-hero">
+      <div class="public-hero-container">
+        <div class="public-hero-logo-box">
+          <img src="assets/logo.png" alt="Logo RT.001" class="public-hero-logo">
+        </div>
+        <div class="public-hero-badge">
+          <i class="fa-solid fa-shield-halved"></i> Lingkungan Guyub, Aman & Berkah
+        </div>
+        <h1 class="public-hero-title">
+          Melayani dengan Hati,<br>
+          <span>Membangun dalam Kebersamaan</span>
+        </h1>
+        <p class="public-hero-subtitle">
+          RUKUN TETANGGA 001 / RW 013 &ndash; PERUMAHAN GRAHA ASRI
+        </p>
+        <p class="public-hero-desc">
+          Sektor Graha Jababeka, Desa Simpangan, Kec. Cikarang Utara, Kab. Bekasi
+        </p>
+
+        <div class="public-hero-actions">
+          <a href="#layanan" class="public-btn-hero-primary">
+            <i class="fa-solid fa-chart-line"></i> Info Kas & Warga
+          </a>
+          <button type="button" class="public-btn-hero-secondary" id="btn-open-login-hero">
+            <i class="fa-solid fa-key"></i> Portal Pengurus (B1 / B2)
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- TENTANG KAMI -->
+    <section id="tentang" class="public-section public-bg-white">
+      <div class="public-container">
+        <div class="public-grid-2">
+          <div>
+            <div class="public-section-badge">Profil Lingkungan</div>
+            <h2 class="public-section-title">Tentang Wilayah Kami</h2>
+            <p class="public-section-text">
+              RT.001 RW.013 merupakan salah satu lingkungan kemasyarakatan di Perumahan Graha Asri Sektor Graha Jababeka, Desa Simpangan. Kami berkomitmen menciptakan lingkungan yang asri, aman, bersih, dan berlandaskan asas gotong royong serta kekeluargaan.
+            </p>
+            <div class="public-roads-card">
+              <h3 class="public-roads-title"><i class="fa-solid fa-map-location-dot"></i> Cakupan Wilayah Jalan:</h3>
+              <ul class="public-roads-list">
+                <li><i class="fa-solid fa-location-dot text-nu-green"></i> <strong>Jl. Citarum II & IVA</strong> (Blok B6, B7)</li>
+                <li><i class="fa-solid fa-location-dot text-nu-green"></i> <strong>Jl. Citarum VIIIB</strong> (Blok B3)</li>
+                <li><i class="fa-solid fa-location-dot text-nu-green"></i> <strong>Jl. Citarum VIIIC & IX</strong> (Blok B3, B4)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="public-feature-cards">
+            <div class="public-feature-card">
+              <div class="public-feature-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div class="public-feature-body">
+                <h4>Keamanan Lingkungan Terpadu</h4>
+                <p>Sistem keamanan portal satu pintu, ronda siskamling malam minggu, dan koordinasi cepat antar warga.</p>
+              </div>
+            </div>
+
+            <div class="public-feature-card">
+              <div class="public-feature-icon">
+                <i class="fa-solid fa-hand-holding-heart"></i>
+              </div>
+              <div class="public-feature-body">
+                <h4>Kepedulian Sosial & Gotong Royong</h4>
+                <p>Kegiatan kerja bakti berkala, santunan warga yang membutuhkan, serta solidaritas sosial kekeluargaan.</p>
+              </div>
+            </div>
+
+            <div class="public-feature-card">
+              <div class="public-feature-icon">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+              </div>
+              <div class="public-feature-body">
+                <h4>Transparansi Keuangan Terbuka</h4>
+                <p>Pencatatan iuran 71 KK, pembagian 6 pos anggaran, dan laporan keuangan tercatat rapi secara digital.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KEGIATAN & AGENDA -->
+    <section id="kegiatan" class="public-section public-bg-gray">
+      <div class="public-container">
+        <div class="public-section-header">
+          <div class="public-section-badge">Program Kerja</div>
+          <h2 class="public-section-title">Agenda & Kegiatan Rutin Warga</h2>
+          <p class="public-section-desc">Aktivitas bersama untuk menjaga kerukunan, ketertiban, dan kebersihan lingkungan.</p>
+        </div>
+
+        <div class="public-agenda-grid">
+          <!-- Card 1 -->
+          <div class="public-agenda-card">
+            <div class="public-agenda-icon-box">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <h3>Keamanan Lingkungan</h3>
+            <ul class="public-agenda-list">
+              <li><i class="fa-regular fa-clock"></i> <strong>Ronda / Siskamling:</strong> Setiap Sabtu Malam</li>
+              <li><i class="fa-solid fa-broom"></i> <strong>Kerja Bakti:</strong> Bulanan Bersama Warga</li>
+              <li><i class="fa-solid fa-door-closed"></i> <strong>Pemberlakuan Jam Portal:</strong> 23.00 &ndash; 05.00</li>
+            </ul>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="public-agenda-card">
+            <div class="public-agenda-icon-box">
+              <i class="fa-solid fa-mosque"></i>
+            </div>
+            <h3>Kerohanian & Taklim</h3>
+            <ul class="public-agenda-list">
+              <li><i class="fa-solid fa-book-quran"></i> <strong>Pengajian Bapak:</strong> Minggu ke-1 & ke-4</li>
+              <li><i class="fa-solid fa-hands-praying"></i> <strong>Pengajian Ibu-ibu:</strong> Setiap Hari Jumat</li>
+              <li><i class="fa-solid fa-calendar-check"></i> <strong>Peringatan PHBI:</strong> Maulid & Isra Mi'raj</li>
+            </ul>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="public-agenda-card">
+            <div class="public-agenda-icon-box">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <h3>Kebersamaan Warga</h3>
+            <ul class="public-agenda-list">
+              <li><i class="fa-solid fa-cow"></i> <strong>Qurban Idul Adha:</strong> Pengelolaan Bersama</li>
+              <li><i class="fa-solid fa-handshake"></i> <strong>Halal Bihalal:</strong> Silaturahmi Akbar Warga</li>
+              <li><i class="fa-solid fa-flag"></i> <strong>Semarak 17 Agustus:</strong> Perlombaan Anak & Warga</li>
+            </ul>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="public-agenda-card">
+            <div class="public-agenda-icon-box">
+              <i class="fa-solid fa-heart"></i>
+            </div>
+            <h3>Solidaritas & Sosial</h3>
+            <ul class="public-agenda-list">
+              <li><i class="fa-solid fa-kit-medical"></i> <strong>Kunjungan Warga Sakit:</strong> Kas Sosial RT</li>
+              <li><i class="fa-solid fa-box-open"></i> <strong>Santunan Duka Cita:</strong> Tanggap Warga</li>
+              <li><i class="fa-solid fa-coins"></i> <strong>Jimpitan Ronda:</strong> Kas Tambahan Keamanan</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRANSPARANSI & DATA DIGITAL -->
+    <section id="layanan" class="public-section public-bg-nu">
+      <div class="public-container">
+        <div class="public-section-header public-header-light">
+          <div class="public-badge-light">Keterbukaan Informasi</div>
+          <h2 class="public-title-light">Pusat Informasi & Digitalisasi RT</h2>
+          <p class="public-desc-light">
+            Kami mengedepankan transparansi pengelolaan data warga dan laporan keuangan kas demi kenyamanan dan kepercayaan bersama.
+          </p>
+        </div>
+
+        <div class="public-stats-grid">
+          <div class="public-stat-box">
+            <i class="fa-solid fa-users-viewfinder"></i>
+            <h3 id="public-stat-residents">71</h3>
+            <p>Kepala Keluarga (KK) Terdata</p>
+            <span class="public-stat-tag">5 Jalur Wilayah</span>
+          </div>
+
+          <div class="public-stat-box">
+            <i class="fa-solid fa-scale-balanced"></i>
+            <h3>100%</h3>
+            <p>Transparansi Pembukuan Kas</p>
+            <span class="public-stat-tag">6 Pos Anggaran Terbagi</span>
+          </div>
+
+          <div class="public-stat-box">
+            <i class="fa-solid fa-wallet"></i>
+            <h3 id="public-stat-balance">Rp 0</h3>
+            <p>Total Saldo Kas RT Terkini</p>
+            <span class="public-stat-tag">Kas Terkonsolidasi</span>
+          </div>
+
+          <div class="public-stat-box">
+            <i class="fa-solid fa-moon"></i>
+            <h3 id="public-stat-jimpitan">Rp 0</h3>
+            <p>Saldo Kas Jimpitan Ronda</p>
+            <span class="public-stat-tag">Pengawasan Bendahara 2</span>
+          </div>
+        </div>
+
+        <div class="public-cta-card">
+          <div class="public-cta-text">
+            <h4>Memerlukan Pembukuan Rinci atau Salinan Laporan?</h4>
+            <p>Pengurus RT dapat masuk ke portal eksekutif untuk melihat matriks checklist, cetak kuitansi, atau ekspor laporan kas.</p>
+          </div>
+          <div class="public-cta-action">
+            <button type="button" class="public-btn-cta" id="btn-open-login-layanan">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk Sistem Pengurus
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STRUKTUR PENGURUS -->
+    <section id="pengurus" class="public-section public-bg-white">
+      <div class="public-container">
+        <div class="public-section-header">
+          <div class="public-section-badge">Kepengurusan 2024–2027</div>
+          <h2 class="public-section-title">Struktur Pengurus RT.001 / RW.013</h2>
+          <p class="public-section-desc">Siap melayani warga dengan tulus, transparan, dan berdedikasi.</p>
+        </div>
+
+        <div class="public-officers-grid">
+          <!-- Ketua RT -->
+          <div class="public-officer-card">
+            <div class="public-officer-avatar-wrap">
+              <div class="public-officer-avatar bg-nu-light text-nu-green">
+                <i class="fa-solid fa-user-tie"></i>
+              </div>
+              <span class="public-officer-badge">RT</span>
+            </div>
+            <h4>Ketua RT</h4>
+            <p class="public-officer-role">Pengurus Utama Wilayah</p>
+            <p class="public-officer-note">Koordinasi Umum & Pelayanan Warga</p>
+            <a href="https://wa.me/?text=Halo%20Ketua%20RT.001%20RW.013%2C%20saya%20warga%20Graha%20Asri%20ingin%20berkonsultasi%20mengenai%3A" target="_blank" class="public-officer-wa">
+              <i class="fa-brands fa-whatsapp"></i> Hubungi Ketua RT
+            </a>
+          </div>
+
+          <!-- Sekretaris -->
+          <div class="public-officer-card">
+            <div class="public-officer-avatar-wrap">
+              <div class="public-officer-avatar bg-nu-light text-nu-green">
+                <i class="fa-solid fa-file-signature"></i>
+              </div>
+              <span class="public-officer-badge">SEK</span>
+            </div>
+            <h4>Sekretaris</h4>
+            <p class="public-officer-role">Administrasi & Persuratan</p>
+            <p class="public-officer-note">Surat Pengantar & Pendataan KK</p>
+            <a href="https://wa.me/?text=Halo%20Sekretaris%20RT.001%20RW.013%2C%20saya%20membutuhkan%20informasi%20surat%20pengantar%20mengenai%3A" target="_blank" class="public-officer-wa">
+              <i class="fa-brands fa-whatsapp"></i> Hubungi Sekretaris
+            </a>
+          </div>
+
+          <!-- Bendahara -->
+          <div class="public-officer-card">
+            <div class="public-officer-avatar-wrap">
+              <div class="public-officer-avatar bg-nu-light text-nu-green">
+                <i class="fa-solid fa-vault"></i>
+              </div>
+              <span class="public-officer-badge">BEN</span>
+            </div>
+            <h4>Bendahara 1 & 2</h4>
+            <p class="public-officer-role">Keuangan & Kas Jimpitan</p>
+            <p class="public-officer-note">Iuran Wajib, Pos Kas & Ronda</p>
+            <a href="https://wa.me/?text=Halo%20Bendahara%20RT.001%20RW.013%2C%20saya%20ingin%20konfirmasi%20pembayaran%20iuran%20kas%20warga%3A" target="_blank" class="public-officer-wa">
+              <i class="fa-brands fa-whatsapp"></i> Hubungi Bendahara
+            </a>
+          </div>
+
+          <!-- Seksi Humas -->
+          <div class="public-officer-card">
+            <div class="public-officer-avatar-wrap">
+              <div class="public-officer-avatar bg-nu-light text-nu-green">
+                <i class="fa-solid fa-bullhorn"></i>
+              </div>
+              <span class="public-officer-badge">HUM</span>
+            </div>
+            <h4>Seksi Humas</h4>
+            <p class="public-officer-role">Sosial & Komunikasi</p>
+            <p class="public-officer-note">Pemberitahuan Agenda & Gotong Royong</p>
+            <a href="https://wa.me/?text=Halo%20Humas%20RT.001%20RW.013%2C%20saya%20ingin%20menyampaikan%20informasi%20lingkungan%3A" target="_blank" class="public-officer-wa">
+              <i class="fa-brands fa-whatsapp"></i> Hubungi Humas
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="public-footer">
+      <div class="public-container">
+        <div class="public-footer-top">
+          <div class="public-footer-brand">
+            <div class="public-footer-logo-row">
+              <img src="assets/logo.png" alt="Logo RT.001" class="public-footer-logo">
+              <div>
+                <h4>RT.001 / RW.013</h4>
+                <p>Graha Asri – Cikarang Utara</p>
+              </div>
+            </div>
+            <p class="public-footer-address">
+              Sektor Graha Jababeka, Desa Simpangan, Kec. Cikarang Utara, Kab. Bekasi, Jawa Barat 17530.
+            </p>
+          </div>
+
+          <div class="public-footer-links">
+            <h5>Navigasi Warga</h5>
+            <ul>
+              <li><a href="#tentang"><i class="fa-solid fa-angle-right"></i> Tentang Wilayah</a></li>
+              <li><a href="#kegiatan"><i class="fa-solid fa-angle-right"></i> Agenda & Kegiatan</a></li>
+              <li><a href="#layanan"><i class="fa-solid fa-angle-right"></i> Transparansi Kas</a></li>
+              <li><a href="#pengurus"><i class="fa-solid fa-angle-right"></i> Struktur Pengurus</a></li>
+            </ul>
+          </div>
+
+          <div class="public-footer-portal-box">
+            <h5>Portal Pengurus RT</h5>
+            <p>Khusus Bendahara 1 & 2 untuk mengelola keuangan eksekutif & iuran.</p>
+            <button type="button" class="public-btn-footer-login" id="btn-open-login-footer">
+              <i class="fa-solid fa-lock"></i> Masuk RT-FinSmart PRO
+            </button>
+          </div>
+        </div>
+
+        <div class="public-footer-bottom">
+          <p>&copy; 2026 RT.001 RW.013 &mdash; Cipta Karya Bersama. All Rights Reserved.</p>
+          <span class="public-footer-version">RT-FinSmart PRO Executive System</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <!-- ==================== END PUBLIC PORTAL ==================== -->
+
   <!-- ==================== LOGIN PORTAL OVERLAY ==================== -->
   <div id="login-overlay" class="login-overlay">
     <!-- Animated Background Orbs -->
@@ -36,6 +426,11 @@
 
     <!-- Login Card -->
     <div class="login-card">
+      <!-- Close Button to return to Public Portal -->
+      <button type="button" class="login-close-btn" id="btn-close-login-overlay" title="Kembali ke Web Warga">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
       <!-- Header: Logo + Brand -->
       <div class="login-brand">
         <div class="login-logo-ring">
@@ -223,6 +618,11 @@
           </div>
           <span class="role-badge role-badge-b1" id="sidebar-role-badge">B1</span>
         </div>
+        <!-- View Public Web Button -->
+        <button class="sidebar-web-btn" id="btn-sidebar-view-public" title="Buka Halaman Web Profil Warga">
+          <i class="fa-solid fa-globe"></i>
+          <span>Lihat Web Profil RT</span>
+        </button>
         <!-- Logout Button -->
         <button class="sidebar-logout-btn" id="btn-logout" title="Keluar dari sistem">
           <i class="fa-solid fa-right-from-bracket"></i>
@@ -284,6 +684,11 @@
 
           <button class="btn btn-outline" id="btn-backup-data" title="Cadangkan Data">
             <i class="fa-solid fa-cloud-arrow-down"></i>
+          </button>
+
+          <button class="btn btn-outline-emerald" id="btn-top-view-public" title="Lihat Web Profil RT">
+            <i class="fa-solid fa-globe"></i>
+            <span class="hide-mobile">Web Warga</span>
           </button>
 
           <button class="btn btn-outline-rose" id="btn-top-logout" title="Keluar dari Sistem">
