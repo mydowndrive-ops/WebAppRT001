@@ -8060,23 +8060,19 @@ h1, h2, h3, h4, h5, h6 {
   gap: 0.85rem;
 }
 
-.drawer-brand-logo {
+.drawer-orbital-wrap {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
-  background: rgba(6, 32, 22, 0.9);
-  border: 1.5px solid rgba(245, 158, 11, 0.45);
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
 }
 
-.drawer-brand-logo img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+.drawer-brand:hover .brand-logo-circle {
+  transform: scale(1.06);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7), 0 0 20px rgba(251, 191, 36, 0.55);
+}
+
+.drawer-brand:hover .brand-orbital-spinner {
+  filter: drop-shadow(0 0 8px #fbbf24) drop-shadow(0 0 14px #10b981);
+  animation-duration: 1.1s;
 }
 
 .drawer-brand-title {
