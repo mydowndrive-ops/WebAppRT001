@@ -136,46 +136,146 @@ const DEFAULT_FUND_REQUESTS = [
 const DEFAULT_RONDA_GROUPS = [
   {
     week: 1,
-    weekName: 'Minggu ke-1',
-    cycle: 'Sabtu Ke-1 Tiap Bulan',
-    leader: { name: 'Pak Budi', initials: 'BD', role: 'Komandan Regu' },
+    weekName: 'Regu 1',
+    cycle: 'Pekan Bergilir ke-1',
+    leader: { name: 'Wageyanto', initials: 'WG', role: 'Komandan Regu' },
     members: [
-      { name: 'Pak Joko', initials: 'JK' },
-      { name: 'Pak Ahmad', initials: 'AH' },
-      { name: 'Pak Doni', initials: 'DN' }
+      { name: 'Fatkhurahman', initials: 'FK' },
+      { name: 'Nono Suyatno', initials: 'NS' },
+      { name: 'Manahara Dimas', initials: 'MD' },
+      { name: 'Jati Purnomo', initials: 'JP' },
+      { name: 'Jumiran', initials: 'JM' },
+      { name: 'M.Hutagalung', initials: 'MH' },
+      { name: 'Andriyanto. K', initials: 'AK' },
+      { name: 'Sukoco', initials: 'SK' },
+      { name: 'Khoirul', initials: 'KH' },
+      { name: 'Mehdi Bazargan', initials: 'MB' }
     ]
   },
   {
     week: 2,
-    weekName: 'Minggu ke-2',
-    cycle: 'Sabtu Ke-2 Tiap Bulan',
-    leader: { name: 'Pak Slamet', initials: 'SL', role: 'Komandan Regu' },
+    weekName: 'Regu 2',
+    cycle: 'Pekan Bergilir ke-2',
+    leader: { name: 'Agus Nursanto', initials: 'AN', role: 'Komandan Regu' },
     members: [
-      { name: 'Pak Eko', initials: 'EK' },
-      { name: 'Pak Rudi', initials: 'RD' },
-      { name: 'Pak Yanto', initials: 'YT' }
+      { name: 'Silmi', initials: 'SL' },
+      { name: 'Sutarno', initials: 'ST' },
+      { name: 'Joko Susilo', initials: 'JS' },
+      { name: 'Agung', initials: 'AG' },
+      { name: 'Yatno', initials: 'YT' },
+      { name: 'H.Tahmidul Akbar', initials: 'TA' },
+      { name: 'Isriyanto Putra', initials: 'IP' },
+      { name: 'Ama jupri', initials: 'AJ' },
+      { name: 'Faisal Muit', initials: 'FM' },
+      { name: 'Didi Prayitno', initials: 'DP' }
     ]
   },
   {
     week: 3,
-    weekName: 'Minggu ke-3',
-    cycle: 'Sabtu Ke-3 Tiap Bulan',
-    leader: { name: 'Pak Wawan', initials: 'WW', role: 'Komandan Regu' },
+    weekName: 'Regu 3',
+    cycle: 'Pekan Bergilir ke-3',
+    leader: { name: 'Abu Rifat', initials: 'AR', role: 'Komandan Regu' },
     members: [
-      { name: 'Pak Agus', initials: 'AG' },
-      { name: 'Pak Haryanto', initials: 'HY' },
-      { name: 'Pak Dedi', initials: 'DD' }
+      { name: 'Dedi', initials: 'DD' },
+      { name: 'Bagas Santoso', initials: 'BS' },
+      { name: 'Hardiyatna', initials: 'HY' },
+      { name: 'Supriya/Kapri', initials: 'SK' },
+      { name: 'Faiz', initials: 'FZ' },
+      { name: 'Supeno', initials: 'SP' },
+      { name: 'Arif Nur', initials: 'AN' },
+      { name: 'Yusuf', initials: 'YS' },
+      { name: 'Oktaviandri', initials: 'OK' },
+      { name: 'Trio Rahmat', initials: 'TR' }
     ]
   },
   {
     week: 4,
-    weekName: 'Minggu ke-4',
-    cycle: 'Sabtu Ke-4 Tiap Bulan',
-    leader: { name: 'Pak Hendra', initials: 'HD', role: 'Komandan Regu' },
+    weekName: 'Regu 4',
+    cycle: 'Pekan Bergilir ke-4',
+    leader: { name: 'Fery', initials: 'FY', role: 'Komandan Regu' },
     members: [
-      { name: 'Pak Rian', initials: 'RN' },
-      { name: 'Pak Fajar', initials: 'FJ' },
-      { name: 'Pak Arif', initials: 'AF' }
+      { name: 'Yudi Adjie. D', initials: 'YA' },
+      { name: 'Ibnu', initials: 'IB' },
+      { name: 'Elan', initials: 'EL' },
+      { name: 'Sujari', initials: 'SJ' },
+      { name: 'Andira', initials: 'AD' },
+      { name: 'M. Askur', initials: 'MA' },
+      { name: 'Supriyanto', initials: 'SY' },
+      { name: 'Omos', initials: 'OM' },
+      { name: 'Maman', initials: 'MM' },
+      { name: 'H. Rusli', initials: 'HR' }
+    ]
+  },
+  {
+    week: 5,
+    weekName: 'Regu 5',
+    cycle: 'Pekan Bergilir ke-5',
+    leader: { name: 'Abib Dwi K', initials: 'AD', role: 'Komandan Regu' },
+    members: [
+      { name: 'Marsidi', initials: 'MR' },
+      { name: 'Juniar Sinaga', initials: 'JS' },
+      { name: 'Warsito', initials: 'WS' },
+      { name: 'Usep Usmara', initials: 'UU' },
+      { name: 'Sahidin', initials: 'SH' },
+      { name: 'Triyanto', initials: 'TY' },
+      { name: 'Rahmat', initials: 'RH' },
+      { name: 'M H Alfadli', initials: 'MA' },
+      { name: 'KOST-1', initials: 'K1' },
+      { name: 'Moh.Sulaiman', initials: 'MS' }
+    ]
+  },
+  {
+    week: 6,
+    weekName: 'Regu 6',
+    cycle: 'Pekan Bergilir ke-6',
+    leader: { name: 'Aris Suyitno', initials: 'AS', role: 'Komandan Regu' },
+    members: [
+      { name: 'Narno', initials: 'NR' },
+      { name: 'Jumari Susanto', initials: 'JS' },
+      { name: 'Sukasno', initials: 'SK' },
+      { name: 'H. Pandoli', initials: 'HP' },
+      { name: 'Haris', initials: 'HR' },
+      { name: 'Paino', initials: 'PN' },
+      { name: 'Sunarno', initials: 'SN' },
+      { name: 'Arif', initials: 'AF' },
+      { name: 'Yayat Ruhyat-1', initials: 'Y1' },
+      { name: 'Yayat Ruhyat-2', initials: 'Y2' }
+    ]
+  },
+  {
+    week: 7,
+    weekName: 'Regu 7',
+    cycle: 'Pekan Bergilir ke-7',
+    leader: { name: 'Heru Tri Iswanto', initials: 'HT', role: 'Komandan Regu' },
+    members: [
+      { name: 'Supratno', initials: 'SP' },
+      { name: 'Rinto Sitorus', initials: 'RS' },
+      { name: 'Dwi susanto', initials: 'DS' },
+      { name: 'Lilis Marsidi', initials: 'LM' },
+      { name: 'Samit', initials: 'SM' },
+      { name: 'Supardi', initials: 'SP' },
+      { name: 'Usman', initials: 'UM' },
+      { name: 'Doni Rahman', initials: 'DR' },
+      { name: 'Ma\'muroji', initials: 'MM' },
+      { name: 'Suhartono', initials: 'SH' }
+    ]
+  },
+  {
+    week: 8,
+    weekName: 'Regu 8',
+    cycle: 'Pekan Bergilir ke-8',
+    leader: { name: 'Joshua', initials: 'JS', role: 'Komandan Regu' },
+    members: [
+      { name: 'Basis Pambudi', initials: 'BP' },
+      { name: 'Sutiyono', initials: 'ST' },
+      { name: 'Hendrik', initials: 'HD' },
+      { name: 'Aswin Pratama', initials: 'AP' },
+      { name: 'Solehudin', initials: 'SL' },
+      { name: 'Bambang', initials: 'BB' },
+      { name: 'Feisal', initials: 'FS' },
+      { name: 'Nana Dirgana', initials: 'ND' },
+      { name: 'Agus Purnomo', initials: 'AP' },
+      { name: 'Subagyo', initials: 'SB' }
     ]
   }
 ];
@@ -1755,8 +1855,8 @@ function loadState() {
         saveState();
       }
 
-      // Pastikan rondaGroups tersedia
-      if (!state.rondaGroups || !Array.isArray(state.rondaGroups) || state.rondaGroups.length === 0) {
+      // Pastikan rondaGroups tersedia & memiliki 8 kelompok lengkap
+      if (!state.rondaGroups || !Array.isArray(state.rondaGroups) || state.rondaGroups.length < 8) {
         state.rondaGroups = JSON.parse(JSON.stringify(DEFAULT_RONDA_GROUPS));
         saveState();
       }
@@ -6275,28 +6375,22 @@ function getCurrentRondaActiveWeek() {
   const year = now.getFullYear();
   const month = now.getMonth();
   const todayDate = now.getDate();
-  const todayDay = now.getDay(); // 0=Sunday, 6=Saturday
 
-  const saturdays = [];
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  for (let d = 1; d <= daysInMonth; d++) {
-    const tempDate = new Date(year, month, d);
-    if (tempDate.getDay() === 6) {
-      saturdays.push(d);
+  // Hitung urutan hari Sabtu dari awal tahun hingga saat ini
+  let saturdayIndex = 0;
+  for (let m = 0; m <= month; m++) {
+    const endDay = (m === month) ? todayDate : new Date(year, m + 1, 0).getDate();
+    for (let d = 1; d <= endDay; d++) {
+      const curDate = new Date(year, m, d);
+      if (curDate.getDay() === 6) {
+        saturdayIndex++;
+      }
     }
   }
 
-  let activeSatIndex = saturdays.findIndex(satDate => {
-    if (todayDate <= satDate) return true;
-    if (todayDay === 0 && todayDate === satDate + 1) return true;
-    return false;
-  });
-
-  if (activeSatIndex === -1) {
-    activeSatIndex = saturdays.length - 1;
-  }
-
-  return Math.min(activeSatIndex + 1, 4);
+  if (saturdayIndex <= 0) return 1;
+  // Siklus 8 regu berputar berkesinambungan setiap pekan
+  return ((saturdayIndex - 1) % 8) + 1;
 }
 
 function setupRondaSchedule() {
@@ -6747,10 +6841,10 @@ function setupRondaSchedule() {
 
   // Wire Reset Default Button inside Modal
   document.getElementById('btn-reset-ronda-default')?.addEventListener('click', () => {
-    if (confirm('Kembalikan seluruh susunan jadwal ronda ke konfigurasi standar awal (4 kelompok default)?')) {
+    if (confirm('Kembalikan seluruh susunan jadwal ronda ke konfigurasi standar awal (8 kelompok, 11 anggota per kelompok)?')) {
       draftRondaGroups = JSON.parse(JSON.stringify(DEFAULT_RONDA_GROUPS));
       renderRondaManageForm(currentEditingWeek);
-      showToast('Susunan jadwal dikembalikan ke template awal.', 'info');
+      showToast('Susunan jadwal dikembalikan ke template awal 8 kelompok @ 11 anggota.', 'info');
     }
   });
 
@@ -9513,37 +9607,97 @@ function renderPortalWarga() {
   if (statMembers) statMembers.textContent = `${resident.members || 4} Jiwa`;
   if (statPhone) statPhone.textContent = resident.phone || '-';
 
-  // 2. Tentukan Kelompok Ronda Warga
-  let assignedWeek = (resident.noUrut ? ((resident.noUrut - 1) % 4) + 1 : 1);
+  // 2. Tentukan Kelompok Ronda Warga (Rotasi 8 Regu)
+  let assignedWeek = (resident.noUrut ? ((resident.noUrut - 1) % 8) + 1 : 1);
   const foundInGroup = (state.rondaGroups || []).find(g => 
     (g.leader && g.leader.name.toLowerCase() === resident.name.toLowerCase()) ||
     (g.members && g.members.some(m => m.name.toLowerCase() === resident.name.toLowerCase()))
   );
   if (foundInGroup) assignedWeek = foundInGroup.week;
 
-  if (statRondaWeek) statRondaWeek.textContent = `Minggu ke-${assignedWeek}`;
+  if (statRondaWeek) statRondaWeek.textContent = `Regu ${assignedWeek}`;
 
-  // Rincian Ronda Box
+  // Rincian Ronda Box (11 Petugas Ronda)
   const rondaBox = document.getElementById('pw-ronda-info-box');
   if (rondaBox) {
-    const group = (state.rondaGroups || []).find(g => g.week === assignedWeek) || {
-      week: assignedWeek,
-      weekName: `Minggu ke-${assignedWeek}`,
-      cycle: `Sabtu Ke-${assignedWeek} Tiap Bulan`,
-      leader: { name: 'Komandan Regu', role: 'Penanggung Jawab' }
-    };
+    const groups = (state.rondaGroups && state.rondaGroups.length > 0) ? state.rondaGroups : DEFAULT_RONDA_GROUPS;
+    const group = groups.find(g => g.week === assignedWeek) || groups[0];
+    
+    // Gabungkan 1 Komandan + 10 Anggota = 11 Orang Petugas
+    const allMembers = [];
+    if (group.leader && group.leader.name) {
+      allMembers.push({
+        name: group.leader.name,
+        role: 'Komandan Regu',
+        isLeader: true
+      });
+    }
+    (group.members || []).forEach((m, idx) => {
+      allMembers.push({
+        name: m.name,
+        role: `Anggota ${idx + 1}`,
+        isLeader: false
+      });
+    });
+
+    const isCurrentActive = getCurrentRondaActiveWeek() === group.week;
+    const residentNameLower = (resident.name || '').toLowerCase();
+
     rondaBox.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-        <strong style="color:#fff; font-size:0.95rem;">${group.weekName} &bull; Regu ${group.week}</strong>
-        <span style="font-size:0.75rem; color:#38bdf8; background:rgba(6,182,212,0.15); padding:2px 8px; border-radius:4px;">${group.cycle}</span>
-      </div>
-      <p style="margin:0 0 0.4rem 0; font-size:0.84rem; color:#cbd5e1;">
-        <i class="fa-solid fa-user-shield text-gold"></i> Komandan Regu: <strong>${group.leader ? group.leader.name : 'Pak Hendra'}</strong>
-      </p>
-      <div style="font-size:0.78rem; color:#94a3b8; display:flex; align-items:center; gap:0.4rem;">
-        <i class="fa-regular fa-clock text-cyan"></i> Pukul 22:00 WIB s/d 04:00 WIB &bull; Pos Ronda RT.001
+      <div class="pw-ronda-card-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem; flex-wrap:wrap; gap:0.4rem;">
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <span class="badge badge-emerald" style="font-size:0.85rem; font-weight:700;">
+              <i class="fa-solid fa-shield-halved"></i> ${escapeHtml(group.weekName)}
+            </span>
+            ${isCurrentActive ? '<span class="badge badge-gold" style="font-size:0.75rem;"><i class="fa-solid fa-bell"></i> Bertugas Pekan Ini!</span>' : ''}
+          </div>
+          <span style="font-size:0.75rem; color:#38bdf8; background:rgba(6,182,212,0.15); padding:3px 8px; border-radius:6px; border:1px solid rgba(6,182,212,0.25);">
+            <i class="fa-regular fa-calendar"></i> ${escapeHtml(group.cycle)}
+          </span>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.75rem; margin-bottom:0.75rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+            <span style="font-size:0.82rem; color:#94a3b8;"><i class="fa-solid fa-crown text-gold"></i> Komandan Regu (PJ):</span>
+            <strong style="color:#f8fafc; font-size:0.9rem;">${escapeHtml(group.leader ? group.leader.name : '-')}</strong>
+          </div>
+          <div style="font-size:0.78rem; color:#94a3b8; display:flex; align-items:center; gap:0.4rem;">
+            <i class="fa-regular fa-clock text-cyan"></i> Pukul 21:00 – 04:00 WIB &bull; Pos Kamling RT.001
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.75rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+            <span style="font-size:0.82rem; color:#cbd5e1; font-weight:600;">
+              <i class="fa-solid fa-users text-emerald"></i> Daftar 11 Petugas Regu Anda:
+            </span>
+            <span style="font-size:0.72rem; color:#64748b;">${allMembers.length} Orang</span>
+          </div>
+          <div class="pw-ronda-roster-grid">
+            ${allMembers.map((m, idx) => {
+              const isMe = m.name.toLowerCase() === residentNameLower;
+              return `
+                <div class="pw-ronda-chip ${m.isLeader ? 'is-leader' : ''} ${isMe ? 'is-me' : ''}" title="${escapeHtml(m.name)} (${m.role})">
+                  <span class="pw-ronda-chip-num">${idx + 1}</span>
+                  <span class="pw-ronda-chip-name">${escapeHtml(m.name)}</span>
+                  ${m.isLeader ? '<i class="fa-solid fa-crown text-gold" style="font-size:0.65rem;"></i>' : ''}
+                  ${isMe ? '<span class="badge-me-tag">Anda</span>' : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-sm btn-outline" id="btn-pw-view-all-ronda" style="width:100%; justify-content:center; gap:0.4rem; padding:0.5rem; font-size:0.8rem; border-radius:8px; border-color:rgba(6,182,212,0.4); color:#38bdf8;">
+          <i class="fa-solid fa-users-viewfinder"></i> Lihat Susunan Seluruh 8 Regu Ronda
+        </button>
       </div>
     `;
+
+    document.getElementById('btn-pw-view-all-ronda')?.addEventListener('click', () => {
+      openAllRondaPortalModal();
+    });
   }
 
   // 3. Matriks 12 Bulan Iuran Wajib Warga Tahun Berjalan (2026)
@@ -9666,6 +9820,74 @@ function renderPortalWarga() {
   } catch (err) {
     console.warn('Gagal merender grafik iuran tahunan portal warga:', err);
   }
+}
+
+/**
+ * Buka Modal Seluruh 8 Regu Ronda untuk Warga di Portal Warga
+ */
+function openAllRondaPortalModal() {
+  const content = document.getElementById('pw-all-ronda-content');
+  if (!content) return;
+  const groups = (state.rondaGroups && state.rondaGroups.length > 0) ? state.rondaGroups : DEFAULT_RONDA_GROUPS;
+  const resident = state.currentVerifiedResident || (state.residents && state.residents[0]);
+  const residentNameLower = (resident && resident.name ? resident.name.toLowerCase() : '');
+  const activeWeek = getCurrentRondaActiveWeek();
+
+  content.innerHTML = `
+    <div class="pw-all-ronda-container">
+      ${groups.map(g => {
+        const isCurrentActive = g.week === activeWeek;
+        const allM = [];
+        if (g.leader && g.leader.name) {
+          allM.push({ name: g.leader.name, role: 'Komandan Regu', isLeader: true });
+        }
+        (g.members || []).forEach((m, idx) => {
+          allM.push({ name: m.name, role: `Anggota ${idx + 1}`, isLeader: false });
+        });
+
+        const hasResident = allM.some(m => m.name.toLowerCase() === residentNameLower);
+
+        return `
+          <div class="pw-ronda-group-card ${hasResident ? 'highlight-my-group' : ''}">
+            <div class="pw-group-card-header">
+              <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                <span class="badge ${hasResident ? 'badge-emerald' : 'badge-outline'}" style="font-weight:700; font-size:0.85rem;">
+                  <i class="fa-solid fa-shield-halved"></i> ${escapeHtml(g.weekName)}
+                </span>
+                ${hasResident ? '<span class="badge badge-gold" style="font-size:0.7rem;"><i class="fa-solid fa-user-shield"></i> Regu Anda</span>' : ''}
+                ${isCurrentActive ? '<span class="badge badge-cyan" style="font-size:0.7rem;"><i class="fa-solid fa-circle-play"></i> Pekan Ini</span>' : ''}
+              </div>
+              <span class="pw-group-cycle-tag">${escapeHtml(g.cycle)}</span>
+            </div>
+
+            <div class="pw-group-leader-row">
+              <i class="fa-solid fa-crown text-gold"></i>
+              <span>Komandan Regu: <strong>${escapeHtml(g.leader ? g.leader.name : '-')}</strong></span>
+            </div>
+
+            <div class="pw-group-members-list">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                <span class="pw-group-members-title">11 Petugas Ronda:</span>
+                <span style="font-size:0.72rem; color:#64748b;">${allM.length} Petugas</span>
+              </div>
+              <div class="pw-group-chips-wrap">
+                ${allM.map((m, idx) => {
+                  const isMe = m.name.toLowerCase() === residentNameLower;
+                  return `
+                    <span class="pw-member-chip ${m.isLeader ? 'chip-leader' : ''} ${isMe ? 'chip-me' : ''}">
+                      <small>${idx + 1}.</small> ${escapeHtml(m.name)} ${isMe ? '<strong>(Anda)</strong>' : ''}
+                    </span>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  openModal('modal-pw-all-ronda');
 }
 
 // ==================== MODAL PENGAJUAN DANA WARGA TERVERIFIKASI ====================

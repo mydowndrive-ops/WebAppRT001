@@ -1164,14 +1164,18 @@
               </div>
 
               <div class="ronda-filter-tabs" id="ronda-filter-tabs">
-                <button type="button" class="ronda-tab-btn active" data-filter="all">Semua Kelompok</button>
+                <button type="button" class="ronda-tab-btn active" data-filter="all">Semua Regu (8)</button>
                 <button type="button" class="ronda-tab-btn tab-highlight" data-filter="current" id="btn-filter-current">
                   <i class="fa-solid fa-star text-gold"></i> Pekan Ini
                 </button>
-                <button type="button" class="ronda-tab-btn" data-filter="1">Minggu ke-1</button>
-                <button type="button" class="ronda-tab-btn" data-filter="2">Minggu ke-2</button>
-                <button type="button" class="ronda-tab-btn" data-filter="3">Minggu ke-3</button>
-                <button type="button" class="ronda-tab-btn" data-filter="4">Minggu ke-4</button>
+                <button type="button" class="ronda-tab-btn" data-filter="1">Regu 1</button>
+                <button type="button" class="ronda-tab-btn" data-filter="2">Regu 2</button>
+                <button type="button" class="ronda-tab-btn" data-filter="3">Regu 3</button>
+                <button type="button" class="ronda-tab-btn" data-filter="4">Regu 4</button>
+                <button type="button" class="ronda-tab-btn" data-filter="5">Regu 5</button>
+                <button type="button" class="ronda-tab-btn" data-filter="6">Regu 6</button>
+                <button type="button" class="ronda-tab-btn" data-filter="7">Regu 7</button>
+                <button type="button" class="ronda-tab-btn" data-filter="8">Regu 8</button>
               </div>
 
               <div class="ronda-quick-actions">
@@ -4761,19 +4765,31 @@
       <datalist id="ronda-residents-datalist"></datalist>
 
       <div style="padding: 1rem 0;">
-        <!-- Week Selector Tabs in Modal -->
+        <!-- Week Selector Tabs in Modal (8 Regu Ronda) -->
         <div class="ronda-manage-week-tabs" id="ronda-manage-week-tabs">
           <button type="button" class="ronda-manage-tab active" data-week="1">
-            <i class="fa-regular fa-calendar"></i> Minggu 1
+            <i class="fa-solid fa-shield-halved"></i> Regu 1
           </button>
           <button type="button" class="ronda-manage-tab" data-week="2">
-            <i class="fa-regular fa-calendar"></i> Minggu 2
+            <i class="fa-solid fa-shield-halved"></i> Regu 2
           </button>
           <button type="button" class="ronda-manage-tab" data-week="3">
-            <i class="fa-regular fa-calendar"></i> Minggu 3
+            <i class="fa-solid fa-shield-halved"></i> Regu 3
           </button>
           <button type="button" class="ronda-manage-tab" data-week="4">
-            <i class="fa-regular fa-calendar"></i> Minggu 4
+            <i class="fa-solid fa-shield-halved"></i> Regu 4
+          </button>
+          <button type="button" class="ronda-manage-tab" data-week="5">
+            <i class="fa-solid fa-shield-halved"></i> Regu 5
+          </button>
+          <button type="button" class="ronda-manage-tab" data-week="6">
+            <i class="fa-solid fa-shield-halved"></i> Regu 6
+          </button>
+          <button type="button" class="ronda-manage-tab" data-week="7">
+            <i class="fa-solid fa-shield-halved"></i> Regu 7
+          </button>
+          <button type="button" class="ronda-manage-tab" data-week="8">
+            <i class="fa-solid fa-shield-halved"></i> Regu 8
           </button>
         </div>
 
@@ -4781,8 +4797,8 @@
           <div class="ronda-manage-form-body">
             <!-- Week Info Banner -->
             <div class="ronda-manage-info-banner">
-              <span class="badge badge-emerald" id="ronda-edit-week-badge">Minggu ke-1</span>
-              <span class="ronda-edit-cycle-text" id="ronda-edit-cycle-text">Sabtu Ke-1 Tiap Bulan &bull; Pukul 21.00 &ndash; 04.00 WIB</span>
+              <span class="badge badge-emerald" id="ronda-edit-week-badge">Regu 1</span>
+              <span class="ronda-edit-cycle-text" id="ronda-edit-cycle-text">Pekan Bergilir ke-1 &bull; Pukul 21.00 &ndash; 04.00 WIB</span>
             </div>
 
             <!-- Input Komandan Regu -->
@@ -4800,7 +4816,7 @@
             <div class="form-group mb-3">
               <div class="ronda-members-edit-header">
                 <label class="ronda-form-label mb-0">
-                  <i class="fa-solid fa-users text-emerald"></i> <strong>Daftar Anggota Petugas Ronda:</strong>
+                  <i class="fa-solid fa-users text-emerald"></i> <strong>Daftar 10 Anggota Petugas Ronda:</strong>
                 </label>
                 <button type="button" class="btn-add-member-mini" id="btn-add-ronda-member">
                   <i class="fa-solid fa-plus"></i> Tambah Anggota
@@ -4809,7 +4825,7 @@
               <div class="ronda-members-edit-list" id="ronda-members-edit-container">
                 <!-- Dynamically populated rows -->
               </div>
-              <small class="text-muted" style="font-size:0.75rem;">Petugas yang bertugas patroli keliling gang/blok dan mengambil uang kas jimpitan warga.</small>
+              <small class="text-muted" style="font-size:0.75rem;">Total 11 orang per regu (1 Komandan Regu + 10 Anggota Petugas).</small>
             </div>
           </div>
 
@@ -4825,6 +4841,25 @@
             </div>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Daftar Lengkap 8 Regu Ronda (Portal Warga) -->
+  <div class="modal-backdrop" id="modal-pw-all-ronda">
+    <div class="modal-content glass-panel luxury-modal modal-ronda-dialog" style="max-width: 840px; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <h3><i class="fa-solid fa-shield-halved text-cyan"></i> Daftar Lengkap 8 Regu Ronda RT.001</h3>
+          <p class="modal-subtitle">Total 8 regu beranggotakan masing-masing 11 petugas ronda (1 Komandan Regu + 10 Anggota).</p>
+        </div>
+        <button class="modal-close" data-close="modal-pw-all-ronda">&times;</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; padding: 1rem 0;" id="pw-all-ronda-content">
+        <!-- Dynamically rendered by openAllRondaPortalModal() -->
+      </div>
+      <div class="modal-actions" style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+        <button type="button" class="btn btn-outline" data-close="modal-pw-all-ronda">Tutup</button>
       </div>
     </div>
   </div>
@@ -4849,6 +4884,10 @@
               <option value="Regu 2">Regu 2</option>
               <option value="Regu 3">Regu 3</option>
               <option value="Regu 4">Regu 4</option>
+              <option value="Regu 5">Regu 5</option>
+              <option value="Regu 6">Regu 6</option>
+              <option value="Regu 7">Regu 7</option>
+              <option value="Regu 8">Regu 8</option>
             </select>
           </div>
         </div>
