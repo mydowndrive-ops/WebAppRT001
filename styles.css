@@ -3149,20 +3149,69 @@ h1, h2, h3, h4, h5, h6 {
   padding: 1.75rem 2rem 1.5rem;
 }
 
-.login-logo-ring {
+/* ---- Logo Modal Login: Serasi dengan Logo Halaman Utama (Gambar 2) ---- */
+.login-logo-wrap {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  width: 72px; height: 72px;
-  border-radius: 18px;
-  background: #fff;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 0 3px rgba(245,158,11,0.35), 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.login-logo-wrap .brand-orbital-track {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.8px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 14px rgba(255, 34, 34, 0.22), inset 0 0 10px rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+.login-logo-wrap .brand-orbital-spinner {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 3.5px solid transparent;
+  border-top-color: #ff2222;
+  border-right-color: #ffffff;
+  filter: drop-shadow(0 0 10px #ff2222) drop-shadow(0 0 16px #ffffff);
+  animation: rotateOrbitalLight 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+.login-logo-wrap .brand-logo-circle {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65), 0 0 18px rgba(255, 34, 34, 0.4), 0 0 24px rgba(255, 255, 255, 0.35);
+  position: relative;
+  z-index: 2;
   overflow: hidden;
 }
 
-.login-logo-img {
-  width: 60px; height: 60px;
+.login-logo-wrap .login-logo-img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  border-radius: 13px;
+  border-radius: 50%;
+  display: block;
+}
+
+.login-logo-ring {
+  flex-shrink: 0;
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 3px rgba(255, 34, 34, 0.4), 0 8px 24px rgba(0,0,0,0.5);
+  overflow: hidden;
 }
 
 .login-brand-text {
@@ -3856,17 +3905,23 @@ h1, h2, h3, h4, h5, h6 {
   .login-section {
     padding: 1.2rem 1.5rem;
   }
-  .login-logo-ring {
-    width: 60px; height: 60px;
+  .login-logo-wrap {
+    width: 58px;
+    height: 58px;
   }
-  .login-logo-img {
-    width: 50px; height: 50px;
+  .login-logo-wrap .brand-logo-circle {
+    width: 52px;
+    height: 52px;
+    padding: 4px;
+  }
+  .login-logo-ring {
+    width: 58px; height: 58px;
   }
   .login-title {
     font-size: 1.3rem;
   }
   .login-role-grid {
-    grid-template-columns: 1fr 1fr;
+    display: none !important;
   }
 }
 

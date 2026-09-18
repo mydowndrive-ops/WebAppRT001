@@ -4516,7 +4516,7 @@ function setupAccountManagementEvents() {
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.8.3')
+      navigator.serviceWorker.register('sw.js?v=2.8.4')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -4531,7 +4531,7 @@ function registerServiceWorker() {
   if ('caches' in window) {
     caches.keys().then((keys) => {
       keys.forEach((key) => {
-        if (key !== 'rt-finsmart-cache-v2.8.3') {
+        if (key !== 'rt-finsmart-cache-v2.8.4') {
           console.log('Menghapus cache lama browser:', key);
           caches.delete(key);
         }
