@@ -5751,9 +5751,66 @@ function setupUpcomingEventBanner() {
     bannerBox.addEventListener('mouseleave', startEventAutoPlay);
   }
 
-  // Initial render
+  // ==================== POPUP MODAL BANNER CONTROLS ====================
+
+  window.openEventPopupBanner = function() {
+    if (!bannerWrap) return;
+    bannerWrap.style.display = 'flex';
+    requestAnimationFrame(() => {
+      bannerWrap.classList.add('show-popup');
+      bannerWrap.classList.remove('closing');
+    });
+    startEventAutoPlay();
+  };
+
+  window.closeEventPopupBanner = function() {
+    if (!bannerWrap) return;
+    bannerWrap.classList.add('closing');
+    stopEventAutoPlay();
+    setTimeout(() => {
+      bannerWrap.classList.remove('show-popup', 'closing');
+      bannerWrap.style.display = 'none';
+    }, 280);
+  };
+
+  // 1. Tombol Tutup Banner (Tanda Silang X) -> Hanya hilang jika ditekan ini
+  document.getElementById('btn-close-event-banner')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    window.closeEventPopupBanner();
+  });
+
+  // 2. Tombol Buka Kembali Event di Live Ticker
+  document.getElementById('btn-reopen-event-popup')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.openEventPopupBanner();
+  });
+
+  // 3. Tombol Lihat Agenda Lengkap -> Buka subview kegiatan & tutup popup
+  document.getElementById('btn-event-view-detail')?.addEventListener('click', () => {
+    window.closeEventPopupBanner();
+  });
+
+  // 4. Tombol Escape keyboard
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && bannerWrap.classList.contains('show-popup')) {
+      window.closeEventPopupBanner();
+    }
+  });
+
+  // Initial render content
   renderCurrentEvent(0, false);
-  startEventAutoPlay();
+
+  // 5. Muncul tiba-tiba di halaman depan publik setelah jeda dramatis 700ms
+  setTimeout(() => {
+    const publicPortal = document.getElementById('portal-public');
+    const hub = document.getElementById('public-home-hub');
+    const isPublicHubActive = (!publicPortal || publicPortal.style.display !== 'none') &&
+                              (!hub || hub.style.display !== 'none');
+    if (isPublicHubActive && !isLoggedIn()) {
+      window.openEventPopupBanner();
+    }
+  }, 750);
 }
 
 

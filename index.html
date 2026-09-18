@@ -22,7 +22,7 @@
   <!-- Chart.js for Executive Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <link rel="stylesheet" href="styles.css?v=2.6.3">
+  <link rel="stylesheet" href="styles.css?v=2.6.4">
 </head>
 <body>
 
@@ -296,12 +296,22 @@
               <span class="hub-ticker-label">Status Lingkungan</span>
               <strong class="hub-ticker-val text-emerald">Aman &bull; Guyub Rukun</strong>
             </div>
+            <button type="button" class="btn-hub-event-trigger" id="btn-reopen-event-popup" title="Buka Pengumuman Event Terdekat">
+              <span class="event-trigger-dot"></span>
+              <i class="fa-solid fa-bullhorn text-emerald"></i>
+              <span>Event Terdekat</span>
+            </button>
           </div>
         </section>
 
-        <!-- BANNER IKLAN / BROADCAST HIGHLIGHT EVENT TERDEKAT -->
-        <section class="hub-event-banner-wrap" id="hub-event-banner-wrap" aria-label="Informasi Event Terdekat">
+        <!-- BANNER IKLAN / BROADCAST HIGHLIGHT EVENT TERDEKAT (POPUP BANNER) -->
+        <div class="hub-event-banner-wrap" id="hub-event-banner-wrap" aria-label="Informasi Event Terdekat" role="dialog" aria-modal="true" style="display: none;">
           <div class="hub-event-banner glass-panel">
+            <!-- Tombol Tutup Banner (Tanda Silang) -->
+            <button type="button" class="btn-event-popup-close" id="btn-close-event-banner" aria-label="Tutup Pengumuman Event" title="Tutup Pengumuman (X)">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+
             <div class="event-banner-ambient"></div>
             <div class="event-banner-shimmer"></div>
 
@@ -381,7 +391,7 @@
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
         <!-- 6 INTERACTIVE ACTION CARDS GRID (EXECUTIVE HUB) -->
         <section class="hub-grid-section" id="hub-services-section" aria-label="Menu Utama Layanan Warga">
@@ -5337,6 +5347,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.6.3"></script>
+  <script src="app.js?v=2.6.4"></script>
 </body>
 </html>

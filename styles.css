@@ -8386,31 +8386,149 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.01em;
 }
 
-/* ==================== BANNER IKLAN / BROADCAST EVENT TERDEKAT ==================== */
+/* ==================== BANNER IKLAN / BROADCAST EVENT TERDEKAT (POPUP MODAL) ==================== */
 .hub-event-banner-wrap {
-  width: 100%;
-  margin-bottom: 1.25rem;
-  position: relative;
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  background: rgba(2, 12, 8, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.32s ease;
+}
+
+.hub-event-banner-wrap.show-popup {
+  display: flex !important;
+  opacity: 1;
+  visibility: visible;
+}
+
+.hub-event-banner-wrap.closing {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
 }
 
 .hub-event-banner {
-  background: linear-gradient(135deg, rgba(6, 40, 28, 0.82) 0%, rgba(10, 25, 47, 0.85) 50%, rgba(6, 26, 17, 0.9) 100%);
-  border: 1.5px solid rgba(16, 185, 129, 0.35);
-  border-radius: 20px;
-  padding: 1.35rem 1.6rem;
+  background: linear-gradient(135deg, rgba(6, 40, 28, 0.95) 0%, rgba(10, 25, 47, 0.96) 50%, rgba(6, 26, 17, 0.97) 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  border-radius: 24px;
+  padding: 1.6rem 1.85rem;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 1.75rem;
   align-items: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 20px rgba(16, 185, 129, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  max-width: 880px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.hub-event-banner-wrap.show-popup .hub-event-banner {
+  animation: eventPopupBounceIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.hub-event-banner-wrap.closing .hub-event-banner {
+  transform: scale(0.92) translateY(16px);
+  transition: transform 0.25s ease;
+}
+
+@keyframes eventPopupBounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.82) translateY(28px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.02) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Tombol Tutup Banner (Tanda Silang) */
+.btn-event-popup-close {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  z-index: 25;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.btn-event-popup-close:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #fca5a5;
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.45);
+}
+
+.btn-event-popup-close:active {
+  transform: rotate(90deg) scale(0.92);
+}
+
+/* Tombol Re-open Event di Ticker */
+.btn-hub-event-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #a7f3d0;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.btn-hub-event-trigger:hover {
+  background: rgba(16, 185, 129, 0.24);
+  border-color: rgba(52, 211, 153, 0.6);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.3);
+}
+
+.event-trigger-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  display: inline-block;
+  animation: beaconPing 2s infinite;
 }
 
 .hub-event-banner:hover {
-  border-color: rgba(52, 211, 153, 0.6);
-  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.55), 0 0 28px rgba(16, 185, 129, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(52, 211, 153, 0.65);
+  box-shadow: 0 28px 65px rgba(0, 0, 0, 0.8), 0 0 35px rgba(16, 185, 129, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Ambient glow & shimmer effect */
@@ -8464,6 +8582,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.65rem 0.85rem;
+  padding-right: 2.8rem;
 }
 
 .event-live-beacon {
@@ -9281,22 +9400,22 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .hub-event-banner-wrap {
+    order: 99;
+    margin-bottom: 0;
+  }
+
+  .hub-ticker-bar {
     order: 3;
     margin-bottom: 1.25rem;
   }
 
-  .hub-ticker-bar {
+  .hub-chart-spotlight {
     order: 4;
     margin-bottom: 1.25rem;
   }
 
-  .hub-chart-spotlight {
-    order: 5;
-    margin-bottom: 1.25rem;
-  }
-
   .hub-mini-footer {
-    order: 6;
+    order: 5;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.85rem;
