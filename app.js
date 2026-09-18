@@ -2141,6 +2141,22 @@ function renderDashboard() {
   // Capaian Iuran Berdasarkan Nama Jalan
   renderDashboardStreetKpi();
 
+  // Update Dashboard Asset Banner
+  try {
+    const asetList = getAsetList();
+    const totalVal = asetList.reduce((acc, it) => acc + (Number(it.harga) || 0), 0);
+    const okCount = asetList.filter(it => it.kondisi === 'ok').length;
+    const badCount = asetList.length - okCount;
+    const dashAssetVal = document.getElementById('dash-asset-total-val');
+    if (dashAssetVal) dashAssetVal.textContent = formatRupiah(totalVal);
+    const dashAssetOk = document.getElementById('dash-asset-ok-count');
+    if (dashAssetOk) dashAssetOk.textContent = `${okCount} Aset (${Math.round((okCount / (asetList.length || 1)) * 100)}%)`;
+    const dashAssetBad = document.getElementById('dash-asset-bad-count');
+    if (dashAssetBad) dashAssetBad.textContent = `${badCount} Perlu Perhatian`;
+  } catch (e) {
+    console.warn('Dashboard asset banner update:', e);
+  }
+
   // Recent Transactions Table
   const tbodyRecent = document.getElementById('tbody-recent-tx');
   if (tbodyRecent) {
@@ -3498,6 +3514,7 @@ function navigateToView(viewId) {
     'jimpitan': { title: 'Uang Jimpitan Ronda', sub: 'Perolehan & Pengeluaran Kas Ronda Malam Minggu' },
     'pengajuan-dana-admin': { title: 'Pengajuan Dana Warga', sub: 'Verifikasi, Persetujuan & Realisasi Pencairan Kas Fasilitas' },
     'pengurus-struktur': { title: 'Bagan & Struktur Pengurus RT', sub: 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027' },
+    'aset-rt': { title: 'Inventaris & Aset RT.001', sub: 'Pencatatan Sarana Prasarana & Nilai Perolehan Aset Lingkungan Graha Asri' },
     'portal-warga': { title: 'Portal Mandiri Warga RT.001', sub: 'Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan' }
   };
 
@@ -3517,6 +3534,7 @@ function navigateToView(viewId) {
   if (viewId === 'jimpitan') renderJimpitan();
   if (viewId === 'pengajuan-dana-admin') renderAdminFundRequests();
   if (viewId === 'pengurus-struktur') renderPengurusStruktur();
+  if (viewId === 'aset-rt') renderAsetRt();
   if (viewId === 'portal-warga') renderPortalWarga();
 }
 
@@ -6463,6 +6481,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDemografi();
   setupFundRequestModule();
   setupResidentAccountsEvents();
+  setupAsetRtModule();
 
   // Check session → if logged in, go to admin dashboard/portal; else show public landing page
   if (isLoggedIn()) {
@@ -10166,6 +10185,689 @@ function updateBroadcastPreview() {
     bubble.textContent = textareaContent.value;
   }
 }
+
+
+// ==========================================================================
+// MODUL INVENTARIS & ASET RT.001 / RW.013 GRAHA ASRI (GOOGLE SHEETS DATASET)
+// ==========================================================================
+
+const DEFAULT_ASET_RT = [
+  { id: 1, nama: 'Televisi 21"', kategori: 'elektronik', qty: 1, satuan: 'unit', tgl_beli: '-', harga: 0, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Inventaris hibah pos ronda untuk monitor CCTV / hiburan warga', icon: 'fa-tv' },
+  { id: 2, nama: 'Water Dispenser', kategori: 'pos_dapur', qty: 2, satuan: 'unit', tgl_beli: '-', harga: 0, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Dispenser galon air minum pos kamling & sekretariat', icon: 'fa-faucet-drip' },
+  { id: 3, nama: 'Kursi Lipat / Plastik', kategori: 'pos_dapur', qty: 60, satuan: 'pcs', tgl_beli: '-', harga: 0, kondisi: 'sebagian_rusak', sumber: 'Kas RT', keterangan: '59 pcs kondisi prima, hilang 1 pcs saat kegiatan warga', icon: 'fa-chair' },
+  { id: 4, nama: 'Tenda Terop', kategori: 'tenda_lapangan', qty: 2, satuan: 'lokal', tgl_beli: '-', harga: 0, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Fasilitas tenda acara hajatan, kerja bakti & kedukaan warga', icon: 'fa-campground' },
+  { id: 5, nama: 'Terpal Tenda', kategori: 'tenda_lapangan', qty: 2, satuan: 'lembar', tgl_beli: '-', harga: 0, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Atap penutup tenda terop lingkungan', icon: 'fa-sheet-plastic' },
+  { id: 6, nama: 'Terpal (Alas)', kategori: 'tenda_lapangan', qty: 1, satuan: 'lembar', tgl_beli: '-', harga: 0, kondisi: 'rusak', sumber: 'Kas RT', keterangan: 'Kondisi sobek / tidak layak pakai (Rencana usulan peremajaan baru)', icon: 'fa-rug' },
+  { id: 7, nama: 'Sound System & Mic Wireless', kategori: 'elektronik', qty: 1, satuan: 'unit', tgl_beli: '-', harga: 2000000, kondisi: 'ok', sumber: 'Kas Jimpitan', keterangan: 'Pengadaan dari akumulasi dana jimpitan ronda warga', icon: 'fa-bullhorn' },
+  { id: 8, nama: 'Umbul-umbul Bendera 17 Agustus', kategori: 'event', qty: 25, satuan: 'pcs', tgl_beli: 'Agustus 2020', harga: 437000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Pengadaan tgl 9 & 10 Agustus 2020 untuk dekorasi gapura RT', icon: 'fa-flag' },
+  { id: 9, nama: 'Lampu Hias Kedip 17 Agustus', kategori: 'event', qty: 11, satuan: 'pcs', tgl_beli: 'Agustus 2020', harga: 132000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Pembelian tgl 9 Agustus 2020 untuk semarak kemerdekaan', icon: 'fa-lightbulb' },
+  { id: 10, nama: 'Umbul-umbul Bendera 17 Agustus (Tahap 2)', kategori: 'event', qty: 15, satuan: 'pcs', tgl_beli: 'Agustus 2022', harga: 150000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Pembelian tambahan tgl 6 Agustus 2022', icon: 'fa-flag' },
+  { id: 11, nama: 'Tangga Lipat Pasang Tenda', kategori: 'tenda_lapangan', qty: 2, satuan: 'unit', tgl_beli: 'Agustus 2020', harga: 800000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Tangga aluminium kokoh untuk pasang tratak tenda & lampu jalan', icon: 'fa-stairs' },
+  { id: 12, nama: 'Multifunction Inkjet Printer Canon PIXMA E410', kategori: 'elektronik', qty: 1, satuan: 'unit', tgl_beli: 'November 2020', harga: 925000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Pencetakan surat pengantar warga, laporan kas & administrasi', icon: 'fa-print' },
+  { id: 13, nama: 'Lampu LED 36 Watt (Type TL Tube)', kategori: 'elektronik', qty: 3, satuan: 'pcs', tgl_beli: 'November 2020', harga: 300000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Penerangan pos kamling & area pintu portal', icon: 'fa-bolt' },
+  { id: 14, nama: 'Tikar Anyam Plastik (2m x 3m)', kategori: 'event', qty: 4, satuan: 'pcs', tgl_beli: 'Maret 2022', harga: 420000, kondisi: 'ok', sumber: 'Kas Jimpitan', keterangan: 'Pengadaan menggunakan dana Jimpitan Ronda Warga', icon: 'fa-border-all' },
+  { id: 15, nama: 'Lampu LED Vario 30 Watt (Bohlam)', kategori: 'elektronik', qty: 2, satuan: 'pcs', tgl_beli: 'Mei 2022', harga: 110000, kondisi: 'ok', sumber: 'Halal Bihalal', keterangan: 'Pengadaan sisa dana acara Halal Bihalal Warga', icon: 'fa-lightbulb' },
+  { id: 16, nama: 'Tikar Anyam Plastik (2m x 3m) Seri 2', kategori: 'event', qty: 4, satuan: 'pcs', tgl_beli: 'Juni 2022', harga: 428000, kondisi: 'ok', sumber: 'Kas Jimpitan', keterangan: 'Pengadaan menggunakan alokasi kas Jimpitan Ronda', icon: 'fa-border-all' },
+  { id: 17, nama: 'Rak Penyimpanan Barang di Pos Ronda', kategori: 'pos_dapur', qty: 1, satuan: 'unit', tgl_beli: 'Juli 2022', harga: 6003884, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Rak besi kokoh penyimpanan seluruh peralatan inventaris pos', icon: 'fa-table-cells-large' },
+  { id: 18, nama: 'Meja Serbaguna Lipat', kategori: 'pos_dapur', qty: 6, satuan: 'pcs', tgl_beli: 'Juli 2022', harga: 0, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Meja pertemuan warga, rapat koordinasi & posyandu', icon: 'fa-table' },
+  { id: 19, nama: 'Thermos Dispenser (Sigma 9.5 Liter)', kategori: 'pos_dapur', qty: 2, satuan: 'pcs', tgl_beli: 'September 2022', harga: 608000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Thermos air panas kapasitas besar untuk ronda & konsumsi rapat', icon: 'fa-mug-hot' },
+  { id: 20, nama: 'Mesin Fogging MAHKOTA MTF 180 A', kategori: 'elektronik', qty: 1, satuan: 'unit', tgl_beli: 'September 2022', harga: 3545000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Mesin pengasapan mandiri pencegahan nyamuk DBD di 71 KK', icon: 'fa-smog' },
+  { id: 21, nama: 'Meja Tenis Meja MDF 18mm (Set Lengkap)', kategori: 'tenda_lapangan', qty: 1, satuan: 'set', tgl_beli: 'Oktober 2022', harga: 2716000, kondisi: 'ok', sumber: 'Saweran Warga', keterangan: 'Pengadaan dari saweran & penggalangan dana antusiasme warga', icon: 'fa-table-tennis-paddle-ball' },
+  { id: 22, nama: 'Lampu Sorot Lapangan Volley', kategori: 'elektronik', qty: 1, satuan: 'pcs', tgl_beli: 'September 2022', harga: 0, kondisi: 'ok', sumber: 'Sumbangan Warga', keterangan: 'Hibah sumbangan dari Pak Dokter untuk sarana olahraga malam', icon: 'fa-sun' },
+  { id: 23, nama: 'Lampu LED Hannochs Nova 45 Watt', kategori: 'elektronik', qty: 3, satuan: 'pcs', tgl_beli: 'Desember 2022', harga: 201000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Lampu LED daya tinggi untuk fasum lapangan & gerbang utama', icon: 'fa-lightbulb' },
+  { id: 24, nama: 'Kipas Angin Gantung (Ceiling Fan) GMC BM-503', kategori: 'elektronik', qty: 1, satuan: 'unit', tgl_beli: 'Februari 2022', harga: 245000, kondisi: 'ok', sumber: 'Kas Jimpitan', keterangan: 'Kipas langit-langit pos ronda dari kas Jimpitan warga', icon: 'fa-fan' },
+  { id: 25, nama: 'STB TANAKA T2 Sniper (SN: 0452 9658 97)', kategori: 'elektronik', qty: 1, satuan: 'set', tgl_beli: 'Maret 2023', harga: 200000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Set Top Box siaran digital pos ronda & remote control', icon: 'fa-satellite-dish' },
+  { id: 26, nama: 'Nampan Plastik Merk Nice Ø30 cm', kategori: 'pos_dapur', qty: 60, satuan: 'pcs', tgl_beli: 'Mei 2023', harga: 350000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Peralatan konsumsi pertemuan, kenduri & arisan lingkungan', icon: 'fa-utensils' },
+  { id: 27, nama: 'Piring Plastik Model Rotan', kategori: 'pos_dapur', qty: 12, satuan: 'pcs', tgl_beli: 'Mei 2023', harga: 30000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Piring saji kenduri & pertemuan santai warga', icon: 'fa-plate-wheat' },
+  { id: 28, nama: 'Bola Volley Mikasa MVA300', kategori: 'tenda_lapangan', qty: 1, satuan: 'pcs', tgl_beli: 'Juli 2023', harga: 100000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Bola pertandingan resmi lapangan volley warga RT.001', icon: 'fa-volleyball' },
+  { id: 29, nama: 'Meja Karambol Ukuran 90 x 90 cm', kategori: 'tenda_lapangan', qty: 1, satuan: 'pcs', tgl_beli: 'Juli 2023', harga: 150000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Sarana rekreasi & silaturahmi pos kamling ronda malam', icon: 'fa-dice' },
+  { id: 30, nama: 'Jaring Lapangan Volley 6m x 30m x 1.5mm', kategori: 'tenda_lapangan', qty: 30, satuan: 'meter', tgl_beli: 'Juli 2023', harga: 336000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Jaring pengaman pembatas pinggir lapangan volley', icon: 'fa-border-none' },
+  { id: 31, nama: 'Jaring Lapangan Volley 6m x 12m x 1.5mm', kategori: 'tenda_lapangan', qty: 12, satuan: 'meter', tgl_beli: 'Juli 2023', harga: 151000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Jaring pengaman pembatas ujung lapangan volley', icon: 'fa-border-none' },
+  { id: 32, nama: 'Tali Tambang Nylon No.8 Panjang 45m', kategori: 'tenda_lapangan', qty: 45, satuan: 'meter', tgl_beli: 'Juli 2023', harga: 146000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Tali bentangan tiang net & tenda (dibagi 3 utas)', icon: 'fa-lines-leaning' },
+  { id: 33, nama: 'Lampu Hias Kedip 17 Agustus (Merah Putih)', kategori: 'event', qty: 20, satuan: 'pcs', tgl_beli: 'Juli 2023', harga: 259000, kondisi: 'ok', sumber: 'Kas RT', keterangan: 'Dekorasi meriah HUT Kemerdekaan RI di gerbang & jalan', icon: 'fa-lightbulb' }
+];
+
+const ASET_STORAGE_KEY = 'rt_finsmart_aset_items_v2';
+let asetViewMode = 'cards'; // 'cards' | 'table'
+
+function getAsetList() {
+  try {
+    const raw = localStorage.getItem(ASET_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    console.error('Error reading aset storage:', e);
+  }
+  return [...DEFAULT_ASET_RT];
+}
+
+function saveAsetList(list) {
+  try {
+    localStorage.setItem(ASET_STORAGE_KEY, JSON.stringify(list));
+  } catch (e) {
+    console.error('Error saving aset storage:', e);
+  }
+}
+
+function getCategoryMeta(cat) {
+  const map = {
+    'tenda_lapangan': { label: 'Tenda & Lapangan', icon: 'fa-campground', color: '#10b981', badgeClass: 'badge-emerald' },
+    'elektronik': { label: 'Elektronik & Mesin', icon: 'fa-bolt', color: '#38bdf8', badgeClass: 'badge-cyan' },
+    'pos_dapur': { label: 'Pos & Dapur Warga', icon: 'fa-utensils', color: '#f59e0b', badgeClass: 'badge-gold' },
+    'event': { label: 'Perlengkapan Event', icon: 'fa-flag', color: '#a855f7', badgeClass: 'badge-purple' }
+  };
+  return map[cat] || { label: 'Umum', icon: 'fa-box', color: '#94a3b8', badgeClass: 'badge-secondary' };
+}
+
+function getConditionBadge(kondisi) {
+  if (kondisi === 'ok') {
+    return `<span class="badge-status-pill pill-ok"><i class="fa-solid fa-circle-check"></i> Laik Pakai (OK)</span>`;
+  }
+  if (kondisi === 'sebagian_rusak') {
+    return `<span class="badge-status-pill pill-warning"><i class="fa-solid fa-triangle-exclamation"></i> Sebagian Rusak/Hilang</span>`;
+  }
+  return `<span class="badge-status-pill pill-danger"><i class="fa-solid fa-circle-xmark"></i> Rusak / Tidak Laik</span>`;
+}
+
+function renderAsetRt() {
+  const list = getAsetList();
+
+  // 1. Calculate overall KPIs
+  const totalVal = list.reduce((acc, it) => acc + (Number(it.harga) || 0), 0);
+  const totalItems = list.length;
+  const okItems = list.filter(it => it.kondisi === 'ok').length;
+  const defectItems = list.filter(it => it.kondisi !== 'ok').length;
+  const okPercent = totalItems > 0 ? ((okItems / totalItems) * 100).toFixed(1) : 0;
+  const totalQtyPhysical = list.reduce((acc, it) => acc + (Number(it.qty) || 1), 0);
+
+  // Update KPI card elements
+  const elTotalVal = document.getElementById('kpi-aset-total-val');
+  if (elTotalVal) elTotalVal.textContent = formatRupiah(totalVal);
+
+  const elTotalItems = document.getElementById('kpi-aset-total-items');
+  if (elTotalItems) elTotalItems.textContent = `${totalItems} Macam`;
+
+  const elTotalPhysical = document.getElementById('kpi-aset-total-physical');
+  if (elTotalPhysical) elTotalPhysical.textContent = `${totalQtyPhysical} Fisik Barang Tersimpan`;
+
+  const elOkRate = document.getElementById('kpi-aset-ok-rate');
+  if (elOkRate) elOkRate.textContent = `${okItems} Aset (${okPercent}%)`;
+
+  const elDefectCount = document.getElementById('kpi-aset-defect-count');
+  if (elDefectCount) elDefectCount.textContent = `${defectItems} Butuh Perhatian`;
+
+  const sidebarBadge = document.getElementById('sidebar-aset-badge');
+  if (sidebarBadge) sidebarBadge.textContent = totalItems;
+
+  // 2. Read filter inputs
+  const searchInput = document.getElementById('input-search-aset');
+  const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+  const filterCat = document.getElementById('filter-kategori-aset');
+  const catVal = filterCat ? filterCat.value : 'all';
+
+  const filterKondisi = document.getElementById('filter-kondisi-aset');
+  const kondisiVal = filterKondisi ? filterKondisi.value : 'all';
+
+  const filterSumber = document.getElementById('filter-sumber-aset');
+  const sumberVal = filterSumber ? filterSumber.value : 'all';
+
+  // Toggle clear search button
+  const btnClear = document.getElementById('btn-clear-search-aset');
+  if (btnClear) btnClear.style.display = searchVal ? 'block' : 'none';
+
+  // Toggle reset filters button
+  const hasActiveFilters = searchVal !== '' || catVal !== 'all' || kondisiVal !== 'all' || sumberVal !== 'all';
+  const btnReset = document.getElementById('btn-reset-aset-filters');
+  if (btnReset) btnReset.style.display = hasActiveFilters ? 'inline-flex' : 'none';
+
+  // 3. Filter data
+  const filtered = list.filter(item => {
+    // Search match
+    if (searchVal) {
+      const matchName = (item.nama || '').toLowerCase().includes(searchVal);
+      const matchKet = (item.keterangan || '').toLowerCase().includes(searchVal);
+      const matchSumber = (item.sumber || '').toLowerCase().includes(searchVal);
+      const matchBeli = (item.tgl_beli || '').toLowerCase().includes(searchVal);
+      if (!matchName && !matchKet && !matchSumber && !matchBeli) return false;
+    }
+
+    // Category match
+    if (catVal !== 'all' && item.kategori !== catVal) return false;
+
+    // Condition match
+    if (kondisiVal === 'ok' && item.kondisi !== 'ok') return false;
+    if (kondisiVal === 'defect' && item.kondisi === 'ok') return false;
+
+    // Source match
+    if (sumberVal !== 'all' && item.sumber !== sumberVal) return false;
+
+    return true;
+  });
+
+  // Display count
+  const elDisplayCount = document.getElementById('aset-displayed-count');
+  if (elDisplayCount) elDisplayCount.textContent = filtered.length;
+
+  // 4. Render Grid View
+  const gridContainer = document.getElementById('aset-grid-view');
+  if (gridContainer) {
+    if (filtered.length === 0) {
+      gridContainer.innerHTML = `
+        <div class="aset-empty-box glass-panel" style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem;">
+          <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); color: #fbbf24; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1rem;">
+            <i class="fa-solid fa-box-archive"></i>
+          </div>
+          <h3 style="color: #fff; margin-bottom: 0.4rem;">Tidak Ada Inventaris Ditemukan</h3>
+          <p style="color: #94a3b8; font-size: 0.9rem; max-width: 420px; margin: 0 auto 1.25rem;">Tidak ada barang yang cocok dengan kata kunci atau filter yang Anda pilih.</p>
+          <button type="button" class="btn btn-outline-gold" onclick="resetAsetFilters()">
+            <i class="fa-solid fa-rotate-left"></i> Reset Filter Pencarian
+          </button>
+        </div>
+      `;
+    } else {
+      gridContainer.innerHTML = filtered.map(item => {
+        const catMeta = getCategoryMeta(item.kategori);
+        const condBadge = getConditionBadge(item.kondisi);
+        const formattedPrice = item.harga > 0 ? formatRupiah(item.harga) : '<span class="text-muted" style="font-size:0.85rem;"><i class="fa-solid fa-hand-holding-heart"></i> Hibah / Inventaris</span>';
+        const cardGlow = item.kondisi === 'rusak' ? 'border-defect' : (item.kondisi === 'sebagian_rusak' ? 'border-warning' : '');
+
+        return `
+          <div class="aset-card glass-panel ${cardGlow}" data-id="${item.id}">
+            <div class="aset-card-topline">
+              <span class="aset-cat-tag ${catMeta.badgeClass}">
+                <i class="fa-solid ${catMeta.icon}"></i> ${catMeta.label}
+              </span>
+              ${condBadge}
+            </div>
+
+            <div class="aset-card-header">
+              <div class="aset-icon-box" style="background: ${catMeta.color}1c; color: ${catMeta.color}; border: 1px solid ${catMeta.color}35;">
+                <i class="fa-solid ${item.icon || catMeta.icon}"></i>
+              </div>
+              <div class="aset-header-info">
+                <h3 class="aset-name">${escapeHtml(item.nama)}</h3>
+                <div class="aset-qty-badge">
+                  <i class="fa-solid fa-layer-group text-emerald"></i>
+                  <strong>${item.qty} ${escapeHtml(item.satuan)}</strong>
+                </div>
+              </div>
+            </div>
+
+            <p class="aset-notes"><i class="fa-regular fa-note-sticky text-gold"></i> ${escapeHtml(item.keterangan || 'Tidak ada catatan khusus')}</p>
+
+            <div class="aset-card-specs">
+              <div class="spec-col">
+                <span class="spec-lbl"><i class="fa-regular fa-calendar-days text-cyan"></i> Pengadaan</span>
+                <span class="spec-val">${escapeHtml(item.tgl_beli || '-')}</span>
+              </div>
+              <div class="spec-col">
+                <span class="spec-lbl"><i class="fa-solid fa-hand-holding-dollar text-emerald"></i> Sumber Dana</span>
+                <span class="spec-val font-semibold text-emerald">${escapeHtml(item.sumber || 'Kas RT')}</span>
+              </div>
+            </div>
+
+            <div class="aset-card-footer">
+              <div class="aset-price-wrap">
+                <span class="price-lbl">Nilai Perolehan</span>
+                <div class="price-val ${item.harga > 0 ? 'text-gold' : ''}">${formattedPrice}</div>
+              </div>
+              <div class="aset-card-actions">
+                <button type="button" class="btn-icon-action btn-action-edit" onclick="openEditAsetModal(${item.id})" title="Edit Data Barang">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button type="button" class="btn-icon-action btn-action-delete" onclick="deleteAsetItem(${item.id})" title="Hapus Barang">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  // 5. Render Table View
+  const tbody = document.getElementById('tbody-aset-full');
+  if (tbody) {
+    if (filtered.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="9" style="text-align: center; color: #94a3b8; padding: 2.5rem;">
+            <i class="fa-solid fa-box-archive" style="font-size: 2rem; opacity: 0.3; margin-bottom: 0.5rem; display: block;"></i>
+            Tidak ada inventaris yang cocok dengan filter pencarian.
+          </td>
+        </tr>
+      `;
+    } else {
+      const filteredSum = filtered.reduce((acc, it) => acc + (Number(it.harga) || 0), 0);
+      const tfootVal = document.getElementById('tfoot-aset-total-val');
+      if (tfootVal) tfootVal.textContent = formatRupiah(filteredSum);
+
+      tbody.innerHTML = filtered.map((item, idx) => {
+        const catMeta = getCategoryMeta(item.kategori);
+        const condBadge = getConditionBadge(item.kondisi);
+        const formattedPrice = item.harga > 0 ? formatRupiah(item.harga) : '<span class="text-muted">-</span>';
+
+        return `
+          <tr>
+            <td style="text-align: center; color: #94a3b8; font-weight: 700;">${idx + 1}</td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.65rem;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: ${catMeta.color}1c; color: ${catMeta.color}; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0;">
+                  <i class="fa-solid ${item.icon || catMeta.icon}"></i>
+                </div>
+                <div>
+                  <strong style="color: #fff; font-size: 0.92rem;">${escapeHtml(item.nama)}</strong>
+                </div>
+              </div>
+            </td>
+            <td><span class="aset-cat-tag ${catMeta.badgeClass}" style="font-size: 0.72rem;"><i class="fa-solid ${catMeta.icon}"></i> ${catMeta.label}</span></td>
+            <td style="text-align: center;"><strong>${item.qty}</strong> <span style="font-size: 0.8rem; color: #94a3b8;">${escapeHtml(item.satuan)}</span></td>
+            <td><span style="color: #cbd5e1; font-size: 0.85rem;">${escapeHtml(item.tgl_beli || '-')}</span></td>
+            <td style="text-align: right; font-weight: 700; color: #fbbf24;">${formattedPrice}</td>
+            <td style="text-align: center;">${condBadge}</td>
+            <td>
+              <div style="font-size: 0.82rem; color: #cbd5e1;">
+                <span class="badge-tag-emerald" style="font-size: 0.72rem; padding: 2px 6px; display: inline-block; margin-bottom: 2px;"><i class="fa-solid fa-coins"></i> ${escapeHtml(item.sumber || 'Kas RT')}</span>
+                <div style="color: #94a3b8;">${escapeHtml(item.keterangan || '-')}</div>
+              </div>
+            </td>
+            <td style="text-align: center;">
+              <div style="display: flex; gap: 0.35rem; justify-content: center;">
+                <button type="button" class="btn-icon-action btn-action-edit" onclick="openEditAsetModal(${item.id})" title="Edit">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button type="button" class="btn-icon-action btn-action-delete" onclick="deleteAsetItem(${item.id})" title="Hapus">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+  }
+}
+
+function resetAsetFilters() {
+  const searchInput = document.getElementById('input-search-aset');
+  if (searchInput) searchInput.value = '';
+
+  const filterCat = document.getElementById('filter-kategori-aset');
+  if (filterCat) filterCat.value = 'all';
+
+  const filterKondisi = document.getElementById('filter-kondisi-aset');
+  if (filterKondisi) filterKondisi.value = 'all';
+
+  const filterSumber = document.getElementById('filter-sumber-aset');
+  if (filterSumber) filterSumber.value = 'all';
+
+  renderAsetRt();
+}
+
+function setAsetViewMode(mode) {
+  asetViewMode = mode;
+  const gridEl = document.getElementById('aset-grid-view');
+  const tableEl = document.getElementById('aset-table-view');
+  const btnCards = document.getElementById('btn-view-cards');
+  const btnTable = document.getElementById('btn-view-table');
+
+  if (mode === 'table') {
+    if (gridEl) gridEl.style.display = 'none';
+    if (tableEl) tableEl.style.display = 'block';
+    if (btnCards) btnCards.classList.remove('active');
+    if (btnTable) btnTable.classList.add('active');
+  } else {
+    if (gridEl) gridEl.style.display = 'grid';
+    if (tableEl) tableEl.style.display = 'none';
+    if (btnCards) btnCards.classList.add('active');
+    if (btnTable) btnTable.classList.remove('active');
+  }
+}
+
+function openAddAsetModal() {
+  const modal = document.getElementById('modal-add-aset');
+  if (!modal) return;
+
+  document.getElementById('modal-aset-title').innerHTML = '<i class="fa-solid fa-box-open text-gold"></i> Catat Inventaris Aset Baru';
+  document.getElementById('input-aset-id').value = '';
+  document.getElementById('input-aset-nama').value = '';
+  document.getElementById('input-aset-kategori').value = 'tenda_lapangan';
+  document.getElementById('input-aset-kondisi').value = 'ok';
+  document.getElementById('input-aset-qty').value = '1';
+  document.getElementById('input-aset-satuan').value = 'unit';
+  document.getElementById('input-aset-harga').value = '0';
+  document.getElementById('input-aset-pembelian').value = '';
+  document.getElementById('input-aset-sumber').value = 'Kas RT';
+  document.getElementById('input-aset-keterangan').value = '';
+
+  modal.classList.add('active');
+}
+
+function openEditAsetModal(id) {
+  const list = getAsetList();
+  const item = list.find(it => it.id === Number(id));
+  if (!item) return;
+
+  const modal = document.getElementById('modal-add-aset');
+  if (!modal) return;
+
+  document.getElementById('modal-aset-title').innerHTML = '<i class="fa-solid fa-pen-to-square text-gold"></i> Edit Inventaris Aset RT';
+  document.getElementById('input-aset-id').value = item.id;
+  document.getElementById('input-aset-nama').value = item.nama;
+  document.getElementById('input-aset-kategori').value = item.kategori;
+  document.getElementById('input-aset-kondisi').value = item.kondisi;
+  document.getElementById('input-aset-qty').value = item.qty;
+  document.getElementById('input-aset-satuan').value = item.satuan;
+  document.getElementById('input-aset-harga').value = item.harga || 0;
+  document.getElementById('input-aset-pembelian').value = item.tgl_beli || '';
+  document.getElementById('input-aset-sumber').value = item.sumber || 'Kas RT';
+  document.getElementById('input-aset-keterangan').value = item.keterangan || '';
+
+  modal.classList.add('active');
+}
+
+function deleteAsetItem(id) {
+  const list = getAsetList();
+  const item = list.find(it => it.id === Number(id));
+  if (!item) return;
+
+  if (!confirm(`Apakah Anda yakin ingin menghapus aset "${item.nama}" dari daftar inventaris?`)) {
+    return;
+  }
+
+  const updated = list.filter(it => it.id !== Number(id));
+  saveAsetList(updated);
+  showToast(`Aset "${item.nama}" berhasil dihapus.`, 'info');
+  renderAsetRt();
+  renderDashboard();
+}
+
+function prepareAsetPrintReport() {
+  const list = getAsetList();
+  const totalVal = list.reduce((acc, it) => acc + (Number(it.harga) || 0), 0);
+  const totalPhysical = list.reduce((acc, it) => acc + (Number(it.qty) || 1), 0);
+  const okCount = list.filter(it => it.kondisi === 'ok').length;
+  const defectCount = list.length - okCount;
+
+  const container = document.getElementById('aset-print-doc-content');
+  if (!container) return;
+
+  const currentDateStr = new Intl.DateTimeFormat('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(new Date());
+
+  container.innerHTML = `
+    <div style="font-family: Arial, sans-serif; color: #1e293b; line-height: 1.5;">
+      <!-- Kop Surat -->
+      <div style="text-align: center; border-bottom: 3px double #0f172a; padding-bottom: 12px; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-size: 1.3rem; letter-spacing: 0.08em; color: #064e3b; text-transform: uppercase;">RUKUN TETANGGA 001 / RUKUN WARGA 013</h2>
+        <h3 style="margin: 3px 0 6px 0; font-size: 1rem; color: #047857;">PERUMAHAN GRAHA ASRI &bull; KEL. SIMPANGAN, CIKARANG UTARA, KAB. BEKASI</h3>
+        <p style="margin: 0; font-size: 0.8rem; color: #64748b;">Sekretariat: Jl. Citarum II, Perum Graha Asri, Desa Simpangan, Kec. Cikarang Utara, Kab. Bekasi 17530</p>
+      </div>
+
+      <!-- Judul Dokumen -->
+      <div style="text-align: center; margin-bottom: 18px;">
+        <h3 style="margin: 0 0 4px 0; font-size: 1.15rem; text-decoration: underline; letter-spacing: 0.05em;">BERITA ACARA &amp; DAFTAR INVENTARIS ASET</h3>
+        <p style="margin: 0; font-size: 0.85rem; color: #475569;">Nomor Registrasi: 004/BA-ASET/RT.001-RW.013/VII/2023</p>
+      </div>
+
+      <!-- Keterangan Pembuka -->
+      <p style="font-size: 0.88rem; margin-bottom: 14px;">
+        Pada hari ini, dicatat dan dilaporkan secara resmi rekapitulasi inventarisasi aset, sarana dan prasarana milik bersama RT.001 / RW.013 Graha Asri dengan rincian sebagai berikut:
+      </p>
+
+      <!-- Ringkasan Statistik Aset -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px;">
+        <div style="text-align: center;">
+          <span style="font-size: 0.72rem; color: #64748b; text-transform: uppercase; display: block;">Total Valuasi</span>
+          <strong style="font-size: 0.95rem; color: #047857;">${formatRupiah(totalVal)}</strong>
+        </div>
+        <div style="text-align: center;">
+          <span style="font-size: 0.72rem; color: #64748b; text-transform: uppercase; display: block;">Ragam Aset</span>
+          <strong style="font-size: 0.95rem;">${list.length} Macam</strong>
+        </div>
+        <div style="text-align: center;">
+          <span style="font-size: 0.72rem; color: #64748b; text-transform: uppercase; display: block;">Kondisi Laik (OK)</span>
+          <strong style="font-size: 0.95rem; color: #059669;">${okCount} Item (${Math.round((okCount / (list.length || 1)) * 100)}%)</strong>
+        </div>
+        <div style="text-align: center;">
+          <span style="font-size: 0.72rem; color: #64748b; text-transform: uppercase; display: block;">Rusak / Perlu Perhatian</span>
+          <strong style="font-size: 0.95rem; color: #dc2626;">${defectCount} Item</strong>
+        </div>
+      </div>
+
+      <!-- Tabel Daftar Aset -->
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem; margin-bottom: 24px;">
+        <thead>
+          <tr style="background: #e2e8f0; color: #0f172a;">
+            <th style="border: 1px solid #cbd5e1; padding: 6px 8px; width: 30px; text-align: center;">No</th>
+            <th style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left;">Nama Barang Aset</th>
+            <th style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center; width: 70px;">Qtty</th>
+            <th style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center; width: 85px;">Pengadaan</th>
+            <th style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; width: 105px;">Nilai Perolehan</th>
+            <th style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center; width: 75px;">Kondisi</th>
+            <th style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left;">Sumber Dana &amp; Keterangan</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${list.map((it, idx) => `
+            <tr style="background: ${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+              <td style="border: 1px solid #cbd5e1; padding: 5px 6px; text-align: center;">${idx + 1}</td>
+              <td style="border: 1px solid #cbd5e1; padding: 5px 8px; font-weight: bold;">${escapeHtml(it.nama)}</td>
+              <td style="border: 1px solid #cbd5e1; padding: 5px 6px; text-align: center;">${it.qty} ${escapeHtml(it.satuan)}</td>
+              <td style="border: 1px solid #cbd5e1; padding: 5px 6px; text-align: center;">${escapeHtml(it.tgl_beli || '-')}</td>
+              <td style="border: 1px solid #cbd5e1; padding: 5px 8px; text-align: right;">${it.harga > 0 ? formatRupiah(it.harga) : '-'}</td>
+              <td style="border: 1px solid #cbd5e1; padding: 5px 6px; text-align: center; font-weight: bold; color: ${it.kondisi === 'ok' ? '#047857' : '#b91c1c'};">
+                ${it.kondisi === 'ok' ? 'OK (Baik)' : (it.kondisi === 'sebagian_rusak' ? 'Sebagian' : 'Rusak')}
+              </td>
+              <td style="border: 1px solid #cbd5e1; padding: 5px 8px;">
+                <strong>${escapeHtml(it.sumber || 'Kas RT')}</strong>: ${escapeHtml(it.keterangan || '-')}
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+        <tfoot>
+          <tr style="background: #e2e8f0; font-weight: bold;">
+            <td colspan="4" style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right;">GRAND TOTAL NILAI ASET TERDATA:</td>
+            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; color: #047857;">${formatRupiah(totalVal)}</td>
+            <td colspan="2" style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${totalPhysical} Fisik Barang</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <!-- Tanda Tangan Pengurus -->
+      <div style="display: flex; justify-content: space-between; margin-top: 30px; font-size: 0.88rem; page-break-inside: avoid;">
+        <div style="text-align: center; width: 220px;">
+          <p style="margin: 0 0 55px 0;">Mengetahui,<br><strong>Ketua RT.001 / RW.013</strong></p>
+          <strong style="text-decoration: underline;">MARYANTO</strong>
+          <span style="display: block; font-size: 0.75rem; color: #64748b;">Ketua RT.001</span>
+        </div>
+        <div style="text-align: center; width: 220px;">
+          <p style="margin: 0 0 55px 0;">Pengelola Sarpras,<br><strong>Seksi Perlengkapan &amp; Aset</strong></p>
+          <strong style="text-decoration: underline;">KASIRUN</strong>
+          <span style="display: block; font-size: 0.75rem; color: #64748b;">Seksi Perlengkapan</span>
+        </div>
+        <div style="text-align: center; width: 220px;">
+          <p style="margin: 0 0 55px 0;">Bekasi, ${currentDateStr}<br><strong>Bendahara RT.001</strong></p>
+          <strong style="text-decoration: underline;">JUMARI S</strong>
+          <span style="display: block; font-size: 0.75rem; color: #64748b;">Bendahara 1</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const modal = document.getElementById('modal-print-aset');
+  if (modal) modal.classList.add('active');
+}
+
+function setupAsetRtModule() {
+  // 1. Initial Render
+  try {
+    renderAsetRt();
+  } catch (e) {
+    console.error('Error in initial renderAsetRt:', e);
+  }
+
+  // 2. Search realtime
+  const searchInput = document.getElementById('input-search-aset');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      renderAsetRt();
+    });
+  }
+
+  // 3. Clear search button
+  const btnClear = document.getElementById('btn-clear-search-aset');
+  if (btnClear) {
+    btnClear.addEventListener('click', () => {
+      if (searchInput) searchInput.value = '';
+      renderAsetRt();
+    });
+  }
+
+  // 4. Filters change
+  ['filter-kategori-aset', 'filter-kondisi-aset', 'filter-sumber-aset'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('change', () => {
+        renderAsetRt();
+      });
+    }
+  });
+
+  // 5. Reset button
+  const btnReset = document.getElementById('btn-reset-aset-filters');
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      resetAsetFilters();
+    });
+  }
+
+  // 6. View Mode Toggles
+  const btnCards = document.getElementById('btn-view-cards');
+  if (btnCards) {
+    btnCards.addEventListener('click', () => {
+      setAsetViewMode('cards');
+    });
+  }
+
+  const btnTable = document.getElementById('btn-view-table');
+  if (btnTable) {
+    btnTable.addEventListener('click', () => {
+      setAsetViewMode('table');
+    });
+  }
+
+  // 7. Modal Add Button
+  const btnOpenAdd = document.getElementById('btn-open-add-aset');
+  if (btnOpenAdd) {
+    btnOpenAdd.addEventListener('click', () => {
+      openAddAsetModal();
+    });
+  }
+
+  // 8. Form Add / Edit Submit
+  const formAdd = document.getElementById('form-add-aset');
+  if (formAdd) {
+    formAdd.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const idVal = document.getElementById('input-aset-id').value;
+      const namaVal = document.getElementById('input-aset-nama').value.trim();
+      const catVal = document.getElementById('input-aset-kategori').value;
+      const kondisiVal = document.getElementById('input-aset-kondisi').value;
+      const qtyVal = Number(document.getElementById('input-aset-qty').value) || 1;
+      const satuanVal = document.getElementById('input-aset-satuan').value.trim() || 'unit';
+      const hargaVal = Number(document.getElementById('input-aset-harga').value) || 0;
+      const tglBeliVal = document.getElementById('input-aset-pembelian').value.trim() || '-';
+      const sumberVal = document.getElementById('input-aset-sumber').value;
+      const ketVal = document.getElementById('input-aset-keterangan').value.trim();
+
+      if (!namaVal) {
+        showToast('Mohon masukkan nama barang aset.', 'error');
+        return;
+      }
+
+      const list = getAsetList();
+
+      if (idVal) {
+        // Edit existing
+        const idx = list.findIndex(it => it.id === Number(idVal));
+        if (idx !== -1) {
+          list[idx] = {
+            ...list[idx],
+            nama: namaVal,
+            kategori: catVal,
+            kondisi: kondisiVal,
+            qty: qtyVal,
+            satuan: satuanVal,
+            harga: hargaVal,
+            tgl_beli: tglBeliVal,
+            sumber: sumberVal,
+            keterangan: ketVal
+          };
+          showToast(`Aset "${namaVal}" berhasil diperbarui.`, 'success');
+        }
+      } else {
+        // Create new
+        const newId = list.length > 0 ? Math.max(...list.map(it => it.id)) + 1 : 1;
+        const newItem = {
+          id: newId,
+          nama: namaVal,
+          kategori: catVal,
+          kondisi: kondisiVal,
+          qty: qtyVal,
+          satuan: satuanVal,
+          harga: hargaVal,
+          tgl_beli: tglBeliVal,
+          sumber: sumberVal,
+          keterangan: ketVal,
+          icon: getCategoryMeta(catVal).icon
+        };
+        list.unshift(newItem);
+        showToast(`Aset baru "${namaVal}" berhasil dicatat!`, 'success');
+      }
+
+      saveAsetList(list);
+      renderAsetRt();
+      renderDashboard();
+
+      // Close modal
+      const modal = document.getElementById('modal-add-aset');
+      if (modal) modal.classList.remove('active');
+    });
+  }
+
+  // 9. Print Preview & Execute
+  const btnPrintReport = document.getElementById('btn-print-aset-report');
+  if (btnPrintReport) {
+    btnPrintReport.addEventListener('click', () => {
+      prepareAsetPrintReport();
+    });
+  }
+
+  const btnExecutePrint = document.getElementById('btn-execute-print-aset');
+  if (btnExecutePrint) {
+    btnExecutePrint.addEventListener('click', () => {
+      window.print();
+    });
+  }
+
+  // 10. Dashboard Quick Access Button
+  const btnDashOpen = document.getElementById('btn-dash-open-aset');
+  if (btnDashOpen) {
+    btnDashOpen.addEventListener('click', () => {
+      navigateToView('aset-rt');
+    });
+  }
+}
+
 
 
 

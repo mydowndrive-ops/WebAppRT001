@@ -22,7 +22,7 @@
   <!-- Chart.js for Executive Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <link rel="stylesheet" href="styles.css?v=2.6.7">
+  <link rel="stylesheet" href="styles.css?v=2.6.8">
 </head>
 <body>
 
@@ -2087,6 +2087,11 @@
           <span>Struktur Pengurus RT</span>
           <span class="counter-badge" style="background: rgba(168, 85, 247, 0.25); color: #c084fc;">2022-2027</span>
         </a>
+        <a href="#aset-rt" class="menu-item" data-target="aset-rt" data-role-req="ALL">
+          <i class="fa-solid fa-boxes-stacked text-emerald"></i>
+          <span>Inventaris &amp; Aset RT</span>
+          <span class="counter-badge" id="sidebar-aset-badge" style="background: rgba(16, 185, 129, 0.25); color: #34d399;">33</span>
+        </a>
         <a href="#checklist" class="menu-item" data-target="checklist" data-role-req="B1">
           <i class="fa-solid fa-list-check"></i>
           <span>Checklist Iuran Wajib</span>
@@ -2282,6 +2287,38 @@
 
             <button class="btn btn-full btn-emerald" id="btn-goto-checklist">
               <i class="fa-solid fa-list-check"></i> Buka Checklist Iuran Sekarang
+            </button>
+          </div>
+        </div>
+
+        <!-- Ringkasan Inventaris & Aset RT -->
+        <div class="dash-asset-banner glass-panel mt-4" id="dash-asset-banner">
+          <div class="dash-asset-banner-left">
+            <div class="dash-asset-icon-box">
+              <i class="fa-solid fa-boxes-stacked text-emerald"></i>
+            </div>
+            <div>
+              <div class="dash-asset-badge-row">
+                <span class="badge-tag-emerald"><i class="fa-solid fa-shield-halved"></i> Inventaris RT.001</span>
+                <span class="badge-tag-gold" id="dash-asset-update-badge"><i class="fa-solid fa-check-double"></i> Terverifikasi Juli 2023</span>
+              </div>
+              <h3 class="dash-asset-title">Valuasi Aset Lingkungan Terdata: <span class="text-gold" id="dash-asset-total-val">Rp 20.742.884</span></h3>
+              <p class="dash-asset-sub">Tercatat <strong>33 ragam inventaris</strong> (192+ fisik barang) dengan <strong>97% kondisi prima laik pakai</strong> untuk kegiatan dan fasilitas warga.</p>
+            </div>
+          </div>
+          <div class="dash-asset-banner-right">
+            <div class="dash-asset-mini-stats">
+              <div class="dash-asset-mini-stat">
+                <span class="val text-emerald" id="dash-asset-ok-count">32 Aset</span>
+                <span class="lbl">Laik Pakai (97%)</span>
+              </div>
+              <div class="dash-asset-mini-stat">
+                <span class="val text-rose" id="dash-asset-bad-count">1 Rusak / 1 Hilang</span>
+                <span class="lbl">Perlu Penggantian</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-gold" id="btn-dash-open-aset" title="Buka Daftar Inventaris & Aset RT">
+              <i class="fa-solid fa-arrow-right"></i> Kelola Daftar Aset Lengkap
             </button>
           </div>
         </div>
@@ -3736,6 +3773,187 @@
         </div>
       </div>
     </section>
+
+      <!-- ==================== VIEW: DAFTAR INVENTARIS & ASET RT.001 ==================== -->
+      <section class="view-section" id="view-aset-rt">
+        <!-- View Header Banner -->
+        <div class="view-header-banner glass-panel">
+          <div class="banner-text">
+            <div class="banner-pre-badge mb-1">
+              <span class="badge-tag-emerald"><i class="fa-solid fa-boxes-stacked"></i> INVENTARISASI &amp; SARPRAS RT.001</span>
+              <span class="badge-tag-gold"><i class="fa-solid fa-shield-halved"></i> PERIODE 2022–2027</span>
+            </div>
+            <h2><i class="fa-solid fa-boxes-stacked text-emerald"></i> Daftar Inventaris &amp; Aset RT.001 / RW.013</h2>
+            <p>Pencatatan resmi barang modal, sarana prasarana, fasilitas olahraga &amp; inventaris lingkungan Graha Asri berdasarkan dokumen resmi per Juli 2023.</p>
+          </div>
+          <div class="banner-actions">
+            <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSlxGLncE-il_V31ysA74I9C94MF5KtZCcOtRFrVIe28mPz47adb01maR9-jyY2oQ/pubhtml" target="_blank" rel="noopener noreferrer" class="btn btn-outline-emerald" title="Buka Spreadsheet Asli di Google Sheets">
+              <i class="fa-solid fa-table"></i> Google Sheets Asli
+            </a>
+            <button type="button" class="btn btn-outline-gold" id="btn-print-aset-report" title="Cetak Berita Acara / Laporan Aset RT">
+              <i class="fa-solid fa-print"></i> Cetak Laporan
+            </button>
+            <button type="button" class="btn btn-emerald" id="btn-open-add-aset" title="Catat Inventaris Baru">
+              <i class="fa-solid fa-plus"></i> Tambah Aset Baru
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI Metrik Aset Eksekutif -->
+        <div class="kpi-grid mb-4">
+          <div class="kpi-card glass-panel luxury-gold-glow">
+            <div class="kpi-icon-wrap" style="background: rgba(245, 158, 11, 0.18); color: #fbbf24;">
+              <i class="fa-solid fa-coins"></i>
+            </div>
+            <div class="kpi-details">
+              <span class="kpi-label">Valuasi Total Aset Terdata</span>
+              <h3 class="kpi-value text-gold" id="kpi-aset-total-val">Rp 20.742.884</h3>
+              <span class="kpi-subtext"><i class="fa-solid fa-check text-emerald"></i> Terakumulasi 33 Jenis Barang</span>
+            </div>
+          </div>
+
+          <div class="kpi-card glass-panel">
+            <div class="kpi-icon-wrap" style="background: rgba(16, 185, 129, 0.18); color: #34d399;">
+              <i class="fa-solid fa-cubes-stacked"></i>
+            </div>
+            <div class="kpi-details">
+              <span class="kpi-label">Ragam Inventaris</span>
+              <h3 class="kpi-value text-emerald" id="kpi-aset-total-items">33 Macam</h3>
+              <span class="kpi-subtext" id="kpi-aset-total-physical">192+ Fisik Barang Tersimpan</span>
+            </div>
+          </div>
+
+          <div class="kpi-card glass-panel">
+            <div class="kpi-icon-wrap" style="background: rgba(6, 182, 212, 0.18); color: #22d3ee;">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="kpi-details">
+              <span class="kpi-label">Kondisi Laik Pakai (OK)</span>
+              <h3 class="kpi-value text-cyan" id="kpi-aset-ok-rate">32 Aset (97.0%)</h3>
+              <span class="kpi-subtext">Siap Digunakan Fasilitas Warga</span>
+            </div>
+          </div>
+
+          <div class="kpi-card glass-panel">
+            <div class="kpi-icon-wrap" style="background: rgba(244, 63, 94, 0.18); color: #fb7185;">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="kpi-details">
+              <span class="kpi-label">Perlu Peremajaan / Hilang</span>
+              <h3 class="kpi-value text-rose" id="kpi-aset-defect-count">1 Rusak &bull; 1 Hilang</h3>
+              <span class="kpi-subtext">Terpal Alas (Sobek) &amp; 1 Kursi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toolbar Kontrol: Pencarian, Filter & Dual View Switcher -->
+        <div class="aset-toolbar glass-panel mb-4">
+          <div class="aset-toolbar-search">
+            <i class="fa-solid fa-magnifying-glass text-gold"></i>
+            <input type="text" id="input-search-aset" placeholder="Cari nama aset, spesifikasi, merek, atau keterangan...">
+            <button type="button" class="btn-clear-search" id="btn-clear-search-aset" style="display:none;" title="Hapus pencarian">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="aset-toolbar-filters">
+            <!-- Filter Kategori -->
+            <div class="filter-box">
+              <label for="filter-kategori-aset" title="Pilih Kategori"><i class="fa-solid fa-layer-group text-emerald"></i></label>
+              <select id="filter-kategori-aset" class="custom-select">
+                <option value="all">Semua Kategori (33)</option>
+                <option value="tenda_lapangan">🏕️ Tenda &amp; Fasilitas Lapangan</option>
+                <option value="elektronik">⚡ Elektronik &amp; Mesin</option>
+                <option value="pos_dapur">🍽️ Peralatan Pos &amp; Dapur</option>
+                <option value="event">🎉 Perlengkapan Event &amp; 17-an</option>
+              </select>
+            </div>
+
+            <!-- Filter Kondisi -->
+            <div class="filter-box">
+              <label for="filter-kondisi-aset" title="Pilih Kondisi"><i class="fa-solid fa-heart-pulse text-gold"></i></label>
+              <select id="filter-kondisi-aset" class="custom-select">
+                <option value="all">Semua Kondisi</option>
+                <option value="ok">✅ Laik Pakai (OK)</option>
+                <option value="defect">⚠️ Rusak / Hilang / Butuh Perbaikan</option>
+              </select>
+            </div>
+
+            <!-- Filter Sumber Dana -->
+            <div class="filter-box">
+              <label for="filter-sumber-aset" title="Pilih Sumber Dana"><i class="fa-solid fa-hand-holding-dollar text-cyan"></i></label>
+              <select id="filter-sumber-aset" class="custom-select">
+                <option value="all">Semua Sumber Dana</option>
+                <option value="Kas Jimpitan">Kas Jimpitan Ronda</option>
+                <option value="Saweran Warga">Saweran / Donasi Warga</option>
+                <option value="Halal Bihalal">Dana Halal Bihalal</option>
+                <option value="Sumbangan Warga">Hibah / Sumbangan Warga</option>
+                <option value="Kas RT">Kas Utama RT</option>
+              </select>
+            </div>
+
+            <!-- Toggle View Switcher -->
+            <div class="view-mode-toggle-group" role="group" aria-label="Mode Tampilan">
+              <button type="button" class="btn-toggle-view active" id="btn-view-cards" title="Tampilan Kartu Visual">
+                <i class="fa-solid fa-grip"></i>
+                <span class="d-none-mobile">Kartu</span>
+              </button>
+              <button type="button" class="btn-toggle-view" id="btn-view-table" title="Tampilan Tabel Eksekutif">
+                <i class="fa-solid fa-table-list"></i>
+                <span class="d-none-mobile">Tabel</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Status Counter -->
+        <div class="aset-result-status-row mb-3">
+          <span class="aset-result-text">Menampilkan <strong id="aset-displayed-count" class="text-emerald">33</strong> aset terinventarisir</span>
+          <button type="button" class="btn-reset-filters" id="btn-reset-aset-filters" style="display: none;">
+            <i class="fa-solid fa-rotate-left"></i> Reset Filter
+          </button>
+        </div>
+
+        <!-- VIEW 1: GRID VIEW (KARTU MEWAH) -->
+        <div class="aset-cards-grid" id="aset-grid-view">
+          <!-- Dynamically populated via renderAsetRt() -->
+        </div>
+
+        <!-- VIEW 2: TABLE VIEW (TABEL EKSEKUTIF) -->
+        <div class="aset-table-wrap glass-panel" id="aset-table-view" style="display: none;">
+          <div class="table-responsive">
+            <table class="luxury-table" id="table-aset-full">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">No</th>
+                  <th>Nama Barang / Inventaris</th>
+                  <th>Kategori</th>
+                  <th style="text-align: center;">Jumlah (Qty)</th>
+                  <th>Tahun Beli</th>
+                  <th style="text-align: right;">Harga / Nilai Perolehan</th>
+                  <th style="text-align: center;">Status Kondisi</th>
+                  <th>Sumber Pengadaan &amp; Catatan</th>
+                  <th style="text-align: center;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-aset-full">
+                <!-- Dynamically populated via renderAsetRt() -->
+              </tbody>
+              <tfoot>
+                <tr class="aset-table-tfoot-row">
+                  <td colspan="5" style="text-align: right; font-weight: 800; font-family: var(--font-heading); letter-spacing: 0.05em;">
+                    <i class="fa-solid fa-calculator text-gold"></i> TOTAL VALUASI ASET TERDATA:
+                  </td>
+                  <td style="text-align: right; font-weight: 800; color: #fbbf24; font-size: 1.05rem;" id="tfoot-aset-total-val">
+                    Rp 20.742.884
+                  </td>
+                  <td colspan="3"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
 
       <!-- View: Portal Warga Terverifikasi (Layanan & Dashboard Personal Warga) -->
       <section class="view-section" id="view-portal-warga">
@@ -5372,6 +5590,135 @@
     </div>
   </div>
 
+  <!-- Modal: Tambah / Edit Inventaris Aset RT -->
+  <div class="modal-backdrop" id="modal-add-aset">
+    <div class="modal-content glass-panel luxury-modal" style="max-width: 640px;">
+      <div class="modal-header">
+        <div>
+          <span class="modal-pre-tag text-emerald"><i class="fa-solid fa-boxes-stacked"></i> INVENTARISASI RT.001</span>
+          <h3 id="modal-aset-title" style="margin:0;"><i class="fa-solid fa-box-open text-gold"></i> Catat Inventaris Aset Baru</h3>
+        </div>
+        <button class="modal-close" data-close="modal-add-aset">&times;</button>
+      </div>
+
+      <form id="form-add-aset" style="padding-top: 1rem;">
+        <input type="hidden" id="input-aset-id" value="">
+
+        <div class="form-group mb-3">
+          <label for="input-aset-nama" style="display:block; font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:0.35rem;">
+            <i class="fa-solid fa-tag text-emerald"></i> Nama Barang / Inventaris:
+          </label>
+          <input type="text" id="input-aset-nama" class="form-input" placeholder="Contoh: Mesin Pemotong Rumput Honda" required>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;" class="mb-3">
+          <div class="form-group">
+            <label for="input-aset-kategori" style="display:block; font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:0.35rem;">
+              <i class="fa-solid fa-layer-group text-cyan"></i> Kategori:
+            </label>
+            <select id="input-aset-kategori" class="form-input" required>
+              <option value="tenda_lapangan">🏕️ Tenda &amp; Fasilitas Lapangan</option>
+              <option value="elektronik">⚡ Elektronik &amp; Mesin</option>
+              <option value="pos_dapur">🍽️ Peralatan Pos &amp; Dapur</option>
+              <option value="event">🎉 Perlengkapan Event &amp; 17-an</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="input-aset-kondisi" style="display:block; font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:0.35rem;">
+              <i class="fa-solid fa-heart-pulse text-gold"></i> Kondisi Fisik:
+            </label>
+            <select id="input-aset-kondisi" class="form-input" required>
+              <option value="ok">✅ Laik Pakai (OK)</option>
+              <option value="sebagian_rusak">⚠️ Sebagian Rusak / Kurang</option>
+              <option value="rusak">❌ Rusak / Tidak Laik Pakai</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;" class="mb-3">
+          <div class="form-group">
+            <label for="input-aset-qty" style="display:block; font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:0.35rem;">
+              <i class="fa-solid fa-calculator text-emerald"></i> Jumlah Kuantitas &amp; Satuan:
+            </label>
+            <div style="display:flex; gap:0.5rem;">
+              <input type="number" id="input-aset-qty" class="form-input" value="1" min="1" required style="width:90px;">
+              <input type="text" id="input-aset-satuan" class="form-input" placeholder="unit / pcs / meter" value="unit" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="input-aset-harga" style="display:block; font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:0.35rem;">
+              <i class="fa-solid fa-coins text-gold"></i> Nilai Perolehan / Harga (Rp):
+            </label>
+            <input type="number" id="input-aset-harga" class="form-input" placeholder="0 jika hibah/inventaris" value="0">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem;" class="mb-3">
+          <div class="form-group">
+            <label for="input-aset-pembelian" style="display:block; font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:0.35rem;">
+              <i class="fa-solid fa-calendar text-cyan"></i> Waktu Pengadaan / Beli:
+            </label>
+            <input type="text" id="input-aset-pembelian" class="form-input" placeholder="Contoh: Juli 2023 atau -">
+          </div>
+
+          <div class="form-group">
+            <label for="input-aset-sumber" style="display:block; font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:0.35rem;">
+              <i class="fa-solid fa-hand-holding-dollar text-emerald"></i> Sumber Pendanaan:
+            </label>
+            <select id="input-aset-sumber" class="form-input">
+              <option value="Kas RT">Kas Utama RT</option>
+              <option value="Kas Jimpitan">Kas Jimpitan Ronda</option>
+              <option value="Saweran Warga">Saweran / Donasi Warga</option>
+              <option value="Halal Bihalal">Dana Halal Bihalal</option>
+              <option value="Sumbangan Warga">Hibah / Sumbangan Warga</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="input-aset-keterangan" style="display:block; font-size:0.85rem; font-weight:600; color:#cbd5e1; margin-bottom:0.35rem;">
+            <i class="fa-solid fa-comment-dots text-gold"></i> Lokasi Penyimpanan &amp; Catatan Khusus:
+          </label>
+          <textarea id="input-aset-keterangan" class="form-input" rows="2" placeholder="Contoh: Tersimpan di rak besi Pos Kamling RT.001"></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.75rem;">
+          <button type="button" class="btn btn-outline" data-close="modal-add-aset">Batal</button>
+          <button type="submit" class="btn btn-emerald" id="btn-save-aset">
+            <i class="fa-solid fa-floppy-disk"></i> Simpan Inventaris Aset
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Cetak Berita Acara / Laporan Aset RT.001 -->
+  <div class="modal-backdrop" id="modal-print-aset">
+    <div class="modal-content glass-panel luxury-modal" style="max-width: 820px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header d-print-none">
+        <div>
+          <span class="modal-pre-tag text-emerald"><i class="fa-solid fa-print"></i> BERITA ACARA &amp; LAPORAN ASET</span>
+          <h3 style="margin:0;"><i class="fa-solid fa-file-invoice text-gold"></i> Pratinjau Laporan Aset RT.001</h3>
+        </div>
+        <button class="modal-close" data-close="modal-print-aset">&times;</button>
+      </div>
+
+      <!-- Printable Document Container -->
+      <div class="aset-print-doc" id="aset-print-doc-content" style="background:#ffffff; color:#0f172a; padding: 2rem; border-radius: 12px; margin-top: 1rem;">
+        <!-- Dynamically injected via JS -->
+      </div>
+
+      <div class="d-print-none" style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+        <button type="button" class="btn btn-outline" data-close="modal-print-aset">Tutup</button>
+        <button type="button" class="btn btn-emerald" id="btn-execute-print-aset">
+          <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Luxury Scroll-to-Top Button -->
   <button id="btn-scroll-top" class="scroll-to-top-btn" title="Kembali ke Bagian Atas Halaman (1-Klik)" aria-label="Kembali ke Bagian Atas">
     <div class="scroll-top-icon-wrapper">
@@ -5384,6 +5731,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.6.7"></script>
+  <script src="app.js?v=2.6.8"></script>
 </body>
 </html>
