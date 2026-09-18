@@ -8767,6 +8767,36 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Hub Section Header & Badge */
+.hub-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  padding: 0 0.25rem;
+}
+
+.hub-section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #a7f3d0;
+  text-transform: uppercase;
+}
+
+.hub-section-hint {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
 /* 6 Interactive Cards Grid */
 .hub-cards-grid {
   display: grid;
@@ -9166,55 +9196,226 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 768px) {
+  /* ---- Mobile Navbar Optimization ---- */
+  .public-nav-container {
+    padding: 0.65rem 0.85rem;
+    gap: 0.5rem;
+  }
+
+  .public-brand {
+    gap: 0.55rem;
+  }
+
+  .public-brand-logo-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    padding: 2px;
+  }
+
+  .public-logo-img {
+    height: 26px;
+  }
+
+  .public-brand-main {
+    font-size: 1.05rem;
+    line-height: 1.1;
+  }
+
+  .public-brand-sub {
+    font-size: 0.68rem;
+  }
+
+  .public-nav-actions {
+    gap: 0.35rem;
+  }
+
+  .nav-portal-group {
+    padding: 0.15rem;
+    gap: 0.25rem;
+  }
+
+  .btn-nav-portal {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.76rem;
+    gap: 0.3rem;
+  }
+
+  .btn-nav-portal i {
+    font-size: 0.78rem;
+  }
+
+  .btn-drawer-trigger {
+    padding: 0.42rem 0.8rem;
+    font-size: 0.78rem;
+    gap: 0.4rem;
+  }
+
+  .drawer-trigger-badge {
+    width: 18px;
+    height: 18px;
+    font-size: 0.68rem;
+  }
+
+  /* ---- Mobile Hub: Prioritaskan Menu Layanan Langsung di Atas ---- */
   .public-home-hub {
-    padding: 1.25rem 1rem;
+    padding: 1rem 0.85rem;
     min-height: auto;
   }
-  .hub-hero-title {
-    font-size: 1.85rem;
+
+  .hub-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
   }
+
+  /* Urutan Re-Ordering di HP: Header -> Menu Layanan (ATAS) -> Event Banner -> Ticker -> Grafik -> Footer */
+  .hub-hero-header {
+    order: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .hub-grid-section {
+    order: 2;
+    margin-bottom: 1.25rem;
+  }
+
+  .hub-event-banner-wrap {
+    order: 3;
+    margin-bottom: 1.25rem;
+  }
+
+  .hub-ticker-bar {
+    order: 4;
+    margin-bottom: 1.25rem;
+  }
+
+  .hub-chart-spotlight {
+    order: 5;
+    margin-bottom: 1.25rem;
+  }
+
+  .hub-mini-footer {
+    order: 6;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+
+  .hub-hero-title {
+    font-size: 1.7rem;
+  }
+
   .cyber-badge-h1 {
-    padding: 0.75rem 1rem 0.9rem 1rem;
-    border-radius: 16px;
+    padding: 0.65rem 0.85rem 0.75rem 0.85rem;
+    border-radius: 14px;
     width: 100%;
     max-width: 100%;
   }
+
   .cyber-badge-tag {
-    font-size: 0.68rem;
-    padding: 0.22rem 0.7rem;
-    gap: 0.35rem;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+    gap: 0.3rem;
   }
+
   .cyber-text-glow {
-    font-size: 1.55rem;
+    font-size: 1.4rem;
   }
+
   .cyber-corner-bracket {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
+
   .hub-hero-subtitle {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
+    line-height: 1.45;
   }
+
+  /* Grid Menu Layanan 2-Kolom di Layar HP agar Compact & Mudah Dijangkau */
   .hub-cards-grid {
-    grid-template-columns: 1fr;
-    gap: 0.9rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
   }
+
+  .hub-card {
+    padding: 1.1rem 0.95rem;
+    border-radius: 16px;
+  }
+
+  .hub-card-header {
+    margin-bottom: 0.65rem;
+  }
+
+  .hub-card-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    font-size: 1rem;
+  }
+
+  .hub-card-badge {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .hub-card-title {
+    font-size: 0.98rem;
+    margin-bottom: 0.35rem;
+    line-height: 1.25;
+  }
+
+  .hub-card-desc {
+    font-size: 0.76rem;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .hub-card-action {
+    font-size: 0.74rem;
+  }
+
   .hub-ticker-bar {
     grid-template-columns: 1fr;
     padding: 0.75rem 1rem;
   }
+
   .subview-header-bar {
     top: 60px;
     padding: 0.6rem 1rem;
   }
+
   .subview-breadcrumb {
     display: none;
   }
+
   .public-drawer-panel {
     width: 100%;
     max-width: 100vw;
   }
-  .hub-mini-footer {
-    flex-direction: column;
-    align-items: flex-start;
+}
+
+@media (max-width: 480px) {
+  .public-nav-container {
+    padding: 0.5rem 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .public-brand-sub {
+    display: none; /* Sembunyikan subtext 'Graha Asri' agar baris pertama sangat lega */
+  }
+
+  .btn-drawer-trigger .drawer-trigger-text {
+    font-size: 0.74rem;
+  }
+
+  .hub-cards-grid {
+    grid-template-columns: 1fr; /* Di layar HP yang sangat kecil (360px) 1 kolom elegan */
+    gap: 0.85rem;
   }
 }
 
