@@ -22,7 +22,7 @@
   <!-- Chart.js for Executive Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <link rel="stylesheet" href="styles.css?v=2.7.0">
+  <link rel="stylesheet" href="styles.css?v=2.8.3">
 </head>
 <body>
 
@@ -339,7 +339,7 @@
             </div>
             <button type="button" class="btn-hub-event-trigger" id="btn-reopen-event-popup" title="Buka Pengumuman Event Terdekat">
               <span class="event-trigger-dot"></span>
-              <i class="fa-solid fa-bullhorn text-emerald"></i>
+              <i class="fa-solid fa-bullhorn"></i>
               <span>Event Terdekat</span>
             </button>
           </div>
@@ -1903,49 +1903,26 @@
 
       <!-- Role Selector -->
       <div class="login-section" id="login-main-view">
-        <p class="login-section-title">
-          <i class="fa-solid fa-users-gear"></i> Pilih Akun Akses Portal
-        </p>
-        <div class="login-role-grid">
-          <button class="login-role-card" id="login-card-b1" data-role="b1">
-            <div class="login-role-icon gold-icon">
-              <i class="fa-solid fa-crown"></i>
-            </div>
-            <span class="login-role-name">Bendahara 1</span>
-            <span class="login-role-desc">Admin RBAC</span>
-            <span class="login-role-pill b1-pill">Keuangan Utama</span>
-          </button>
-          <button class="login-role-card" id="login-card-b2" data-role="b2">
-            <div class="login-role-icon emerald-icon">
-              <i class="fa-solid fa-moon"></i>
-            </div>
-            <span class="login-role-name">Admin 2</span>
-            <span class="login-role-desc">Koordinator Jimpitan</span>
-            <span class="login-role-pill b2-pill">JIMPITAN</span>
-          </button>
-          <button class="login-role-card" id="login-card-pengurus" data-role="pengurus">
-            <div class="login-role-icon purple-icon">
-              <i class="fa-solid fa-user-tie"></i>
-            </div>
-            <span class="login-role-name">Pengurus RT</span>
-            <span class="login-role-desc">Agenda &amp; Aspirasi</span>
-            <span class="login-role-pill pengurus-pill">PENGURUS</span>
-          </button>
-          <button class="login-role-card" id="login-card-warga" data-role="warga">
-            <div class="login-role-icon cyan-icon">
-              <i class="fa-solid fa-house-user"></i>
-            </div>
-            <span class="login-role-name">Warga RT.001</span>
-            <span class="login-role-desc">Layanan Mandiri Warga</span>
-            <span class="login-role-pill warga-pill">WARGA</span>
-          </button>
+        <!-- Direct Portal Header Banner -->
+        <div id="login-direct-header" class="login-direct-header" style="display: block;">
+          <div class="direct-portal-badge" id="direct-portal-badge">
+            <i id="direct-portal-icon" class="fa-solid fa-house-chimney-user"></i>
+            <span id="direct-portal-name">Portal Mandiri Warga RT.001</span>
+          </div>
+          <h3 class="direct-portal-title" id="direct-portal-title">Masuk Portal Warga</h3>
+          <p class="direct-portal-subtitle" id="direct-portal-subtitle">Silakan masukkan password rumah Anda</p>
         </div>
 
-        <!-- Container 1: PIN Input for Admin 1, Admin 2, Pengurus RT -->
-        <div class="login-form-group" id="login-pin-section">
+        <!-- Hidden from layout (Direct PIN mode active - cards removed) -->
+        <div id="login-pengurus-chips" style="display: none !important;"></div>
+        <p class="login-section-title" id="login-section-title" style="display: none !important;"></p>
+        <div class="login-role-grid" id="login-role-grid" style="display: none !important;"></div>
+
+        <!-- Container 1: PIN Input for Pengurus RT (1111 / 2222 / 3333) -->
+        <div class="login-form-group" id="login-pin-section" style="display:none;">
           <label class="login-label">
-            <i class="fa-solid fa-lock"></i>
-            Masukkan PIN &mdash; <span id="login-selected-role-label" class="login-role-hint">Pilih akun dahulu</span>
+            <i class="fa-solid fa-lock text-gold"></i>
+            <span id="login-selected-role-label">Masukkan PIN Pengurus:</span>
           </label>
           <div class="login-input-wrapper">
             <input
@@ -1976,10 +1953,10 @@
         </div>
 
         <!-- Container 2: Password-Only Input for Warga RT.001 (112 KK) -->
-        <div class="login-warga-section" id="login-warga-section" style="display:none;">
+        <div class="login-warga-section" id="login-warga-section" style="display:block;">
           <div class="warga-login-welcome-banner glass-panel mb-3">
             <div class="warga-login-ico-box">
-              <i class="fa-solid fa-house-user text-cyan"></i>
+              <i class="fa-solid fa-house-chimney-user text-cyan"></i>
             </div>
             <div>
               <h4 style="margin:0; font-size:0.95rem; color:#fff;">Portal Mandiri Warga RT.001</h4>
@@ -2018,8 +1995,18 @@
 
         <button class="login-submit-btn" id="btn-login-submit">
           <i class="fa-solid fa-right-to-bracket"></i>
-          <span>MASUK KE SISTEM</span>
+          <span>MASUK KE PORTAL WARGA</span>
         </button>
+
+        <!-- Switch Portal / Mode Links -->
+        <div class="login-switch-row" id="login-switch-row">
+          <button type="button" class="login-switch-btn" id="btn-switch-to-pengurus" style="display:inline-flex;">
+            <i class="fa-solid fa-crown text-gold"></i> Anda Pengurus RT? Masuk di sini
+          </button>
+          <button type="button" class="login-switch-btn" id="btn-switch-to-warga" style="display:none;">
+            <i class="fa-solid fa-house-chimney-user text-cyan"></i> Warga RT.001? Masuk Portal Warga
+          </button>
+        </div>
 
         <button class="login-forgot-link" id="btn-show-forgot">
           <i class="fa-solid fa-key"></i> Bantuan Login &amp; Lupa Sandi
@@ -5734,6 +5721,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.6.9"></script>
+  <script src="app.js?v=2.8.3"></script>
 </body>
 </html>

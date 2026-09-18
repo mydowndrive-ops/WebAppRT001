@@ -2047,15 +2047,139 @@ function formatCurrency(number) {
   return formatRupiah(number);
 }
 
-// Modal helper functions
-function openModal(modalId) {
-  const modal = document.getElementById(modalId);
-  if (modal) modal.classList.add('active');
+// ==================== APP HISTORY & MOBILE BACK NAVIGATION CONTROLLER ====================
+
+let isProgrammaticNav = false;
+let lastRootBackPress = 0;
+
+function pushNavHistory(type, id = null, hash = '') {
+  try {
+    const currentState = window.history.state;
+    if (currentState && currentState.type === type && currentState.id === id) {
+      return;
+    }
+    const targetUrl = hash ? (hash.startsWith('#') ? hash : `#${hash}`) : (window.location.hash || '#hub');
+    window.history.pushState({ appNav: true, type, id, time: Date.now() }, '', targetUrl);
+  } catch (e) {
+    console.warn('pushNavHistory error:', e);
+  }
 }
 
-function closeModal(modalId) {
+function popNavHistory() {
+  isProgrammaticNav = true;
+  window.history.back();
+}
+
+function setupAppHistoryNavigation() {
+  // 1. Initial State Setup (Root Guard)
+  try {
+    const currentHash = window.location.hash || '';
+    if (!currentHash || currentHash === '#' || currentHash === '#hub') {
+      window.history.replaceState({ appNav: true, type: 'root', time: Date.now() }, '', '#hub');
+      window.history.pushState({ appNav: true, type: 'root-guard', time: Date.now() }, '', '#hub');
+    }
+  } catch (e) {
+    console.warn('Initial history setup failed:', e);
+  }
+
+  // 2. Global popstate listener (Menangani tombol Back ponsel / gesture Android / browser)
+  window.addEventListener('popstate', () => {
+    if (isProgrammaticNav) {
+      isProgrammaticNav = false;
+      return;
+    }
+
+    // A. Prioritas 0: Jika Event Popup Banner sedang terbuka
+    const bannerWrap = document.getElementById('hub-event-banner-wrap');
+    if (bannerWrap && (bannerWrap.classList.contains('show-popup') || (bannerWrap.style.display !== 'none' && bannerWrap.style.display !== ''))) {
+      if (typeof window.closeEventPopupBanner === 'function') {
+        window.closeEventPopupBanner(true);
+        return;
+      }
+    }
+
+    // B. Prioritas 1: Jika modal login overlay sedang terbuka
+    const loginOverlay = document.getElementById('login-overlay');
+    if (loginOverlay && loginOverlay.style.display !== 'none' && !loginOverlay.classList.contains('fade-out')) {
+      hideLoginOverlay(true);
+      return;
+    }
+
+    // C. Prioritas 2: Jika drawer menu layanan sedang terbuka
+    const publicDrawer = document.getElementById('public-offcanvas-drawer');
+    if (publicDrawer && publicDrawer.classList.contains('open')) {
+      closePublicDrawer(true);
+      return;
+    }
+
+    // D. Prioritas 3: Jika ada modal dialog aplikasi yang sedang aktif (.modal-backdrop.active atau .modal.active)
+    const activeModal = document.querySelector('.modal-backdrop.active, .modal.active');
+    if (activeModal) {
+      closeModal(activeModal.id, true);
+      return;
+    }
+
+    // E. Prioritas 4: Jika sedang berada di sub-halaman publik (misal: Kegiatan, Demografi, Layanan, Tentang, Pengurus)
+    const publicPortal = document.getElementById('portal-public');
+    const publicHub = document.getElementById('public-home-hub');
+    const isPublicVisible = publicPortal && publicPortal.style.display !== 'none';
+    if (isPublicVisible && publicHub && publicHub.style.display === 'none') {
+      switchPublicView('hub', true);
+      return;
+    }
+
+    // F. Prioritas 5: Jika sedang berada di dashboard/portal aplikasi pengurus (bukan portal publik)
+    const adminApp = document.getElementById('app');
+    if (adminApp && adminApp.style.display !== 'none') {
+      const activeAdminSection = document.querySelector('.view-section.active');
+      const isWarga = state.currentUser === 'warga';
+      const defaultViewId = isWarga ? 'view-portal-warga' : (state.currentUser === 'b2' ? 'view-jimpitan' : 'view-dashboard');
+
+      if (activeAdminSection && activeAdminSection.id !== defaultViewId) {
+        navigateToView(isWarga ? 'portal-warga' : (state.currentUser === 'b2' ? 'jimpitan' : 'dashboard'));
+        return;
+      } else {
+        showPublicPortal();
+        return;
+      }
+    }
+
+    // G. Prioritas 6: Berada di Beranda Utama (Hub)
+    // Terapkan proteksi ganda agar tidak langsung menutup aplikasi / browser secara tidak sengaja
+    const now = Date.now();
+    if (now - lastRootBackPress < 2000) {
+      // Pengguna menekan Back 2x berturut-turut dalam 2 detik -> izinkan browser keluar
+      window.history.back();
+    } else {
+      lastRootBackPress = now;
+      showToast('Tekan sekali lagi untuk keluar dari aplikasi', 'info');
+      // Push guard state kembali agar back berikutnya tetap bisa dicegat
+      try {
+        window.history.pushState({ appNav: true, type: 'root-guard', time: Date.now() }, '', '#hub');
+      } catch (err) {}
+    }
+  });
+}
+
+// Modal helper functions with History API support
+function openModal(modalId) {
   const modal = document.getElementById(modalId);
-  if (modal) modal.classList.remove('active');
+  if (modal) {
+    modal.classList.add('active');
+    if (typeof pushNavHistory === 'function') {
+      pushNavHistory('modal', modalId, `modal-${modalId}`);
+    }
+  }
+}
+
+function closeModal(modalId, fromPopState = false) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.remove('active');
+    if (!fromPopState && typeof popNavHistory === 'function' && window.history.state?.type === 'modal' && window.history.state?.id === modalId) {
+      popNavHistory();
+    }
+  }
 }
 
 const MONTH_NAMES = [
@@ -4392,10 +4516,27 @@ function setupAccountManagementEvents() {
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('RT-FinSmart ServiceWorker registered', reg.scope))
+      navigator.serviceWorker.register('sw.js?v=2.8.3')
+        .then(reg => {
+          console.log('RT-FinSmart ServiceWorker registered', reg.scope);
+          if (reg.update) {
+            reg.update();
+          }
+        })
         .catch(err => console.warn('ServiceWorker registration error', err));
     });
+  }
+
+  // Bersihkan cache lawas browser secara agresif agar pembaruan CSS & JS langsung terlihat
+  if ('caches' in window) {
+    caches.keys().then((keys) => {
+      keys.forEach((key) => {
+        if (key !== 'rt-finsmart-cache-v2.8.3') {
+          console.log('Menghapus cache lama browser:', key);
+          caches.delete(key);
+        }
+      });
+    }).catch(e => console.warn('Cache purge error:', e));
   }
 }
 
@@ -4504,22 +4645,28 @@ function openPublicDrawer() {
   if (drawer) drawer.classList.add('open');
   if (backdrop) backdrop.classList.add('open');
   document.body.style.overflow = 'hidden';
+  if (typeof pushNavHistory === 'function') {
+    pushNavHistory('drawer', null, 'menu');
+  }
 }
 
-function closePublicDrawer() {
+function closePublicDrawer(fromPopState = false) {
   const drawer = document.getElementById('public-offcanvas-drawer');
   const backdrop = document.getElementById('public-drawer-backdrop');
   if (drawer) drawer.classList.remove('open');
   if (backdrop) backdrop.classList.remove('open');
   document.body.style.overflow = '';
+  if (!fromPopState && typeof popNavHistory === 'function' && window.history.state?.type === 'drawer') {
+    popNavHistory();
+  }
 }
 
 /**
  * Ganti Tampilan Publik Secara Modular (Hub 1-Layar vs Sub-Views)
  * Menjamin index.html tidak memanjang ke bawah dan bebas tumpukan.
  */
-function switchPublicView(viewId) {
-  closePublicDrawer();
+function switchPublicView(viewId, fromPopState = false) {
+  closePublicDrawer(true);
   const hub = document.getElementById('public-home-hub');
   const danaView = document.getElementById('view-layanan-pengajuan-dana');
   const allSubviews = document.querySelectorAll('.public-subview');
@@ -4531,6 +4678,14 @@ function switchPublicView(viewId) {
     if (danaView) danaView.style.display = 'none';
     updatePublicStats();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!fromPopState) {
+      if (window.location.hash && window.location.hash !== '#' && window.location.hash !== '#hub') {
+        window.history.replaceState({ appNav: true, type: 'hub' }, '', '#hub');
+      }
+      if (typeof popNavHistory === 'function' && window.history.state?.type === 'subview') {
+        popNavHistory();
+      }
+    }
     return;
   }
 
@@ -4542,9 +4697,11 @@ function switchPublicView(viewId) {
       openPortalWargaPengajuanModal(state.currentVerifiedResident);
     } else {
       showToast('Formulir Pengajuan Dana hanya dapat diakses melalui Portal Warga terverifikasi.', 'info');
-      showLoginOverlay();
-      const wargaRoleCard = document.querySelector('[data-role="warga"]');
-      if (wargaRoleCard) wargaRoleCard.click();
+      if (typeof window.openRoleLogin === 'function') {
+        window.openRoleLogin('warga');
+      } else {
+        showLoginOverlay();
+      }
     }
     return;
   }
@@ -4558,14 +4715,26 @@ function switchPublicView(viewId) {
     targetSubview.style.display = 'block';
 
     if (viewId === 'demografi') {
+      try { renderPublicDemografi(); } catch (e) { console.error('Error demografi', e); }
       renderDemografiUI();
       setTimeout(() => renderDemografiCharts(), 120);
     } else if (viewId === 'layanan') {
+      try { renderPublicKasSummary(); } catch (e) { console.error('Error kas', e); }
       updatePublicStats();
       setTimeout(() => renderPublicAnnualDuesChart(), 120);
+    } else if (viewId === 'kegiatan') {
+      try { renderPublicEventsList(); } catch (e) { console.error('Error events', e); }
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!fromPopState) {
+      if (window.location.hash !== `#${viewId}`) {
+        window.location.hash = viewId;
+      }
+      if (typeof pushNavHistory === 'function') {
+        pushNavHistory('subview', viewId, viewId);
+      }
+    }
   }
 }
 
@@ -5261,20 +5430,24 @@ function renderWargaAnnualDuesChart(selectedYear, chartType = currentWargaAnnual
 /**
  * Tampilkan Modal Login Eksekutif Glassmorphism
  */
-function showLoginOverlay() {
+function showLoginOverlay(defaultRole = 'warga') {
   const overlay = document.getElementById('login-overlay');
   if (overlay) {
     overlay.classList.remove('fade-out');
     overlay.style.display = 'flex';
-    const pinInput = document.getElementById('login-pin-input');
-    if (pinInput) setTimeout(() => pinInput.focus(), 150);
+    if (typeof pushNavHistory === 'function') {
+      pushNavHistory('login', null, 'login');
+    }
+    if (typeof window.applyLoginModeGlobal === 'function') {
+      window.applyLoginModeGlobal(defaultRole === 'pengurus' || defaultRole === 'b1' || defaultRole === 'b2' ? 'direct-pengurus' : 'direct-warga', defaultRole);
+    }
   }
 }
 
 /**
  * Tutup Modal Login Eksekutif
  */
-function hideLoginOverlay() {
+function hideLoginOverlay(fromPopState = false) {
   const overlay = document.getElementById('login-overlay');
   if (overlay) {
     overlay.classList.add('fade-out');
@@ -5283,6 +5456,9 @@ function hideLoginOverlay() {
         overlay.style.display = 'none';
       }
     }, 280);
+    if (!fromPopState && typeof popNavHistory === 'function' && window.history.state?.type === 'login') {
+      popNavHistory();
+    }
   }
 }
 
@@ -5290,120 +5466,134 @@ function hideLoginOverlay() {
 
 function setupLoginPortal() {
   let selectedRole = null;
+  let currentLoginMode = 'direct-warga';
 
-  const overlay      = document.getElementById('login-overlay');
-  const pinInput     = document.getElementById('login-pin-input');
-  const pinSection   = document.getElementById('login-pin-section');
-  const wargaSection = document.getElementById('login-warga-section');
-  const wargaUserInput = document.getElementById('login-warga-user-input');
-  const wargaPassInput = document.getElementById('login-warga-pass-input');
-  const wargaEyeBtn    = document.getElementById('login-warga-eye-btn');
-  const wargaEyeIcon   = document.getElementById('login-warga-eye-icon');
-  const wargaErrorMsg  = document.getElementById('login-warga-error-msg');
-  const eyeBtn       = document.getElementById('login-eye-btn');
-  const eyeIcon      = document.getElementById('login-eye-icon');
-  const checkShowPin = document.getElementById('login-toggle-show-pin');
-  const errorMsg     = document.getElementById('login-error-msg');
-  const roleLabel    = document.getElementById('login-selected-role-label');
-  const submitBtn    = document.getElementById('btn-login-submit');
-  const showForgot   = document.getElementById('btn-show-forgot');
-  const backBtn      = document.getElementById('btn-back-to-login');
-  const mainView     = document.getElementById('login-main-view');
-  const forgotView   = document.getElementById('login-forgot-view');
-  const cardB1       = document.getElementById('login-card-b1');
-  const cardB2       = document.getElementById('login-card-b2');
-  const copyEmailBtn = document.getElementById('btn-copy-reset-email');
-  const closeBtn     = document.getElementById('btn-close-login-overlay');
+  const overlay          = document.getElementById('login-overlay');
+  const pinInput         = document.getElementById('login-pin-input');
+  const pinSection       = document.getElementById('login-pin-section');
+  const wargaSection     = document.getElementById('login-warga-section');
+  const wargaUserInput   = document.getElementById('login-warga-user-input');
+  const wargaPassInput   = document.getElementById('login-warga-pass-input');
+  const wargaEyeBtn      = document.getElementById('login-warga-eye-btn');
+  const wargaEyeIcon     = document.getElementById('login-warga-eye-icon');
+  const wargaErrorMsg    = document.getElementById('login-warga-error-msg');
+  const eyeBtn           = document.getElementById('login-eye-btn');
+  const eyeIcon          = document.getElementById('login-eye-icon');
+  const checkShowPin     = document.getElementById('login-toggle-show-pin');
+  const errorMsg         = document.getElementById('login-error-msg');
+  const roleLabel        = document.getElementById('login-selected-role-label');
+  const submitBtn        = document.getElementById('btn-login-submit');
+  const showForgot       = document.getElementById('btn-show-forgot');
+  const backBtn          = document.getElementById('btn-back-to-login');
+  const mainView         = document.getElementById('login-main-view');
+  const forgotView       = document.getElementById('login-forgot-view');
+  const copyEmailBtn     = document.getElementById('btn-copy-reset-email');
+  const closeBtn         = document.getElementById('btn-close-login-overlay');
 
-  // ---- Dynamic role cards renderer ----
-  window.renderDynamicLoginCards = function() {
-    const grid = document.querySelector('#login-main-view .login-role-grid');
-    if (!grid) return;
-    const accounts = state.adminAccounts || DEFAULT_ACCOUNTS;
-    grid.innerHTML = accounts.map(acc => {
-      const isSelected = selectedRole === acc.id;
-      const isB1 = acc.id === 'b1' || acc.accessLevel === 'B1';
-      const isB2 = acc.id === 'b2';
-      let iconWrapClass = acc.colorClass || (isB1 ? 'gold-icon' : 'emerald-icon');
-      let pillClass = acc.badgeClass || (isB1 ? 'b1-pill' : 'b2-pill');
-      
-      let selClass = '';
-      if (isSelected) {
-        if (acc.id === 'b1') selClass = 'selected-b1';
-        else if (acc.id === 'b2') selClass = 'selected-b2';
-        else if (acc.id === 'pengurus') selClass = 'selected-pengurus';
-        else if (acc.id === 'warga') selClass = 'selected-warga';
-        else selClass = 'selected';
+  // Direct login elements
+  const directHeader     = document.getElementById('login-direct-header');
+  const directBadge      = document.getElementById('direct-portal-badge');
+  const directIcon       = document.getElementById('direct-portal-icon');
+  const directName       = document.getElementById('direct-portal-name');
+  const directTitle      = document.getElementById('direct-portal-title');
+  const directSubtitle   = document.getElementById('direct-portal-subtitle');
+  const pengurusChips    = document.getElementById('login-pengurus-chips');
+  const sectionTitle     = document.getElementById('login-section-title');
+  const roleGrid         = document.getElementById('login-role-grid');
+  const switchToPengurus = document.getElementById('btn-switch-to-pengurus');
+  const switchToWarga    = document.getElementById('btn-switch-to-warga');
+  const showAllAccounts  = document.getElementById('btn-show-all-accounts');
+
+  // ---- Apply Login Mode (Direct Warga or Direct Pengurus ONLY - NO Account Selection Cards) ----
+  function applyLoginMode(mode, targetRole) {
+    currentLoginMode = mode;
+    if (errorMsg) errorMsg.style.display = 'none';
+    if (wargaErrorMsg) wargaErrorMsg.style.display = 'none';
+
+    // Pastikan 4-cards grid dan section title SELALU disembunyikan total
+    if (sectionTitle) sectionTitle.style.display = 'none';
+    if (roleGrid) roleGrid.style.display = 'none';
+    if (pengurusChips) pengurusChips.style.display = 'none';
+    if (showAllAccounts) showAllAccounts.style.display = 'none';
+
+    if (mode === 'direct-pengurus' || targetRole === 'pengurus' || targetRole === 'b1' || targetRole === 'b2') {
+      selectedRole = targetRole || 'pengurus';
+      if (directHeader) {
+        directHeader.style.display = 'block';
+        if (directBadge) directBadge.className = 'direct-portal-badge badge-pengurus-glow';
+        if (directIcon) directIcon.className = 'fa-solid fa-crown text-gold';
+        if (directName) directName.textContent = 'Portal Pengurus RT.001';
+        if (directTitle) directTitle.textContent = 'Masuk Akses Pengurus';
+        if (directSubtitle) directSubtitle.textContent = 'Masukkan PIN Pengurus Anda untuk membuka sistem administrasi & kas';
       }
 
-      return `
-        <button type="button" class="login-role-card ${selClass}" data-role="${acc.id}">
-          <div class="login-role-icon ${iconWrapClass}">
-            <i class="${acc.icon || 'fa-solid fa-user-shield'}"></i>
-          </div>
-          <span class="login-role-name">${acc.name}</span>
-          <span class="login-role-desc">${acc.desc || acc.roleTitle || ''}</span>
-          <span class="login-role-pill ${pillClass}">${acc.badge || 'PENGURUS'}</span>
-        </button>
-      `;
-    }).join('');
+      if (wargaSection) wargaSection.style.display = 'none';
+      if (pinSection) pinSection.style.display = 'block';
+      if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>MASUK KE SISTEM</span>';
 
-    grid.querySelectorAll('.login-role-card').forEach(card => {
-      card.addEventListener('click', () => {
-        selectRole(card.getAttribute('data-role'));
-      });
-    });
-  };
-
-  // ---- Role card selection ----
-  function selectRole(role) {
-    selectedRole = role;
-    const accounts = state.adminAccounts || DEFAULT_ACCOUNTS;
-    const acc = accounts.find(a => a.id === role) || { name: role, accessLevel: 'B1' };
-
-    document.querySelectorAll('#login-main-view .login-role-card').forEach(card => {
-      card.classList.remove('selected-b1', 'selected-b2', 'selected-pengurus', 'selected-warga', 'selected');
-      if (card.getAttribute('data-role') === role) {
-        if (role === 'b1') card.classList.add('selected-b1');
-        else if (role === 'b2') card.classList.add('selected-b2');
-        else if (role === 'pengurus') card.classList.add('selected-pengurus');
-        else if (role === 'warga') card.classList.add('selected-warga');
-        else card.classList.add('selected');
+      if (roleLabel) {
+        roleLabel.textContent = 'Masukkan PIN Pengurus:';
       }
-    });
 
-    if (roleLabel) {
-      roleLabel.textContent = acc.name;
-      roleLabel.style.color = acc.accessLevel === 'B1' ? 'var(--gold-400)' : (acc.accessLevel === 'WARGA' ? '#38bdf8' : 'var(--emerald-400)');
-    }
+      if (switchToPengurus) switchToPengurus.style.display = 'none';
+      if (switchToWarga) switchToWarga.style.display = 'inline-flex';
 
-    if (role === 'warga') {
+      if (pinInput) {
+        pinInput.value = '';
+        setTimeout(() => pinInput.focus(), 150);
+      }
+    } else {
+      // Direct Warga (Default)
+      selectedRole = 'warga';
+      if (directHeader) {
+        directHeader.style.display = 'block';
+        if (directBadge) directBadge.className = 'direct-portal-badge badge-warga-glow';
+        if (directIcon) directIcon.className = 'fa-solid fa-house-chimney-user text-cyan';
+        if (directName) directName.textContent = 'Portal Mandiri Warga RT.001';
+        if (directTitle) directTitle.textContent = 'Masuk Portal Warga';
+        if (directSubtitle) directSubtitle.textContent = 'Masukkan password rumah tangga Anda untuk cek iuran & layanan mandiri';
+      }
+
       if (pinSection) pinSection.style.display = 'none';
       if (wargaSection) wargaSection.style.display = 'block';
       if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>MASUK KE PORTAL WARGA</span>';
-      if (wargaErrorMsg) wargaErrorMsg.style.display = 'none';
+
+      if (switchToPengurus) switchToPengurus.style.display = 'inline-flex';
+      if (switchToWarga) switchToWarga.style.display = 'none';
+
       if (wargaPassInput) {
         wargaPassInput.value = '';
         setTimeout(() => wargaPassInput.focus(), 150);
       }
-    } else {
-      if (pinSection) pinSection.style.display = 'block';
-      if (wargaSection) wargaSection.style.display = 'none';
-      if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>MASUK KE SISTEM</span>';
-      if (errorMsg) errorMsg.style.display = 'none';
-      if (pinInput) { pinInput.value = ''; pinInput.focus(); }
     }
   }
 
-  // Expose selectRole globally for navbar quick portals
+  // Expose applyLoginMode secara global
+  window.applyLoginModeGlobal = applyLoginMode;
+
+  // Switch Portal links
+  if (switchToPengurus) {
+    switchToPengurus.addEventListener('click', (e) => {
+      e.preventDefault();
+      applyLoginMode('direct-pengurus', 'pengurus');
+    });
+  }
+  if (switchToWarga) {
+    switchToWarga.addEventListener('click', (e) => {
+      e.preventDefault();
+      applyLoginMode('direct-warga', 'warga');
+    });
+  }
+
+  // Expose openRoleLogin globally for direct login triggers
   window.openRoleLogin = function(role) {
-    showLoginOverlay();
-    selectRole(role);
+    const isPengurus = (role === 'pengurus' || role === 'b1' || role === 'b2');
+    showLoginOverlay(isPengurus ? 'pengurus' : 'warga');
+    applyLoginMode(isPengurus ? 'direct-pengurus' : 'direct-warga', role || (isPengurus ? 'pengurus' : 'warga'));
   };
 
-  // Initial render of role cards
-  window.renderDynamicLoginCards();
-  selectRole('b1');
+  // Inisialisasi awal ke mode warga
+  applyLoginMode('direct-warga', 'warga');
 
   // ---- Password visibility helper (syncs Eye Icon and Tik Checkbox) ----
   function setPinVisibility(visible) {
@@ -5440,12 +5630,7 @@ function setupLoginPortal() {
 
   // ---- Login submit ----
   function attemptLogin() {
-    if (!selectedRole) {
-      showToast('Pilih akun portal terlebih dahulu.', 'warning');
-      return;
-    }
-
-    // A. Autentikasi Khusus Akun Warga RT.001 (Cukup Masukkan Password Saja)
+    // A. Autentikasi Akun Warga RT.001 (1 input password rumah)
     if (selectedRole === 'warga') {
       const enteredPass = (wargaPassInput?.value || '').trim();
 
@@ -5459,7 +5644,7 @@ function setupLoginPortal() {
         return;
       }
 
-      // Cocokkan terhadap database password 112 warga (case-insensitive & trim)
+      // Cocokkan terhadap database password 112 warga
       const cleanEnteredPass = enteredPass.toLowerCase().replace(/\s+/g, '');
       const matched = (state.residents || []).find(r => {
         if (!r.password) return false;
@@ -5490,13 +5675,37 @@ function setupLoginPortal() {
       return;
     }
 
-    // B. Autentikasi Akun Pengurus (Admin 1, Admin 2, Pengurus RT) dengan PIN
-    const enteredPin = pinInput.value.trim();
-    if (!state.accountPins) state.accountPins = { b1: '1111', b2: '2222', pengurus: '3333' };
-    const correctPin = state.accountPins[selectedRole];
+    // B. Autentikasi Akun Pengurus (PIN 1111 / 2222 / 3333)
+    const enteredPin = (pinInput?.value || '').trim();
+    if (!enteredPin) {
+      showToast('Mohon masukkan PIN Pengurus.', 'warning');
+      if (errorMsg) {
+        errorMsg.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Mohon masukkan PIN Pengurus.';
+        errorMsg.style.display = 'flex';
+      }
+      if (pinInput) pinInput.focus();
+      return;
+    }
 
-    if (enteredPin === correctPin) {
-      // Successful login
+    if (!state.accountPins) state.accountPins = { b1: '1111', b2: '2222', pengurus: '3333' };
+
+    let authenticatedRole = null;
+    // Auto-detect role langsung dari PIN yang dimasukkan pengurus
+    for (const [rId, rPin] of Object.entries(state.accountPins)) {
+      if (rPin === enteredPin) {
+        authenticatedRole = rId;
+        break;
+      }
+    }
+
+    // Periksa juga akun custom jika ada
+    if (!authenticatedRole && state.adminAccounts) {
+      const customAcc = state.adminAccounts.find(a => (a.pin === enteredPin || (a.id === 'b1' && enteredPin === '1111') || (a.id === 'b2' && enteredPin === '2222') || (a.id === 'pengurus' && enteredPin === '3333')));
+      if (customAcc) authenticatedRole = customAcc.id;
+    }
+
+    if (authenticatedRole) {
+      selectedRole = authenticatedRole;
       state.currentUser = selectedRole;
       setSession(selectedRole);
       saveState();
@@ -5505,7 +5714,7 @@ function setupLoginPortal() {
       const accounts = state.adminAccounts || DEFAULT_ACCOUNTS;
       const acc = accounts.find(a => a.id === selectedRole);
 
-      // Cek apakah ada aksi tertunda (misal: Kelola Jadwal Ronda dari landing page)
+      // Cek apakah ada aksi tertunda
       if (typeof window.pendingPengurusAction === 'function') {
         const pendingAction = window.pendingPengurusAction;
         window.pendingPengurusAction = null;
@@ -5526,14 +5735,17 @@ function setupLoginPortal() {
       }
       showToast(`✅ Selamat datang, ${acc ? acc.name : selectedRole}!`, 'success');
     } else {
-      // Wrong PIN
       if (errorMsg) {
+        errorMsg.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> PIN salah. Silakan coba lagi (PIN: 1111 / 2222 / 3333).';
         errorMsg.style.display = 'flex';
         errorMsg.style.animation = 'none';
         requestAnimationFrame(() => { errorMsg.style.animation = ''; });
       }
-      pinInput.value = '';
-      pinInput.focus();
+      showToast('PIN Pengurus salah. Silakan coba lagi.', 'error');
+      if (pinInput) {
+        pinInput.value = '';
+        pinInput.focus();
+      }
     }
   }
 
@@ -5565,10 +5777,39 @@ function setupLoginPortal() {
   }
 
   // ---- Tombol-Tombol Pembuka Login dari Halaman Publik ----
+  // 1. Kartu Unggulan Hub: Portal Mandiri Warga RT.001
+  document.getElementById('card-hub-portal-warga')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (state.currentUser === 'warga' && state.currentVerifiedResident) {
+      showAdminApp();
+      navigateToView('portal-warga');
+    } else {
+      if (typeof window.openRoleLogin === 'function') {
+        window.openRoleLogin('warga');
+      } else {
+        showLoginOverlay('warga');
+      }
+    }
+  });
+
+  // 2. Tombol Footer Hub: Portal Pengurus
+  document.getElementById('btn-open-login-footer')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (['pengurus', 'b1', 'b2'].includes(state.currentUser)) {
+      showAdminApp();
+      navigateToView('pengurus-management');
+    } else {
+      if (typeof window.openRoleLogin === 'function') {
+        window.openRoleLogin('pengurus');
+      } else {
+        showLoginOverlay('pengurus');
+      }
+    }
+  });
+
+  // 3. Trigger Login Lainnya (Hero, Layanan, Nav, Mobile)
   const loginTriggers = [
     'btn-open-login-nav',
-    'btn-open-login-drawer',
-    'btn-open-login-footer',
     'btn-open-login-mobile',
     'btn-open-login-hero',
     'btn-open-login-layanan'
@@ -5578,7 +5819,11 @@ function setupLoginPortal() {
     if (el) {
       el.addEventListener('click', () => {
         closePublicDrawer();
-        showLoginOverlay();
+        if (typeof window.openRoleLogin === 'function') {
+          window.openRoleLogin('pengurus');
+        } else {
+          showLoginOverlay('pengurus');
+        }
       });
     }
   });
@@ -5676,6 +5921,33 @@ function setupPublicPortalNavigation() {
     }
   });
 
+  // Tombol Akses Portal Warga Langsung dari Menu Drawer
+  document.getElementById('btn-drawer-portal-warga')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closePublicDrawer();
+    if (state.currentUser === 'warga' && state.currentVerifiedResident) {
+      showAdminApp();
+      navigateToView('portal-warga');
+    } else {
+      if (typeof window.openRoleLogin === 'function') {
+        window.openRoleLogin('warga');
+      } else {
+        showLoginOverlay();
+      }
+    }
+  });
+
+  // Tombol Masuk RT-FinSmart PRO dari Footer Drawer
+  document.getElementById('btn-open-login-drawer')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closePublicDrawer();
+    if (typeof window.openRoleLogin === 'function') {
+      window.openRoleLogin('b1');
+    } else {
+      showLoginOverlay();
+    }
+  });
+
   // Tombol Buka Drawer dari Sub-Views
   document.querySelectorAll('.btn-subview-drawer, .btn-subview-bottom-drawer').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -5705,7 +5977,13 @@ function setupPublicPortalNavigation() {
     if (subviewTarget) {
       e.preventDefault();
       const viewId = subviewTarget.getAttribute('data-subview');
-      if (viewId) switchPublicView(viewId);
+      if (viewId) {
+        if (window.location.hash !== `#${viewId}`) {
+          window.location.hash = viewId;
+        } else {
+          switchPublicView(viewId);
+        }
+      }
       return;
     }
 
@@ -5713,21 +5991,30 @@ function setupPublicPortalNavigation() {
     const backHubBtn = e.target.closest('[data-action="back-hub"], .btn-subview-back, .btn-subview-bottom-back');
     if (backHubBtn) {
       e.preventDefault();
-      switchPublicView('hub');
+      if (window.location.hash && window.location.hash !== '#' && window.location.hash !== '#hub') {
+        window.history.back();
+      } else {
+        switchPublicView('hub');
+      }
       return;
     }
   });
 
   // 5. Dukungan Deep Linking Hash URL (#tentang, #demografi, dll)
   const handleHashChange = () => {
-    const hash = (window.location.hash || '').replace('#', '');
+    const hash = (window.location.hash || '').replace('#', '').trim();
     if (['tentang', 'demografi', 'layanan', 'kegiatan', 'pengurus', 'pengajuan-dana'].includes(hash)) {
-      switchPublicView(hash);
-    } else if (hash === 'portal-public' || hash === 'hub') {
-      switchPublicView('hub');
+      switchPublicView(hash, true);
+    } else if (hash === 'portal-public' || hash === 'hub' || hash === '') {
+      switchPublicView('hub', true);
     }
   };
   window.addEventListener('hashchange', handleHashChange);
+
+  // Periksa hash pada saat pertama kali load
+  if (window.location.hash && window.location.hash !== '#' && window.location.hash !== '#hub') {
+    handleHashChange();
+  }
 
   // 6. Inisialisasi Kontrol Grafik Iuran Tahunan Publik
   setupPublicAnnualDuesChartEvents();
@@ -5895,9 +6182,12 @@ function setupUpcomingEventBanner() {
       bannerWrap.classList.remove('closing');
     });
     startEventAutoPlay();
+    if (typeof pushNavHistory === 'function') {
+      pushNavHistory('event-popup', null, 'event');
+    }
   };
 
-  window.closeEventPopupBanner = function() {
+  window.closeEventPopupBanner = function(fromPopState = false) {
     if (!bannerWrap) return;
     bannerWrap.classList.add('closing');
     stopEventAutoPlay();
@@ -5905,6 +6195,9 @@ function setupUpcomingEventBanner() {
       bannerWrap.classList.remove('show-popup', 'closing');
       bannerWrap.style.display = 'none';
     }, 280);
+    if (!fromPopState && typeof popNavHistory === 'function' && window.history.state?.type === 'event-popup') {
+      popNavHistory();
+    }
   };
 
   // 1. Tombol Tutup Banner (Tanda Silang X) -> Hanya hilang jika ditekan ini
@@ -6593,6 +6886,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFundRequestModule();
   setupResidentAccountsEvents();
   setupAsetRtModule();
+  setupAppHistoryNavigation();
 
   // Check session → if logged in, go to admin dashboard/portal; else show public landing page
   if (isLoggedIn()) {
