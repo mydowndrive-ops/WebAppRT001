@@ -5557,7 +5557,7 @@ function setupLoginPortal() {
         if (directIcon) directIcon.className = 'fa-solid fa-house-chimney-user text-cyan';
         if (directName) directName.textContent = 'Portal Mandiri Warga RT.001';
         if (directTitle) directTitle.textContent = 'Masuk Portal Warga';
-        if (directSubtitle) directSubtitle.textContent = 'Masukkan password rumah tangga Anda untuk cek iuran & layanan mandiri';
+        if (directSubtitle) directSubtitle.textContent = 'Masukkan PIN Anda untuk cek iuran & layanan mandiri';
       }
 
       if (pinSection) pinSection.style.display = 'none';
