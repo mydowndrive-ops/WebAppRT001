@@ -3469,6 +3469,11 @@ function navigateToView(viewId) {
     viewId = 'jimpitan';
   }
 
+  // If Pengurus attempts to navigate to Checklist or B1-only page, redirect to pengurus-struktur
+  if (state.currentUser === 'pengurus' && (viewId === 'checklist' || B1_ONLY_TARGETS.includes(viewId))) {
+    viewId = 'pengurus-struktur';
+  }
+
   // Hide all sections
   document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
   // Deactivate all nav links
@@ -6482,6 +6487,20 @@ function applyRBAC() {
   // Sidebar and bottom nav menu items
   document.querySelectorAll('[data-role-req]').forEach(el => {
     const req = el.getAttribute('data-role-req');
+    const target = el.getAttribute('data-target');
+
+    // Menu Khusus: Checklist Iuran Wajib dikeluarkan/disembunyikan dari peran Pengurus RT & Warga
+    if (target === 'checklist') {
+      if (isPengurus || isWarga || !isB1) {
+        el.style.display = 'none';
+        return;
+      } else {
+        el.style.display = '';
+        el.classList.remove('menu-item-locked');
+        return;
+      }
+    }
+
     if (req === 'ALL') {
       el.classList.remove('menu-item-locked');
       el.style.display = '';
@@ -6494,7 +6513,7 @@ function applyRBAC() {
       }
     } else if (req === 'B1' && !isB1) {
       el.classList.add('menu-item-locked');
-      if (isWarga) el.style.display = 'none';
+      if (isWarga || isPengurus) el.style.display = 'none';
     } else if (req === 'B2' && isWarga) {
       el.classList.add('menu-item-locked');
       el.style.display = 'none';
