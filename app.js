@@ -1643,7 +1643,7 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1zwrXck7x2H
 
 // App State
 let state = {
-  currentUser: 'b1', // 'b1' = Admin 1 (Full Control & RBAC Master)
+  currentUser: null, // null = Belum login (default public portal warga)
   adminAccounts: JSON.parse(JSON.stringify(DEFAULT_ACCOUNTS)),
   accountPins: { b1: '1111', b2: '2222', pengurus: '3333', warga: '0000' }, // Default PINs
   mandatoryDues: 50000,
@@ -1678,6 +1678,12 @@ function loadState() {
     if (saved) {
       const parsed = JSON.parse(saved);
       state = Object.assign(state, parsed);
+      
+      // Keamanan sesi: jika tidak ada sesi login aktif di sessionStorage, jangan biarkan currentUser tersangkut
+      if (typeof isLoggedIn === 'function' && !isLoggedIn()) {
+        state.currentUser = null;
+        state.currentVerifiedResident = null;
+      }
       
       // Auto-migrate if stored residents is old demo/placeholder data (e.g. contains Bambang Sutrisno)
       if (!state.residents || state.residents.length < 100 || state.residents.some(r => r.name.includes('Bambang Sutrisno'))) {
@@ -4691,7 +4697,7 @@ function switchPublicView(viewId, fromPopState = false) {
 
   // 2. Tampilan Khusus: Layanan Pengajuan Dana (Harus Melalui Portal Warga Terverifikasi)
   if (viewId === 'pengajuan-dana') {
-    if (state.currentUser === 'warga' && state.currentVerifiedResident) {
+    if (isLoggedIn() && state.currentUser === 'warga' && state.currentVerifiedResident) {
       showAdminApp();
       navigateToView('portal-warga');
       openPortalWargaPengajuanModal(state.currentVerifiedResident);
@@ -4700,7 +4706,7 @@ function switchPublicView(viewId, fromPopState = false) {
       if (typeof window.openRoleLogin === 'function') {
         window.openRoleLogin('warga');
       } else {
-        showLoginOverlay();
+        showLoginOverlay('warga');
       }
     }
     return;
@@ -5780,7 +5786,7 @@ function setupLoginPortal() {
   // 1. Kartu Unggulan Hub: Portal Mandiri Warga RT.001
   document.getElementById('card-hub-portal-warga')?.addEventListener('click', (e) => {
     e.preventDefault();
-    if (state.currentUser === 'warga' && state.currentVerifiedResident) {
+    if (isLoggedIn() && state.currentUser === 'warga' && state.currentVerifiedResident) {
       showAdminApp();
       navigateToView('portal-warga');
     } else {
@@ -5795,9 +5801,10 @@ function setupLoginPortal() {
   // 2. Tombol Footer Hub: Portal Pengurus
   document.getElementById('btn-open-login-footer')?.addEventListener('click', (e) => {
     e.preventDefault();
-    if (['pengurus', 'b1', 'b2'].includes(state.currentUser)) {
+    if (isLoggedIn() && ['pengurus', 'b1', 'b2'].includes(state.currentUser)) {
       showAdminApp();
-      navigateToView('pengurus-management');
+      const targetView = state.currentUser === 'pengurus' ? 'pengurus-struktur' : (state.currentUser === 'b2' ? 'jimpitan' : 'dashboard');
+      navigateToView(targetView);
     } else {
       if (typeof window.openRoleLogin === 'function') {
         window.openRoleLogin('pengurus');
@@ -5895,28 +5902,29 @@ function setupPublicPortalNavigation() {
   // Tombol Cepat Portal di Navbar (Warga & Pengurus)
   document.getElementById('btn-nav-portal-warga')?.addEventListener('click', (e) => {
     e.preventDefault();
-    if (state.currentUser === 'warga' && state.currentVerifiedResident) {
+    if (isLoggedIn() && state.currentUser === 'warga' && state.currentVerifiedResident) {
       showAdminApp();
       navigateToView('portal-warga');
     } else {
       if (typeof window.openRoleLogin === 'function') {
         window.openRoleLogin('warga');
       } else {
-        showLoginOverlay();
+        showLoginOverlay('warga');
       }
     }
   });
 
   document.getElementById('btn-nav-portal-pengurus')?.addEventListener('click', (e) => {
     e.preventDefault();
-    if (['pengurus', 'b1', 'b2'].includes(state.currentUser)) {
+    if (isLoggedIn() && ['pengurus', 'b1', 'b2'].includes(state.currentUser)) {
       showAdminApp();
-      navigateToView('pengurus-management');
+      const targetView = state.currentUser === 'pengurus' ? 'pengurus-struktur' : (state.currentUser === 'b2' ? 'jimpitan' : 'dashboard');
+      navigateToView(targetView);
     } else {
       if (typeof window.openRoleLogin === 'function') {
         window.openRoleLogin('pengurus');
       } else {
-        showLoginOverlay();
+        showLoginOverlay('pengurus');
       }
     }
   });
@@ -5925,14 +5933,14 @@ function setupPublicPortalNavigation() {
   document.getElementById('btn-drawer-portal-warga')?.addEventListener('click', (e) => {
     e.preventDefault();
     closePublicDrawer();
-    if (state.currentUser === 'warga' && state.currentVerifiedResident) {
+    if (isLoggedIn() && state.currentUser === 'warga' && state.currentVerifiedResident) {
       showAdminApp();
       navigateToView('portal-warga');
     } else {
       if (typeof window.openRoleLogin === 'function') {
         window.openRoleLogin('warga');
       } else {
-        showLoginOverlay();
+        showLoginOverlay('warga');
       }
     }
   });
@@ -6905,6 +6913,8 @@ document.addEventListener('DOMContentLoaded', () => {
       navigateToView('dashboard');
     }
   } else {
+    state.currentUser = null;
+    state.currentVerifiedResident = null;
     showPublicPortal();
     // Render the app in background so it's ready when user logs in
     try { renderAll(); } catch (e) { console.error('Error pre-rendering admin data', e); }
@@ -8029,13 +8039,13 @@ function setupFundRequestModule() {
  * Tampilkan Halaman / Modal Formulir Layanan Pengajuan Dana (Akses Eksklusif Portal Warga)
  */
 function showFundRequestView() {
-  if (state.currentUser === 'warga' && state.currentVerifiedResident) {
+  if (isLoggedIn() && state.currentUser === 'warga' && state.currentVerifiedResident) {
     showAdminApp();
     navigateToView('portal-warga');
     openPortalWargaPengajuanModal(state.currentVerifiedResident);
   } else {
     showToast('Formulir Pengajuan Dana hanya dapat diakses melalui Portal Warga terverifikasi.', 'info');
-    showLoginOverlay();
+    showLoginOverlay('warga');
     const wargaRoleCard = document.querySelector('[data-role="warga"]');
     if (wargaRoleCard) wargaRoleCard.click();
   }
