@@ -22,9 +22,42 @@
   <!-- Chart.js for Executive Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <link rel="stylesheet" href="styles.css?v=2.6.5">
+  <link rel="stylesheet" href="styles.css?v=2.6.6">
 </head>
 <body>
+
+  <!-- ==================== SPLASH LOADING SCREEN (LOGO RT DENGAN ROTATING LIGHT GLOW) ==================== -->
+  <div id="app-splash-screen" class="app-splash-screen" aria-label="Memuat Aplikasi RT-FinSmart">
+    <div class="splash-content">
+      <div class="splash-logo-container">
+        <!-- Glowing ambient halo -->
+        <div class="splash-ambient-halo"></div>
+        
+        <!-- Circular orbital track -->
+        <div class="splash-orbital-track"></div>
+
+        <!-- Rotating glowing light beam around logo (Cahaya memutari logo) -->
+        <div class="splash-orbital-spinner"></div>
+
+        <!-- Circular White Badge containing new RT Logo (Gambar 3) -->
+        <div class="splash-logo-circle">
+          <img src="assets/logo.png?v=2.6.6" alt="Logo RT.001 / RW.013 Graha Asri" class="splash-logo-img">
+        </div>
+      </div>
+
+      <!-- App Title & Motto -->
+      <div class="splash-brand-info">
+        <h1 class="splash-title">RT.001 / RW.013 GRAHA ASRI</h1>
+        <p class="splash-subtitle">CIPTA KARYA BERSAMA</p>
+      </div>
+
+      <!-- Status Pill with Pulsing Amber Dot -->
+      <div class="splash-status-pill">
+        <span class="splash-pulse-dot"></span>
+        <span class="splash-loading-text">MEMUAT TAMPILAN...</span>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== PUBLIC PORTAL (LANDING PAGE WARGA - DARK LUXURY EMERALD) ==================== -->
   <div id="portal-public" class="portal-public-page">
@@ -52,7 +85,7 @@
       <div class="public-nav-container">
         <a href="javascript:void(0)" class="public-brand" id="nav-brand-link">
           <div class="public-brand-logo-wrap">
-            <img src="assets/logo.png" alt="Logo RT.001" class="public-logo-img">
+            <img src="assets/logo.png?v=2.6.6" alt="Logo RT.001" class="public-logo-img">
           </div>
           <div class="public-brand-title">
             <span class="public-brand-main">RT.001 / RW.013</span>
@@ -5347,6 +5380,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.6.5"></script>
+  <script src="app.js?v=2.6.6"></script>
 </body>
 </html>

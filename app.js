@@ -5806,7 +5806,7 @@ function setupUpcomingEventBanner() {
   // Initial render content
   renderCurrentEvent(0, false);
 
-  // 5. Muncul tiba-tiba di halaman depan publik setelah jeda dramatis 700ms
+  // 5. Muncul tiba-tiba di halaman depan publik setelah splash loading selesai
   setTimeout(() => {
     const publicPortal = document.getElementById('portal-public');
     const hub = document.getElementById('public-home-hub');
@@ -5815,7 +5815,7 @@ function setupUpcomingEventBanner() {
     if (isPublicHubActive && !isLoggedIn()) {
       window.openEventPopupBanner();
     }
-  }, 750);
+  }, 2800);
 }
 
 
@@ -6426,9 +6426,25 @@ function setupScrollToTop() {
   });
 }
 
+// ==================== SPLASH SCREEN CONTROLLER ====================
+
+function setupSplashScreen() {
+  const splash = document.getElementById('app-splash-screen');
+  if (!splash) return;
+
+  // Tampilkan animasi splash selama ~1.85s, lalu transisi keluar secara elegan
+  setTimeout(() => {
+    splash.classList.add('splash-hidden');
+    setTimeout(() => {
+      splash.style.display = 'none';
+    }, 650);
+  }, 1850);
+}
+
 // ==================== INIT ====================
 
 document.addEventListener('DOMContentLoaded', () => {
+  setupSplashScreen();
   loadState();
   setupNavigation();
   setupScrollToTop();
