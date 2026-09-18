@@ -3024,14 +3024,14 @@
             <p>Perolehan & Pengeluaran Kas Ronda Malam Minggu • Input Setiap Hari Minggu</p>
           </div>
           <div class="header-actions-row">
-            <button class="btn btn-outline-cyan" id="btn-admin-manage-ronda">
-              <i class="fa-solid fa-calendar-days text-gold"></i> Atur Petugas Ronda
+            <button class="btn btn-outline-cyan" id="btn-admin-manage-ronda" onclick="window.openManageRondaModal(1)">
+              <i class="fa-solid fa-calendar-days text-gold"></i> Atur Jadwal Ronda
             </button>
-            <button class="btn btn-emerald" id="btn-add-jimpitan-income">
+            <button class="btn btn-emerald" id="btn-add-jimpitan-income" onclick="window.openJimpitanIncomeModal()">
               <i class="fa-solid fa-plus"></i> Catat Perolehan Jimpitan
             </button>
-            <button class="btn btn-outline" id="btn-add-jimpitan-expense">
-              <i class="fa-solid fa-minus"></i> Catat Pengeluaran Ronda
+            <button class="btn btn-outline" id="btn-add-jimpitan-expense" onclick="window.openJimpitanExpenseModal()">
+              <i class="fa-solid fa-minus"></i> Catat Pengeluaran Jimpitan
             </button>
           </div>
         </div>
@@ -3106,7 +3106,7 @@
           <div class="glass-panel" style="padding: 1.5rem; border-radius: var(--radius-lg);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
               <h3 style="font-size:1rem; font-family:var(--font-heading); display:flex; align-items:center; gap:.5rem;">
-                <i class="fa-solid fa-arrow-trend-down text-rose"></i> Riwayat Pengeluaran Kas Ronda
+                <i class="fa-solid fa-arrow-trend-down text-rose"></i> Riwayat Pengeluaran Kas Jimpitan
               </h3>
             </div>
             <div class="table-wrapper" style="max-height:380px; overflow-y:auto;">
@@ -4915,7 +4915,7 @@
   <div class="modal-backdrop" id="modal-add-jimpitan-expense">
     <div class="modal-content glass-panel luxury-modal" style="max-width:500px;">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-cart-shopping text-rose"></i> Catat Pengeluaran Kas Ronda</h3>
+        <h3><i class="fa-solid fa-cart-shopping text-rose"></i> Catat Pengeluaran Jimpitan</h3>
         <button class="modal-close" data-close="modal-add-jimpitan-expense">&times;</button>
       </div>
       <form id="form-jimpitan-expense" style="padding:1rem 0;">
@@ -4936,13 +4936,13 @@
         </div>
         <div class="form-group">
           <label class="form-label">Keterangan Pengeluaran</label>
-          <input type="text" class="form-input" id="jimp-expense-desc" placeholder="Detail pengeluaran kas ronda" required>
+          <input type="text" class="form-input" id="jimp-expense-desc" placeholder="Detail pengeluaran kas jimpitan" required>
         </div>
         <div class="form-group">
           <label class="form-label">Nominal Pengeluaran (Rp)</label>
           <input type="number" class="form-input" id="jimp-expense-amount" placeholder="Contoh: 35000" min="0" required>
         </div>
-        <button type="submit" class="btn btn-outline-rose btn-full"><i class="fa-solid fa-floppy-disk"></i> Simpan Pengeluaran</button>
+        <button type="submit" class="btn btn-outline-rose btn-full"><i class="fa-solid fa-floppy-disk"></i> Simpan Pengeluaran Jimpitan</button>
       </form>
     </div>
   </div>
