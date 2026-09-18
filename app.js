@@ -3821,14 +3821,28 @@ function setupNavigation() {
 }
 
 function navigateToView(viewId) {
-  // If B2 attempts to navigate to B1-only page, redirect to jimpitan
-  if (state.currentUser === 'b2' && B1_ONLY_TARGETS.includes(viewId)) {
+  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
+  const isB2 = currentAcc && currentAcc.accessLevel === 'B2';
+  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
+  const isWarga = currentAcc && currentAcc.accessLevel === 'WARGA';
+
+  const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur'];
+  const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga'];
+  const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'aset-rt'];
+
+  // If B2 attempts to navigate outside allowed pages, redirect to jimpitan
+  if (isB2 && !B2_ALLOWED_TARGETS.includes(viewId)) {
     viewId = 'jimpitan';
   }
 
-  // If Pengurus attempts to navigate to Checklist or B1-only page, redirect to pengurus-struktur
-  if (state.currentUser === 'pengurus' && (viewId === 'checklist' || B1_ONLY_TARGETS.includes(viewId))) {
-    viewId = 'pengurus-struktur';
+  // If Pengurus attempts to navigate outside allowed pages, redirect to dashboard
+  if (isPengurus && !PENGURUS_ALLOWED_TARGETS.includes(viewId)) {
+    viewId = 'dashboard';
+  }
+
+  // If Warga attempts to navigate to admin pages, redirect to portal-warga
+  if (isWarga && !WARGA_ALLOWED_TARGETS.includes(viewId)) {
+    viewId = 'portal-warga';
   }
 
   // Hide all sections
@@ -5833,7 +5847,7 @@ function setupLoginPortal() {
       const isJimpitanOnly = acc && acc.accessLevel === 'B2';
       const isPengurusRole = acc && acc.accessLevel === 'PENGURUS';
       if (isPengurusRole) {
-        navigateToView('pengurus-struktur');
+        navigateToView('dashboard');
       } else if (isJimpitanOnly) {
         navigateToView('jimpitan');
       } else {
@@ -5903,7 +5917,7 @@ function setupLoginPortal() {
     e.preventDefault();
     if (isLoggedIn() && ['pengurus', 'b1', 'b2'].includes(state.currentUser)) {
       showAdminApp();
-      const targetView = state.currentUser === 'pengurus' ? 'pengurus-struktur' : (state.currentUser === 'b2' ? 'jimpitan' : 'dashboard');
+      const targetView = state.currentUser === 'b2' ? 'jimpitan' : 'dashboard';
       navigateToView(targetView);
     } else {
       if (typeof window.openRoleLogin === 'function') {
@@ -6018,7 +6032,7 @@ function setupPublicPortalNavigation() {
     e.preventDefault();
     if (isLoggedIn() && ['pengurus', 'b1', 'b2'].includes(state.currentUser)) {
       showAdminApp();
-      const targetView = state.currentUser === 'pengurus' ? 'pengurus-struktur' : (state.currentUser === 'b2' ? 'jimpitan' : 'dashboard');
+      const targetView = state.currentUser === 'b2' ? 'jimpitan' : 'dashboard';
       navigateToView(targetView);
     } else {
       if (typeof window.openRoleLogin === 'function') {
@@ -7002,7 +7016,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (state.currentUser === 'b2') {
       navigateToView('jimpitan');
     } else if (state.currentUser === 'pengurus') {
-      navigateToView('pengurus-struktur');
+      navigateToView('dashboard');
     } else {
       navigateToView('dashboard');
     }
@@ -7016,90 +7030,82 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// ==================== ADMIN 1 / ADMIN 2 RBAC ACCESS CONTROL ====================
+// ==================== ADMIN 1 / ADMIN 2 / PENGURUS RBAC ACCESS CONTROL ====================
 
-// Pages only Admin 1 can access
-const B1_ONLY_TARGETS = ['dashboard', 'checklist', 'pos-anggaran', 'pengeluaran', 'pengajuan-dana-admin', 'warga', 'laporan', 'pengaturan'];
+// Definisi izin halaman per peran (Role-Based Access Control)
+const B1_RESTRICTED_TARGETS = ['checklist', 'pos-anggaran', 'pengeluaran', 'laporan', 'pengaturan'];
+const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur'];
+const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga'];
+const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'aset-rt'];
 
 function applyRBAC() {
-  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser) || { accessLevel: state.currentUser === 'b2' ? 'B2' : 'B1' };
+  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser) || { accessLevel: state.currentUser === 'b2' ? 'B2' : (state.currentUser === 'pengurus' ? 'PENGURUS' : (state.currentUser === 'warga' ? 'WARGA' : 'B1')) };
   const isB1 = !currentAcc || currentAcc.accessLevel === 'B1';
   const isB2 = currentAcc && currentAcc.accessLevel === 'B2';
   const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
   const isWarga = currentAcc && currentAcc.accessLevel === 'WARGA';
 
-  // Sidebar and bottom nav menu items
-  document.querySelectorAll('[data-role-req]').forEach(el => {
-    const req = el.getAttribute('data-role-req');
+  // Filter menu sidebar dan bottom nav
+  document.querySelectorAll('.menu-item, .bnav-item').forEach(el => {
     const target = el.getAttribute('data-target');
+    if (!target) return;
 
-    // Menu Khusus: Checklist Iuran Wajib dikeluarkan/disembunyikan dari peran Pengurus RT & Warga
-    if (target === 'checklist') {
-      if (isPengurus || isWarga || !isB1) {
-        el.style.display = 'none';
-        return;
-      } else {
-        el.style.display = '';
-        el.classList.remove('menu-item-locked');
-        return;
-      }
-    }
-
-    if (req === 'ALL') {
-      el.classList.remove('menu-item-locked');
+    if (isB1) {
+      // Admin 1 / Bendahara 1 Utama: Akses penuh ke seluruh menu
       el.style.display = '';
-    } else if (req === 'WARGA') {
-      if (isWarga) {
-        el.classList.remove('menu-item-locked');
+      el.classList.remove('menu-item-locked');
+    } else if (isB2) {
+      // Admin 2 / Koordinator Jimpitan: Fokus pada Jimpitan, Aset RT, dan Struktur
+      if (B2_ALLOWED_TARGETS.includes(target)) {
         el.style.display = '';
+        el.classList.remove('menu-item-locked');
       } else {
         el.style.display = 'none';
       }
-    } else if (req === 'B1' && !isB1) {
-      el.classList.add('menu-item-locked');
-      if (isWarga || isPengurus) el.style.display = 'none';
-    } else if (req === 'B2' && isWarga) {
-      el.classList.add('menu-item-locked');
-      el.style.display = 'none';
-    } else {
-      el.classList.remove('menu-item-locked');
-      el.style.display = '';
+    } else if (isPengurus) {
+      // Pengurus RT (Ketua, Sekr, Humas): Monitoring Dashboard, Struktur, Aset, Jimpitan, Pengajuan Dana, dan Data Warga
+      if (PENGURUS_ALLOWED_TARGETS.includes(target)) {
+        el.style.display = '';
+        el.classList.remove('menu-item-locked');
+      } else {
+        el.style.display = 'none';
+      }
+    } else if (isWarga) {
+      // Warga: Hanya Portal Warga, Struktur, dan Aset RT
+      if (WARGA_ALLOWED_TARGETS.includes(target)) {
+        el.style.display = '';
+        el.classList.remove('menu-item-locked');
+      } else {
+        el.style.display = 'none';
+      }
     }
   });
 
-  // If Warga user is on an Admin-only section, redirect them to portal-warga
-  if (isWarga) {
-    const activeSection = document.querySelector('.view-section.active');
-    if (activeSection && activeSection.id !== 'view-portal-warga' && activeSection.id !== 'view-pengurus-struktur' && activeSection.id !== 'view-jimpitan') {
+  // Jika halaman aktif saat ini tidak diizinkan untuk peran pengguna, alihkan otomatis
+  const activeSection = document.querySelector('.view-section.active');
+  if (activeSection) {
+    const activeTarget = activeSection.id.replace('view-', '');
+    if (isWarga && !WARGA_ALLOWED_TARGETS.includes(activeTarget)) {
       navigateToView('portal-warga');
-    }
-  }
-
-  // If Admin 2 / Jimpitan user is on an Admin 1-only section, redirect them to jimpitan
-  if (isB2) {
-    const activeSection = document.querySelector('.view-section.active');
-    if (activeSection && activeSection.id !== 'view-jimpitan' && activeSection.id !== 'view-pengurus-struktur') {
+    } else if (isB2 && !B2_ALLOWED_TARGETS.includes(activeTarget)) {
       navigateToView('jimpitan');
+    } else if (isPengurus && !PENGURUS_ALLOWED_TARGETS.includes(activeTarget)) {
+      navigateToView('dashboard');
     }
   }
 
-  // If Pengurus user is on an Admin 1-only section, redirect them to pengurus-struktur
-  if (isPengurus) {
-    const activeSection = document.querySelector('.view-section.active');
-    if (activeSection && B1_ONLY_TARGETS.includes(activeSection.id.replace('view-', ''))) {
-      navigateToView('pengurus-struktur');
-    }
-  }
-
-  // Quick-pay button: hide for non-Admin 1
+  // Quick-pay button: sembunyikan untuk non-Admin 1
   const qpBtn = document.getElementById('btn-quick-pay');
   if (qpBtn) qpBtn.style.display = isB1 ? '' : 'none';
 
-  // Demografi edit buttons: hide for non-Admin 1 (only Admin 1 can edit)
+  // Demografi edit buttons: sembunyikan untuk non-Admin 1 (hanya Admin 1 yang dapat mengubah demografi)
   const demoTopBtn = document.getElementById('btn-top-open-demografi');
   if (demoTopBtn) demoTopBtn.style.display = isB1 ? '' : 'none';
   const demoWargaBtn = document.getElementById('btn-open-demografi-modal-admin');
   if (demoWargaBtn) demoWargaBtn.style.display = isB1 ? '' : 'none';
+
+  // Sesuaikan tampilan kontrol kas Jimpitan sesuai role
+  renderJimpitan();
 }
 
 function updateUserProfileUI() {
@@ -7236,7 +7242,7 @@ function setupAccountSwitcher() {
       const isJimpitanOnly = acc && acc.accessLevel === 'B2';
       const isPengurusRole = acc && acc.accessLevel === 'PENGURUS';
       if (isPengurusRole) {
-        navigateToView('pengurus-struktur');
+        navigateToView('dashboard');
       } else if (isJimpitanOnly) {
         navigateToView('jimpitan');
       } else {
@@ -7255,18 +7261,30 @@ function setupAccountSwitcher() {
     if (e.key === 'Enter') document.getElementById('btn-confirm-switch-account').click();
   });
 
-  // Intercept navigation to Admin 1-only pages when user has non-B1 access
+  // Intercept navigation to restricted pages based on role
   document.addEventListener('click', e => {
     const navItem = e.target.closest('[data-target]');
     if (!navItem) return;
     const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
     const isB1 = !currentAcc || currentAcc.accessLevel === 'B1';
     if (isB1) return;
+
+    const isB2 = currentAcc && currentAcc.accessLevel === 'B2';
+    const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
     const target = navItem.dataset.target;
-    if (B1_ONLY_TARGETS.includes(target)) {
+
+    if (isB2 && !B2_ALLOWED_TARGETS.includes(target)) {
       e.preventDefault();
       e.stopPropagation();
-      showToast('🔒 Menu ini dikhususkan untuk Administrator Utama (Admin 1 / Bendahara 1).', 'warning');
+      showToast('🔒 Menu ini dikhususkan untuk Administrator Utama atau Pengurus RT.', 'warning');
+      return;
+    }
+
+    if (isPengurus && !PENGURUS_ALLOWED_TARGETS.includes(target)) {
+      e.preventDefault();
+      e.stopPropagation();
+      showToast('🔒 Menu pembukuan iuran & kas utama ini dikhususkan untuk Bendahara 1.', 'warning');
+      return;
     }
   }, true);
 }
@@ -7284,6 +7302,44 @@ function renderJimpitan() {
   const totalIncome = incomes.reduce((s, r) => s + Number(r.amount), 0);
   const totalExpense = expenses.reduce((s, r) => s + Number(r.amount), 0);
   const saldo = totalIncome - totalExpense;
+
+  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
+  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
+  const isB2 = currentAcc && currentAcc.accessLevel === 'B2';
+  const isB1 = !currentAcc || currentAcc.accessLevel === 'B1';
+
+  // Kontrol Hak Akses Tombol Jimpitan
+  const btnIncome = document.getElementById('btn-add-jimpitan-income');
+  const btnExpense = document.getElementById('btn-add-jimpitan-expense');
+  const btnManageRonda = document.getElementById('btn-admin-manage-ronda');
+  const roleBadgeEl = document.getElementById('jimpitan-role-badge');
+
+  if (isPengurus) {
+    // Pengurus RT: Read-Only untuk keuangan jimpitan, namun tetap bisa Atur Petugas Ronda
+    if (btnIncome) btnIncome.style.display = 'none';
+    if (btnExpense) btnExpense.style.display = 'none';
+    if (btnManageRonda) btnManageRonda.style.display = '';
+    if (roleBadgeEl) {
+      roleBadgeEl.style.display = 'inline-flex';
+      roleBadgeEl.innerHTML = '<i class="fa-solid fa-eye text-purple"></i> Mode Pemantauan Pengurus (Hanya Lihat Saldo & Riwayat)';
+      roleBadgeEl.className = 'jimp-role-badge badge-pengurus-mode';
+    }
+  } else {
+    // Admin 2 & Admin 1: Akses Input & Pengelolaan Kas Jimpitan
+    if (btnIncome) btnIncome.style.display = '';
+    if (btnExpense) btnExpense.style.display = '';
+    if (btnManageRonda) btnManageRonda.style.display = '';
+    if (roleBadgeEl) {
+      roleBadgeEl.style.display = 'inline-flex';
+      if (isB2) {
+        roleBadgeEl.innerHTML = '<i class="fa-solid fa-pen-to-square text-emerald"></i> Koordinator Jimpitan (Akses Input & Kelola Kas)';
+        roleBadgeEl.className = 'jimp-role-badge badge-b2-mode';
+      } else {
+        roleBadgeEl.innerHTML = '<i class="fa-solid fa-crown text-gold"></i> Bendahara 1 Utama (Akses Penuh)';
+        roleBadgeEl.className = 'jimp-role-badge badge-b1-mode';
+      }
+    }
+  }
 
   // KPI Cards
   const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -7321,7 +7377,12 @@ function renderJimpitan() {
           <td>${r.koordinator || '-'}</td>
           <td class="text-emerald font-semibold">${formatCurrency(r.amount)}</td>
           <td style="font-size:.78rem; color:var(--text-muted); max-width:120px;">${r.notes || '-'}</td>
-          <td><button class="btn btn-sm btn-outline-rose" data-jimp-delete-income="${r.id}" title="Hapus"><i class="fa-solid fa-trash"></i></button></td>
+          <td>
+            ${isPengurus 
+              ? `<span class="badge-locked-read" title="Pengurus RT dalam mode pemantauan"><i class="fa-solid fa-lock"></i> Kunci</span>`
+              : `<button class="btn btn-sm btn-outline-rose" data-jimp-delete-income="${r.id}" title="Hapus"><i class="fa-solid fa-trash"></i></button>`
+            }
+          </td>
         </tr>`).join('');
     }
   }
@@ -7341,7 +7402,12 @@ function renderJimpitan() {
             <small style="color:var(--text-muted);">${r.category}</small>
           </td>
           <td class="text-rose font-semibold">${formatCurrency(r.amount)}</td>
-          <td><button class="btn btn-sm btn-outline-rose" data-jimp-delete-expense="${r.id}" title="Hapus"><i class="fa-solid fa-trash"></i></button></td>
+          <td>
+            ${isPengurus 
+              ? `<span class="badge-locked-read" title="Pengurus RT dalam mode pemantauan"><i class="fa-solid fa-lock"></i> Kunci</span>`
+              : `<button class="btn btn-sm btn-outline-rose" data-jimp-delete-expense="${r.id}" title="Hapus"><i class="fa-solid fa-trash"></i></button>`
+            }
+          </td>
         </tr>`).join('');
     }
   }
@@ -7358,8 +7424,17 @@ function setupJimpitanEvents() {
     return d.toISOString().split('T')[0];
   };
 
+  const isPengurusUser = () => {
+    const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
+    return currentAcc && currentAcc.accessLevel === 'PENGURUS';
+  };
+
   // Open income modal
   document.getElementById('btn-add-jimpitan-income')?.addEventListener('click', () => {
+    if (isPengurusUser()) {
+      showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
+      return;
+    }
     document.getElementById('jimp-income-date').value = nextSunday();
     document.getElementById('jimp-income-amount').value = '';
     document.getElementById('jimp-income-koordinator').value = '';
@@ -7369,6 +7444,10 @@ function setupJimpitanEvents() {
 
   // Open expense modal
   document.getElementById('btn-add-jimpitan-expense')?.addEventListener('click', () => {
+    if (isPengurusUser()) {
+      showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
+      return;
+    }
     document.getElementById('jimp-expense-date').value = new Date().toISOString().split('T')[0];
     document.getElementById('jimp-expense-amount').value = '';
     document.getElementById('jimp-expense-desc').value = '';
@@ -7378,6 +7457,11 @@ function setupJimpitanEvents() {
   // Submit income form
   document.getElementById('form-jimpitan-income')?.addEventListener('submit', e => {
     e.preventDefault();
+    if (isPengurusUser()) {
+      showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
+      closeModal('modal-add-jimpitan-income');
+      return;
+    }
     const date = document.getElementById('jimp-income-date').value;
     const regu = document.getElementById('jimp-income-regu').value;
     const koordinator = document.getElementById('jimp-income-koordinator').value.trim();
@@ -7405,6 +7489,11 @@ function setupJimpitanEvents() {
   // Submit expense form
   document.getElementById('form-jimpitan-expense')?.addEventListener('submit', e => {
     e.preventDefault();
+    if (isPengurusUser()) {
+      showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
+      closeModal('modal-add-jimpitan-expense');
+      return;
+    }
     const date = document.getElementById('jimp-expense-date').value;
     const category = document.getElementById('jimp-expense-category').value;
     const desc = document.getElementById('jimp-expense-desc').value.trim();
@@ -7433,6 +7522,10 @@ function setupJimpitanEvents() {
     // Delete jimpitan income
     const incomeDelBtn = e.target.closest('[data-jimp-delete-income]');
     if (incomeDelBtn) {
+      if (isPengurusUser()) {
+        showToast('⚠️ Pengurus RT tidak dapat menghapus atau mengedit data Kas Jimpitan.', 'warning');
+        return;
+      }
       const id = incomeDelBtn.getAttribute('data-jimp-delete-income');
       state.jimpitanIncomes = (state.jimpitanIncomes || []).filter(r => r.id !== id);
       saveState();
@@ -7443,6 +7536,10 @@ function setupJimpitanEvents() {
     // Delete jimpitan expense
     const expDelBtn = e.target.closest('[data-jimp-delete-expense]');
     if (expDelBtn) {
+      if (isPengurusUser()) {
+        showToast('⚠️ Pengurus RT tidak dapat menghapus atau mengedit data Kas Jimpitan.', 'warning');
+        return;
+      }
       const id = expDelBtn.getAttribute('data-jimp-delete-expense');
       state.jimpitanExpenses = (state.jimpitanExpenses || []).filter(r => r.id !== id);
       saveState();
