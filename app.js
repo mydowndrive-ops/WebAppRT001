@@ -3437,7 +3437,90 @@ function populateGlobalYearSelect() {
 // ==================== EVENT LISTENERS & NAVIGATION ====================
 
 function setupNavigation() {
-  // Desktop Menu & Mobile Bottom Nav
+  // ==========================================================================
+  // INTERACTIVE SIDEBAR MANAGEMENT (COLLAPSE / EXPAND / AUTO & MOBILE DRAWER)
+  // ==========================================================================
+  const sidebarEl = document.getElementById('sidebar');
+  const appContainerEl = document.getElementById('app');
+  const menuToggleBtn = document.getElementById('menu-toggle');
+  const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+  const sidebarBackdropEl = document.getElementById('sidebar-backdrop');
+
+  const isDesktopScreen = () => window.innerWidth > 1024;
+
+  function toggleSidebarDesktop(forceState) {
+    if (!sidebarEl || !appContainerEl) return;
+    const currentlyCollapsed = sidebarEl.classList.contains('collapsed');
+    const willCollapse = (typeof forceState === 'boolean') ? forceState : !currentlyCollapsed;
+
+    if (willCollapse) {
+      sidebarEl.classList.add('collapsed');
+      appContainerEl.classList.add('sidebar-collapsed');
+      localStorage.setItem('rt_sidebar_collapsed', 'true');
+      if (menuToggleBtn) {
+        menuToggleBtn.title = "Buka Lebar Menu Sidebar (Ctrl+B)";
+      }
+    } else {
+      sidebarEl.classList.remove('collapsed');
+      appContainerEl.classList.remove('sidebar-collapsed');
+      localStorage.setItem('rt_sidebar_collapsed', 'false');
+      if (menuToggleBtn) {
+        menuToggleBtn.title = "Ciutkan Menu Sidebar (Ctrl+B)";
+      }
+    }
+  }
+
+  function toggleSidebarMobile(forceOpen) {
+    if (!sidebarEl) return;
+    const currentlyOpen = sidebarEl.classList.contains('mobile-open');
+    const willOpen = (typeof forceOpen === 'boolean') ? forceOpen : !currentlyOpen;
+
+    if (willOpen) {
+      sidebarEl.classList.add('mobile-open');
+      sidebarBackdropEl?.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    } else {
+      sidebarEl.classList.remove('mobile-open');
+      sidebarBackdropEl?.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function handleUniversalSidebarToggle() {
+    if (isDesktopScreen()) {
+      toggleSidebarDesktop();
+    } else {
+      toggleSidebarMobile();
+    }
+  }
+
+  // Restore or automatically apply sidebar collapse on desktop
+  const savedSidebarPref = localStorage.getItem('rt_sidebar_collapsed');
+  if (isDesktopScreen()) {
+    if (savedSidebarPref === 'true') {
+      toggleSidebarDesktop(true);
+    } else if (savedSidebarPref === null && window.innerWidth < 1280) {
+      // Smart automatic collapse on compact laptop screens to give spacious view
+      toggleSidebarDesktop(true);
+    }
+  }
+
+  // Toggle button event listeners
+  menuToggleBtn?.addEventListener('click', handleUniversalSidebarToggle);
+  sidebarToggleBtn?.addEventListener('click', () => {
+    if (isDesktopScreen()) {
+      toggleSidebarDesktop();
+    } else {
+      toggleSidebarMobile(false);
+    }
+  });
+
+  // Click outside on backdrop to close mobile drawer
+  sidebarBackdropEl?.addEventListener('click', () => {
+    toggleSidebarMobile(false);
+  });
+
+  // Desktop Menu & Mobile Bottom Nav click handling
   const navLinks = document.querySelectorAll('.menu-item, .bnav-item');
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
@@ -3445,14 +3528,42 @@ function setupNavigation() {
       const target = link.getAttribute('data-target');
       navigateToView(target);
 
-      // Close mobile sidebar if open
-      document.getElementById('sidebar')?.classList.remove('mobile-open');
+      // Close mobile sidebar if open on mobile devices
+      if (!isDesktopScreen()) {
+        toggleSidebarMobile(false);
+      }
     });
   });
 
-  // Mobile Hamburger Toggle
-  document.getElementById('menu-toggle')?.addEventListener('click', () => {
-    document.getElementById('sidebar')?.classList.toggle('mobile-open');
+  // Global Keyboard shortcut: Ctrl + B or Alt + S to toggle sidebar
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'b' || e.key === 'B')) {
+      e.preventDefault();
+      handleUniversalSidebarToggle();
+    } else if (e.altKey && (e.key === 's' || e.key === 'S')) {
+      e.preventDefault();
+      handleUniversalSidebarToggle();
+    }
+  });
+
+  // Smooth window resize handling
+  let sidebarResizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(sidebarResizeTimer);
+    sidebarResizeTimer = setTimeout(() => {
+      if (isDesktopScreen()) {
+        toggleSidebarMobile(false);
+        const pref = localStorage.getItem('rt_sidebar_collapsed');
+        if (pref === 'true') {
+          toggleSidebarDesktop(true);
+        } else if (pref === 'false') {
+          toggleSidebarDesktop(false);
+        }
+      } else {
+        sidebarEl?.classList.remove('collapsed');
+        appContainerEl?.classList.remove('sidebar-collapsed');
+      }
+    }, 150);
   });
 
   // Global Period Selectors

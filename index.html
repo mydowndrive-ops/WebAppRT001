@@ -22,7 +22,7 @@
   <!-- Chart.js for Executive Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <link rel="stylesheet" href="styles.css?v=2.6.8">
+  <link rel="stylesheet" href="styles.css?v=2.6.9">
 </head>
 <body>
 
@@ -2067,7 +2067,7 @@
   <!-- ==================== END LOGIN PORTAL ==================== -->
 
   <div class="app-container" id="app">
-    <!-- Sidebar Navigation for Desktop -->
+    <!-- Sidebar Navigation for Desktop & Mobile -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="logo-wrapper">
@@ -2079,62 +2079,65 @@
             <p>RT.001 / RW.013 • Jl. Citarum II</p>
           </div>
         </div>
+        <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" title="Ciutkan / Lebarkan Sidebar (Ctrl+B)" aria-label="Toggle Sidebar">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
       </div>
 
       <nav class="sidebar-menu">
-        <a href="#dashboard" class="menu-item active" data-target="dashboard" data-role-req="B1">
+        <a href="#dashboard" class="menu-item active" data-target="dashboard" data-role-req="B1" data-tooltip="Dashboard Eksekutif">
           <i class="fa-solid fa-chart-pie"></i>
           <span>Dashboard Eksekutif</span>
         </a>
-        <a href="#pengurus-struktur" class="menu-item" data-target="pengurus-struktur" data-role-req="ALL">
+        <a href="#pengurus-struktur" class="menu-item" data-target="pengurus-struktur" data-role-req="ALL" data-tooltip="Struktur Pengurus RT">
           <i class="fa-solid fa-sitemap text-purple"></i>
           <span>Struktur Pengurus RT</span>
           <span class="counter-badge" style="background: rgba(168, 85, 247, 0.25); color: #c084fc;">2022-2027</span>
         </a>
-        <a href="#aset-rt" class="menu-item" data-target="aset-rt" data-role-req="ALL">
+        <a href="#aset-rt" class="menu-item" data-target="aset-rt" data-role-req="ALL" data-tooltip="Inventaris &amp; Aset RT">
           <i class="fa-solid fa-boxes-stacked text-emerald"></i>
           <span>Inventaris &amp; Aset RT</span>
           <span class="counter-badge" id="sidebar-aset-badge" style="background: rgba(16, 185, 129, 0.25); color: #34d399;">33</span>
         </a>
-        <a href="#checklist" class="menu-item" data-target="checklist" data-role-req="B1">
+        <a href="#checklist" class="menu-item" data-target="checklist" data-role-req="B1" data-tooltip="Checklist Iuran Wajib">
           <i class="fa-solid fa-list-check"></i>
           <span>Checklist Iuran Wajib</span>
           <span class="counter-badge" id="sidebar-unpaid-badge">0</span>
         </a>
-        <a href="#pos-anggaran" class="menu-item" data-target="pos-anggaran" data-role-req="B1">
+        <a href="#pos-anggaran" class="menu-item" data-target="pos-anggaran" data-role-req="B1" data-tooltip="6 Pos Anggaran &amp; SHR">
           <i class="fa-solid fa-wallet"></i>
           <span>6 Pos Anggaran & SHR</span>
         </a>
-        <a href="#pengeluaran" class="menu-item" data-target="pengeluaran" data-role-req="B1">
+        <a href="#pengeluaran" class="menu-item" data-target="pengeluaran" data-role-req="B1" data-tooltip="Pengeluaran Kas">
           <i class="fa-solid fa-money-bill-transfer"></i>
           <span>Pengeluaran Kas</span>
         </a>
-        <a href="#jimpitan" class="menu-item" data-target="jimpitan" data-role-req="B2">
+        <a href="#jimpitan" class="menu-item" data-target="jimpitan" data-role-req="B2" data-tooltip="Uang Jimpitan Ronda">
           <i class="fa-solid fa-moon text-gold"></i>
           <span>Uang Jimpitan Ronda</span>
           <span class="counter-badge" id="sidebar-jimpitan-badge" style="background: rgba(16, 185, 129, 0.25); color: #34d399;">Minggu</span>
         </a>
-        <a href="#pengajuan-dana-admin" class="menu-item" data-target="pengajuan-dana-admin" data-role-req="B1">
+        <a href="#pengajuan-dana-admin" class="menu-item" data-target="pengajuan-dana-admin" data-role-req="B1" data-tooltip="Pengajuan Dana Warga">
           <i class="fa-solid fa-hand-holding-dollar text-cyan"></i>
           <span>Pengajuan Dana Warga</span>
           <span class="counter-badge" id="sidebar-pengajuan-badge" style="background: rgba(37, 99, 235, 0.35); color: #60a5fa;">0</span>
         </a>
-        <a href="#warga" class="menu-item" data-target="warga" data-role-req="B1">
+        <a href="#warga" class="menu-item" data-target="warga" data-role-req="B1" data-tooltip="Data Warga">
           <i class="fa-solid fa-users-gear"></i>
           <span>Data Warga</span>
         </a>
-        <a href="#laporan" class="menu-item" data-target="laporan" data-role-req="B1">
+        <a href="#laporan" class="menu-item" data-target="laporan" data-role-req="B1" data-tooltip="Laporan &amp; Pembukuan">
           <i class="fa-solid fa-file-invoice-dollar"></i>
           <span>Laporan & Pembukuan</span>
         </a>
-        <a href="#pengaturan" class="menu-item" data-target="pengaturan" data-role-req="B1">
+        <a href="#pengaturan" class="menu-item" data-target="pengaturan" data-role-req="B1" data-tooltip="Pengaturan Pos &amp; Sistem">
           <i class="fa-solid fa-sliders"></i>
           <span>Pengaturan Pos & Sistem</span>
         </a>
       </nav>
 
       <div class="sidebar-footer">
-        <div class="user-profile-card" id="btn-open-switch-account" title="Klik untuk berganti akun (Admin 1 / Admin 2)">
+        <div class="user-profile-card" id="btn-open-switch-account" title="Klik untuk berganti akun (Admin 1 / Admin 2)" data-tooltip="Profil Akun (Ganti Role)">
           <div class="user-avatar" id="sidebar-user-avatar">
             <i class="fa-solid fa-user-shield text-gold"></i>
           </div>
@@ -2145,24 +2148,27 @@
           <span class="role-badge role-badge-b1" id="sidebar-role-badge">Admin 1</span>
         </div>
         <!-- View Public Web Button -->
-        <button class="sidebar-web-btn" id="btn-sidebar-view-public" title="Buka Halaman Web Profil Warga">
+        <button class="sidebar-web-btn" id="btn-sidebar-view-public" title="Buka Halaman Web Profil Warga" data-tooltip="Lihat Web Profil RT">
           <i class="fa-solid fa-globe"></i>
           <span>Lihat Web Profil RT</span>
         </button>
         <!-- Logout Button -->
-        <button class="sidebar-logout-btn" id="btn-logout" title="Keluar dari sistem">
+        <button class="sidebar-logout-btn" id="btn-logout" title="Keluar dari sistem" data-tooltip="Keluar dari Sistem">
           <i class="fa-solid fa-right-from-bracket"></i>
           <span>Keluar</span>
         </button>
       </div>
     </aside>
 
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
     <!-- Main Content Area -->
     <main class="main-content">
       <!-- Top Executive Header Bar -->
       <header class="top-header">
         <div class="header-left">
-          <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
+          <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Sidebar" title="Sembunyikan / Tampilkan Sidebar (Ctrl+B)">
             <i class="fa-solid fa-bars"></i>
           </button>
           <div class="page-title-group">
@@ -5728,6 +5734,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.6.8"></script>
+  <script src="app.js?v=2.6.9"></script>
 </body>
 </html>
