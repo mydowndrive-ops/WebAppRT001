@@ -22,7 +22,7 @@
   <!-- Chart.js for Executive Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.2">
+  <link rel="stylesheet" href="styles.css?v=2.9.3">
 </head>
 <body>
 
@@ -2109,9 +2109,9 @@
           <i class="fa-solid fa-money-bill-transfer"></i>
           <span>Pengeluaran Kas</span>
         </a>
-        <a href="#non-iuran" class="menu-item" data-target="non-iuran" data-role-req="B1" data-tooltip="Penerimaan Di Luar Iuran">
+        <a href="#non-iuran" class="menu-item" data-target="non-iuran" data-role-req="ALL" data-tooltip="Pemasukkan NON iuran">
           <i class="fa-solid fa-hand-holding-dollar text-cyan"></i>
-          <span>Penerimaan Di Luar Iuran</span>
+          <span>Pemasukkan NON iuran</span>
           <span class="counter-badge" id="sidebar-non-dues-badge" style="background: rgba(6, 182, 212, 0.25); color: #22d3ee;">0</span>
         </a>
         <a href="#jimpitan" class="menu-item" data-target="jimpitan" data-role-req="B2" data-tooltip="Uang Jimpitan Ronda">
@@ -2596,13 +2596,13 @@
         </div>
       </section>
 
-      <!-- View: Penerimaan Di Luar Iuran Bulanan (Khusus Bendahara 1) -->
+      <!-- View: Pemasukkan NON Iuran (Transparansi Kas RT 001) -->
       <section class="view-section" id="view-non-iuran">
         <div class="view-header-banner glass-panel luxury-emerald-glow" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
           <div class="banner-text">
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px;">
-              <h2 style="margin: 0;"><i class="fa-solid fa-hand-holding-dollar text-cyan"></i> Penerimaan Di Luar Iuran Bulanan</h2>
-              <span class="badge-gold-pill"><i class="fa-solid fa-crown text-gold"></i> Khusus Bendahara 1</span>
+              <h2 style="margin: 0;"><i class="fa-solid fa-hand-holding-dollar text-cyan"></i> Pemasukkan NON iuran</h2>
+              <span id="non-dues-role-badge" class="badge-gold-pill"><i class="fa-solid fa-crown text-gold"></i> Khusus Bendahara 1</span>
             </div>
             <p style="margin: 0; color: var(--text-muted);">Pencatatan Pemasukan, Pengeluaran &amp; Saldo Kas Non-Iuran (Donasi Warga, Hibah Pemda/Kelurahan, Sewa Fasum, Sponsor &amp; Daur Ulang)</p>
           </div>
@@ -2614,20 +2614,23 @@
             <button class="btn btn-outline-rose" id="btn-add-non-dues-expense" onclick="window.openAddNonDuesExpenseModal(event)">
               <i class="fa-solid fa-minus-circle"></i> Catat Pengeluaran
             </button>
+            <button class="btn btn-outline-cyan" id="btn-print-non-dues-report" onclick="window.openNonDuesFullReportModal(event)">
+              <i class="fa-solid fa-print"></i> Laporan Lengkap
+            </button>
             <button class="btn btn-outline" id="btn-export-non-dues-csv" onclick="window.exportNonDuesCSV()">
               <i class="fa-solid fa-file-csv"></i> Ekspor CSV
             </button>
           </div>
         </div>
 
-        <!-- KPI Cards: Penerimaan, Pengeluaran, Saldo Kas Non-Iuran -->
+        <!-- KPI Cards: Pemasukkan (Penerimaan), Pengeluaran, Saldo Kas Non-Iuran -->
         <div class="jimpitan-stats-grid" style="margin-top: 1.5rem;">
           <div class="jimpitan-stat-card">
             <div class="jimpitan-icon-box" style="background: rgba(16,185,129,0.18);">
               <i class="fa-solid fa-arrow-trend-up text-emerald" style="font-size:1.5rem;"></i>
             </div>
             <div>
-              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; font-weight:600; letter-spacing:0.5px;">TOTAL PENERIMAAN NON-IURAN</p>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; font-weight:600; letter-spacing:0.5px;">TOTAL PEMASUKKAN (PENERIMAAN)</p>
               <h3 id="non-dues-total-income" style="font-size:1.35rem; font-family:var(--font-heading); color:var(--emerald-400);">Rp 0</h3>
               <small id="non-dues-income-count" style="color:var(--text-muted);">0 transaksi masuk</small>
             </div>
@@ -2651,7 +2654,7 @@
             <div>
               <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; font-weight:600; letter-spacing:0.5px;">SALDO KAS NON-IURAN</p>
               <h3 id="non-dues-saldo" style="font-size:1.35rem; font-family:var(--font-heading); color:var(--gold-400);">Rp 0</h3>
-              <small style="color:var(--text-muted);">Penerimaan − Pengeluaran</small>
+              <small style="color:var(--text-muted);">Pemasukan − Pengeluaran</small>
             </div>
           </div>
 
@@ -3008,6 +3011,27 @@
             <tbody id="tbody-report-pos">
               <!-- Dynamically populated -->
             </tbody>
+          </table>
+
+          <!-- Rekapitulasi Kas Pemasukkan NON Iuran RT -->
+          <h4 class="report-section-heading mt-4"><i class="fa-solid fa-hand-holding-dollar text-cyan"></i> Rekapitulasi Kas Pemasukkan NON Iuran</h4>
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th style="width:40px; text-align:center;">No</th>
+                <th>Kategori Sumber / Pos Non-Iuran</th>
+                <th style="text-align:center;">Jumlah Transaksi</th>
+                <th style="text-align:right;">Pemasukan (Debet)</th>
+                <th style="text-align:right;">Pengeluaran (Kredit)</th>
+                <th style="text-align:right;">Saldo Kas</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-report-non-dues">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+            <tfoot id="tfoot-report-non-dues">
+              <!-- Summary totals -->
+            </tfoot>
           </table>
 
           <!-- Detailed Ledger Transactions in Report -->
@@ -4320,6 +4344,57 @@
                 </button>
               </div>
             </div>
+
+            <!-- Card: Transparansi Pemasukkan NON Iuran RT (Read/View Only Warga) -->
+            <div class="pw-non-dues-card" style="margin-top: 1.5rem; background: rgba(8, 20, 29, 0.65); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: var(--radius-lg); padding: 1.25rem;">
+              <div class="pw-card-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                <div class="pw-card-title" style="display:flex; align-items:center; gap:8px;">
+                  <i class="fa-solid fa-hand-holding-dollar text-cyan" style="font-size:1.2rem;"></i>
+                  <h3 style="font-size:1.05rem; margin:0; font-family:var(--font-heading);">Pemasukkan NON Iuran RT</h3>
+                </div>
+                <span class="badge-pill badge-cyan"><i class="fa-solid fa-eye"></i> Mode Pantau Warga</span>
+              </div>
+              <p class="pw-card-desc" style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;">
+                Transparansi kas non-iuran RT (Donasi sukarela warga, hibah pemerintah, sewa fasum &amp; peralatan, sponsor, dan daur ulang).
+              </p>
+
+              <div class="jimpitan-stats-grid" style="grid-template-columns: repeat(3, 1fr); gap:0.75rem; margin-bottom: 1.25rem;">
+                <div class="jimpitan-stat-card" style="padding:0.75rem; border-radius:10px;">
+                  <div>
+                    <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">TOTAL PEMASUKKAN</p>
+                    <h4 id="pw-non-dues-in" style="font-size:1rem; font-family:var(--font-heading); color:var(--emerald-400); margin:0;">Rp 0</h4>
+                  </div>
+                </div>
+
+                <div class="jimpitan-stat-card" style="padding:0.75rem; border-radius:10px;">
+                  <div>
+                    <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">TOTAL PENGELUARAN</p>
+                    <h4 id="pw-non-dues-out" style="font-size:1rem; font-family:var(--font-heading); color:var(--rose-400); margin:0;">Rp 0</h4>
+                  </div>
+                </div>
+
+                <div class="jimpitan-stat-card" style="padding:0.75rem; border-radius:10px; border-color:rgba(245,158,11,0.35);">
+                  <div>
+                    <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">SALDO BERSIH KAS</p>
+                    <h4 id="pw-non-dues-saldo" style="font-size:1rem; font-family:var(--font-heading); color:var(--gold-400); margin:0;">Rp 0</h4>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.08);">
+                <small id="pw-non-dues-last-tx" style="color:var(--text-muted); font-size:0.78rem;">
+                  <i class="fa-regular fa-clock text-gold"></i> Memuat mutasi terbaru...
+                </small>
+                <div style="display:flex; gap:8px;">
+                  <button type="button" class="btn btn-outline-cyan btn-xs" onclick="navigateToView('non-iuran')">
+                    <i class="fa-solid fa-eye"></i> Rincian Kas
+                  </button>
+                  <button type="button" class="btn btn-outline-gold btn-xs" onclick="window.openNonDuesFullReportModal(event)">
+                    <i class="fa-solid fa-print"></i> Laporan Lengkap
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Col 2: Jadwal Ronda & Layanan Fasilitas -->
@@ -5242,7 +5317,7 @@
   <div class="modal-backdrop" id="modal-add-non-dues-income">
     <div class="modal-content glass-panel luxury-modal" style="max-width:550px;">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-hand-holding-dollar text-emerald"></i> Catat Penerimaan Di Luar Iuran</h3>
+        <h3><i class="fa-solid fa-hand-holding-dollar text-emerald"></i> Catat Pemasukkan NON Iuran</h3>
         <button type="button" class="modal-close" onclick="closeModal('modal-add-non-dues-income')" data-close="modal-add-non-dues-income">&times;</button>
       </div>
       <form id="form-non-dues-income" onsubmit="event.preventDefault(); window.handleNonDuesIncomeSubmit(event);" style="padding:1rem 0;">
@@ -5370,6 +5445,106 @@
         <button type="button" class="btn btn-outline" onclick="closeModal('modal-non-dues-receipt')">Tutup</button>
         <div style="display:flex; gap:8px;">
           <button type="button" class="btn btn-emerald" id="btn-share-non-dues-wa"><i class="fa-brands fa-whatsapp"></i> Bagikan ke WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Laporan Lengkap Pemasukkan NON Iuran (Pemasukkan, Pengeluaran, Saldo) -->
+  <div class="modal-backdrop" id="modal-non-dues-report">
+    <div class="modal-content glass-panel luxury-modal" style="max-width:820px; width:95%;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-file-invoice-dollar text-cyan"></i> Laporan Lengkap Pemasukkan NON Iuran</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modal-non-dues-report')" data-close="modal-non-dues-report">&times;</button>
+      </div>
+      <div style="padding:1rem 0; max-height:72vh; overflow-y:auto;" id="printable-non-dues-report-area">
+        <!-- Letterhead Kop Resmi -->
+        <div class="report-letterhead" style="text-align:center; border-bottom:2px solid var(--border-color); padding-bottom:1rem; margin-bottom:1.25rem;">
+          <h2 style="font-size:1.15rem; margin:0 0 4px 0; color:var(--text-primary); font-family:var(--font-heading);">RUKUN TETANGGA 001 / RUKUN WARGA 013</h2>
+          <p style="margin:0 0 4px 0; font-size:0.85rem; color:var(--text-secondary); font-weight:600;">PERUMAHAN GRAHA ASRI - SEKTOR GRAHA JABABEKA - DESA SIMPANGAN</p>
+          <h3 style="font-size:1rem; margin:6px 0 2px 0; color:var(--cyan-400); letter-spacing:0.5px;">LAPORAN LENGKAP KAS PEMASUKKAN NON IURAN</h3>
+          <p style="margin:0; font-size:0.8rem; color:var(--text-muted);" id="non-dues-report-period">Periode: Tahun Berjalan 2026</p>
+        </div>
+
+        <!-- 3 Summary Boxes: Pemasukkan (Penerimaan), Pengeluaran, Saldo Kas -->
+        <div class="report-summary-boxes" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:1rem; margin-bottom:1.5rem;">
+          <div class="rep-box text-emerald" style="background:rgba(16,185,129,0.08); padding:1rem; border-radius:12px; border:1px solid rgba(16,185,129,0.25); text-align:center;">
+            <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px; font-weight:700;">TOTAL PEMASUKKAN (PENERIMAAN)</span>
+            <strong id="rep-non-dues-total-in" style="font-size:1.25rem; font-family:var(--font-heading); color:var(--emerald-400);">Rp 0</strong>
+            <small id="rep-non-dues-count-in" style="display:block; font-size:0.75rem; color:var(--text-muted); margin-top:3px;">0 Transaksi</small>
+          </div>
+          <div class="rep-box text-rose" style="background:rgba(244,63,94,0.08); padding:1rem; border-radius:12px; border:1px solid rgba(244,63,94,0.25); text-align:center;">
+            <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px; font-weight:700;">TOTAL PENGELUARAN</span>
+            <strong id="rep-non-dues-total-out" style="font-size:1.25rem; font-family:var(--font-heading); color:var(--rose-400);">Rp 0</strong>
+            <small id="rep-non-dues-count-out" style="display:block; font-size:0.75rem; color:var(--text-muted); margin-top:3px;">0 Transaksi</small>
+          </div>
+          <div class="rep-box text-gold" style="background:rgba(245,158,11,0.08); padding:1rem; border-radius:12px; border:1px solid rgba(245,158,11,0.25); text-align:center;">
+            <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px; font-weight:700;">SALDO KAS BERSIH NON-IURAN</span>
+            <strong id="rep-non-dues-final-balance" style="font-size:1.25rem; font-family:var(--font-heading); color:var(--gold-400);">Rp 0</strong>
+            <small style="display:block; font-size:0.75rem; color:var(--text-muted); margin-top:3px;">Pemasukan − Pengeluaran</small>
+          </div>
+        </div>
+
+        <!-- Rekap Per Kategori Pemasukan -->
+        <h4 style="font-size:0.95rem; margin:1rem 0 0.5rem 0; display:flex; align-items:center; gap:6px;">
+          <i class="fa-solid fa-chart-pie text-emerald"></i> Rekapitulasi per Kategori Sumber Pemasukkan
+        </h4>
+        <table class="report-table" style="width:100%; margin-bottom:1.5rem;">
+          <thead>
+            <tr>
+              <th style="width:40px; text-align:center;">No</th>
+              <th>Kategori Sumber Dana</th>
+              <th style="text-align:center;">Jumlah Transaksi</th>
+              <th style="text-align:right;">Subtotal Pemasukkan</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-non-dues-report-cat">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+
+        <!-- Mutasi Kas Kronologis Lengkap -->
+        <h4 style="font-size:0.95rem; margin:1rem 0 0.5rem 0; display:flex; align-items:center; gap:6px;">
+          <i class="fa-solid fa-list-check text-cyan"></i> Rincian Buku Kas Mutasi Masuk &amp; Keluar
+        </h4>
+        <div class="table-wrapper" style="max-height:280px; overflow-y:auto; border:1px solid var(--border-color); border-radius:8px;">
+          <table class="data-table" style="width:100%; font-size:0.84rem;">
+            <thead>
+              <tr>
+                <th style="width:30px; text-align:center;">No</th>
+                <th>Tanggal</th>
+                <th>Jenis</th>
+                <th>Kategori / Pos</th>
+                <th>Sumber / Uraian</th>
+                <th style="text-align:right;">Pemasukan (Debet)</th>
+                <th style="text-align:right;">Pengeluaran (Kredit)</th>
+                <th style="text-align:right;">Saldo Kas</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-non-dues-report-ledger">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="report-signatures" style="display:flex; justify-content:space-between; margin-top:2rem; padding:0 2rem;">
+          <div style="text-align:center;">
+            <p style="margin:0 0 3.5rem 0; font-size:0.85rem;">Mengetahui,<br><strong>Ketua RT.001 / RW.013</strong></p>
+            <p style="margin:0; font-weight:700; text-decoration:underline;">( Supriyadi )</p>
+          </div>
+          <div style="text-align:center;">
+            <p style="margin:0 0 3.5rem 0; font-size:0.85rem;"><span id="sig-non-dues-date">Cikarang Utara, 20 September 2026</span><br><strong>Bendahara 1 RT.001</strong></p>
+            <p style="margin:0; font-weight:700; text-decoration:underline;">( Bendahara 1 )</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:1.25rem;">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-non-dues-report')">Tutup</button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-outline" onclick="window.exportNonDuesCSV()"><i class="fa-solid fa-file-csv"></i> Unduh CSV</button>
+          <button type="button" class="btn btn-emerald" onclick="window.printNonDuesReport()"><i class="fa-solid fa-print"></i> Cetak / Simpan PDF</button>
         </div>
       </div>
     </div>
@@ -6175,6 +6350,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.2"></script>
+  <script src="app.js?v=2.9.3"></script>
 </body>
 </html>

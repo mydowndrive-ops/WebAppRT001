@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (01:50 WIB)  
-**Versi Rilis Aktif:** `v2.9.2`  
+**Terakhir Diperbarui:** 20 September 2026 (02:00 WIB)  
+**Versi Rilis Aktif:** `v2.9.3`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -21,18 +21,44 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 
 | Peran | Nama Akun / Entitas | Hak Akses Utama | Kredensial Masuk | Mode Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **B1** | **Bendahara 1 (Super Admin)** | Akses Penuh: Dashboard, Matriks Checklist, 6 Pos Anggaran & SHR, Pengeluaran Kas, **Penerimaan Di Luar Iuran (Penerimaan, Pengeluaran, Saldo Non-Iuran)**, Data 71 KK, Laporan & Pembukuan, Pengaturan Pos, Kas Jimpitan Ronda, Atur Jadwal Ronda, Pengajuan Dana Warga, Inventaris Aset RT | PIN: `1111` | **Full Read & Write** |
-| **B2** | **Bendahara 2 (Koordinator Jimpitan)** | Pengelolaan Uang Jimpitan Ronda (Catat Perolehan Mingguan, Pengeluaran Pos Ronda, Rekap Saldo, Ekspor CSV), Monitoring Inventaris Aset RT, dan Struktur Pengurus | PIN: `2222` | **Limited Read & Write** |
-| **PENGURUS** | **Pengurus RT (Ketua, Sekr, Humas)** | Monitoring Dashboard Eksekutif, Struktur & Bagan Organisasi, Jadwal & Susunan 8 Regu Ronda, Inventaris Aset RT, Pemantauan Jimpitan, Verifikasi Usulan Fasum, dan Buku Induk Warga | PIN: `3333` | **Operational Read & Write** |
-| **WARGA** | **Warga RT.001 Terverifikasi** | Portal Mandiri Warga (Kartu Iuran 12 Bulan, Kwitansi Digital, Jadwal Ronda Pribadi & Seluruh Regu, Layanan e-Surat, Pengajuan Fasum, Kotak Aspirasi), Bagan Struktur RT, dan Inventaris Aset RT | Password Rumah per KK (112 KK, contoh: `C2B602` untuk Blok B6 No. 02) | **STRICT READ / VIEW ONLY** |
+| **B1** | **Bendahara 1 (Super Admin)** | Akses Penuh: Dashboard, Matriks Checklist, 6 Pos Anggaran & SHR, Pengeluaran Kas, **Pemasukkan NON iuran (Kelola Penerimaan, Pengeluaran, Saldo & Laporan Lengkap)**, Data 71 KK, Laporan & Pembukuan, Pengaturan Pos, Kas Jimpitan Ronda, Atur Jadwal Ronda, Pengajuan Dana Warga, Inventaris Aset RT | PIN: `1111` | **Full Read & Write** |
+| **B2** | **Bendahara 2 (Admin 2 / Jimpitan)** | Pengelolaan Uang Jimpitan Ronda (Catat & Rekap Mingguan), **Monitoring Pemasukkan NON iuran (Read/View Only)**, Monitoring Inventaris Aset RT, dan Struktur Pengurus | PIN: `2222` | **Limited Read & Write (Read-Only di Non-Iuran)** |
+| **PENGURUS** | **Pengurus RT (Ketua, Sekr, Humas)** | Monitoring Dashboard Eksekutif, Struktur Organisasi, Jadwal Ronda, Inventaris Aset RT, Pemantauan Jimpitan, Verifikasi Usulan Fasum, Buku Induk Warga, dan **Monitoring Pemasukkan NON iuran (Read/View Only)** | PIN: `3333` | **Operational Read & Write (Read-Only di Non-Iuran)** |
+| **WARGA** | **Warga RT.001 Terverifikasi** | Portal Mandiri Warga (Kartu Iuran 12 Bulan, Kwitansi Digital, Jadwal Ronda, **Transparansi Pemasukkan NON iuran RT & Laporan Lengkap (Read/View Only)**, Layanan e-Surat, Pengajuan Fasum, Kotak Aspirasi) | Password Rumah per KK (112 KK, contoh: `C2B602` untuk Blok B6 No. 02) | **STRICT READ / VIEW ONLY** |
 
-- **Pengunjung Publik / Belum Login**: Otomatis dibatasi dalam mode **READ ONLY** (tidak dapat memodifikasi jadwal ronda, aset, maupun pengajuan dana).
+- **Pengunjung Publik / Belum Login**: Otomatis dibatasi dalam mode **READ ONLY** (tidak dapat memodifikasi jadwal ronda, aset, kas, maupun pengajuan dana).
 - **Email Bantuan / Lupa PIN:** `rt001rw013.grahaasri@gmail.com`
 - **Penyimpanan Sesi:** Menggunakan `sessionStorage` (`RT001_LOGIN_SESSION_V1`). Sesi aktif selama jendela tab terbuka dan akan meminta verifikasi ulang jika pengguna menekan tombol **Keluar (Logout)**.
 
 ---
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
+
+### 1. 💼 Transformasi "Pemasukkan NON iuran", Laporan Lengkap Akuntansi & Akses Transparansi Multi-Role (Read-Only) (Update v2.9.3 - 20 Sept 2026)
+- **Latar Belakang & Kebutuhan**:
+  1. Penamaan modul dan seluruh istilah terkait diubah dari *"Penerimaan Di Luar Iuran"* menjadi **"Pemasukkan NON iuran"**.
+  2. Dibutuhkan sajian **Laporan Lengkap** akuntansi formal mencakup seluruh komponen kas non-iuran: **Pemasukkan**, **Pengeluaran**, dan **Saldo Kas Berjalan**, dilengkapi rekap per kategori sumber dana, buku besar mutasi kronologis, dan lembar pengesahan resmi bertanda tangan Ketua RT & Bendahara 1.
+  3. Kebutuhan azas transparansi publik agar modul Pemasukkan NON iuran dapat ditinjau langsung oleh **Warga** (di Portal Warga), **Pengurus RT**, serta **Admin 2 (Bendahara 2)**, namun dengan proteksi ketat **Read / View Only** (hak cipta/edit/hapus mutlak berada di Bendahara 1).
+- **Solusi & Rekayasa Arsitektur**:
+  1. **Standardisasi Nomenklatur Global ("Pemasukkan NON iuran")**:
+     - Memperbarui label menu sidebar, header banner, kartu metrik, formulir modal input, tabel mutasi kas, lembar kuitansi digital WhatsApp, hingga tajuk berkas ekspor CSV menjadi *"Pemasukkan NON iuran"*.
+  2. **Modal Laporan Lengkap Akuntansi Kas Non-Iuran (`#modal-non-dues-report`)**:
+     - **Kop Surat Resmi**: Rukun Tetangga 001 / RW 013 Perumahan Graha Asri - Sektor Graha Jababeka.
+     - **3 Summary Card**: Total Pemasukkan (Penerimaan), Total Pengeluaran, dan Saldo Bersih Kas Non-Iuran.
+     - **Tabel Rekapitulasi per Kategori Sumber Dana**: Agregasi frekuensi transaksi dan nominal subtotal (Donasi Warga, Bantuan Hibah, Sewa Fasum, Sponsorship, dan Daur Ulang).
+     - **Buku Kas Kronologis Lengkap**: Menggabungkan seluruh arus dana masuk dan keluar secara terurut tanggal, dengan kolom Tanggal, Jenis, Kategori, Uraian, Pemasukan (Debet), Pengeluaran (Kredit), dan Saldo Kas Berjalan (*Running Balance*).
+     - **Tanda Tangan Pengesahan Ganda**: Kolom persetujuan Ketua RT 001 (Supriyadi) dan Bendahara 1 RT 001.
+     - **Opsi Ekspor**: Tombol *Cetak / Simpan PDF* (tampilan print stylesheet ramah cetak) dan *Unduh CSV*.
+  3. **Integrasi Rekapitulasi ke Laporan Keuangan Umum (`#view-laporan`)**:
+     - Menambahkan sub-tabel akuntansi *"Rekapitulasi Kas Pemasukkan NON Iuran"* di bawah tabel pos anggaran pada lembar laporan keuangan komprehensif RT.
+  4. **Proteksi Hak Akses Multi-Role (Read / View Only)**:
+     - **Bendahara 1 (B1)**: Tetap memegang hak *Super Admin* penuh untuk mencatat pemasukan, mencatat pengeluaran, serta menghapus data transaksi.
+     - **Admin 2 (B2)** & **Pengurus RT**: Dapat membuka modul dari sidebar dan memeriksa buku kas, melihat kuitansi, membaca laporan lengkap, serta mengekspor data. Tombol *"Catat Penerimaan"* dan *"Catat Pengeluaran"* disembunyikan otomatis, tombol hapus diganti lencana *"Terverifikasi"*, dan backend JavaScript dijaga dengan proteksi guard `isB1`.
+     - **Portal Warga (`#view-portal-warga`)**: Dilengkapi kartu transparansi mewah *"Pemasukkan NON Iuran RT"* dengan live summary (Pemasukan, Pengeluaran, Saldo), indikator mutasi terakhir, tombol cepat *"Rincian Kas"*, dan tombol *"Laporan Lengkap"*.
+  5. **Penyelarasan Cache Busting & PWA ke `v=2.9.3`**:
+     - Berkas [index.html](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/index.html), [styles.css](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/styles.css), [app.js](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/app.js), dan [sw.js](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/sw.js) diselaraskan ke versi `v2.9.3`.
+
+---
 
 ### 1. ✨ Tipografi Mewah & Modern Elemen Teks "WARGA RT.001 RW.013" (Update v2.9.2 - 20 Sept 2026)
 - **Latar Belakang & Kebutuhan**:
