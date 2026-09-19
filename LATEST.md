@@ -32,11 +32,11 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
 
 ### 1. 🇮🇩 Banner Bendera Merah Putih & Animasi Mewah Split-Text Reveal
 - **Transformasi Kotak Header Hero**:
-  - Mengganti latar kotak lama dengan pemutaran video dinamis bendera Merah Putih berkibar asli menggunakan berkas `redwihite.mp4` / `redwihite.webm` (`<video class="flag-video-bg" autoplay loop muted playsinline preload="auto">`).
+  - Mengganti latar kotak lama dengan pemutaran video dinamis bendera Merah Putih berkibar asli menggunakan berkas `redwihite.mp4` (`<video class="flag-video-bg" autoplay loop muted playsinline preload="auto">`).
   - **Pembersihan Watermark Shutterstock 100% (*Watermark-Free*)**:
     - Teks watermark *"shutterstock"* yang semula menempel pada bagian kain putih telah dihilangkan secara sempurna menggunakan teknik rekonstruksi *masked feather inpainting* tanpa merusak dinamika lipatan kain sutra bendera.
-    - Format video telah dioptimalkan dengan H.264 FastStart (`redwihite.mp4`) untuk pemutaran instan tanpa *buffering* di seluruh jenis peramban modern.
-    - Dilengkapi fallback multi-format: `redwihite.mp4`, `assets/redwihite.mp4`, `redwihite.webm`, `assets/redwihite.webm`.
+    - Format video telah dioptimalkan dengan H.264 FastStart (`redwihite.mp4` dan `assets/redwihite.mp4`) untuk pemutaran instan tanpa *buffering* di seluruh jenis peramban modern.
+    - Berkas `redwihite.webm` lama yang mengandung watermark telah dihapus bersih dari repositori.
   - **Efek Animasi Mewah Split-Text Reveal (Dua Baris Teks)**:
     - Judul utama `<h1>` kini berformat dua tingkat:
       1. Baris atas: `"Web Aplikasi Resmi"` (`.split-line-sub`) beraksen emas lembut (*luxury gold*).
