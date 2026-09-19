@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (01:15 WIB)  
-**Versi Rilis Aktif:** `v2.8.9`  
+**Terakhir Diperbarui:** 20 September 2026 (01:40 WIB)  
+**Versi Rilis Aktif:** `v2.9.0`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -21,7 +21,7 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 
 | Peran | Nama Akun / Entitas | Hak Akses Utama | Kredensial Masuk | Mode Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **B1** | **Bendahara 1 (Super Admin)** | Akses Penuh: Dashboard, Matriks Checklist, 6 Pos Anggaran & SHR, Pengeluaran Kas, Data 71 KK, Laporan & Pembukuan, Pengaturan Pos, Kas Jimpitan Ronda, Atur Jadwal Ronda, Pengajuan Dana Warga, Inventaris Aset RT | PIN: `1111` | **Full Read & Write** |
+| **B1** | **Bendahara 1 (Super Admin)** | Akses Penuh: Dashboard, Matriks Checklist, 6 Pos Anggaran & SHR, Pengeluaran Kas, **Penerimaan Di Luar Iuran (Penerimaan, Pengeluaran, Saldo Non-Iuran)**, Data 71 KK, Laporan & Pembukuan, Pengaturan Pos, Kas Jimpitan Ronda, Atur Jadwal Ronda, Pengajuan Dana Warga, Inventaris Aset RT | PIN: `1111` | **Full Read & Write** |
 | **B2** | **Bendahara 2 (Koordinator Jimpitan)** | Pengelolaan Uang Jimpitan Ronda (Catat Perolehan Mingguan, Pengeluaran Pos Ronda, Rekap Saldo, Ekspor CSV), Monitoring Inventaris Aset RT, dan Struktur Pengurus | PIN: `2222` | **Limited Read & Write** |
 | **PENGURUS** | **Pengurus RT (Ketua, Sekr, Humas)** | Monitoring Dashboard Eksekutif, Struktur & Bagan Organisasi, Jadwal & Susunan 8 Regu Ronda, Inventaris Aset RT, Pemantauan Jimpitan, Verifikasi Usulan Fasum, dan Buku Induk Warga | PIN: `3333` | **Operational Read & Write** |
 | **WARGA** | **Warga RT.001 Terverifikasi** | Portal Mandiri Warga (Kartu Iuran 12 Bulan, Kwitansi Digital, Jadwal Ronda Pribadi & Seluruh Regu, Layanan e-Surat, Pengajuan Fasum, Kotak Aspirasi), Bagan Struktur RT, dan Inventaris Aset RT | Password Rumah per KK (112 KK, contoh: `C2B602` untuk Blok B6 No. 02) | **STRICT READ / VIEW ONLY** |
@@ -34,7 +34,34 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🔒 Penegakan Status Read/View-Only Menyeluruh di Dashboard Warga (Update v2.8.9 - 20 Sept 2026)
+### 1. 💰 Modul Penerimaan Di Luar Iuran Bulanan Khusus Bendahara 1 (Update v2.9.0 - 20 Sept 2026)
+- **Latar Belakang & Kebutuhan**:
+  - Pengurus RT membutuhkan pencatatan terpisah dan transparan khusus Bendahara 1 untuk mengelola seluruh dana non-iuran bulanan warga (donasi sukarela, bantuan hibah pemerintah/kelurahan, sewa sarana/fasum RT seperti tenda dan kursi, sponsorship acara warga/17-an, serta hasil penjualan sampah daur ulang/rongsok RT).
+- **Solusi & Rekayasa Arsitektur**:
+  1. **Hak Akses Eksklusif Bendahara 1 (B1 Strict RBAC)**:
+     - Ditambahkan menu navigasi baru: **"Penerimaan Di Luar Iuran"** (`data-target="non-iuran"`) dengan ikon `fa-hand-holding-dollar` dan lencana counter realtime.
+     - Dibatasi secara ketat hanya dapat dilihat dan dibuka oleh Bendahara 1 (PIN: `1111`). Menu tersembunyi 100% untuk B2, Pengurus RT, Warga, maupun pengunjung publik yang belum login.
+     - Upaya pengaksesan URL hash langsung (`#non-iuran`) otomatis dicegat oleh sistem proteksi `applyRBAC()` dan `navigateToView()`.
+  2. **Tiga Indikator Finansial Utama (KPI Cards)**:
+     - **Total Penerimaan Non-Iuran**: Kalkulasi akumulasi seluruh dana masuk di luar iuran bulanan + counter jumlah transaksi.
+     - **Total Pengeluaran Non-Iuran**: Kalkulasi akumulasi seluruh pengeluaran pos kas non-iuran + counter pos pengeluaran.
+     - **Saldo Kas Non-Iuran**: Saldo kas bersih (`Penerimaan − Pengeluaran`) dengan styling dinamis (warna emas berkilau jika positif/surplus).
+     - **Mutasi Terakhir**: Menampilkan tanggal, kategori pos, dan nominal transaksi terakhir.
+  3. **Form Modal Input Transaksi Modern**:
+     - **Catat Penerimaan (`#modal-add-non-dues-income`)**: Tanggal penerimaan, kategori sumber, donatur/sumber dana (dengan autocomplete datalist 112 KK warga), nominal rupiah terformat titik ribuan, metode pembayaran (Tunai/Transfer/QRIS), dan catatan peruntukan.
+     - **Catat Pengeluaran (`#modal-add-non-dues-expense`)**: Tanggal pengeluaran, kategori pengeluaran, uraian keperluan, penanggung jawab/penerima, nominal rupiah, dan catatan bukti nota toko.
+  4. **Kuitansi Digital & WhatsApp Share Generator**:
+     - Setiap transaksi penerimaan dilengkapi tombol **"Kuitansi"** yang memunculkan tanda terima sah berkop RT.001 / RW.013 Graha Asri lengkap dengan nomor bukti, tanggal, donatur, jumlah nominal, dan stempel status *"DITERIMA DENGAN AMANAH"*.
+     - Dilengkapi tombol **"Bagikan ke WhatsApp"** yang otomatis memformat pesan konfirmasi tanda terima sopan dan siap kirim ke donatur/warga.
+  5. **Ekspor CSV & Persistensi Penuh**:
+     - Tombol **"Ekspor CSV"** untuk mengunduh mutasi kas non-iuran dalam format spreadsheet.
+     - Tersimpan otomatis di `localStorage` dan terintegrasi dalam skema cadangan database `state`.
+  6. **Penyelarasan Cache Busting ke `v=2.9.0`**:
+     - Seluruh aset di [index.html](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/index.html), [app.js](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/app.js), dan [sw.js](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/sw.js) diselaraskan ke `v2.9.0`.
+
+---
+
+### 2. 🔒 Penegakan Status Read/View-Only Menyeluruh di Dashboard Warga (Update v2.8.9 - 20 Sept 2026)
 - **Latar Belakang & Kebutuhan**:
   - Pada pengujian sebelumnya, saat pengguna masuk sebagai Warga dan membuka modul *Struktur Pengurus RT* atau tab *Jadwal & Regu Ronda Malam*, masih tampil tombol **"Atur Jadwal Ronda"** dan tombol **"Edit Regu"** di ke-8 kartu regu ronda, serta tombol **"Tambah Aset"** dan tombol **"Edit/Hapus"** pada modul *Inventaris & Aset RT*.
 - **Solusi & Rekayasa DevOps**:

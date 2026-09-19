@@ -22,7 +22,7 @@
   <!-- Chart.js for Executive Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <link rel="stylesheet" href="styles.css?v=2.8.9">
+  <link rel="stylesheet" href="styles.css?v=2.9.0">
 </head>
 <body>
 
@@ -2100,6 +2100,11 @@
           <i class="fa-solid fa-money-bill-transfer"></i>
           <span>Pengeluaran Kas</span>
         </a>
+        <a href="#non-iuran" class="menu-item" data-target="non-iuran" data-role-req="B1" data-tooltip="Penerimaan Di Luar Iuran">
+          <i class="fa-solid fa-hand-holding-dollar text-cyan"></i>
+          <span>Penerimaan Di Luar Iuran</span>
+          <span class="counter-badge" id="sidebar-non-dues-badge" style="background: rgba(6, 182, 212, 0.25); color: #22d3ee;">0</span>
+        </a>
         <a href="#jimpitan" class="menu-item" data-target="jimpitan" data-role-req="B2" data-tooltip="Uang Jimpitan Ronda">
           <i class="fa-solid fa-moon text-gold"></i>
           <span>Uang Jimpitan Ronda</span>
@@ -2578,6 +2583,155 @@
                 <!-- Dynamically populated -->
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Penerimaan Di Luar Iuran Bulanan (Khusus Bendahara 1) -->
+      <section class="view-section" id="view-non-iuran">
+        <div class="view-header-banner glass-panel luxury-emerald-glow" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div class="banner-text">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px;">
+              <h2 style="margin: 0;"><i class="fa-solid fa-hand-holding-dollar text-cyan"></i> Penerimaan Di Luar Iuran Bulanan</h2>
+              <span class="badge-gold-pill"><i class="fa-solid fa-crown text-gold"></i> Khusus Bendahara 1</span>
+            </div>
+            <p style="margin: 0; color: var(--text-muted);">Pencatatan Pemasukan, Pengeluaran &amp; Saldo Kas Non-Iuran (Donasi Warga, Hibah Pemda/Kelurahan, Sewa Fasum, Sponsor &amp; Daur Ulang)</p>
+          </div>
+
+          <div class="banner-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn btn-emerald" id="btn-add-non-dues-income" onclick="window.openAddNonDuesIncomeModal(event)">
+              <i class="fa-solid fa-plus-circle"></i> Catat Penerimaan
+            </button>
+            <button class="btn btn-outline-rose" id="btn-add-non-dues-expense" onclick="window.openAddNonDuesExpenseModal(event)">
+              <i class="fa-solid fa-minus-circle"></i> Catat Pengeluaran
+            </button>
+            <button class="btn btn-outline" id="btn-export-non-dues-csv" onclick="window.exportNonDuesCSV()">
+              <i class="fa-solid fa-file-csv"></i> Ekspor CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Cards: Penerimaan, Pengeluaran, Saldo Kas Non-Iuran -->
+        <div class="jimpitan-stats-grid" style="margin-top: 1.5rem;">
+          <div class="jimpitan-stat-card">
+            <div class="jimpitan-icon-box" style="background: rgba(16,185,129,0.18);">
+              <i class="fa-solid fa-arrow-trend-up text-emerald" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; font-weight:600; letter-spacing:0.5px;">TOTAL PENERIMAAN NON-IURAN</p>
+              <h3 id="non-dues-total-income" style="font-size:1.35rem; font-family:var(--font-heading); color:var(--emerald-400);">Rp 0</h3>
+              <small id="non-dues-income-count" style="color:var(--text-muted);">0 transaksi masuk</small>
+            </div>
+          </div>
+
+          <div class="jimpitan-stat-card">
+            <div class="jimpitan-icon-box" style="background: rgba(244,63,94,0.15);">
+              <i class="fa-solid fa-arrow-trend-down text-rose" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; font-weight:600; letter-spacing:0.5px;">TOTAL PENGELUARAN NON-IURAN</p>
+              <h3 id="non-dues-total-expense" style="font-size:1.35rem; font-family:var(--font-heading); color:var(--rose-400);">Rp 0</h3>
+              <small id="non-dues-expense-count" style="color:var(--text-muted);">0 pos pengeluaran</small>
+            </div>
+          </div>
+
+          <div class="jimpitan-stat-card" style="border-color: rgba(245,158,11,0.35);">
+            <div class="jimpitan-icon-box" style="background: rgba(245,158,11,0.18);">
+              <i class="fa-solid fa-vault text-gold" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; font-weight:600; letter-spacing:0.5px;">SALDO KAS NON-IURAN</p>
+              <h3 id="non-dues-saldo" style="font-size:1.35rem; font-family:var(--font-heading); color:var(--gold-400);">Rp 0</h3>
+              <small style="color:var(--text-muted);">Penerimaan − Pengeluaran</small>
+            </div>
+          </div>
+
+          <div class="jimpitan-stat-card">
+            <div class="jimpitan-icon-box" style="background: rgba(6,182,212,0.18);">
+              <i class="fa-solid fa-calendar-check text-cyan" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; font-weight:600; letter-spacing:0.5px;">MUTASI TERAKHIR</p>
+              <h3 id="non-dues-last-date" style="font-size:1.05rem; font-family:var(--font-heading); color:var(--text-primary);">Belum ada data</h3>
+              <small id="non-dues-last-info" style="color:var(--text-muted);">-</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="glass-panel" style="padding: 1rem 1.25rem; border-radius: var(--radius-lg); margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div class="search-input-box" style="min-width: 280px; flex: 1;">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="non-dues-search" placeholder="Cari donatur, instansi, uraian keterangan, atau nominal..." oninput="window.renderNonDuesView()">
+          </div>
+          <div class="filter-group" style="display: flex; gap: 10px; align-items: center;">
+            <select id="non-dues-filter-category" class="custom-select" onchange="window.renderNonDuesView()">
+              <option value="ALL">Semua Kategori Sumber</option>
+              <option value="Donasi Warga">Donasi / Sumbangan Warga</option>
+              <option value="Hibah Pemerintah">Hibah / Bantuan Pemerintah</option>
+              <option value="Sewa Fasum">Sewa Fasum &amp; Perlengkapan</option>
+              <option value="Sponsorship">Sponsorship Acara</option>
+              <option value="Daur Ulang">Penjualan Sampah / Daur Ulang</option>
+              <option value="Bagi Hasil Bank">Bagi Hasil / Bunga Bank</option>
+              <option value="Lain-lain">Penerimaan Lain-lain</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dual Panel Tables: Riwayat Penerimaan & Riwayat Pengeluaran -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.25rem;">
+          <!-- Tabel Penerimaan -->
+          <div class="glass-panel" style="padding: 1.5rem; border-radius: var(--radius-lg);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+              <h3 style="font-size:1.05rem; font-family:var(--font-heading); display:flex; align-items:center; gap:.5rem;">
+                <i class="fa-solid fa-arrow-trend-up text-emerald"></i> Riwayat Penerimaan
+              </h3>
+              <span class="badge-tag-cyan" id="badge-count-incomes">0 Transaksi</span>
+            </div>
+            <div class="table-wrapper" style="max-height:420px; overflow-y:auto;">
+              <table class="data-table" id="table-non-dues-income">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Sumber / Donatur</th>
+                    <th>Kategori</th>
+                    <th>Nominal</th>
+                    <th>Metode</th>
+                    <th style="text-align:right;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-non-dues-income">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tabel Pengeluaran -->
+          <div class="glass-panel" style="padding: 1.5rem; border-radius: var(--radius-lg);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+              <h3 style="font-size:1.05rem; font-family:var(--font-heading); display:flex; align-items:center; gap:.5rem;">
+                <i class="fa-solid fa-arrow-trend-down text-rose"></i> Riwayat Pengeluaran
+              </h3>
+              <span class="badge-tag-rose" id="badge-count-expenses">0 Pengeluaran</span>
+            </div>
+            <div class="table-wrapper" style="max-height:420px; overflow-y:auto;">
+              <table class="data-table" id="table-non-dues-expense">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>Keperluan / Pos</th>
+                    <th>PJ / Penerima</th>
+                    <th>Nominal</th>
+                    <th>Keterangan</th>
+                    <th style="text-align:right;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-non-dues-expense">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -5075,6 +5229,143 @@
     </div>
   </div>
 
+  <!-- Modal: Tambah Penerimaan Non-Iuran -->
+  <div class="modal-backdrop" id="modal-add-non-dues-income">
+    <div class="modal-content glass-panel luxury-modal" style="max-width:550px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-hand-holding-dollar text-emerald"></i> Catat Penerimaan Di Luar Iuran</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modal-add-non-dues-income')" data-close="modal-add-non-dues-income">&times;</button>
+      </div>
+      <form id="form-non-dues-income" onsubmit="event.preventDefault(); window.handleNonDuesIncomeSubmit(event);" style="padding:1rem 0;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Tanggal Penerimaan</label>
+            <input type="date" class="form-input" id="non-dues-in-date" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kategori Sumber</label>
+            <select class="form-input" id="non-dues-in-category" required>
+              <option value="Donasi Warga">Donasi / Sumbangan Warga</option>
+              <option value="Hibah Pemerintah">Hibah / Bantuan Kelurahan / Pemda</option>
+              <option value="Sewa Fasum">Sewa Fasum / Tenda / Inventaris RT</option>
+              <option value="Sponsorship">Sponsor Acara Lingkungan / 17-an</option>
+              <option value="Daur Ulang">Penjualan Sampah Daur Ulang / Rongsok</option>
+              <option value="Bagi Hasil Bank">Bagi Hasil / Bunga Bank Kas RT</option>
+              <option value="Lain-lain">Penerimaan Lain-lain</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nama Donatur / Sumber Dana</label>
+          <input type="text" class="form-input" id="non-dues-in-source" list="datalist-warga-sources" placeholder="Nama warga (contoh: Wageyanto / Blok B6 No. 02) atau nama instansi" required>
+          <datalist id="datalist-warga-sources">
+            <!-- Populated with warga names -->
+          </datalist>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Nominal Penerimaan (Rp)</label>
+            <input type="text" inputmode="numeric" class="form-input" id="non-dues-in-amount" placeholder="Contoh: 250.000" required oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Metode Pembayaran</label>
+            <select class="form-input" id="non-dues-in-method">
+              <option value="Tunai">Tunai / Cash</option>
+              <option value="Transfer Bank">Transfer Bank BCA / Mandiri</option>
+              <option value="QRIS">QRIS Kas RT</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Keterangan / Peruntukan Dana</label>
+          <textarea class="form-input" id="non-dues-in-notes" rows="2" placeholder="Uraian peruntukan, nomor kuitansi manual, atau catatan khusus..."></textarea>
+        </div>
+
+        <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:10px; margin-top:1.25rem;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-add-non-dues-income')">Batal</button>
+          <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-floppy-disk"></i> Simpan Penerimaan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Tambah Pengeluaran Non-Iuran -->
+  <div class="modal-backdrop" id="modal-add-non-dues-expense">
+    <div class="modal-content glass-panel luxury-modal" style="max-width:550px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-receipt text-rose"></i> Catat Pengeluaran Kas Non-Iuran</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modal-add-non-dues-expense')" data-close="modal-add-non-dues-expense">&times;</button>
+      </div>
+      <form id="form-non-dues-expense" onsubmit="event.preventDefault(); window.handleNonDuesExpenseSubmit(event);" style="padding:1rem 0;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Tanggal Pengeluaran</label>
+            <input type="date" class="form-input" id="non-dues-out-date" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Kategori Pengeluaran</label>
+            <select class="form-input" id="non-dues-out-category" required>
+              <option value="Kegiatan Sosial">Bantuan Sosial / Musibah Khusus</option>
+              <option value="Konsumsi Acara">Konsumsi Kegiatan / Acara Khusus RT</option>
+              <option value="Perawatan Fasum">Perawatan / Perbaikan Fasum Donatur</option>
+              <option value="Pengadaan Inventaris">Pengadaan Sarana &amp; Inventaris Tambahan</option>
+              <option value="Operasional Non-Iuran">Operasional Kas Non-Iuran</option>
+              <option value="Lain-lain">Pengeluaran Lain-lain</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Uraian / Keperluan Pengeluaran</label>
+          <input type="text" class="form-input" id="non-dues-out-desc" placeholder="Contoh: Pembelian terpal cadangan dan cat pos kamling" required>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="form-group">
+            <label class="form-label">Nominal Pengeluaran (Rp)</label>
+            <input type="text" inputmode="numeric" class="form-input" id="non-dues-out-amount" placeholder="Contoh: 150.000" required oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Penanggung Jawab / Penerima</label>
+            <input type="text" class="form-input" id="non-dues-out-pic" placeholder="Nama pengurus / toko penerima" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Catatan Tambahan / Bukti Nota</label>
+          <textarea class="form-input" id="non-dues-out-notes" rows="2" placeholder="Nomor nota, keterangan kwitansi toko, atau rincian barang..."></textarea>
+        </div>
+
+        <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:10px; margin-top:1.25rem;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-add-non-dues-expense')">Batal</button>
+          <button type="submit" class="btn btn-outline-rose"><i class="fa-solid fa-floppy-disk"></i> Simpan Pengeluaran</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Kuitansi Tanda Terima Non-Iuran (WhatsApp & Cetak) -->
+  <div class="modal-backdrop" id="modal-non-dues-receipt">
+    <div class="modal-content glass-panel luxury-modal" style="max-width:560px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-file-invoice-dollar text-gold"></i> Tanda Terima Penerimaan Non-Iuran</h3>
+        <button type="button" class="modal-close" onclick="closeModal('modal-non-dues-receipt')" data-close="modal-non-dues-receipt">&times;</button>
+      </div>
+      <div style="padding:1rem 0;" id="non-dues-receipt-body">
+        <!-- Injected via JS -->
+      </div>
+      <div class="modal-actions" style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:1.25rem;">
+        <button type="button" class="btn btn-outline" onclick="closeModal('modal-non-dues-receipt')">Tutup</button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-emerald" id="btn-share-non-dues-wa"><i class="fa-brands fa-whatsapp"></i> Bagikan ke WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal: APK Build & Install Guide -->
   <div class="modal-backdrop" id="modal-apk-guide">
     <div class="modal-content glass-panel luxury-modal guide-modal-box">
@@ -5875,6 +6166,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.8.9"></script>
+  <script src="app.js?v=2.9.0"></script>
 </body>
 </html>

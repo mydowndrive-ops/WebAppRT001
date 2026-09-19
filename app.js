@@ -1748,6 +1748,66 @@ const INITIAL_RESIDENTS = [
 
 const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1zwrXck7x2HzVV6KhFgb3DgdAw5SrIUXm64a2M1mbclo/export?format=csv';
 
+const DEFAULT_NON_DUES_INCOMES = [
+  {
+    id: 'NDI-202609-001',
+    date: '2026-09-05',
+    category: 'Donasi Warga',
+    source: 'H. Tahmidul Akbar (Blok B6 No. 14)',
+    amount: 500000,
+    method: 'Tunai',
+    notes: 'Sumbangan sukarela perbaikan kanopi pos ronda RT'
+  },
+  {
+    id: 'NDI-202609-002',
+    date: '2026-09-10',
+    category: 'Sewa Fasum',
+    source: 'Wageyanto (Blok B6 No. 02)',
+    amount: 250000,
+    method: 'Transfer Bank',
+    notes: 'Sewa tenda dan 40 kursi RT untuk acara tasyakuran keluarga'
+  },
+  {
+    id: 'NDI-202609-003',
+    date: '2026-09-12',
+    category: 'Daur Ulang',
+    source: 'Pengepul Berkah Lingkungan',
+    amount: 180000,
+    method: 'Tunai',
+    notes: 'Hasil penjualan kardus, plastik, dan rongsok pembersihan lingkungan RT'
+  },
+  {
+    id: 'NDI-202609-004',
+    date: '2026-09-15',
+    category: 'Hibah Pemerintah',
+    source: 'Kelurahan / Pemda Kab. Bekasi',
+    amount: 1000000,
+    method: 'Transfer Bank',
+    notes: 'Dana pembinaan ketahanan lingkungan & operasional RT triwulan III'
+  }
+];
+
+const DEFAULT_NON_DUES_EXPENSES = [
+  {
+    id: 'NDE-202609-001',
+    date: '2026-09-07',
+    category: 'Perawatan Fasum',
+    desc: 'Beli cat besi, tiner, dan kuas untuk kanopi pos kamling',
+    pic: 'Wageyanto (Ketua RT)',
+    amount: 220000,
+    notes: 'Nota Toko Bangunan Graha Indah No. 0482'
+  },
+  {
+    id: 'NDE-202609-002',
+    date: '2026-09-11',
+    category: 'Pengadaan Inventaris',
+    desc: 'Jahit tambal terpal tenda RT yang sobek',
+    pic: 'Agus Nursanto',
+    amount: 150000,
+    notes: 'Kuitansi Bengkel Terpal Cikarang'
+  }
+];
+
 // App State
 let state = {
   currentUser: null, // null = Belum login (default public portal warga)
@@ -1761,6 +1821,8 @@ let state = {
   expenses: [], // Array of expense records
   jimpitanIncomes: [], // Array of jimpitan income records
   jimpitanExpenses: [], // Array of jimpitan expense records
+  nonDuesIncomes: JSON.parse(JSON.stringify(DEFAULT_NON_DUES_INCOMES)), // Array of non-dues income records
+  nonDuesExpenses: JSON.parse(JSON.stringify(DEFAULT_NON_DUES_EXPENSES)), // Array of non-dues expense records
   fundRequests: JSON.parse(JSON.stringify(DEFAULT_FUND_REQUESTS)), // Array of citizen fund requests
   rondaGroups: JSON.parse(JSON.stringify(DEFAULT_RONDA_GROUPS)), // 4-week patrol and jimpitan schedule
   currentVerifiedResident: null,
@@ -1860,6 +1922,16 @@ function loadState() {
       // Pastikan fundRequests tersedia
       if (!state.fundRequests || !Array.isArray(state.fundRequests) || state.fundRequests.length === 0) {
         state.fundRequests = JSON.parse(JSON.stringify(DEFAULT_FUND_REQUESTS));
+        saveState();
+      }
+
+      // Pastikan nonDuesIncomes & nonDuesExpenses tersedia
+      if (!state.nonDuesIncomes || !Array.isArray(state.nonDuesIncomes) || state.nonDuesIncomes.length === 0) {
+        state.nonDuesIncomes = JSON.parse(JSON.stringify(DEFAULT_NON_DUES_INCOMES));
+        saveState();
+      }
+      if (!state.nonDuesExpenses || !Array.isArray(state.nonDuesExpenses) || state.nonDuesExpenses.length === 0) {
+        state.nonDuesExpenses = JSON.parse(JSON.stringify(DEFAULT_NON_DUES_EXPENSES));
         saveState();
       }
 
@@ -3925,6 +3997,7 @@ function navigateToView(viewId) {
     'laporan': { title: 'Laporan & Pembukuan', sub: 'Laporan Pertanggungjawaban Keuangan Siap Cetak' },
     'pengaturan': { title: 'Pengaturan Pos & Sistem', sub: 'Konfigurasi Iuran, Split Anggaran & Cadangan Database' },
     'jimpitan': { title: 'Uang Jimpitan Ronda', sub: 'Perolehan & Pengeluaran Kas Ronda Malam Minggu' },
+    'non-iuran': { title: 'Penerimaan Di Luar Iuran Bulanan', sub: 'Pemasukan, Pengeluaran & Saldo Kas Non-Iuran (Donasi, Hibah, Sewa Fasum & Usaha RT)' },
     'pengajuan-dana-admin': { title: 'Pengajuan Dana Warga', sub: 'Verifikasi, Persetujuan & Realisasi Pencairan Kas Fasilitas' },
     'pengurus-struktur': { title: 'Bagan & Struktur Pengurus RT', sub: 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027' },
     'aset-rt': { title: 'Inventaris & Aset RT.001', sub: 'Pencatatan Sarana Prasarana & Nilai Perolehan Aset Lingkungan Graha Asri' },
@@ -3945,6 +4018,7 @@ function navigateToView(viewId) {
   if (viewId === 'checklist') renderChecklist();
   if (viewId === 'pos-anggaran') renderPosDetails();
   if (viewId === 'pengeluaran') renderExpenses();
+  if (viewId === 'non-iuran') renderNonDuesView();
   if (viewId === 'warga') renderResidents();
   if (viewId === 'laporan') renderReport();
   if (viewId === 'pengaturan') renderSettings();
@@ -4737,6 +4811,7 @@ function renderAll() {
   try { renderReport(); } catch (e) { console.error('Error renderReport', e); }
   try { renderSettings(); } catch (e) { console.error('Error renderSettings', e); }
   try { renderJimpitan(); } catch (e) { console.error('Error renderJimpitan', e); }
+  try { renderNonDuesView(); } catch (e) { console.error('Error renderNonDuesView', e); }
   try { renderAdminFundRequests(); } catch (e) { console.error('Error renderAdminFundRequests', e); }
   try { updateFundRequestBadges(); } catch (e) { console.error('Error updateFundRequestBadges', e); }
   try { populateResidentSelects(); } catch (e) { console.error('Error populateResidentSelects', e); }
@@ -7131,7 +7206,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==================== ADMIN 1 / ADMIN 2 / PENGURUS RBAC ACCESS CONTROL ====================
 
 // Definisi izin halaman per peran (Role-Based Access Control)
-const B1_RESTRICTED_TARGETS = ['checklist', 'pos-anggaran', 'pengeluaran', 'laporan', 'pengaturan'];
+const B1_RESTRICTED_TARGETS = ['checklist', 'pos-anggaran', 'pengeluaran', 'non-iuran', 'laporan', 'pengaturan'];
 const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur'];
 const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga'];
 const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt'];
@@ -7793,6 +7868,407 @@ if (typeof document !== 'undefined') {
     setupJimpitanEvents();
   }
 }
+
+// ==================== MODUL PENERIMAAN & PENGELUARAN DI LUAR IURAN (KHUSUS BENDAHARA 1) ====================
+
+function renderNonDuesView() {
+  const incomes = state.nonDuesIncomes || [];
+  const expenses = state.nonDuesExpenses || [];
+
+  const totalIncome = incomes.reduce((s, r) => s + Number(r.amount || 0), 0);
+  const totalExpense = expenses.reduce((s, r) => s + Number(r.amount || 0), 0);
+  const saldo = totalIncome - totalExpense;
+
+  // Update KPI Cards
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('non-dues-total-income', formatCurrency(totalIncome));
+  setEl('non-dues-income-count', `${incomes.length} transaksi masuk`);
+  setEl('non-dues-total-expense', formatCurrency(totalExpense));
+  setEl('non-dues-expense-count', `${expenses.length} pos pengeluaran`);
+  setEl('non-dues-saldo', formatCurrency(saldo));
+
+  const saldoEl = document.getElementById('non-dues-saldo');
+  if (saldoEl) {
+    saldoEl.style.color = saldo >= 0 ? 'var(--gold-400)' : 'var(--rose-400)';
+  }
+
+  // Update Mutasi Terakhir
+  const allTx = [
+    ...incomes.map(i => ({ ...i, type: 'in' })),
+    ...expenses.map(e => ({ ...e, type: 'out' }))
+  ].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  if (allTx.length > 0) {
+    const last = allTx[0];
+    setEl('non-dues-last-date', formatDateLong(last.date));
+    setEl('non-dues-last-info', last.type === 'in' ? `+ ${formatCurrency(last.amount)} (${last.category || 'Penerimaan'})` : `- ${formatCurrency(last.amount)} (${last.category || 'Pengeluaran'})`);
+  } else {
+    setEl('non-dues-last-date', 'Belum ada data');
+    setEl('non-dues-last-info', '-');
+  }
+
+  // Update badge sidebar
+  const badgeEl = document.getElementById('sidebar-non-dues-badge');
+  if (badgeEl) {
+    badgeEl.textContent = incomes.length;
+  }
+
+  // Populate datalist warga sources if empty
+  const datalist = document.getElementById('datalist-warga-sources');
+  if (datalist && datalist.children.length === 0) {
+    const residents = state.residents || [];
+    datalist.innerHTML = residents.map(r => `<option value="${r.name} (${r.block || ''} ${r.houseNo || ''})"></option>`).join('') +
+      '<option value="Kelurahan Graha Asri"></option><option value="Pemda Kab. Bekasi"></option><option value="Donatur Hamba Allah"></option>';
+  }
+
+  // Filter & Search
+  const searchVal = (document.getElementById('non-dues-search')?.value || '').toLowerCase().trim();
+  const categoryFilter = document.getElementById('non-dues-filter-category')?.value || 'ALL';
+
+  // Filter Incomes
+  const filteredIncomes = incomes.filter(inc => {
+    const matchCat = categoryFilter === 'ALL' || (inc.category && inc.category.toLowerCase().includes(categoryFilter.toLowerCase()));
+    const matchSearch = !searchVal ||
+      (inc.source && inc.source.toLowerCase().includes(searchVal)) ||
+      (inc.notes && inc.notes.toLowerCase().includes(searchVal)) ||
+      (inc.category && inc.category.toLowerCase().includes(searchVal)) ||
+      String(inc.amount).includes(searchVal);
+    return matchCat && matchSearch;
+  }).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Filter Expenses
+  const filteredExpenses = expenses.filter(exp => {
+    const matchCat = categoryFilter === 'ALL' || (exp.category && exp.category.toLowerCase().includes(categoryFilter.toLowerCase()));
+    const matchSearch = !searchVal ||
+      (exp.desc && exp.desc.toLowerCase().includes(searchVal)) ||
+      (exp.pic && exp.pic.toLowerCase().includes(searchVal)) ||
+      (exp.notes && exp.notes.toLowerCase().includes(searchVal)) ||
+      (exp.category && exp.category.toLowerCase().includes(searchVal)) ||
+      String(exp.amount).includes(searchVal);
+    return matchCat && matchSearch;
+  }).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  setEl('badge-count-incomes', `${filteredIncomes.length} Transaksi`);
+  setEl('badge-count-expenses', `${filteredExpenses.length} Pengeluaran`);
+
+  // Render Incomes Table
+  const tbodyIn = document.getElementById('tbody-non-dues-income');
+  if (tbodyIn) {
+    if (filteredIncomes.length === 0) {
+      tbodyIn.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2.5rem;"><i class="fa-solid fa-hand-holding-dollar" style="opacity:.3; font-size:2rem; margin-bottom:.5rem;"></i><br>Belum ada catatan penerimaan non-iuran.</td></tr>`;
+    } else {
+      tbodyIn.innerHTML = filteredIncomes.map(inc => {
+        const catBadge = `<span class="badge-tag-cyan">${escapeHtml(inc.category || 'Penerimaan')}</span>`;
+        const methodBadge = inc.method === 'Tunai' 
+          ? `<span class="badge-tag-gold"><i class="fa-solid fa-money-bill-1"></i> Tunai</span>`
+          : (inc.method === 'QRIS' ? `<span class="badge-tag-emerald"><i class="fa-solid fa-qrcode"></i> QRIS</span>` : `<span class="badge-tag-cyan"><i class="fa-solid fa-building-columns"></i> Transfer</span>`);
+
+        return `
+          <tr>
+            <td style="white-space:nowrap; font-size:0.85rem; color:var(--text-muted);">${formatDateShort(inc.date)}</td>
+            <td>
+              <div style="font-weight:600; color:var(--text-primary); font-size:0.9rem;">${escapeHtml(inc.source || '-')}</div>
+              ${inc.notes ? `<small style="color:var(--text-muted); font-size:0.75rem; display:block;">${escapeHtml(inc.notes)}</small>` : ''}
+            </td>
+            <td>${catBadge}</td>
+            <td style="font-weight:700; color:var(--emerald-400); white-space:nowrap;">+ ${formatCurrency(inc.amount)}</td>
+            <td>${methodBadge}</td>
+            <td style="text-align:right; white-space:nowrap;">
+              <button class="btn btn-xs btn-outline-gold" title="Kuitansi Digital & WhatsApp" onclick="window.openNonDuesReceiptModal('${inc.id}')">
+                <i class="fa-solid fa-file-invoice"></i> Kuitansi
+              </button>
+              <button class="btn btn-xs btn-outline-rose" title="Hapus Data" onclick="window.deleteNonDuesIncome('${inc.id}')">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+  }
+
+  // Render Expenses Table
+  const tbodyOut = document.getElementById('tbody-non-dues-expense');
+  if (tbodyOut) {
+    if (filteredExpenses.length === 0) {
+      tbodyOut.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2.5rem;"><i class="fa-solid fa-receipt" style="opacity:.3; font-size:2rem; margin-bottom:.5rem;"></i><br>Belum ada catatan pengeluaran kas non-iuran.</td></tr>`;
+    } else {
+      tbodyOut.innerHTML = filteredExpenses.map(exp => {
+        const catBadge = `<span class="badge-tag-rose">${escapeHtml(exp.category || 'Pengeluaran')}</span>`;
+        return `
+          <tr>
+            <td style="white-space:nowrap; font-size:0.85rem; color:var(--text-muted);">${formatDateShort(exp.date)}</td>
+            <td>
+              <div style="font-weight:600; color:var(--text-primary); font-size:0.9rem;">${escapeHtml(exp.desc || '-')}</div>
+              ${catBadge}
+            </td>
+            <td style="color:var(--text-secondary); font-size:0.85rem;">${escapeHtml(exp.pic || '-')}</td>
+            <td style="font-weight:700; color:var(--rose-400); white-space:nowrap;">- ${formatCurrency(exp.amount)}</td>
+            <td style="font-size:0.8rem; color:var(--text-muted); max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(exp.notes || '-')}</td>
+            <td style="text-align:right; white-space:nowrap;">
+              <button class="btn btn-xs btn-outline-rose" title="Hapus Data" onclick="window.deleteNonDuesExpense('${exp.id}')">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+  }
+}
+window.renderNonDuesView = renderNonDuesView;
+
+function openAddNonDuesIncomeModal(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const dateInput = document.getElementById('non-dues-in-date');
+  if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+  const sourceInput = document.getElementById('non-dues-in-source');
+  if (sourceInput) sourceInput.value = '';
+  const amountInput = document.getElementById('non-dues-in-amount');
+  if (amountInput) amountInput.value = '';
+  const notesInput = document.getElementById('non-dues-in-notes');
+  if (notesInput) notesInput.value = '';
+  openModal('modal-add-non-dues-income');
+}
+window.openAddNonDuesIncomeModal = openAddNonDuesIncomeModal;
+
+function openAddNonDuesExpenseModal(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const dateInput = document.getElementById('non-dues-out-date');
+  if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+  const descInput = document.getElementById('non-dues-out-desc');
+  if (descInput) descInput.value = '';
+  const picInput = document.getElementById('non-dues-out-pic');
+  if (picInput) picInput.value = '';
+  const amountInput = document.getElementById('non-dues-out-amount');
+  if (amountInput) amountInput.value = '';
+  const notesInput = document.getElementById('non-dues-out-notes');
+  if (notesInput) notesInput.value = '';
+  openModal('modal-add-non-dues-expense');
+}
+window.openAddNonDuesExpenseModal = openAddNonDuesExpenseModal;
+
+function handleNonDuesIncomeSubmit(e) {
+  if (e && e.preventDefault) e.preventDefault();
+
+  const date = document.getElementById('non-dues-in-date')?.value || new Date().toISOString().split('T')[0];
+  const category = document.getElementById('non-dues-in-category')?.value || 'Donasi Warga';
+  const source = document.getElementById('non-dues-in-source')?.value?.trim();
+  const amountStr = document.getElementById('non-dues-in-amount')?.value || '';
+  const amount = parseInt(amountStr.replace(/\D/g, ''), 10);
+  const method = document.getElementById('non-dues-in-method')?.value || 'Tunai';
+  const notes = document.getElementById('non-dues-in-notes')?.value?.trim() || '';
+
+  if (!source) {
+    showToast('Silakan masukkan nama donatur atau sumber dana!', 'warning');
+    return;
+  }
+  if (!amount || isNaN(amount) || amount <= 0) {
+    showToast('Nominal penerimaan harus lebih dari 0!', 'warning');
+    return;
+  }
+
+  const newRecord = {
+    id: `NDI-${Date.now()}`,
+    date,
+    category,
+    source,
+    amount,
+    method,
+    notes
+  };
+
+  if (!state.nonDuesIncomes || !Array.isArray(state.nonDuesIncomes)) {
+    state.nonDuesIncomes = [];
+  }
+  state.nonDuesIncomes.unshift(newRecord);
+  saveState();
+  closeModal('modal-add-non-dues-income');
+  renderNonDuesView();
+  showToast(`Penerimaan sebesar ${formatCurrency(amount)} berhasil dicatat!`, 'success');
+}
+window.handleNonDuesIncomeSubmit = handleNonDuesIncomeSubmit;
+
+function handleNonDuesExpenseSubmit(e) {
+  if (e && e.preventDefault) e.preventDefault();
+
+  const date = document.getElementById('non-dues-out-date')?.value || new Date().toISOString().split('T')[0];
+  const category = document.getElementById('non-dues-out-category')?.value || 'Operasional Non-Iuran';
+  const desc = document.getElementById('non-dues-out-desc')?.value?.trim();
+  const amountStr = document.getElementById('non-dues-out-amount')?.value || '';
+  const amount = parseInt(amountStr.replace(/\D/g, ''), 10);
+  const pic = document.getElementById('non-dues-out-pic')?.value?.trim() || 'Bendahara RT';
+  const notes = document.getElementById('non-dues-out-notes')?.value?.trim() || '';
+
+  if (!desc) {
+    showToast('Silakan masukkan keperluan pengeluaran!', 'warning');
+    return;
+  }
+  if (!amount || isNaN(amount) || amount <= 0) {
+    showToast('Nominal pengeluaran harus lebih dari 0!', 'warning');
+    return;
+  }
+
+  const newRecord = {
+    id: `NDE-${Date.now()}`,
+    date,
+    category,
+    desc,
+    pic,
+    amount,
+    notes
+  };
+
+  if (!state.nonDuesExpenses || !Array.isArray(state.nonDuesExpenses)) {
+    state.nonDuesExpenses = [];
+  }
+  state.nonDuesExpenses.unshift(newRecord);
+  saveState();
+  closeModal('modal-add-non-dues-expense');
+  renderNonDuesView();
+  showToast(`Pengeluaran sebesar ${formatCurrency(amount)} berhasil dicatat!`, 'success');
+}
+window.handleNonDuesExpenseSubmit = handleNonDuesExpenseSubmit;
+
+function deleteNonDuesIncome(id) {
+  const item = (state.nonDuesIncomes || []).find(i => i.id === id);
+  if (!item) return;
+  if (!confirm(`Hapus catatan penerimaan dari "${item.source}" sebesar ${formatCurrency(item.amount)}?`)) return;
+
+  state.nonDuesIncomes = (state.nonDuesIncomes || []).filter(i => i.id !== id);
+  saveState();
+  renderNonDuesView();
+  showToast('Catatan penerimaan berhasil dihapus.', 'info');
+}
+window.deleteNonDuesIncome = deleteNonDuesIncome;
+
+function deleteNonDuesExpense(id) {
+  const item = (state.nonDuesExpenses || []).find(e => e.id === id);
+  if (!item) return;
+  if (!confirm(`Hapus catatan pengeluaran "${item.desc}" sebesar ${formatCurrency(item.amount)}?`)) return;
+
+  state.nonDuesExpenses = (state.nonDuesExpenses || []).filter(e => e.id !== id);
+  saveState();
+  renderNonDuesView();
+  showToast('Catatan pengeluaran berhasil dihapus.', 'info');
+}
+window.deleteNonDuesExpense = deleteNonDuesExpense;
+
+let currentNonDuesReceiptRecord = null;
+function openNonDuesReceiptModal(id) {
+  const item = (state.nonDuesIncomes || []).find(i => i.id === id);
+  if (!item) return;
+  currentNonDuesReceiptRecord = item;
+
+  const receiptBody = document.getElementById('non-dues-receipt-body');
+  if (receiptBody) {
+    receiptBody.innerHTML = `
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(245,158,11,0.25); border-radius:var(--radius-lg); padding:1.5rem; position:relative; overflow:hidden;">
+        <div style="text-align:center; border-bottom:1px dashed rgba(255,255,255,0.15); padding-bottom:1rem; margin-bottom:1rem;">
+          <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:6px;">
+            <img src="assets/logo.png" alt="Logo RT" style="width:36px; height:36px; object-fit:contain; border-radius:6px;">
+            <div>
+              <h4 style="margin:0; font-family:var(--font-heading); font-size:1.1rem; color:var(--text-primary);">RUKUN TETANGGA 001 / RW 013</h4>
+              <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">Graha Asri, Cikarang Utara • Tanda Terima Sah Kas Non-Iuran</p>
+            </div>
+          </div>
+          <span class="badge-tag-emerald" style="margin-top:4px;">STATUS: DITERIMA DENGAN AMANAH</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:130px 1fr; gap:8px 12px; font-size:0.88rem;">
+          <div style="color:var(--text-muted);">No. Bukti</div>
+          <div style="font-weight:700; color:var(--gold-400); font-family:monospace;">${item.id}</div>
+
+          <div style="color:var(--text-muted);">Tanggal</div>
+          <div style="font-weight:600; color:var(--text-primary);">${formatDateLong(item.date)}</div>
+
+          <div style="color:var(--text-muted);">Diterima Dari</div>
+          <div style="font-weight:700; color:var(--text-primary); font-size:0.95rem;">${escapeHtml(item.source)}</div>
+
+          <div style="color:var(--text-muted);">Kategori Sumber</div>
+          <div style="font-weight:600; color:var(--cyan-400);">${escapeHtml(item.category)}</div>
+
+          <div style="color:var(--text-muted);">Metode Bayar</div>
+          <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(item.method || 'Tunai')}</div>
+
+          <div style="color:var(--text-muted);">Jumlah Nominal</div>
+          <div style="font-size:1.2rem; font-weight:800; color:var(--emerald-400); font-family:var(--font-heading);">${formatCurrency(item.amount)}</div>
+
+          ${item.notes ? `
+          <div style="color:var(--text-muted);">Keterangan</div>
+          <div style="color:var(--text-secondary); font-style:italic;">"${escapeHtml(item.notes)}"</div>
+          ` : ''}
+        </div>
+
+        <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px dashed rgba(255,255,255,0.15); text-align:center; font-size:0.78rem; color:var(--text-muted);">
+          Terima kasih atas partisipasi dan kepedulian Bapak/Ibu demi kemajuan lingkungan RT 001 / RW 013.
+          <div style="margin-top:6px; font-weight:600; color:var(--gold-400);"><i class="fa-solid fa-crown text-gold"></i> Bendahara 1 RT 001</div>
+        </div>
+      </div>
+    `;
+  }
+
+  const shareBtn = document.getElementById('btn-share-non-dues-wa');
+  if (shareBtn) {
+    shareBtn.onclick = () => shareNonDuesReceiptWA(item.id);
+  }
+
+  openModal('modal-non-dues-receipt');
+}
+window.openNonDuesReceiptModal = openNonDuesReceiptModal;
+
+function shareNonDuesReceiptWA(id) {
+  const item = (state.nonDuesIncomes || []).find(i => i.id === id);
+  if (!item) return;
+
+  const text = 
+`*TANDA TERIMA RESMI KAS RT.001 / RW.013*
+_(Penerimaan Dana Di Luar Iuran Bulanan)_
+--------------------------------------------
+No. Bukti : ${item.id}
+Tanggal   : ${formatDateLong(item.date)}
+Diterima  : *${item.source}*
+Kategori  : ${item.category}
+Metode    : ${item.method || 'Tunai'}
+Nominal   : *${formatCurrency(item.amount)}*
+${item.notes ? `Keterangan: ${item.notes}\n` : ''}--------------------------------------------
+_Alhamdulillah, dana telah tercatat sah di Buku Kas Keuangan RT.001 Graha Asri._
+_Terima kasih banyak atas partisipasi, kebaikan, dan sumbangsih Bapak/Ibu demi kemakmuran lingkungan kita._
+
+*Hormat kami,*
+*Bendahara 1 / Pengurus RT.001 RW.013*`;
+
+  const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+  window.open(waUrl, '_blank');
+}
+window.shareNonDuesReceiptWA = shareNonDuesReceiptWA;
+
+function exportNonDuesCSV() {
+  const incomes = state.nonDuesIncomes || [];
+  const expenses = state.nonDuesExpenses || [];
+
+  let csvContent = "data:text/csv;charset=utf-8,";
+  csvContent += "=== LAPORAN PENERIMAAN DI LUAR IURAN (KAS NON-IURAN) RT 001 ===\r\n";
+  csvContent += "Tipe,ID,Tanggal,Kategori,Sumber/Penerima,Keperluan/Keterangan,Metode/PJ,Nominal (Rp)\r\n";
+
+  incomes.forEach(i => {
+    csvContent += `"PENERIMAAN","${i.id}","${i.date}","${i.category}","${(i.source||'').replace(/"/g, '""')}","${(i.notes||'').replace(/"/g, '""')}","${i.method||'Tunai'}","${i.amount}"\r\n`;
+  });
+
+  expenses.forEach(e => {
+    csvContent += `"PENGELUARAN","${e.id}","${e.date}","${e.category}","${(e.pic||'').replace(/"/g, '""')}","${(e.desc||'').replace(/"/g, '""')}","${(e.notes||'').replace(/"/g, '""')}","${e.amount}"\r\n`;
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `Laporan_Kas_Non_Iuran_RT001_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  showToast('Laporan kas non-iuran berhasil diekspor ke CSV!', 'success');
+}
+window.exportNonDuesCSV = exportNonDuesCSV;
 
 // ==================== MODUL STATISTIK DEMOGRAFI WARGA RT.001 RW.013 ====================
 const DEMOGRAFI_STORAGE_KEY = 'rt_demografi_data_v1';
