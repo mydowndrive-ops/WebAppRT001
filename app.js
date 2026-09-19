@@ -73,6 +73,13 @@ const DEFAULT_ACCOUNTS = [
   }
 ];
 
+function isCurrentWarga() {
+  if (typeof isLoggedIn === 'function' && !isLoggedIn()) return true;
+  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
+  return (currentAcc && currentAcc.accessLevel === 'WARGA') || state.currentUser === 'warga';
+}
+window.isCurrentWarga = isCurrentWarga;
+
 const DEFAULT_FUND_REQUESTS = [
   {
     id: 'DANA-202609-001',
@@ -1761,6 +1768,7 @@ let state = {
   selectedYear: 2026,
   activeReceiptData: null
 };
+window.state = state;
 
 // Chart instances
 let cashflowChart = null;
@@ -3856,11 +3864,11 @@ function navigateToView(viewId) {
   const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
   const isB2 = currentAcc && currentAcc.accessLevel === 'B2';
   const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
-  const isWarga = currentAcc && currentAcc.accessLevel === 'WARGA';
+  const isWarga = isCurrentWarga();
 
   const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur'];
   const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga'];
-  const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'aset-rt'];
+  const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt'];
 
   const originalTarget = viewId;
   let isRondaPengurus = false;
@@ -4689,10 +4697,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.8.8';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.8.9';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.8.8')
+      navigator.serviceWorker.register('sw.js?v=2.8.9')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -6620,6 +6628,10 @@ function renderRondaManageForm(weekNum = 1) {
 }
 
 function openManageRondaModal(weekNum = 1) {
+  if (isCurrentWarga()) {
+    showToast('Akses Dibatasi: Warga hanya memiliki hak akses Lihat/Pantau (Read-Only) untuk Jadwal Ronda.', 'warning');
+    return;
+  }
   try {
     populateResidentsDatalist();
     draftRondaGroups = JSON.parse(JSON.stringify(getRondaGroups()));
@@ -7122,14 +7134,14 @@ document.addEventListener('DOMContentLoaded', () => {
 const B1_RESTRICTED_TARGETS = ['checklist', 'pos-anggaran', 'pengeluaran', 'laporan', 'pengaturan'];
 const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur'];
 const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga'];
-const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'aset-rt'];
+const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt'];
 
 function applyRBAC() {
   const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser) || { accessLevel: state.currentUser === 'b2' ? 'B2' : (state.currentUser === 'pengurus' ? 'PENGURUS' : (state.currentUser === 'warga' ? 'WARGA' : 'B1')) };
   const isB1 = !currentAcc || currentAcc.accessLevel === 'B1';
   const isB2 = currentAcc && currentAcc.accessLevel === 'B2';
   const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
-  const isWarga = currentAcc && currentAcc.accessLevel === 'WARGA';
+  const isWarga = isCurrentWarga();
 
   // Filter menu sidebar dan bottom nav
   document.querySelectorAll('.menu-item, .bnav-item').forEach(el => {
@@ -7189,6 +7201,26 @@ function applyRBAC() {
   if (demoTopBtn) demoTopBtn.style.display = isB1 ? '' : 'none';
   const demoWargaBtn = document.getElementById('btn-open-demografi-modal-admin');
   if (demoWargaBtn) demoWargaBtn.style.display = isB1 ? '' : 'none';
+
+  // Tombol Cadangkan Data: Sembunyikan untuk Warga
+  const backupBtn = document.getElementById('btn-backup-data');
+  if (backupBtn) backupBtn.style.display = isWarga ? 'none' : '';
+
+  // Tombol Atur Jadwal Ronda: Sembunyikan untuk Warga (Read-Only)
+  const rondaBtns = [
+    'btn-pengurus-quick-ronda',
+    'btn-pengurus-modal-ronda',
+    'btn-dash-manage-ronda',
+    'btn-admin-manage-ronda'
+  ];
+  rondaBtns.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isWarga ? 'none' : '';
+  });
+
+  // Tombol Tambah Aset Baru: Sembunyikan untuk Warga (Read-Only)
+  const btnOpenAddAset = document.getElementById('btn-open-add-aset');
+  if (btnOpenAddAset) btnOpenAddAset.style.display = isWarga ? 'none' : '';
 
   // Sesuaikan tampilan kontrol kas Jimpitan sesuai role
   renderJimpitan();
@@ -9468,6 +9500,12 @@ function renderPengurusStruktur() {
   setupOrgControls();
   renderDynamicOrgCards();
   applyOrgFilter();
+
+  const isWarga = isCurrentWarga();
+  const btnQuickRonda = document.getElementById('btn-pengurus-quick-ronda');
+  if (btnQuickRonda) btnQuickRonda.style.display = isWarga ? 'none' : '';
+  const btnModalRonda = document.getElementById('btn-pengurus-modal-ronda');
+  if (btnModalRonda) btnModalRonda.style.display = isWarga ? 'none' : '';
 }
 
 /**
@@ -10768,6 +10806,8 @@ function renderPengurusRondaPanel(filterVal = 'all') {
     return;
   }
 
+  const isWargaUser = isCurrentWarga();
+
   container.innerHTML = filtered.map(g => {
     const isCurrent = g.week === currentWeek;
     const leaderInitials = (g.leader && g.leader.initials) ? g.leader.initials : getResidentMonogram(g.leader ? g.leader.name : '');
@@ -10815,15 +10855,24 @@ function renderPengurusRondaPanel(filterVal = 'all') {
         </div>
 
         <div class="pengurus-ronda-card-actions">
-          <button type="button" class="btn btn-sm btn-outline-cyan btn-edit-regu flex-grow-1" data-week="${g.week}" onclick="window.openManageRondaModal(${g.week})" title="Atur personel Regu ${g.week}">
-            <i class="fa-solid fa-user-pen"></i> Edit Regu
-          </button>
-          <button type="button" class="btn btn-sm btn-outline-emerald btn-wa-regu" data-week="${g.week}" title="Kirim Pengingat WhatsApp ke Regu ${g.week}">
-            <i class="fa-brands fa-whatsapp"></i> WA
-          </button>
-          <button type="button" class="btn btn-sm btn-outline btn-copy-regu" data-week="${g.week}" title="Salin Jadwal Regu ${g.week}">
-            <i class="fa-regular fa-copy"></i>
-          </button>
+          ${isWargaUser ? `
+            <button type="button" class="btn btn-sm btn-outline-emerald btn-wa-regu flex-grow-1" data-week="${g.week}" title="Kirim Pengingat WhatsApp ke Regu ${g.week}">
+              <i class="fa-brands fa-whatsapp"></i> WhatsApp Regu
+            </button>
+            <button type="button" class="btn btn-sm btn-outline btn-copy-regu" data-week="${g.week}" title="Salin Jadwal Regu ${g.week}">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          ` : `
+            <button type="button" class="btn btn-sm btn-outline-cyan btn-edit-regu flex-grow-1" data-week="${g.week}" onclick="window.openManageRondaModal(${g.week})" title="Atur personel Regu ${g.week}">
+              <i class="fa-solid fa-user-pen"></i> Edit Regu
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-emerald btn-wa-regu" data-week="${g.week}" title="Kirim Pengingat WhatsApp ke Regu ${g.week}">
+              <i class="fa-brands fa-whatsapp"></i> WA
+            </button>
+            <button type="button" class="btn btn-sm btn-outline btn-copy-regu" data-week="${g.week}" title="Salin Jadwal Regu ${g.week}">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          `}
         </div>
       </div>
     `;
@@ -10888,6 +10937,7 @@ function renderPengurusVerifikasiList(filter = 'all') {
   const container = document.getElementById('pengurus-verifikasi-list');
   if (!container) return;
 
+  const isWargaUser = isCurrentWarga();
   const requests = state.fundRequests || [];
 
   // Update counts
@@ -10970,21 +11020,25 @@ function renderPengurusVerifikasiList(filter = 'all') {
           "${req.description}"
         </div>
 
-        <!-- Action buttons for Pengurus -->
-        <div style="display:flex; gap:0.5rem; margin-top:auto; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.06); flex-wrap:wrap;">
-          ${req.status === 'pending' ? `
-            <button type="button" class="btn btn-sm btn-emerald flex-grow-1 btn-act-approve" data-id="${req.id}">
-              <i class="fa-solid fa-check"></i> Setujui
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-danger btn-act-reject" data-id="${req.id}" style="border-color:#f43f5e; color:#f43f5e;">
-              <i class="fa-solid fa-xmark"></i> Tolak
-            </button>
-          ` : ''}
-          ${req.status === 'approved' ? `
-            <button type="button" class="btn btn-sm btn-cyan flex-grow-1 btn-act-disburse" data-id="${req.id}">
-              <i class="fa-solid fa-money-bill-transfer"></i> Cairkan Dana
-            </button>
-          ` : ''}
+        <!-- Action buttons for Pengurus / Read-Only for Warga -->
+        <div style="display:flex; gap:0.5rem; margin-top:auto; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; align-items:center;">
+          ${isWargaUser ? `
+            <span class="badge-tag-cyan" style="font-size:0.75rem; padding:4px 8px;"><i class="fa-solid fa-eye"></i> Tinjauan Warga (Read-Only)</span>
+          ` : `
+            ${req.status === 'pending' ? `
+              <button type="button" class="btn btn-sm btn-emerald flex-grow-1 btn-act-approve" data-id="${req.id}">
+                <i class="fa-solid fa-check"></i> Setujui
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-danger btn-act-reject" data-id="${req.id}" style="border-color:#f43f5e; color:#f43f5e;">
+                <i class="fa-solid fa-xmark"></i> Tolak
+              </button>
+            ` : ''}
+            ${req.status === 'approved' ? `
+              <button type="button" class="btn btn-sm btn-cyan flex-grow-1 btn-act-disburse" data-id="${req.id}">
+                <i class="fa-solid fa-money-bill-transfer"></i> Cairkan Dana
+              </button>
+            ` : ''}
+          `}
           <button type="button" class="btn btn-sm btn-outline-emerald btn-act-wa" data-phone="${req.phone}" data-title="${req.title}" title="Hubungi Pemohon via WA">
             <i class="fa-brands fa-whatsapp"></i> Hubungi
           </button>
@@ -11408,6 +11462,10 @@ function getConditionBadge(kondisi) {
 }
 
 function renderAsetRt() {
+  const isWargaUser = isCurrentWarga();
+  const btnOpenAdd = document.getElementById('btn-open-add-aset');
+  if (btnOpenAdd) btnOpenAdd.style.display = isWargaUser ? 'none' : '';
+
   const list = getAsetList();
 
   // 1. Calculate overall KPIs
@@ -11550,14 +11608,20 @@ function renderAsetRt() {
                 <span class="price-lbl">Nilai Perolehan</span>
                 <div class="price-val ${item.harga > 0 ? 'text-gold' : ''}">${formattedPrice}</div>
               </div>
-              <div class="aset-card-actions">
-                <button type="button" class="btn-icon-action btn-action-edit" onclick="openEditAsetModal(${item.id})" title="Edit Data Barang">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button type="button" class="btn-icon-action btn-action-delete" onclick="deleteAsetItem(${item.id})" title="Hapus Barang">
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
-              </div>
+              ${isWargaUser ? `
+                <div class="aset-card-actions">
+                  <span class="badge-tag-cyan" style="font-size:0.72rem; padding:3px 8px;"><i class="fa-solid fa-eye"></i> Terdata</span>
+                </div>
+              ` : `
+                <div class="aset-card-actions">
+                  <button type="button" class="btn-icon-action btn-action-edit" onclick="openEditAsetModal(${item.id})" title="Edit Data Barang">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" class="btn-icon-action btn-action-delete" onclick="deleteAsetItem(${item.id})" title="Hapus Barang">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+              `}
             </div>
           </div>
         `;
@@ -11612,14 +11676,18 @@ function renderAsetRt() {
               </div>
             </td>
             <td style="text-align: center;">
-              <div style="display: flex; gap: 0.35rem; justify-content: center;">
-                <button type="button" class="btn-icon-action btn-action-edit" onclick="openEditAsetModal(${item.id})" title="Edit">
-                  <i class="fa-solid fa-pen"></i>
-                </button>
-                <button type="button" class="btn-icon-action btn-action-delete" onclick="deleteAsetItem(${item.id})" title="Hapus">
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
-              </div>
+              ${isWargaUser ? `
+                <span class="badge-tag-cyan" style="font-size:0.72rem; padding:3px 6px;"><i class="fa-solid fa-eye"></i> Terdata</span>
+              ` : `
+                <div style="display: flex; gap: 0.35rem; justify-content: center;">
+                  <button type="button" class="btn-icon-action btn-action-edit" onclick="openEditAsetModal(${item.id})" title="Edit">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button type="button" class="btn-icon-action btn-action-delete" onclick="deleteAsetItem(${item.id})" title="Hapus">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+              `}
             </td>
           </tr>
         `;
@@ -11665,6 +11733,10 @@ function setAsetViewMode(mode) {
 }
 
 function openAddAsetModal() {
+  if (isCurrentWarga()) {
+    showToast('Akses Dibatasi: Warga hanya memiliki hak akses Lihat/Pantau (Read-Only) untuk Inventaris Aset.', 'warning');
+    return;
+  }
   const modal = document.getElementById('modal-add-aset');
   if (!modal) return;
 
@@ -11684,6 +11756,10 @@ function openAddAsetModal() {
 }
 
 function openEditAsetModal(id) {
+  if (isCurrentWarga()) {
+    showToast('Akses Dibatasi: Warga hanya memiliki hak akses Lihat/Pantau (Read-Only) untuk Inventaris Aset.', 'warning');
+    return;
+  }
   const list = getAsetList();
   const item = list.find(it => it.id === Number(id));
   if (!item) return;
@@ -11707,6 +11783,10 @@ function openEditAsetModal(id) {
 }
 
 function deleteAsetItem(id) {
+  if (isCurrentWarga()) {
+    showToast('Akses Dibatasi: Warga hanya memiliki hak akses Lihat/Pantau (Read-Only) untuk Inventaris Aset.', 'warning');
+    return;
+  }
   const list = getAsetList();
   const item = list.find(it => it.id === Number(id));
   if (!item) return;

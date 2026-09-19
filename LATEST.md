@@ -116,7 +116,28 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
   3. Memberikan pengaman `typeof BROADCAST_TEMPLATES === 'undefined'` pada `refreshContent()`.
   4. Meningkatkan versi aset (*cache busting*) ke `v=2.8.8` pada `index.html`, `app.js`, dan `sw.js`.
 
-### 4. 🪙 Modul Kas Jimpitan Ronda Terintegrasi (Update 19 Sept 2026)
+### 6. 🔒 Penegakan Read/View-Only Mode Menyeluruh pada Dashboard Warga (Update v2.8.9)
+- **Kebutuhan & Arahan**:
+  - Seluruh elemen antarmuka yang dapat diakses oleh Warga (`accessLevel === 'WARGA'` maupun pengunjung portal publik) wajib berstatus **READ/VIEW ONLY** sehingga warga tidak dapat melakukan pengubahan, penambahan, penghapusan, ataupun manipulasi data apa pun.
+- **Penyempurnaan & Pengamanan (v2.8.9)**:
+  1. **Helper Otorisasi Terpusat (`isCurrentWarga()`)**:
+     - Fungsi `isCurrentWarga()` mengecek apakah pengguna berstatus non-login (publik) atau memiliki akun dengan `accessLevel === 'WARGA'`.
+  2. **Penyembunyian Tombol "Atur Jadwal Ronda" & "Edit Regu"**:
+     - Tombol `#btn-pengurus-quick-ronda`, `#btn-pengurus-modal-ronda`, `#btn-dash-manage-ronda`, dan `#btn-admin-manage-ronda` secara otomatis disembunyikan (`display: none`) untuk Warga.
+     - Pada panel 8 Regu Ronda (`renderPengurusRondaPanel`), tombol aksi `.btn-edit-regu` ("Edit Regu") dihilangkan total untuk Warga, hanya menyajikan tombol pemantauan ("WhatsApp Regu" dan "Salin Jadwal").
+     - Fungsi `openManageRondaModal(weekNum)` dibentengi dengan pemeriksaan keamanan di sisi fungsi: jika Warga mencoba memanggil fungsi ini, sistem langsung menolak dan memunculkan notifikasi peringatan.
+  3. **Pengamanan Modul Inventaris & Aset RT (`aset-rt`)**:
+     - Tombol `#btn-open-add-aset` ("Tambah Aset Baru") disembunyikan untuk Warga.
+     - Pada tampilan Kartu maupun Tabel Inventaris, tombol `.btn-action-edit` dan `.btn-action-delete` digantikan dengan lencana status `<span class="badge-tag-cyan"><i class="fa-solid fa-eye"></i> Terdata</span>`.
+     - Fungsi `openAddAsetModal()`, `openEditAsetModal()`, dan `deleteAsetItem()` dibentengi di level JavaScript dengan penolakan langsung jika diakses oleh Warga.
+  4. **Pusat Verifikasi Fasum Warga (`pengurus-tab-panel-verifikasi`)**:
+     - Tombol aksi persetujuan ("Setujui" & "Tolak") dihilangkan untuk Warga, digantikan dengan status lencana *Tinjauan Warga (Read-Only)*.
+  5. **Tombol Administratif Cadangkan Data**:
+     - Tombol `#btn-backup-data` disembunyikan untuk peran Warga.
+  6. **Penyelarasan Cache Busting ke `v=2.8.9`**:
+     - `index.html`, `sw.js`, dan `app.js` diselaraskan ke versi `v=2.8.9` agar browser dan PWA Service Worker segera memperbarui seluruh berkas secara bersih.
+
+### 7. 🪙 Modul Kas Jimpitan Ronda Terintegrasi (Update 19 Sept 2026)
 - Penguatan alur pencatatan perolehan uang jimpitan malam minggu untuk akun Bendahara 2 (B2) dan Bendahara 1 (B1).
 - Otomatis memperbarui total penerimaan jimpitan, mutasi pengeluaran siskamling, dan saldo kas jimpitan yang langsung tampil di kartu Transparansi Keuangan Portal Warga.
 
