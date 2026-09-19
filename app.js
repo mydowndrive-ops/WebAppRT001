@@ -2272,6 +2272,7 @@ function openModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.classList.add('active');
+    modal.style.display = 'flex';
     if (typeof pushNavHistory === 'function') {
       pushNavHistory('modal', modalId, `modal-${modalId}`);
     }
@@ -2282,6 +2283,7 @@ function closeModal(modalId, fromPopState = false) {
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.classList.remove('active');
+    modal.style.display = 'none';
     if (!fromPopState && typeof popNavHistory === 'function' && window.history.state?.type === 'modal' && window.history.state?.id === modalId) {
       popNavHistory();
     }
@@ -3951,7 +3953,7 @@ function setupModalEventListeners() {
     btn.addEventListener('click', (e) => {
       const modalId = btn.getAttribute('data-close') || btn.closest('.modal-backdrop')?.id;
       if (modalId) {
-        document.getElementById(modalId)?.classList.remove('active');
+        closeModal(modalId);
       }
     });
   });
@@ -3960,7 +3962,7 @@ function setupModalEventListeners() {
   document.querySelectorAll('.modal-backdrop').forEach(bd => {
     bd.addEventListener('click', (e) => {
       if (e.target === bd) {
-        bd.classList.remove('active');
+        closeModal(bd.id);
       }
     });
   });
@@ -6579,23 +6581,27 @@ function renderRondaManageForm(weekNum = 1) {
 
   if (badgeEl) badgeEl.textContent = group.weekName || `Regu ${currentEditingWeek}`;
   if (cycleEl) cycleEl.textContent = `${group.cycle || `Pekan Bergilir ke-${currentEditingWeek}`} • Pukul 21.00 – 04.00 WIB`;
-  if (leaderInput) leaderInput.value = group.leader ? (group.leader.name || '') : '';
+  const leaderName = typeof group.leader === 'string' ? group.leader : (group.leader && group.leader.name ? group.leader.name : '');
+  if (leaderInput) leaderInput.value = leaderName;
 
   if (membersContainer) {
     if (!group.members || group.members.length === 0) {
       membersContainer.innerHTML = `<div class="text-muted" style="font-size:0.85rem; padding:0.5rem; text-align:center;">Belum ada anggota. Klik "+ Tambah Anggota" untuk menambahkan.</div>`;
     } else {
-      membersContainer.innerHTML = group.members.map((m, idx) => `
+      membersContainer.innerHTML = group.members.map((m, idx) => {
+        const mName = typeof m === 'string' ? m : (m && m.name ? m.name : '');
+        return `
         <div class="ronda-member-edit-row" data-idx="${idx}">
           <span class="ronda-member-num">${idx + 1}</span>
           <div class="ronda-member-input-wrap" style="flex:1;">
-            <input type="text" class="form-input ronda-member-input ronda-member-name-input" value="${escapeHtml(m.name || '')}" placeholder="Ketik nama petugas ronda..." list="ronda-residents-datalist" autocomplete="off">
+            <input type="text" class="form-input ronda-member-input ronda-member-name-input" value="${escapeHtml(mName)}" placeholder="Ketik nama petugas ronda..." list="ronda-residents-datalist" autocomplete="off">
           </div>
           <button type="button" class="btn-remove-ronda-member" title="Hapus petugas ini" data-idx="${idx}">
             <i class="fa-solid fa-trash-can"></i>
           </button>
         </div>
-      `).join('');
+        `;
+      }).join('');
 
       // Wire delete buttons
       membersContainer.querySelectorAll('.btn-remove-ronda-member').forEach(btn => {
@@ -6612,33 +6618,15 @@ function renderRondaManageForm(weekNum = 1) {
 }
 
 function openManageRondaModal(weekNum = 1) {
-  // 1. Cek Hak Akses (Admin 2 / B2 tidak diizinkan mengatur jadwal ronda)
-  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
-  const isB2 = currentAcc && currentAcc.accessLevel === 'B2';
-  if (isB2) {
-    showToast('⚠️ Pengaturan Jadwal Ronda dikelola khusus oleh Pengurus RT.', 'warning');
-    return;
+  try {
+    populateResidentsDatalist();
+    draftRondaGroups = JSON.parse(JSON.stringify(getRondaGroups()));
+    renderRondaManageForm(weekNum);
+    openModal('modal-manage-ronda');
+  } catch (err) {
+    console.error('Error in openManageRondaModal:', err);
+    openModal('modal-manage-ronda');
   }
-
-  // Cek apakah pengguna sedang aktif di Portal Admin / Pengurus
-  const loggedIn = (typeof isLoggedIn === 'function' && isLoggedIn()) || Boolean(sessionStorage.getItem(LOGIN_SESSION_KEY));
-  const isAppActive = document.getElementById('app') && document.getElementById('app').style.display !== 'none';
-  const isAuthorized = loggedIn || isAppActive || ['pengurus', 'b1', 'admin'].includes(state.currentUser);
-
-  if (!isAuthorized) {
-    window.pendingPengurusAction = () => {
-      openManageRondaModal(weekNum);
-    };
-    showToast('🔒 Silakan masuk sebagai Pengurus RT untuk mengubah susunan ronda.', 'info');
-    if (typeof showLoginOverlay === 'function') showLoginOverlay('pengurus');
-    return;
-  }
-
-  // 2. Siapkan data draft dan datalist
-  populateResidentsDatalist();
-  draftRondaGroups = JSON.parse(JSON.stringify(getRondaGroups()));
-  renderRondaManageForm(weekNum);
-  openModal('modal-manage-ronda');
 }
 
 // Global exposure
@@ -6649,7 +6637,11 @@ window.generateAllRondaScheduleText = generateAllScheduleText;
 window.openManageRondaModal = openManageRondaModal;
 window.renderRondaManageForm = renderRondaManageForm;
 
+let isManageRondaModalSetup = false;
 function setupManageRondaModal() {
+  if (isManageRondaModalSetup) return;
+  isManageRondaModalSetup = true;
+
   // Tab click in Modal (8 Regu Ronda)
   document.getElementById('ronda-manage-week-tabs')?.addEventListener('click', (e) => {
     const tab = e.target.closest('.ronda-manage-tab');
@@ -6724,6 +6716,12 @@ function setupManageRondaModal() {
   document.getElementById('btn-dash-manage-ronda')?.addEventListener('click', () => openManageRondaModal(1));
   document.getElementById('btn-pengurus-quick-ronda')?.addEventListener('click', () => openManageRondaModal(1));
   document.getElementById('btn-pengurus-modal-ronda')?.addEventListener('click', () => openManageRondaModal(1));
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupManageRondaModal);
+} else {
+  setupManageRondaModal();
 }
 
 function setupRondaSchedule() {

@@ -1534,7 +1534,7 @@ h1, h2, h3, h4, h5, h6 {
   bottom: 0;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(8px);
-  z-index: 1000;
+  z-index: 10000;
   display: none;
   align-items: center;
   justify-content: center;
@@ -1543,7 +1543,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .modal-backdrop.active {
-  display: flex;
+  display: flex !important;
 }
 
 .modal-content {
@@ -13540,6 +13540,10 @@ h1, h2, h3, h4, h5, h6 {
 .pengurus-ronda-card-actions .btn {
   font-size: 0.8rem;
   padding: 0.45rem 0.75rem;
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 

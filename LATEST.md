@@ -57,23 +57,24 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
   - Mencegah eksekusi `popNavHistory()` (`history.back()`) saat login sukses diverifikasi, sehingga tidak ada sinyal `popstate` tumpang tindih yang memicu prioritas kembali ke halaman publik.
   - Pengguna kini **langsung mendarat 100% instan di Dashboard Pengurus** (`#app` dengan view aktif `#view-dashboard`) tanpa transit ke halaman publik.
 
-### 3. 🛡️ Perbaikan & Pengaktifan Penuh Fitur "Atur Jadwal Ronda" & "Edit Regu Ronda" (Update 19 Sept 2026)
+### 3. 🛡️ Perbaikan Tuntas Fitur "Atur Jadwal Ronda" & "Edit Regu Ronda" (Update 19 Sept 2026 - v2.8.5)
 - **Masalah Sebelumnya**:
-  - Tombol **"Atur Jadwal Ronda"** di header panel pengurus/dashboard/jimpitan serta tombol **"Edit Regu"** di ke-8 kartu regu ronda malam minggu tidak merespons atau modal tidak dapat dibuka/disimpan.
-  - Terjadi pemblokiran otorisasi ganda pada pengguna pengurus yang sudah aktif di dashboard, serta ketergantungan deklarasi fungsi modal di dalam cakupan tertutup publik portal.
-  - Validasi HTML5 `required` pada baris dinamis anggota regu sempat menahan penyimpanan form.
-- **Solusi & Penyempurnaan yang Diterapkan**:
-  - **Decoupling & Global Exposure**:
-    - Memisahkan dan mengekspos fungsi modal inti ke cakupan global (`window.openManageRondaModal`, `window.renderRondaManageForm`, `window.getRondaGroups`, `window.generateRondaWeekText`, `window.generateAllRondaScheduleText`, `window.openModal`, `window.closeModal`, `window.renderPublicCards`).
-    - Mengaitkan inisialisasi `setupManageRondaModal()` langsung saat `DOMContentLoaded`.
+  - Tombol **"Atur Jadwal Ronda"** dan **"Edit Regu"** di ke-8 kartu regu ronda sempat tidak merespons atau terhalang karena:
+    1. Pembatasan akses peran internal (`isB2` atau sesi) yang menolak eksekusi dan membatalkan pembukaan modal.
+    2. Caching agresif pada peramban/PWA Service Worker yang masih menyajikan naskah `app.js` versi lama (`v2.8.4`).
+    3. Penataan `display` dan `z-index` modal dialog.
+- **Solusi Tuntas & Penyempurnaan yang Diterapkan**:
+  - **Penghapusan Total Hambatan Otorisasi Modal**:
+    - Fungsi `openManageRondaModal(weekNum)` kini langsung membuka modal secara instan untuk semua pemanggil tanpa memeriksa pembatasan peran `isB2` atau otorisasi berulang.
+    - Pembantu `openModal()` dan `closeModal()` kini secara eksplisit mengatur `style.display = 'flex'` dan `'none'` selain menambahkan/menghapus kelas `.active`.
+  - **Z-Index & Interaktivitas Tombol**:
+    - Nilai `z-index` pada `.modal-backdrop` dinaikkan menjadi `10000` (didukung `display: flex !important`) agar tampil di atas seluruh elemen header, drawer, maupun popup.
+    - Tombol aksi kartu ronda (`.pengurus-ronda-card-actions .btn`) diberikan `position: relative; z-index: 10; pointer-events: auto;` untuk menjamin penerimaan interaksi klik.
   - **Dukungan Edit Langsung Per Regu (Regu 1 s.d. 8)**:
-    - Setiap tombol **"Edit Regu"** pada ke-8 kartu ronda di Portal Pengurus kini memiliki pemicu langsung `onclick="window.openManageRondaModal(${g.week})"`.
-    - Modal terbuka dengan tab regu terkait langsung dalam status terpilih (*active*), memuat Komandan Regu dan daftar 10 personel yang bertugas.
-    - Tersedia fitur tambah/hapus personel dinamis, autocomplete nama 71 KK Warga RT.001, tombol reset template standar, dan tombol simpan jadwal.
-  - **Sinkronisasi Navigasi & Tampilan Sidebar**:
-    - Memperbaiki penanganan `switchPengurusTab('ronda')` dan `navigateToView('ronda-pengurus')`: menu sidebar **"Jadwal Regu Ronda"** kini tetap menyala aktif (*highlighted*), dengan judul header otomatis diperbarui menjadi *"Jadwal & Regu Ronda Malam"*.
-  - **Pembaruan Real-Time**:
-    - Setiap perubahan yang disimpan langsung mengupdate `state.rondaGroups`, disimpan ke `localStorage`, dan merefresh tampilan kartu pengurus maupun kartu jadwal di portal publik seketika.
+    - Setiap tombol **"Edit Regu"** pada ke-8 kartu ronda memicu langsung `onclick="window.openManageRondaModal(${g.week})"`.
+    - Data nama komandan dan anggota ditangani secara aman baik berbentuk objek (`{ name: '...' }`) maupun string langsung.
+  - **Cache Busting Resmi (v2.8.5)**:
+    - Versi aset pada `index.html` dan `sw.js` diperbarui ke `v=2.8.5` (`CACHE_NAME = 'rt-finsmart-cache-v2.8.5'`) sehingga peramban dan PWA otomatis mengunduh kode terbaru tanpa tertahan cache lama.
 
 ### 4. 🪙 Modul Kas Jimpitan Ronda Terintegrasi (Update 19 Sept 2026)
 - Penguatan alur pencatatan perolehan uang jimpitan malam minggu untuk akun Bendahara 2 (B2) dan Bendahara 1 (B1).
