@@ -30,17 +30,19 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
 
 ## 🌟 Fitur-Fitur Utama & Pembaruan Terkini (Changelog Terbaru)
 
-### 1. 🇮🇩 Banner Bendera Merah Putih Berkibar Realistis (Update 19 Sept 2026)
+### 1. 🇮🇩 Banner Bendera Merah Putih Berkibar Realistis (SVG Displacement & Center Alignment)
 - **Transformasi Kotak Header Hero**:
-  - Mengganti kotak cyber badge lama berlabel "WARGA RT.001 RW.013" dengan banner bendera Merah Putih dinamis beranimasi berkibar (*realistic waving cloth animation*) sepanjang kotak header.
-  - **Efek Visual Gelombang Sutra (*Silk Wave Dynamics*)**:
-    - Dual stripes presisi 50% merah menyala (`#e60000`) dan 50% putih bersih (`#ffffff`).
-    - 3 lapisan lipatan kain (*cloth ripples*) dengan animasi `flagWaveMotion` dan gradasi pencahayaan fotorealistik.
-    - Efek kilau angin mengalir (*wind shimmer flow*) dinamis dengan `flagShimmerFlow`.
-    - Bayangan kain (*drop shadows* dan *edge crease*) yang memberikan ilusi kedalaman 3D.
-  - **Keterbacaan Tipografi Maksimal**:
-    - Judul *"WARGA RT.001 RW.013"* dan sub-badge *"GRAHA ASRI - CITARUM"* tetap tampil tajam dan elegan menggunakan multi-layer shadow kontras tinggi (`text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 4px 18px rgba(0,0,0,0.8)`).
-    - Desain sepenuhnya responsif untuk layar smartphone maupun monitor desktop.
+  - Mengganti kotak background lama dengan komponen bendera Merah Putih dinamis beranimasi berkibar (*realistic waving cloth animation*) murni HTML dan CSS.
+  - **Efek Visual Gelombang Kain & Ripple Dinamis**:
+    - **Teknik SVG Displacement Map**: Memanfaatkan kombinasi filter `<feTurbulence>` dan `<feDisplacementMap>` beranimasi halus untuk mereplikasi riak gelombang 3D kain bendera yang lentur tertiup angin secara kontinu.
+    - **Latar Bendera Dua Warna**: Merah menyala di atas (50%) dan putih bersih di bawah (50%) dengan sentuhan gradasi kain sutra.
+    - **Riak Pencahayaan (*Cloth Shading & Highlights*)**: 3 lapisan gelombang linier overlay/soft-light yang bergeser dinamis dengan CSS keyframes `@keyframes flagWaveMotion`.
+    - **Kilau Angin (*Wind Shimmer Flow*)**: Spekular kilau sutra bergerak dengan `@keyframes flagShimmerFlow`.
+  - **Hierarki Visual & Keterbacaan Kontras (Center Alignment)**:
+    - Teks `"WARGA RT.001 RW.013"` diposisikan di lapisan paling depan (*frontmost layer* dengan `z-index: 3`) persis di tengah-tengah kotak (*center alignment*).
+    - Dilengkapi lapisan pelindung kontras (*radial-gradient contrast scrim*) semi-transparan tipis di belakang teks.
+    - Tipografi *bold* tebal dengan multi-layer shadow gelap pekat (`text-shadow: 0 1px 2px #000, 0 2px 5px rgba(0,0,0,0.95), 0 4px 14px rgba(0,0,0,0.9), 0 0 25px rgba(0,0,0,0.85)`) sehingga teks tetap 100% sangat jelas dan mudah dibaca baik di atas latar merah maupun putih yang sedang bergerak.
+  - **Performa Ringan**: Dijalankan dengan akselerasi perangkat keras GPU (`transform: translate3d`, `will-change: transform`), sangat ringan dan cocok untuk dashboard maupun layar digital signage.
 
 ### 2. ⚡ Perbaikan Alur Navigasi Login Pengurus (Direct Landing - Update 19 Sept 2026)
 - **Masalah Sebelumnya**:
