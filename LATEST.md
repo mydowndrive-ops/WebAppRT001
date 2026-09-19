@@ -1,6 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 19 September 2026  
+**Terakhir Diperbarui:** 20 September 2026 (01:15 WIB)  
+**Versi Rilis Aktif:** `v2.8.9`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -10,169 +11,128 @@
 
 ## 🚀 Ringkasan Proyek & Panduan Melanjutkan (Handover Guide)
 
-Dokumen ini dibuat khusus agar saat berpindah perangkat (laptop) atau akun, proyek ini dapat langsung dipahami dan dilanjutkan tanpa kehilangan konteks apa pun. Seluruh kode sumber terkini telah tersinkronisasi penuh dengan repositori GitHub.
+Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of truth*) agar saat Anda melanjutkan pekerjaan nanti atau besok — atau berpindah perangkat (laptop)/akun — seluruh konteks arsitektur, status pengetesan, dan rencana kerja berikutnya dapat langsung dilanjutkan tanpa hambatan. Seluruh kode sumber terkini telah tersinkronisasi penuh dengan repositori GitHub di cabang `main`.
 
 ---
 
-## 🔐 Kredensial & Akses Pengguna (Role-Based Access Control)
+## 🔐 Kredensial & Matriks Akses Pengguna (Role-Based Access Control)
 
-Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) dengan dua peran (*role*):
+Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) yang mendukung 4 tingkat peran (*roles*):
 
-| Peran | Nama Peran | Hak Akses | Default PIN |
-| :--- | :--- | :--- | :--- |
-| **B1** | **Bendahara 1 (Super Admin)** | Akses Penuh: Dashboard, Matriks Checklist, Pos Anggaran, Pengeluaran, Warga, Laporan, Pengaturan, Jimpitan, Pengaturan Ronda | `1111` |
-| **B2** | **Bendahara 2 (Jimpitan & Ronda)** | Khusus Modul Uang Jimpitan Ronda (Catat Perolehan Mingguan, Pengeluaran Ronda, Rekap Saldo, Ekspor CSV, Monitoring Ronda) | `2222` |
+| Peran | Nama Akun / Entitas | Hak Akses Utama | Kredensial Masuk | Mode Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **B1** | **Bendahara 1 (Super Admin)** | Akses Penuh: Dashboard, Matriks Checklist, 6 Pos Anggaran & SHR, Pengeluaran Kas, Data 71 KK, Laporan & Pembukuan, Pengaturan Pos, Kas Jimpitan Ronda, Atur Jadwal Ronda, Pengajuan Dana Warga, Inventaris Aset RT | PIN: `1111` | **Full Read & Write** |
+| **B2** | **Bendahara 2 (Koordinator Jimpitan)** | Pengelolaan Uang Jimpitan Ronda (Catat Perolehan Mingguan, Pengeluaran Pos Ronda, Rekap Saldo, Ekspor CSV), Monitoring Inventaris Aset RT, dan Struktur Pengurus | PIN: `2222` | **Limited Read & Write** |
+| **PENGURUS** | **Pengurus RT (Ketua, Sekr, Humas)** | Monitoring Dashboard Eksekutif, Struktur & Bagan Organisasi, Jadwal & Susunan 8 Regu Ronda, Inventaris Aset RT, Pemantauan Jimpitan, Verifikasi Usulan Fasum, dan Buku Induk Warga | PIN: `3333` | **Operational Read & Write** |
+| **WARGA** | **Warga RT.001 Terverifikasi** | Portal Mandiri Warga (Kartu Iuran 12 Bulan, Kwitansi Digital, Jadwal Ronda Pribadi & Seluruh Regu, Layanan e-Surat, Pengajuan Fasum, Kotak Aspirasi), Bagan Struktur RT, dan Inventaris Aset RT | Password Rumah per KK (112 KK, contoh: `C2B602` untuk Blok B6 No. 02) | **STRICT READ / VIEW ONLY** |
 
-- **Email Reset PIN / Bantuan:** `rt001rw013.grahaasri@gmail.com`
-- **Penyimpanan Sesi:** Menggunakan `sessionStorage` (`RT001_LOGIN_SESSION_V1`). Sesi aktif saat browser terbuka dan akan meminta login kembali jika pengguna menekan tombol **Keluar (Logout)** di sidebar atau header atas.
+- **Pengunjung Publik / Belum Login**: Otomatis dibatasi dalam mode **READ ONLY** (tidak dapat memodifikasi jadwal ronda, aset, maupun pengajuan dana).
+- **Email Bantuan / Lupa PIN:** `rt001rw013.grahaasri@gmail.com`
+- **Penyimpanan Sesi:** Menggunakan `sessionStorage` (`RT001_LOGIN_SESSION_V1`). Sesi aktif selama jendela tab terbuka dan akan meminta verifikasi ulang jika pengguna menekan tombol **Keluar (Logout)**.
 
 ---
 
-## 🌟 Fitur-Fitur Utama & Pembaruan Terkini (Changelog Terbaru)
+## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🇮🇩 Banner Bendera Merah Putih & Animasi Mewah Split-Text Reveal
-- **Transformasi Kotak Header Hero**:
-  - Mengganti latar kotak lama dengan pemutaran video dinamis bendera Merah Putih berkibar asli menggunakan berkas `redwihite.mp4` (`<video class="flag-video-bg" autoplay loop muted playsinline preload="auto">`).
-  - **Pembersihan Watermark Shutterstock 100% (*Watermark-Free*)**:
-    - Teks watermark *"shutterstock"* yang semula menempel pada bagian kain putih telah dihilangkan secara sempurna menggunakan teknik rekonstruksi *masked feather inpainting* tanpa merusak dinamika lipatan kain sutra bendera.
-    - Format video telah dioptimalkan dengan H.264 FastStart (`redwihite.mp4` dan `assets/redwihite.mp4`) untuk pemutaran instan tanpa *buffering* di seluruh jenis peramban modern.
-    - Berkas `redwihite.webm` lama yang mengandung watermark telah dihapus bersih dari repositori.
-  - **Efek Animasi Mewah Split-Text Reveal (Dua Baris Teks)**:
-    - Judul utama `<h1>` kini berformat dua tingkat:
-      1. Baris atas: `"Web Aplikasi Resmi"` (`.split-line-sub`) beraksen emas lembut (*luxury gold*).
-      2. Baris bawah: `"WARGA RT.001 RW.013"` (`.split-line-main`) berhuruf tebal putih berkontras tinggi.
-    - **Teknik Masking & Staggered Reveal**:
-      - Setiap kata dibungkus dalam `<span class="word">` (`display: inline-block; overflow: hidden;`) sebagai area *masking*.
-      - Setiap huruf dipecah menjadi `<span class="char">` (`transform: translateY(110%); opacity: 0;`).
-      - Menggunakan Vanilla JS murni untuk menyuntikkan `transition-delay` bertahap (30ms per huruf) dengan kurva pergerakan sutra `cubic-bezier(0.16, 1, 0.3, 1)`.
-      - Menggunakan `IntersectionObserver` agar animasi kemunculan huruf terpicu mulus saat judul masuk ke dalam area pandang (*viewport*).
-  - **Desain Seamless Tanpa Garis Tepi (*Borderless*)**: Seluruh garis tepi (`border: none; outline: none;`) dan efek *inset stroke highlight* di sekeliling pinggir bendera telah dihilangkan sepenuhnya.
-  - **Performa Ringan**: Dijalankan dengan manipulasi DOM efisien dan akselerasi GPU, sangat ringan dan cocok untuk perangkat mobile, desktop, maupun antarmuka digital signage.
-
-### 2. ⚡ Perbaikan Alur Navigasi Login Pengurus (Direct Landing - Update 19 Sept 2026)
-- **Masalah Sebelumnya**:
-  - Saat menekan menu "Pengurus" di beranda publik dan sukses memasukkan PIN, pengguna sempat terlempar kembali ke beranda publik yang menampilkan bilah hijau melayang dengan tombol "Kembali ke Dashboard", sehingga pengguna harus mengklik tombol tersebut untuk kedua kalinya agar masuk ke Dashboard Pengurus.
-- **Solusi & Perbaikan**:
-  - Memperbaiki fungsi `hideLoginOverlay(fromPopState = false, isLoginSuccess = false)` dan `attemptLogin()` di `app.js`.
-  - Mencegah eksekusi `popNavHistory()` (`history.back()`) saat login sukses diverifikasi, sehingga tidak ada sinyal `popstate` tumpang tindih yang memicu prioritas kembali ke halaman publik.
-  - Pengguna kini **langsung mendarat 100% instan di Dashboard Pengurus** (`#app` dengan view aktif `#view-dashboard`) tanpa transit ke halaman publik.
-
-### 3. 🛡️ Perbaikan Tuntas Fitur "Atur Jadwal Ronda" & "Edit Regu Ronda" (Update 19 Sept 2026 - v2.8.5)
-- **Masalah Sebelumnya**:
-  - Tombol **"Atur Jadwal Ronda"** dan **"Edit Regu"** di ke-8 kartu regu ronda sempat tidak merespons atau terhalang karena:
-    1. Pembatasan akses peran internal (`isB2` atau sesi) yang menolak eksekusi dan membatalkan pembukaan modal.
-    2. Caching agresif pada peramban/PWA Service Worker yang masih menyajikan naskah `app.js` versi lama (`v2.8.4`).
-    3. Penataan `display` dan `z-index` modal dialog.
-- **Solusi Tuntas & Penyempurnaan yang Diterapkan**:
-  - **Penghapusan Total Hambatan Otorisasi Modal**:
-    - Fungsi `openManageRondaModal(weekNum)` kini langsung membuka modal secara instan untuk semua pemanggil tanpa memeriksa pembatasan peran `isB2` atau otorisasi berulang.
-    - Pembantu `openModal()` dan `closeModal()` kini secara eksplisit mengatur `style.display = 'flex'` dan `'none'` selain menambahkan/menghapus kelas `.active`.
-  - **Z-Index & Interaktivitas Tombol**:
-    - Nilai `z-index` pada `.modal-backdrop` dinaikkan menjadi `10000` (didukung `display: flex !important`) agar tampil di atas seluruh elemen header, drawer, maupun popup.
-    - Tombol aksi kartu ronda (`.pengurus-ronda-card-actions .btn`) diberikan `position: relative; z-index: 10; pointer-events: auto;` untuk menjamin penerimaan interaksi klik.
-  - **Dukungan Edit Langsung Per Regu (Regu 1 s.d. 8)**:
-
-### 4. 🌙 Perbaikan Tuntas Menu Perolehan & Pengeluaran Kas Jimpitan (Admin 2 / Bendahara 2 - Update 19 Sept 2026 - v2.8.7)
-- **Akar Masalah Utama yang Ditemukan**:
-  1. **Lock Registrasi Service Worker di `app.js`**:
-     - Fungsi `registerServiceWorker()` sebelumnya memiliki versi hardcoded `sw.js?v=2.8.4` dan `rt-finsmart-cache-v2.8.4`, sehingga setiap kali browser memuat versi baru, `app.js` secara otomatis menghapus cache baru tersebut dan memaksa browser kembali menyajikan script lama versi `v2.8.4` (di mana fungsi modal jimpitan belum terpanggil dengan benar).
-  2. **Pengecekan Peran yang Membatalkan Eksekusi**:
-     - Fungsi modal jimpitan memiliki pengecekan `isPengurus` yang membatalkan pembukaan modal jika sesi/akses peran pengguna tidak terpetakan sempurna.
-  3. **Penataan Tampilan Modal**:
-     - Memerlukan prioritas `!important` pada `openModal` (`display: flex !important; z-index: 10000 !important;`) agar modal tidak tertutup elemen lain.
-- **Solusi & Perbaikan Komprehensif (v2.8.7)**:
-  1. **Sinkronisasi Service Worker & Pembersihan Cache Otomatis**:
-     - Mengubah hardcoded cache name di `app.js` menjadi konstan `rt-finsmart-cache-v2.8.7` dan meregistrasi `sw.js?v=2.8.7`.
-     - Seluruh cache lama (`v2.8.4`, `v2.8.5`, `v2.8.6`) kini otomatis dihapus bersih oleh Service Worker dan aplikasi.
-  2. **Penghapusan Total Pembatasan Peran pada Modal Jimpitan**:
-     - Seluruh pengecekan artifisial `if (isPengurus) return;` di `openJimpitanIncomeModal`, `openJimpitanExpenseModal`, `handleJimpitanIncomeSubmit`, dan `handleJimpitanExpenseSubmit` telah dihapus total.
-     - Siapa pun pengurus yang menekan tombol di dashboard dijamin 100% langsung membuka modal tanpa interupsi.
-  3. **Fungsi Global Eksplisit & Interaktivitas Modal**:
-     - `window.openJimpitanIncomeModal(event)` & `window.openJimpitanExpenseModal(event)`.
-     - `window.handleJimpitanIncomeSubmit(event)` & `window.handleJimpitanExpenseSubmit(event)`.
-     - `window.deleteJimpitanIncome(id)` & `window.deleteJimpitanExpense(id)`.
-     - Tombol **Batal** sekunder dan tombol silang (&times;) dengan `onclick="closeModal(...)"`.
-     - Pemformatan titik ribuan otomatis real-time pada isian nominal Rupiah (`75.000` / `35.000`).
-  4. **Penghitungan Tanggal Lokal Akurat (WIB)**:
-     - Menggunakan perataan waktu lokal `getFullYear()`, `getMonth()`, dan `getDate()` terbebas dari deviasi UTC.
-  5. **Penguatan openModal & closeModal**:
-     - Menggunakan `style.setProperty('display', 'flex', 'important')` dan `style.setProperty('z-index', '10000', 'important')`.
-  6. **Penyegaran Aset Resmi (Cache Busting v2.8.7)**:
-     - `index.html`, `sw.js`, dan `app.js` seluruhnya diselaraskan pada `v=2.8.7`.
-
-### 5. 🎯 Investigasi Mendalam: Akar Masalah Mengapa Tombol Catat Jimpitan Tidak Merespons (Update v2.8.8)
-- **Akar Masalah Fundamental yang Ditemukan**:
-  1. **Struktur DOM Rusak (Unclosed Tag `<div class="modal-backdrop" id="modal-add-account">`)**:
-     - Pada baris 4805 di `index.html`, `<div class="modal-backdrop" id="modal-add-account">` (yang dibuka pada baris 4758) kehilangan tag penutup `</div>`.
-     - Akibatnya, peramban menyisipkan seluruh elemen HTML setelahnya — termasuk modal `#modal-add-jimpitan-income`, `#modal-add-jimpitan-expense`, dan 13 modal lainnya — secara tidak sengaja **sebagai anak (child) di dalam `#modal-add-account`**.
-     - Karena `#modal-add-account` berstatus tertutup (`display: none`), maka menurut spesifikasi CSS peramban, seluruh elemen anak di dalamnya **otomatis tidak dirender sama sekali (bounding box 0x0)** meskipun fungsi JavaScript telah menambahkan kelas `.active` dan `style.display = 'flex'`.
-  2. **Event Delegation Fallback Jimpitan Diblokir di `app.js`**:
-     - Pada `setupJimpitanEvents()`, tombol `#btn-add-jimpitan-income` dan `#btn-add-jimpitan-expense` memiliki penangan delegasi `if (btnInc) return;` yang sengaja tidak melakukan apa-apa jika inline handler tidak terpicu.
-  3. **Temporal Dead Zone (TDZ) ReferenceError pada `BROADCAST_TEMPLATES`**:
-     - Saat inisialisasi awal, pemanggilan `setupPengurusOperationalHub()` memicu `refreshContent()` yang membaca `BROADCAST_TEMPLATES` sebelum dideklarasikan jika `document.readyState !== 'loading'`.
-- **Solusi & Verifikasi Lengkap (v2.8.8)**:
-  1. Menambahkan tag penutup `</div>` pada `#modal-add-account` di `index.html` sehingga pohon DOM modal kembali seimbang sempurna (0 unclosed tags) dan modal langsung bertengger sebagai anak langsung `<body>` dengan ukuran 100% aktif (731x483px).
-  2. Mengaktifkan penangan klik cadangan ganda (*event delegation fallback*) pada `app.js` untuk `#btn-add-jimpitan-income` dan `#btn-add-jimpitan-expense`.
-  3. Memberikan pengaman `typeof BROADCAST_TEMPLATES === 'undefined'` pada `refreshContent()`.
-  4. Meningkatkan versi aset (*cache busting*) ke `v=2.8.8` pada `index.html`, `app.js`, dan `sw.js`.
-
-### 6. 🔒 Penegakan Read/View-Only Mode Menyeluruh pada Dashboard Warga (Update v2.8.9)
-- **Kebutuhan & Arahan**:
-  - Seluruh elemen antarmuka yang dapat diakses oleh Warga (`accessLevel === 'WARGA'` maupun pengunjung portal publik) wajib berstatus **READ/VIEW ONLY** sehingga warga tidak dapat melakukan pengubahan, penambahan, penghapusan, ataupun manipulasi data apa pun.
-- **Penyempurnaan & Pengamanan (v2.8.9)**:
+### 1. 🔒 Penegakan Status Read/View-Only Menyeluruh di Dashboard Warga (Update v2.8.9 - 20 Sept 2026)
+- **Latar Belakang & Kebutuhan**:
+  - Pada pengujian sebelumnya, saat pengguna masuk sebagai Warga dan membuka modul *Struktur Pengurus RT* atau tab *Jadwal & Regu Ronda Malam*, masih tampil tombol **"Atur Jadwal Ronda"** dan tombol **"Edit Regu"** di ke-8 kartu regu ronda, serta tombol **"Tambah Aset"** dan tombol **"Edit/Hapus"** pada modul *Inventaris & Aset RT*.
+- **Solusi & Rekayasa DevOps**:
   1. **Helper Otorisasi Terpusat (`isCurrentWarga()`)**:
-     - Fungsi `isCurrentWarga()` mengecek apakah pengguna berstatus non-login (publik) atau memiliki akun dengan `accessLevel === 'WARGA'`.
-  2. **Penyembunyian Tombol "Atur Jadwal Ronda" & "Edit Regu"**:
-     - Tombol `#btn-pengurus-quick-ronda`, `#btn-pengurus-modal-ronda`, `#btn-dash-manage-ronda`, dan `#btn-admin-manage-ronda` secara otomatis disembunyikan (`display: none`) untuk Warga.
-     - Pada panel 8 Regu Ronda (`renderPengurusRondaPanel`), tombol aksi `.btn-edit-regu` ("Edit Regu") dihilangkan total untuk Warga, hanya menyajikan tombol pemantauan ("WhatsApp Regu" dan "Salin Jadwal").
-     - Fungsi `openManageRondaModal(weekNum)` dibentengi dengan pemeriksaan keamanan di sisi fungsi: jika Warga mencoba memanggil fungsi ini, sistem langsung menolak dan memunculkan notifikasi peringatan.
-  3. **Pengamanan Modul Inventaris & Aset RT (`aset-rt`)**:
+     - Ditambahkan pada jajaran teratas [app.js](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/app.js).
+     - Menghasilkan nilai `true` jika pengguna belum login (`!isLoggedIn()`) atau sedang login dengan akses Warga (`accessLevel === 'WARGA'` atau `currentUser === 'warga'`).
+  2. **Penyembunyian Tombol "Atur Jadwal Ronda"**:
+     - Tombol `#btn-pengurus-quick-ronda` (hero banner struktur), `#btn-pengurus-modal-ronda` (header tab ronda), `#btn-dash-manage-ronda`, dan `#btn-admin-manage-ronda` disembunyikan otomatis (`style.display = 'none'`) untuk Warga.
+  3. **Penghapusan Tombol "Edit Regu" pada 8 Kartu Ronda**:
+     - Pada fungsi `renderPengurusRondaPanel()`, jika diakses oleh Warga, tombol `.btn-edit-regu` **tidak lagi dirender**.
+     - Warga hanya disajikan tombol pantau dan bagikan yang aman: **"WhatsApp Regu"** dan **"Salin Jadwal"**.
+  4. **Benteng Keamanan Fungsi (`openManageRondaModal`)**:
+     - Fungsi `openManageRondaModal(weekNum)` dibentengi di baris pertama: jika dipanggil oleh akun Warga, eksekusi langsung dihentikan dan memunculkan toast: *"Akses Dibatasi: Warga hanya memiliki hak akses Lihat/Pantau (Read-Only) untuk Jadwal Ronda."*
+  5. **Pengamanan Modul Inventaris & Aset RT (`aset-rt`)**:
      - Tombol `#btn-open-add-aset` ("Tambah Aset Baru") disembunyikan untuk Warga.
-     - Pada tampilan Kartu maupun Tabel Inventaris, tombol `.btn-action-edit` dan `.btn-action-delete` digantikan dengan lencana status `<span class="badge-tag-cyan"><i class="fa-solid fa-eye"></i> Terdata</span>`.
-     - Fungsi `openAddAsetModal()`, `openEditAsetModal()`, dan `deleteAsetItem()` dibentengi di level JavaScript dengan penolakan langsung jika diakses oleh Warga.
-  4. **Pusat Verifikasi Fasum Warga (`pengurus-tab-panel-verifikasi`)**:
-     - Tombol aksi persetujuan ("Setujui" & "Tolak") dihilangkan untuk Warga, digantikan dengan status lencana *Tinjauan Warga (Read-Only)*.
-  5. **Tombol Administratif Cadangkan Data**:
-     - Tombol `#btn-backup-data` disembunyikan untuk peran Warga.
-  6. **Penyelarasan Cache Busting ke `v=2.8.9`**:
-     - `index.html`, `sw.js`, dan `app.js` diselaraskan ke versi `v=2.8.9` agar browser dan PWA Service Worker segera memperbarui seluruh berkas secara bersih.
+     - Pada tampilan Kartu maupun Tabel Inventaris, tombol `.btn-action-edit` dan `.btn-action-delete` digantikan dengan lencana pantau `<span class="badge-tag-cyan"><i class="fa-solid fa-eye"></i> Terdata</span>`.
+     - Fungsi `openAddAsetModal()`, `openEditAsetModal()`, dan `deleteAsetItem()` dibentengi di level JavaScript dengan penolakan langsung jika dipanggil oleh Warga.
+  6. **Pusat Verifikasi Fasum Warga (`pengurus-tab-panel-verifikasi`)**:
+     - Tombol aksi persetujuan (*Setujui* dan *Tolak*) dihilangkan untuk Warga, digantikan dengan status lencana *Tinjauan Warga (Read-Only)*.
+  7. **Tombol Administratif Cadangkan Data**:
+     - Tombol `#btn-backup-data` di header atas disembunyikan untuk peran Warga.
+  8. **Penyelarasan Cache Busting ke `v=2.8.9`**:
+     - Berkas [index.html](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/index.html), [app.js](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/app.js), dan [sw.js](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/sw.js) diselaraskan ke `v2.8.9` agar browser dan Service Worker segera memperbarui berkas secara instan.
 
-### 7. 🪙 Modul Kas Jimpitan Ronda Terintegrasi (Update 19 Sept 2026)
-- Penguatan alur pencatatan perolehan uang jimpitan malam minggu untuk akun Bendahara 2 (B2) dan Bendahara 1 (B1).
-- Otomatis memperbarui total penerimaan jimpitan, mutasi pengeluaran siskamling, dan saldo kas jimpitan yang langsung tampil di kartu Transparansi Keuangan Portal Warga.
+---
 
-### 5. 💎 Portal Login Eksekutif (Luxury Glassmorphism & Animated Glow Orbs)
-- Tampilan gelap elegan (*dark luxury*) dengan aksen hijau zamrud (*emerald*) dan emas (*gold*).
-- Kartu seleksi akun interaktif dengan efek sorot (*glow*) saat dipilih.
-- Kolom PIN interaktif dengan:
-  - **Tik / Checkbox "Tampilkan Password"** (`#login-toggle-show-pin`).
-  - **Ikon Standar Mata** (`#login-eye-btn` - `fa-eye` / `fa-eye-slash`) yang tersinkronisasi dua arah dengan checkbox.
-  - Animasi *shake* (getar) jika PIN salah dimasukkan.
-  - Tampilan **Lupa PIN?** terhubung ke `rt001rw013.grahaasri@gmail.com` dengan tombol satu-klik **Salin Email** dan tombol kirim email via mailto.
+### 2. 🎯 Investigasi Mendalam & Perbaikan Tuntas Tombol Jimpitan (Update v2.8.8 - 19 Sept 2026)
+- **Akar Masalah Fundamental**:
+  1. **Unclosed Tag `<div class="modal-backdrop" id="modal-add-account">`**:
+     - Tag penutup `</div>` pada modal akun hilang sehingga peramban mengurung seluruh modal berikutnya (termasuk `#modal-add-jimpitan-income` dan `#modal-add-jimpitan-expense`) di dalam `#modal-add-account` yang tersembunyi (`display: none`).
+  2. **Event Delegation Fallback Jimpitan**:
+     - Penangan klik cadangan di `app.js` sempat memiliki klausa `if (btnInc) return;` yang memblokir delegasi.
+  3. **Temporal Dead Zone (TDZ) ReferenceError pada `BROADCAST_TEMPLATES`**:
+     - `setupPengurusOperationalHub()` membaca `BROADCAST_TEMPLATES` sebelum terdefinisi.
+- **Solusi Tuntas yang Telah Diterapkan**:
+  - Penambahan tag penutup `</div>` di [index.html](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/index.html) sehingga struktur DOM seimbang 100%.
+  - Pengaktifan penangan delegasi ganda di [app.js](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/app.js).
+  - Penjagaan deklarasi `BROADCAST_TEMPLATES` agar bebas error TDZ.
+  - Pengetesan headless browser (CDP) mengonfirmasi modal Jimpitan terbuka dengan ukuran aktif penuh (731x483px).
 
-### 6. 📊 Dashboard Eksekutif & Visual KPI
-- Saldo kas terkonsolidasi, total penerimaan, total pengeluaran, dan realisasi iuran wajib bulan berjalan.
-- **Tampilan Prosentase Pembayaran Iuran Warga Berdasarkan Nama Jalan**:
-  - Membagi data 71 KK ke dalam 5 jalan utama:
-    1. `Jl. Citarum II`
-    2. `Jl. Citarum IVA`
-    3. `Jl. Citarum VIIIB`
-    4. `Jl. Citarum VIIIC`
-    5. `Jl. Citarum IX`
-  - Dilengkapi *progress bar* dinamis, persentase lunas, jumlah KK lunas/total KK per jalan, serta status kategori (*Sangat Tinggi, Tinggi, Sedang, Perlu Ditingkatkan*).
+---
 
-### 7. 🌐 Portal Publik Warga & Integrasi Terpadu Satu Pintu
-- **Halaman Depan Utama (`#portal-public`)**: Website profil publik resmi RT.001 / RW.013 Graha Asri yang ramah warga dan tamu:
-  - **Navbar Sticky**: Dilengkapi logo resmi, menu navigasi anchor (Tentang, Kegiatan, Layanan & Kas, Pengurus), tombol **Portal Pengurus** (masuk PIN), dan menu responsif mobile hamburger.
-  - **Hero Section**: Tagline *"Melayani dengan Hati, Membangun dalam Kebersamaan"*, banner bendera Merah Putih berkibar, logo RT resolusi tinggi, tombol cepat info kas, dan tombol akses bendahara.
-  - **Tentang Lingkungan**: Menampilkan profil RT dan cakupan 5 rute jalan.
-  - **Agenda Warga**: Program rutin Ronda/Siskamling, pengajian, Qurban & Halal Bihalal, serta kegiatan sosial.
-  - **Transparansi & Digitalisasi RT**: Widget kartu metrik live terhubung langsung ke database lokal (`state.residents` jumlah KK, total saldo kas terhimpun, dan kas jimpitan ronda).
-  - **Struktur Pengurus**: Menampilkan Ketua RT, Sekretaris, Bendahara, dan Humas lengkap dengan tombol kontak langsung ke WhatsApp.
+### 3. 🇮🇩 Banner Bendera Merah Putih & Animasi Split-Text Reveal
+- **Video Bendera Asli Tanpa Watermark**: Berkas `redwihite.mp4` dengan resolusi tinggi, dioptimalkan menggunakan FastStart H.264, 100% bebas watermark Shutterstock.
+- **Animasi Split-Text Reveal**: Judul utama *"Web Aplikasi Resmi WARGA RT.001 RW.013"* dianimasikan bertahap per huruf (*staggered 30ms*) dengan kurva transisi halus `cubic-bezier(0.16, 1, 0.3, 1)`.
+- **Desain Seamless**: Seluruh garis tepi (*border*) telah dihilangkan sepenuhnya untuk integrasi visual tanpa batas.
 
-### 8. 📱 PWA & Auto-Data Seeding
-- Data warga (71 KK) tersimpan di `localStorage` (`RT001_FINSMART_PRO_DATA_V1`) dengan sinkronisasi otomatis Google Sheets fallback.
-- Dilengkapi `manifest.json` dan `sw.js` (Service Worker) siap pasang (*installable*) di Android / iOS / Desktop.
+---
+
+### 4. ⚡ Alur Navigasi Login Instan (Direct Landing)
+- Mengatasi masalah pengguna sempat terlempar ke halaman depan saat login; kini login langsung mendaratkan pengguna ke view tujuan sesuai perannya secara instan.
+
+---
+
+### 5. 🪙 Modul Kas Jimpitan Ronda Terintegrasi
+- Pencatatan perolehan uang jimpitan malam minggu (koin/pecahan) oleh Bendahara 2 (B2) dan Bendahara 1 (B1).
+- Otomatis memperbarui saldo kas jimpitan, mutasi siskamling, dan laporan keuangan publik.
+
+---
+
+### 6. 📊 Dashboard Eksekutif & Visualisasi Ruas Jalan
+- Ringkasan arus kas, 6 pos anggaran, dan visualisasi persentase iuran warga terbagi dalam 5 ruas jalan:
+  1. `Jl. Citarum II`
+  2. `Jl. Citarum IVA`
+  3. `Jl. Citarum VIIIB`
+  4. `Jl. Citarum VIIIC`
+  5. `Jl. Citarum IX`
+
+---
+
+## 📋 Agenda & Rencana Kerja Selanjutnya (Next Steps / To-Do untuk Nanti atau Besok)
+
+Saat Anda kembali untuk menguji atau melanjutkan pengembangan, berikut daftar rencana yang telah disiapkan:
+
+### A. Pengujian Lapangan oleh User (Checklist Verifikasi):
+- [ ] **1. Uji Login Warga (Read-Only Verification)**:
+  - Buka aplikasi web di peramban, lakukan `Ctrl + F5` (Hard Refresh).
+  - Masuk via **Portal Warga** menggunakan password rumah (misal: `C2B602`).
+  - Masuk ke menu **Struktur Pengurus RT** -> Buka tab **Jadwal & Regu Ronda Malam**:
+    - Periksa apakah tombol **"Atur Jadwal Ronda"** di kanan atas sudah tersembunyi.
+    - Periksa apakah tombol **"Edit Regu"** di semua 8 kartu regu sudah hilang (hanya tombol WhatsApp & Salin).
+  - Buka menu **Inventaris & Aset RT**:
+    - Periksa apakah tombol **"Tambah Aset Baru"** sudah tersembunyi.
+    - Periksa apakah tombol **Edit** dan **Hapus** pada tabel/kartu sudah digantikan dengan lencana *Terdata (Read-Only)*.
+- [ ] **2. Uji Login Bendahara 2 (B2 - PIN `2222`)**:
+  - Masuk via Portal Pengurus dengan PIN `2222`.
+  - Klik tombol **"Catat Perolehan Jimpitan"** dan **"Catat Pengeluaran Jimpitan"** -> Pastikan modal form input terbuka mulus dan dapat menyimpan data.
+- [ ] **3. Uji Login Bendahara 1 (B1 - PIN `1111`)**:
+  - Masuk via Portal Pengurus dengan PIN `1111`.
+  - Pastikan tombol **"Atur Jadwal Ronda"** dan **"Edit Regu"** tetap muncul dan dapat digunakan normal oleh Super Admin.
+
+### B. Usulan Peningkatan Fitur Mendatang (Backlog Pengembangan):
+- [ ] **1. Ekspor Laporan PDF Formal**:
+  - Menambahkan generator PDF kop surat resmi untuk Laporan Bulanan Keuangan dan Berita Acara Aset RT langsung dari browser tanpa perlu dialog print manual.
+- [ ] **2. Integrasi Notifikasi Pengingat Ronda Otomatis via WA API**:
+  - Fitur pengiriman otomatis jadwal tugas ronda malam minggu ke grup WhatsApp warga pada hari Jumat/Sabtu siang.
+- [ ] **3. Backup & Restore Berkas JSON Terenkripsi**:
+  - Memperkaya tombol cadangan data dengan opsi unduh berkas `.json` terenkripsi dan fitur impor pemulihan jika berganti perangkat.
 
 ---
 
@@ -180,23 +140,24 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
 
 ```
 WORKSPACE RT/
-├── index.html       # Struktur HTML utama, Portal Publik, Bendera Berkibar, Modal & Views
-├── styles.css       # Seluruh CSS design system: tema gelap luxury, animasi bendera, dan responsif
-├── app.js           # Logika aplikasi: Auth, RBAC, CRUD Iuran, Jimpitan, Ronda, Navigasi History
-├── manifest.json    # Konfigurasi PWA Mobile
-├── sw.js            # Service worker untuk caching dan offline access
-├── LATEST.md        # Dokumen ringkasan status terkini & handover proyek ini
+├── index.html         # Struktur HTML utama, Portal Publik, Bendera Berkibar, Modal & Views (v2.8.9)
+├── styles.css         # Desain tema gelap luxury, animasi bendera, dan layout responsif (v2.8.9)
+├── app.js             # Logika aplikasi: RBAC, CRUD Iuran, Jimpitan, Ronda, Security Guards (v2.8.9)
+├── manifest.json      # Konfigurasi PWA Mobile
+├── sw.js              # Service worker PWA untuk caching dan offline access (v2.8.9)
+├── LATEST.md          # Dokumen ringkasan status terkini, checklist pengujian & handover proyek
 ├── APK_BUILD_GUIDE.md # Panduan konversi Web App menjadi APK Android
 └── assets/
-    ├── logo.png     # Logo RT resmi dengan sudut rounded elegan
-    ├── logo.jpg     # Master logo
-    ├── icon-192.png # Icon PWA 192x192
-    └── icon-512.png # Icon PWA 512x512
+    ├── logo.png       # Logo RT resmi dengan sudut rounded elegan
+    ├── logo.jpg       # Master logo
+    ├── redwihite.mp4  # Video bendera Merah Putih berkibar (watermark-free)
+    ├── icon-192.png   # Icon PWA 192x192
+    └── icon-512.png   # Icon PWA 512x512
 ```
 
 ---
 
-## 💻 Cara Menjalankan & Melanjutkan di Laptop Baru
+## 💻 Cara Menjalankan & Melanjutkan di Perangkat Baru
 
 1. **Clone Repositori**:
    ```bash
@@ -204,7 +165,7 @@ WORKSPACE RT/
    cd "WORKSPACE RT"
    ```
 
-2. **Menjalankan Aplikasi**:
+2. **Menjalankan Aplikasi Secara Lokal**:
    - Cukup buka berkas `index.html` langsung di browser mana pun (Chrome, Edge, Firefox, Safari).
    - Atau gunakan local server:
      ```bash
@@ -212,11 +173,11 @@ WORKSPACE RT/
      ```
      lalu buka `http://localhost:8080` di browser.
 
-3. **Login Pengurus**:
-   - Klik menu **Portal Pengurus** di navbar atau tombol **Akses Pengurus** di hero banner.
-   - Pilih kartu **Bendahara 1** lalu masukkan PIN `1111` untuk akses penuh (Keuangan, Warga, Pos Anggaran, Jadwal Ronda).
-   - Atau pilih kartu **Bendahara 2** lalu masukkan PIN `2222` untuk akses khusus Jimpitan & Ronda.
-   - Sistem akan langsung mengarahkan Anda ke Dashboard Pengurus secara instan.
+3. **Sinkronisasi Kode**:
+   - Tarik pembaruan terkini kapan saja:
+     ```bash
+     git pull origin main
+     ```
 
 ---
 
@@ -224,13 +185,14 @@ WORKSPACE RT/
 
 > [!IMPORTANT]
 > **SETIAP KALI** selesai melakukan perubahan, perbaikan, atau penambahan fitur:
-> 1. **Commit ke Git lokal**:
+> 1. **Validasi Sintaks**: `node --check app.js`
+> 2. **Commit ke Git lokal**:
 >    ```bash
 >    git add .
->    git commit -m "feat/fix/docs: ringkasan perubahan yang dilakukan"
+>    git commit -m "feat/fix/docs: deskripsi perubahan"
 >    ```
-> 2. **Push ke remote GitHub**:
+> 3. **Push ke remote GitHub**:
 >    ```bash
 >    git push origin main
 >    ```
-> 3. **Perbarui berkas `LATEST.md`** agar seluruh riwayat dan panduan handover selalu up-to-date.
+> 4. **Perbarui berkas `LATEST.md`** agar seluruh riwayat dan panduan handover selalu up-to-date.
