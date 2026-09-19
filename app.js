@@ -5602,7 +5602,7 @@ function showLoginOverlay(defaultRole = 'warga') {
 /**
  * Tutup Modal Login Eksekutif
  */
-function hideLoginOverlay(fromPopState = false) {
+function hideLoginOverlay(fromPopState = false, isLoginSuccess = false) {
   const overlay = document.getElementById('login-overlay');
   if (overlay) {
     overlay.classList.add('fade-out');
@@ -5611,7 +5611,7 @@ function hideLoginOverlay(fromPopState = false) {
         overlay.style.display = 'none';
       }
     }, 280);
-    if (!fromPopState && typeof popNavHistory === 'function' && window.history.state?.type === 'login') {
+    if (!fromPopState && !isLoginSuccess && typeof popNavHistory === 'function' && window.history.state?.type === 'login') {
       popNavHistory();
     }
   }
@@ -5812,9 +5812,12 @@ function setupLoginPortal() {
         state.currentVerifiedResident = matched;
         setSession('warga');
         saveState();
-        hideLoginOverlay();
+        hideLoginOverlay(false, true);
         showAdminApp();
         navigateToView('portal-warga');
+        if (typeof pushNavHistory === 'function') {
+          pushNavHistory('admin', 'warga', 'portal-warga');
+        }
         showToast(`✅ Selamat Datang di Portal Warga, Bapak/Ibu ${matched.name} (${matched.block} ${matched.houseNo})!`, 'success');
       } else {
         if (wargaErrorMsg) {
@@ -5864,7 +5867,7 @@ function setupLoginPortal() {
       state.currentUser = selectedRole;
       setSession(selectedRole);
       saveState();
-      hideLoginOverlay();
+      hideLoginOverlay(false, true);
 
       const accounts = state.adminAccounts || DEFAULT_ACCOUNTS;
       const acc = accounts.find(a => a.id === selectedRole);
@@ -5881,12 +5884,10 @@ function setupLoginPortal() {
       showAdminApp();
       const isJimpitanOnly = acc && acc.accessLevel === 'B2';
       const isPengurusRole = acc && acc.accessLevel === 'PENGURUS';
-      if (isPengurusRole) {
-        navigateToView('dashboard');
-      } else if (isJimpitanOnly) {
-        navigateToView('jimpitan');
-      } else {
-        navigateToView('dashboard');
+      const targetView = isPengurusRole ? 'dashboard' : (isJimpitanOnly ? 'jimpitan' : 'dashboard');
+      navigateToView(targetView);
+      if (typeof pushNavHistory === 'function') {
+        pushNavHistory('admin', selectedRole, targetView);
       }
       showToast(`✅ Selamat datang, ${acc ? acc.name : selectedRole}!`, 'success');
     } else {
