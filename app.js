@@ -2288,6 +2288,10 @@ function closeModal(modalId, fromPopState = false) {
   }
 }
 
+// Expose modal helpers globally for inline onclick handlers
+window.openModal = openModal;
+window.closeModal = closeModal;
+
 const MONTH_NAMES = [
   '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
@@ -3855,9 +3859,13 @@ function navigateToView(viewId) {
   const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga'];
   const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'aset-rt'];
 
+  const originalTarget = viewId;
+  let isRondaPengurus = false;
+
   // Handle ronda-pengurus alias to open Tab Ronda in pengurus-struktur
   if (viewId === 'ronda-pengurus') {
     viewId = 'pengurus-struktur';
+    isRondaPengurus = true;
     setTimeout(() => {
       if (typeof switchPengurusTab === 'function') {
         switchPengurusTab('ronda');
@@ -3890,7 +3898,11 @@ function navigateToView(viewId) {
   if (targetSec) targetSec.classList.add('active');
 
   // Activate matching links
-  document.querySelectorAll(`[data-target="${viewId}"]`).forEach(link => link.classList.add('active'));
+  if (isRondaPengurus) {
+    document.querySelectorAll('[data-target="ronda-pengurus"]').forEach(link => link.classList.add('active'));
+  } else {
+    document.querySelectorAll(`[data-target="${viewId}"]`).forEach(link => link.classList.add('active'));
+  }
 
   // Update Page Title
   const titles = {
@@ -3908,7 +3920,12 @@ function navigateToView(viewId) {
     'portal-warga': { title: 'Portal Mandiri Warga RT.001', sub: 'Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan' }
   };
 
-  if (titles[viewId]) {
+  if (isRondaPengurus) {
+    const pTitle = document.getElementById('page-title');
+    const pSub = document.getElementById('page-subtitle');
+    if (pTitle) pTitle.textContent = 'Jadwal & Regu Ronda Malam';
+    if (pSub) pSub.textContent = 'Tata Kelola 8 Regu Ronda & Penarikan Jimpitan Warga RT.001';
+  } else if (titles[viewId]) {
     document.getElementById('page-title').textContent = titles[viewId].title;
     document.getElementById('page-subtitle').textContent = titles[viewId].sub;
   }
@@ -6443,6 +6460,272 @@ function getCurrentRondaActiveWeek() {
   return ((saturdayIndex - 1) % 8) + 1;
 }
 
+// ==================== JADWAL RONDA & MANAGEMENT REGU ====================
+
+let currentEditingWeek = 1;
+let draftRondaGroups = null;
+
+function getRondaGroups() {
+  return (state.rondaGroups && Array.isArray(state.rondaGroups) && state.rondaGroups.length > 0)
+    ? state.rondaGroups
+    : DEFAULT_RONDA_GROUPS;
+}
+
+function generateWeekText(weekNum) {
+  const groups = getRondaGroups();
+  const group = groups.find(g => g.week === weekNum);
+  if (!group) return '';
+  let txt = `🛡️ *JADWAL RONDA & JIMPITAN RT.001 - ${group.weekName.toUpperCase()}*\n`;
+  txt += `📅 Pelaksanaan: ${group.cycle} (Pukul 21.00 WIB s/d Selesai)\n`;
+  txt += `📍 Titik Kumpul: Pos Kamling Utama RT.001\n\n`;
+  txt += `⭐ *Komandan Regu:* ${group.leader ? group.leader.name : '-'}\n`;
+  txt += `👥 *Anggota Petugas Ronda & Jimpitan:*\n`;
+  (group.members || []).forEach((m, idx) => {
+    txt += `  ${idx + 1}. ${m.name}\n`;
+  });
+  txt += `\n📌 *Agenda Utama:*\n`;
+  txt += `• 21.00 WIB: Apel Pos Kamling & Koordinasi Regu\n`;
+  txt += `• 22.00 WIB: Pengambilan Uang Kas Jimpitan Warga\n`;
+  txt += `• 23.00 WIB: Penguncian Akses Portal & Patroli Wilayah\n\n`;
+  txt += `_Mari jaga keamanan & ketertiban lingkungan RT.001 bersama. Guyub Rukun!_`;
+  return txt;
+}
+
+function generateAllScheduleText() {
+  const groups = getRondaGroups();
+  let txt = `🛡️ *JADWAL LENGKAP RONDA & JIMPITAN RT.001 GRAHA ASRI*\n`;
+  txt += `Setiap Sabtu Malam (Pukul 21.00 - 04.00 WIB)\n\n`;
+  groups.forEach(g => {
+    txt += `━━━━━━━━━━━━━━━━━━━━━\n`;
+    txt += `📌 *${g.weekName.toUpperCase()}* (${g.cycle})\n`;
+    txt += `⭐ Komandan: ${groupLeaderName(g)}\n`;
+    txt += `👥 Anggota: ${(g.members || []).map(m => m.name).join(', ')}\n\n`;
+  });
+  txt += `━━━━━━━━━━━━━━━━━━━━━\n`;
+  txt += `🪙 *Tradisi Jimpitan:* Mohon sediakan uang koin/sukarela di wadah depan rumah.\n`;
+  txt += `🔒 *Jam Portal:* Ditutup pukul 23.00 - 05.00 WIB demi keamanan bersama.\n`;
+  txt += `_Pengurus Paguyuban RT.001/RW.013_`;
+  return txt;
+}
+
+function groupLeaderName(group) {
+  if (!group || !group.leader) return '-';
+  return typeof group.leader === 'string' ? group.leader : (group.leader.name || '-');
+}
+
+function populateResidentsDatalist() {
+  const datalist = document.getElementById('ronda-residents-datalist');
+  if (!datalist) return;
+  const residents = (state.residents && state.residents.length > 0) ? state.residents : INITIAL_RESIDENTS;
+  datalist.innerHTML = residents.map(r => 
+    `<option value="${escapeHtml(r.name)}">Blok ${r.block || '-'} / No. ${r.houseNo || r.number || '-'}</option>`
+  ).join('');
+}
+
+function syncCurrentFormToDraft() {
+  if (!draftRondaGroups) return;
+  const group = draftRondaGroups.find(g => g.week === currentEditingWeek);
+  if (!group) return;
+
+  const leaderInput = document.getElementById('ronda-edit-leader');
+  if (leaderInput) {
+    const leaderName = leaderInput.value.trim();
+    if (!group.leader || typeof group.leader !== 'object') {
+      group.leader = { role: 'Komandan Regu' };
+    }
+    group.leader.name = leaderName;
+    group.leader.initials = getResidentMonogram(leaderName);
+  }
+
+  const memberInputs = document.querySelectorAll('.ronda-member-name-input');
+  const newMembers = [];
+  memberInputs.forEach(input => {
+    const mName = input.value.trim();
+    if (mName) {
+      newMembers.push({
+        name: mName,
+        initials: getResidentMonogram(mName)
+      });
+    }
+  });
+  group.members = newMembers;
+}
+
+function renderRondaManageForm(weekNum = 1) {
+  currentEditingWeek = parseInt(weekNum, 10) || 1;
+  if (!draftRondaGroups || !Array.isArray(draftRondaGroups) || draftRondaGroups.length === 0) {
+    draftRondaGroups = JSON.parse(JSON.stringify(getRondaGroups()));
+  }
+
+  const modalTabs = document.querySelectorAll('.ronda-manage-tab');
+  modalTabs.forEach(tab => {
+    tab.classList.toggle('active', parseInt(tab.getAttribute('data-week'), 10) === currentEditingWeek);
+  });
+
+  const group = draftRondaGroups.find(g => g.week === currentEditingWeek) || draftRondaGroups[0];
+  if (!group) return;
+
+  if (!group.leader || typeof group.leader !== 'object') {
+    group.leader = { name: typeof group.leader === 'string' ? group.leader : '', initials: 'RT', role: 'Komandan Regu' };
+  }
+  if (!group.members) {
+    group.members = [];
+  }
+
+  const badgeEl = document.getElementById('ronda-edit-week-badge');
+  const cycleEl = document.getElementById('ronda-edit-cycle-text');
+  const leaderInput = document.getElementById('ronda-edit-leader');
+  const membersContainer = document.getElementById('ronda-members-edit-container');
+
+  if (badgeEl) badgeEl.textContent = group.weekName || `Regu ${currentEditingWeek}`;
+  if (cycleEl) cycleEl.textContent = `${group.cycle || `Pekan Bergilir ke-${currentEditingWeek}`} • Pukul 21.00 – 04.00 WIB`;
+  if (leaderInput) leaderInput.value = group.leader ? (group.leader.name || '') : '';
+
+  if (membersContainer) {
+    if (!group.members || group.members.length === 0) {
+      membersContainer.innerHTML = `<div class="text-muted" style="font-size:0.85rem; padding:0.5rem; text-align:center;">Belum ada anggota. Klik "+ Tambah Anggota" untuk menambahkan.</div>`;
+    } else {
+      membersContainer.innerHTML = group.members.map((m, idx) => `
+        <div class="ronda-member-edit-row" data-idx="${idx}">
+          <span class="ronda-member-num">${idx + 1}</span>
+          <div class="ronda-member-input-wrap" style="flex:1;">
+            <input type="text" class="form-input ronda-member-input ronda-member-name-input" value="${escapeHtml(m.name || '')}" placeholder="Ketik nama petugas ronda..." list="ronda-residents-datalist" autocomplete="off">
+          </div>
+          <button type="button" class="btn-remove-ronda-member" title="Hapus petugas ini" data-idx="${idx}">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      `).join('');
+
+      // Wire delete buttons
+      membersContainer.querySelectorAll('.btn-remove-ronda-member').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const idx = parseInt(btn.getAttribute('data-idx'), 10);
+          syncCurrentFormToDraft();
+          group.members.splice(idx, 1);
+          renderRondaManageForm(currentEditingWeek);
+        });
+      });
+    }
+  }
+}
+
+function openManageRondaModal(weekNum = 1) {
+  // 1. Cek Hak Akses (Admin 2 / B2 tidak diizinkan mengatur jadwal ronda)
+  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
+  const isB2 = currentAcc && currentAcc.accessLevel === 'B2';
+  if (isB2) {
+    showToast('⚠️ Pengaturan Jadwal Ronda dikelola khusus oleh Pengurus RT.', 'warning');
+    return;
+  }
+
+  // Cek apakah pengguna sedang aktif di Portal Admin / Pengurus
+  const loggedIn = (typeof isLoggedIn === 'function' && isLoggedIn()) || Boolean(sessionStorage.getItem(LOGIN_SESSION_KEY));
+  const isAppActive = document.getElementById('app') && document.getElementById('app').style.display !== 'none';
+  const isAuthorized = loggedIn || isAppActive || ['pengurus', 'b1', 'admin'].includes(state.currentUser);
+
+  if (!isAuthorized) {
+    window.pendingPengurusAction = () => {
+      openManageRondaModal(weekNum);
+    };
+    showToast('🔒 Silakan masuk sebagai Pengurus RT untuk mengubah susunan ronda.', 'info');
+    if (typeof showLoginOverlay === 'function') showLoginOverlay('pengurus');
+    return;
+  }
+
+  // 2. Siapkan data draft dan datalist
+  populateResidentsDatalist();
+  draftRondaGroups = JSON.parse(JSON.stringify(getRondaGroups()));
+  renderRondaManageForm(weekNum);
+  openModal('modal-manage-ronda');
+}
+
+// Global exposure
+window.getRondaGroups = getRondaGroups;
+window.getCurrentRondaActiveWeek = getCurrentRondaActiveWeek;
+window.generateRondaWeekText = generateWeekText;
+window.generateAllRondaScheduleText = generateAllScheduleText;
+window.openManageRondaModal = openManageRondaModal;
+window.renderRondaManageForm = renderRondaManageForm;
+
+function setupManageRondaModal() {
+  // Tab click in Modal (8 Regu Ronda)
+  document.getElementById('ronda-manage-week-tabs')?.addEventListener('click', (e) => {
+    const tab = e.target.closest('.ronda-manage-tab');
+    if (!tab) return;
+    const targetWeek = parseInt(tab.getAttribute('data-week'), 10);
+    if (!isNaN(targetWeek) && targetWeek !== currentEditingWeek) {
+      syncCurrentFormToDraft();
+      renderRondaManageForm(targetWeek);
+    }
+  });
+
+  // Add Member Button
+  document.getElementById('btn-add-ronda-member')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    syncCurrentFormToDraft();
+    const group = draftRondaGroups.find(g => g.week === currentEditingWeek);
+    if (group) {
+      if (!group.members) group.members = [];
+      group.members.push({ name: '', initials: 'RT' });
+      renderRondaManageForm(currentEditingWeek);
+      const inputs = document.querySelectorAll('.ronda-member-name-input');
+      if (inputs.length > 0) {
+        inputs[inputs.length - 1].focus();
+      }
+    }
+  });
+
+  // Reset Default Button
+  document.getElementById('btn-reset-ronda-default')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (confirm('Kembalikan seluruh susunan jadwal ronda ke konfigurasi standar awal (8 kelompok, 11 anggota per kelompok)?')) {
+      draftRondaGroups = JSON.parse(JSON.stringify(DEFAULT_RONDA_GROUPS));
+      renderRondaManageForm(currentEditingWeek);
+      showToast('Susunan jadwal dikembalikan ke template awal 8 kelompok @ 11 anggota.', 'info');
+    }
+  });
+
+  // Form Submit Save
+  document.getElementById('form-manage-ronda')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    syncCurrentFormToDraft();
+
+    const currentGroup = draftRondaGroups.find(g => g.week === currentEditingWeek);
+    if (!currentGroup || !currentGroup.leader || !currentGroup.leader.name.trim()) {
+      showToast('Mohon isi nama Komandan Regu terlebih dahulu.', 'warning');
+      return;
+    }
+    if (!currentGroup.members || currentGroup.members.length === 0) {
+      showToast('Mohon tambahkan minimal 1 anggota petugas ronda.', 'warning');
+      return;
+    }
+
+    // Save into state and localStorage
+    state.rondaGroups = JSON.parse(JSON.stringify(draftRondaGroups));
+    saveState();
+
+    // Re-render views immediately
+    if (typeof window.renderPublicCards === 'function') window.renderPublicCards();
+    if (typeof renderPengurusRondaPanel === 'function') {
+      renderPengurusRondaPanel(typeof currentPengurusRondaFilter !== 'undefined' ? currentPengurusRondaFilter : 'all');
+    }
+    if (typeof renderJimpitan === 'function') renderJimpitan();
+    if (typeof renderDashboard === 'function') renderDashboard();
+
+    closeModal('modal-manage-ronda');
+    showToast('✅ Susunan Jadwal Ronda & Jimpitan berhasil diperbarui!', 'success');
+  });
+
+  // Triggers from buttons
+  document.getElementById('btn-open-manage-ronda')?.addEventListener('click', () => openManageRondaModal(1));
+  document.getElementById('btn-admin-manage-ronda')?.addEventListener('click', () => openManageRondaModal(1));
+  document.getElementById('btn-dash-manage-ronda')?.addEventListener('click', () => openManageRondaModal(1));
+  document.getElementById('btn-pengurus-quick-ronda')?.addEventListener('click', () => openManageRondaModal(1));
+  document.getElementById('btn-pengurus-modal-ronda')?.addEventListener('click', () => openManageRondaModal(1));
+}
+
 function setupRondaSchedule() {
   const section = document.getElementById('jadwal-ronda-warga');
   if (!section) return;
@@ -6450,29 +6733,20 @@ function setupRondaSchedule() {
   const currentWeek = getCurrentRondaActiveWeek();
   let activeTabFilter = 'all';
 
-  function getRondaGroups() {
-    return (state.rondaGroups && Array.isArray(state.rondaGroups) && state.rondaGroups.length > 0)
-      ? state.rondaGroups
-      : DEFAULT_RONDA_GROUPS;
-  }
-
-  // Render Public Cards Dynamically
   function renderPublicCards() {
     const groups = getRondaGroups();
     const container = document.getElementById('ronda-cards-container');
     if (!container) return;
 
-    // 1. Update Live Status Pill
     const activeGroup = groups.find(g => g.week === currentWeek) || groups[0];
     const activeLabelEl = document.getElementById('ronda-active-week-name');
     if (activeLabelEl && activeGroup) {
-      activeLabelEl.textContent = `${activeGroup.weekName} • Regu ${activeGroup.leader.name}`;
+      activeLabelEl.textContent = `${activeGroup.weekName} • Regu ${activeGroup.leader ? activeGroup.leader.name : '-'}`;
     }
 
-    // Build Cards HTML
     container.innerHTML = groups.map(g => {
       const isCurrent = g.week === currentWeek;
-      const leaderInitials = g.leader.initials || getResidentMonogram(g.leader.name);
+      const leaderInitials = (g.leader && g.leader.initials) ? g.leader.initials : getResidentMonogram(g.leader ? g.leader.name : '');
 
       return `
         <div class="ronda-card ${isCurrent ? 'is-current-week' : ''}" data-week="${g.week}" id="ronda-card-${g.week}">
@@ -6493,7 +6767,7 @@ function setupRondaSchedule() {
             </div>
             <div class="ronda-leader-info">
               <span class="ronda-leader-role"><i class="fa-solid fa-star text-gold"></i> Komandan Regu</span>
-              <strong class="ronda-leader-name" data-name="${escapeHtml(g.leader.name)}">${escapeHtml(g.leader.name)}</strong>
+              <strong class="ronda-leader-name" data-name="${escapeHtml(g.leader ? g.leader.name : '-')}">${escapeHtml(g.leader ? g.leader.name : '-')}</strong>
             </div>
             <span class="ronda-leader-tag">PJ Malam</span>
           </div>
@@ -6504,7 +6778,7 @@ function setupRondaSchedule() {
               <span>Anggota Regu Ronda:</span>
             </div>
             <ul class="ronda-members-list">
-              ${g.members.map(m => {
+              ${(g.members || []).map(m => {
                 const mInitials = m.initials || getResidentMonogram(m.name);
                 return `
                   <li class="ronda-member-item" data-name="${escapeHtml(m.name)}">
@@ -6539,7 +6813,6 @@ function setupRondaSchedule() {
       `;
     }).join('');
 
-    // Rebind individual card buttons
     container.querySelectorAll('.btn-card-action-copy').forEach(btn => {
       btn.addEventListener('click', () => {
         const groupNum = parseInt(btn.getAttribute('data-group'), 10);
@@ -6568,7 +6841,6 @@ function setupRondaSchedule() {
     applyTabFilter(activeTabFilter);
   }
 
-  // Tab filter function
   const tabBtns = section.querySelectorAll('.ronda-tab-btn');
 
   function applyTabFilter(filterVal) {
@@ -6609,7 +6881,6 @@ function setupRondaSchedule() {
     });
   });
 
-  // Search Petugas Ronda Input
   const searchInput = document.getElementById('ronda-search-input');
   const searchClearBtn = document.getElementById('ronda-search-clear');
   const searchFeedback = document.getElementById('ronda-search-feedback');
@@ -6634,7 +6905,6 @@ function setupRondaSchedule() {
 
       const groups = getRondaGroups();
       let totalMatches = 0;
-      let matchingWeeks = [];
 
       cards.forEach(card => {
         const weekNum = parseInt(card.getAttribute('data-week'), 10);
@@ -6643,7 +6913,7 @@ function setupRondaSchedule() {
 
         let cardHasMatch = false;
 
-        if (groupData.leader.name.toLowerCase().includes(query)) {
+        if (groupData.leader && groupData.leader.name && groupData.leader.name.toLowerCase().includes(query)) {
           cardHasMatch = true;
           totalMatches++;
           const leaderEl = card.querySelector('.ronda-leader-name');
@@ -6659,24 +6929,17 @@ function setupRondaSchedule() {
           }
         });
 
-        if (cardHasMatch) {
-          card.style.display = 'flex';
-          matchingWeeks.push(groupData.weekName);
-        } else {
-          card.style.display = 'none';
-        }
+        card.style.display = cardHasMatch ? 'flex' : 'none';
       });
 
       if (searchFeedback) {
-        searchFeedback.style.display = 'flex';
+        searchFeedback.style.display = 'block';
         if (totalMatches > 0) {
-          searchFeedback.innerHTML = `<i class="fa-solid fa-circle-check text-emerald"></i> <span>Ditemukan <strong>${totalMatches} petugas</strong> cocok dengan kata kunci "<strong>${escapeHtml(query)}</strong>" (${matchingWeeks.join(', ')}).</span>`;
-          searchFeedback.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+          searchFeedback.innerHTML = `<i class="fa-solid fa-check"></i> Ditemukan <strong>${totalMatches}</strong> kecocokan nama petugas ronda.`;
           searchFeedback.style.background = 'rgba(16, 185, 129, 0.15)';
-          searchFeedback.style.color = '#a7f3d0';
+          searchFeedback.style.color = '#6ee7b7';
         } else {
-          searchFeedback.innerHTML = `<i class="fa-solid fa-circle-info text-gold"></i> <span>Tidak ditemukan petugas dengan nama "<strong>${escapeHtml(query)}</strong>". Silakan periksa ejaan atau cek daftar kelompok lain.</span>`;
-          searchFeedback.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+          searchFeedback.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Tidak ditemukan petugas ronda dengan nama "<strong>${escapeHtml(query)}</strong>".`;
           searchFeedback.style.background = 'rgba(245, 158, 11, 0.15)';
           searchFeedback.style.color = '#fef08a';
         }
@@ -6699,49 +6962,11 @@ function setupRondaSchedule() {
     });
   }
 
-  // Generate texts for Copy & WA
-  function generateWeekText(weekNum) {
-    const groups = getRondaGroups();
-    const group = groups.find(g => g.week === weekNum);
-    if (!group) return '';
-    let txt = `🛡️ *JADWAL RONDA & JIMPITAN RT.001 - ${group.weekName.toUpperCase()}*\n`;
-    txt += `📅 Pelaksanaan: ${group.cycle} (Pukul 21.00 WIB s/d Selesai)\n`;
-    txt += `📍 Titik Kumpul: Pos Kamling Utama RT.001\n\n`;
-    txt += `⭐ *Komandan Regu:* ${group.leader.name}\n`;
-    txt += `👥 *Anggota Petugas Ronda & Jimpitan:*\n`;
-    group.members.forEach((m, idx) => {
-      txt += `  ${idx + 1}. ${m.name}\n`;
-    });
-    txt += `\n📌 *Agenda Utama:*\n`;
-    txt += `• 21.00 WIB: Apel Pos Kamling & Koordinasi Regu\n`;
-    txt += `• 22.00 WIB: Pengambilan Uang Kas Jimpitan Warga\n`;
-    txt += `• 23.00 WIB: Penguncian Akses Portal & Patroli Wilayah\n\n`;
-    txt += `_Mari jaga keamanan & ketertiban lingkungan RT.001 bersama. Guyub Rukun!_`;
-    return txt;
-  }
-
-  function generateAllScheduleText() {
-    const groups = getRondaGroups();
-    let txt = `🛡️ *JADWAL LENGKAP RONDA & JIMPITAN RT.001 GRAHA ASRI*\n`;
-    txt += `Setiap Sabtu Malam (Pukul 21.00 - 04.00 WIB)\n\n`;
-    groups.forEach(g => {
-      txt += `━━━━━━━━━━━━━━━━━━━━━\n`;
-      txt += `📌 *${g.weekName.toUpperCase()}* (${g.cycle})\n`;
-      txt += `⭐ Komandan: ${g.leader.name}\n`;
-      txt += `👥 Anggota: ${g.members.map(m => m.name).join(', ')}\n\n`;
-    });
-    txt += `━━━━━━━━━━━━━━━━━━━━━\n`;
-    txt += `🪙 *Tradisi Jimpitan:* Mohon sediakan uang koin/sukarela di wadah depan rumah.\n`;
-    txt += `🔒 *Jam Portal:* Ditutup pukul 23.00 - 05.00 WIB demi keamanan bersama.\n`;
-    txt += `_Pengurus Paguyuban RT.001/RW.013_`;
-    return txt;
-  }
-
   document.getElementById('btn-copy-ronda-all')?.addEventListener('click', () => {
     const text = generateAllScheduleText();
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(() => {
-        showToast('📋 Seluruh Jadwal Ronda 4 Minggu berhasil disalin!', 'success');
+        showToast('📋 Seluruh Jadwal Ronda 8 Regu berhasil disalin!', 'success');
       }).catch(() => {
         showToast('📋 Teks jadwal siap dibagikan.', 'info');
       });
@@ -6756,218 +6981,9 @@ function setupRondaSchedule() {
     window.open(url, '_blank');
   });
 
-  // ==================== MODAL KELOLA JADWAL RONDA (AUTH PENGURUS) ====================
-  let currentEditingWeek = 1;
-  let draftRondaGroups = null;
-
-  function populateResidentsDatalist() {
-    const datalist = document.getElementById('ronda-residents-datalist');
-    if (!datalist) return;
-    const residents = state.residents || INITIAL_RESIDENTS;
-    datalist.innerHTML = residents.map(r => 
-      `<option value="${escapeHtml(r.name)}">Blok ${r.block} / No. ${r.houseNo || r.number}</option>`
-    ).join('');
-  }
-
-  function syncCurrentFormToDraft() {
-    if (!draftRondaGroups) return;
-    const group = draftRondaGroups.find(g => g.week === currentEditingWeek);
-    if (!group) return;
-
-    const leaderInput = document.getElementById('ronda-edit-leader');
-    if (leaderInput) {
-      const leaderName = leaderInput.value.trim();
-      group.leader.name = leaderName;
-      group.leader.initials = getResidentMonogram(leaderName);
-    }
-
-    const memberInputs = document.querySelectorAll('.ronda-member-name-input');
-    const newMembers = [];
-    memberInputs.forEach(input => {
-      const mName = input.value.trim();
-      if (mName) {
-        newMembers.push({
-          name: mName,
-          initials: getResidentMonogram(mName)
-        });
-      }
-    });
-    group.members = newMembers;
-  }
-
-  function renderRondaManageForm(weekNum) {
-    currentEditingWeek = weekNum;
-    if (!draftRondaGroups) {
-      draftRondaGroups = JSON.parse(JSON.stringify(getRondaGroups()));
-    }
-
-    const modalTabs = document.querySelectorAll('.ronda-manage-tab');
-    modalTabs.forEach(tab => {
-      tab.classList.toggle('active', parseInt(tab.getAttribute('data-week'), 10) === weekNum);
-    });
-
-    const group = draftRondaGroups.find(g => g.week === weekNum) || draftRondaGroups[0];
-    const badgeEl = document.getElementById('ronda-edit-week-badge');
-    const cycleEl = document.getElementById('ronda-edit-cycle-text');
-    const leaderInput = document.getElementById('ronda-edit-leader');
-    const membersContainer = document.getElementById('ronda-members-edit-container');
-
-    if (badgeEl) badgeEl.textContent = group.weekName;
-    if (cycleEl) cycleEl.textContent = `${group.cycle} • Pukul 21.00 – 04.00 WIB`;
-    if (leaderInput) leaderInput.value = group.leader ? group.leader.name : '';
-
-    if (membersContainer) {
-      if (!group.members || group.members.length === 0) {
-        membersContainer.innerHTML = `<div class="text-muted" style="font-size:0.85rem; padding:0.5rem; text-align:center;">Belum ada anggota. Klik "+ Tambah Anggota" untuk menambahkan.</div>`;
-      } else {
-        membersContainer.innerHTML = group.members.map((m, idx) => `
-          <div class="ronda-member-edit-row" data-idx="${idx}">
-            <span class="ronda-member-num">${idx + 1}</span>
-            <div class="ronda-member-input-wrap">
-              <input type="text" class="form-input ronda-member-name-input" value="${escapeHtml(m.name)}" placeholder="Ketik nama petugas ronda..." list="ronda-residents-datalist" autocomplete="off" required>
-            </div>
-            <button type="button" class="btn-remove-ronda-member" title="Hapus petugas ini" data-idx="${idx}">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-          </div>
-        `).join('');
-
-        // Wire delete buttons
-        membersContainer.querySelectorAll('.btn-remove-ronda-member').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const idx = parseInt(btn.getAttribute('data-idx'), 10);
-            syncCurrentFormToDraft();
-            group.members.splice(idx, 1);
-            renderRondaManageForm(currentEditingWeek);
-          });
-        });
-      }
-    }
-  }
-
-  // Expose global getters and text generators for other modules (Pengurus Hub, Jimpitan, Broadcast)
-  window.getRondaGroups = getRondaGroups;
-  window.getCurrentRondaActiveWeek = getCurrentRondaActiveWeek;
-  window.generateRondaWeekText = generateWeekText;
-  window.generateAllRondaScheduleText = generateAllScheduleText;
-
-  window.openManageRondaModal = function(weekNum = 1) {
-    // 1. Cek Hak Akses (Admin 2 / B2 tidak diizinkan mengatur jadwal ronda)
-    const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
-    const isB2 = currentAcc && currentAcc.accessLevel === 'B2';
-    if (isB2) {
-      showToast('⚠️ Pengaturan Jadwal Ronda dikelola khusus oleh Pengurus RT.', 'warning');
-      return;
-    }
-
-    // Jika belum terautentikasi sebagai pengurus/b1, minta PIN Pengurus
-    const isPengurusOrB1 = ['pengurus', 'b1'].includes(state.currentUser);
-    if (!isPengurusOrB1) {
-      window.pendingPengurusAction = () => {
-        window.openManageRondaModal(weekNum);
-      };
-      showToast('🔒 Memerlukan otorisasi Pengurus RT untuk mengubah jadwal ronda.', 'info');
-      if (typeof showLoginOverlay === 'function') showLoginOverlay('pengurus');
-      return;
-    }
-
-    // 2. Siapkan data draft dan datalist
-    populateResidentsDatalist();
-    draftRondaGroups = JSON.parse(JSON.stringify(getRondaGroups()));
-    renderRondaManageForm(weekNum);
-    openModal('modal-manage-ronda');
-  };
-
-  // Wire Tab Switches inside Modal
-  document.getElementById('ronda-manage-week-tabs')?.addEventListener('click', (e) => {
-    const tab = e.target.closest('.ronda-manage-tab');
-    if (!tab) return;
-    const targetWeek = parseInt(tab.getAttribute('data-week'), 10);
-    if (!isNaN(targetWeek) && targetWeek !== currentEditingWeek) {
-      syncCurrentFormToDraft();
-      renderRondaManageForm(targetWeek);
-    }
-  });
-
-  // Wire Add Member Button inside Modal
-  document.getElementById('btn-add-ronda-member')?.addEventListener('click', () => {
-    syncCurrentFormToDraft();
-    const group = draftRondaGroups.find(g => g.week === currentEditingWeek);
-    if (group) {
-      group.members.push({ name: '', initials: 'RT' });
-      renderRondaManageForm(currentEditingWeek);
-      // Focus on newly added input
-      const inputs = document.querySelectorAll('.ronda-member-name-input');
-      if (inputs.length > 0) {
-        inputs[inputs.length - 1].focus();
-      }
-    }
-  });
-
-  // Wire Reset Default Button inside Modal
-  document.getElementById('btn-reset-ronda-default')?.addEventListener('click', () => {
-    if (confirm('Kembalikan seluruh susunan jadwal ronda ke konfigurasi standar awal (8 kelompok, 11 anggota per kelompok)?')) {
-      draftRondaGroups = JSON.parse(JSON.stringify(DEFAULT_RONDA_GROUPS));
-      renderRondaManageForm(currentEditingWeek);
-      showToast('Susunan jadwal dikembalikan ke template awal 8 kelompok @ 11 anggota.', 'info');
-    }
-  });
-
-  // Wire Form Submit inside Modal
-  document.getElementById('form-manage-ronda')?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    syncCurrentFormToDraft();
-
-    // Validation: make sure leader and at least 1 member exists in active week
-    const currentGroup = draftRondaGroups.find(g => g.week === currentEditingWeek);
-    if (!currentGroup || !currentGroup.leader.name.trim()) {
-      showToast('Mohon isi nama Komandan Regu terlebih dahulu.', 'warning');
-      return;
-    }
-    if (!currentGroup.members || currentGroup.members.length === 0) {
-      showToast('Mohon tambahkan minimal 1 anggota petugas ronda.', 'warning');
-      return;
-    }
-
-    // Save into state and localStorage
-    state.rondaGroups = JSON.parse(JSON.stringify(draftRondaGroups));
-    saveState();
-
-    // Re-render all connected views immediately
-    renderPublicCards();
-    if (typeof renderPengurusRondaPanel === 'function') {
-      renderPengurusRondaPanel(typeof currentPengurusRondaFilter !== 'undefined' ? currentPengurusRondaFilter : 'all');
-    }
-    if (typeof renderJimpitan === 'function') {
-      renderJimpitan();
-    }
-    if (typeof renderDashboard === 'function') {
-      renderDashboard();
-    }
-
-    closeModal('modal-manage-ronda');
-    showToast('✅ Susunan Jadwal Ronda & Jimpitan berhasil diperbarui!', 'success');
-  });
-
-  // Trigger from Public Toolbar ("Kelola Jadwal")
-  document.getElementById('btn-open-manage-ronda')?.addEventListener('click', () => {
-    openManageRondaModal(1);
-  });
-
-  // Trigger from Jimpitan Admin View ("Atur Petugas Ronda")
-  document.getElementById('btn-admin-manage-ronda')?.addEventListener('click', () => {
-    openManageRondaModal(1);
-  });
-
-  // Trigger from Pengurus Actions Header
-  document.getElementById('btn-pengurus-quick-ronda')?.addEventListener('click', () => {
-    openManageRondaModal(1);
-  });
-  document.getElementById('btn-pengurus-modal-ronda')?.addEventListener('click', () => {
-    openManageRondaModal(1);
-  });
 
   // Initial Public Render
+  window.renderPublicCards = renderPublicCards;
   renderPublicCards();
 }
 
@@ -7065,6 +7081,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupPublicPortalNavigation();
   setupUpcomingEventBanner();
   setupRondaSchedule();
+  setupManageRondaModal();
   setupLogout();
   registerServiceWorker();
   initDemografi();
@@ -10604,14 +10621,31 @@ function switchPengurusTab(tabId) {
     if (el) el.style.display = (key === tabId) ? 'block' : 'none';
   });
 
+  const pTitle = document.getElementById('page-title');
+  const pSub = document.getElementById('page-subtitle');
+
   if (tabId === 'ronda') {
+    document.querySelectorAll('.menu-item, .bnav-item').forEach(link => {
+      link.classList.toggle('active', link.getAttribute('data-target') === 'ronda-pengurus');
+    });
+    if (pTitle) pTitle.textContent = 'Jadwal & Regu Ronda Malam';
+    if (pSub) pSub.textContent = 'Tata Kelola 8 Regu Ronda & Penarikan Jimpitan Warga RT.001';
     renderPengurusRondaPanel(currentPengurusRondaFilter);
-  } else if (tabId === 'verifikasi') {
-    renderPengurusVerifikasiList(currentVerifikasiFilter);
-  } else if (tabId === 'buku-induk') {
-    renderBukuIndukWarga();
-  } else if (tabId === 'broadcast') {
-    updateBroadcastPreview();
+  } else {
+    if (tabId === 'struktur') {
+      document.querySelectorAll('.menu-item, .bnav-item').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('data-target') === 'pengurus-struktur');
+      });
+      if (pTitle) pTitle.textContent = 'Bagan & Struktur Pengurus RT';
+      if (pSub) pSub.textContent = 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027';
+    }
+    if (tabId === 'verifikasi') {
+      renderPengurusVerifikasiList(currentVerifikasiFilter);
+    } else if (tabId === 'buku-induk') {
+      renderBukuIndukWarga();
+    } else if (tabId === 'broadcast') {
+      updateBroadcastPreview();
+    }
   }
 }
 
@@ -10745,7 +10779,7 @@ function renderPengurusRondaPanel(filterVal = 'all') {
         </div>
 
         <div class="pengurus-ronda-card-actions">
-          <button type="button" class="btn btn-sm btn-outline-cyan btn-edit-regu flex-grow-1" data-week="${g.week}" title="Atur personel Regu ${g.week}">
+          <button type="button" class="btn btn-sm btn-outline-cyan btn-edit-regu flex-grow-1" data-week="${g.week}" onclick="window.openManageRondaModal(${g.week})" title="Atur personel Regu ${g.week}">
             <i class="fa-solid fa-user-pen"></i> Edit Regu
           </button>
           <button type="button" class="btn btn-sm btn-outline-emerald btn-wa-regu" data-week="${g.week}" title="Kirim Pengingat WhatsApp ke Regu ${g.week}">

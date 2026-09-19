@@ -57,10 +57,23 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
   - Mencegah eksekusi `popNavHistory()` (`history.back()`) saat login sukses diverifikasi, sehingga tidak ada sinyal `popstate` tumpang tindih yang memicu prioritas kembali ke halaman publik.
   - Pengguna kini **langsung mendarat 100% instan di Dashboard Pengurus** (`#app` dengan view aktif `#view-dashboard`) tanpa transit ke halaman publik.
 
-### 3. 🛡️ Pengaturan Jadwal Ronda di Portal Pengurus (Update 19 Sept 2026)
-- Di Portal Pengurus, kini tersedia tab dan panel pengaturan jadwal ronda mingguan (Regu Ronda Senin s.d. Minggu).
-- Pengurus dapat mengelola pembagian nama warga petugas ronda per regu, koordinator lapangan, nomor kontak darurat, serta hari giliran ronda.
-- Perubahan jadwal ronda langsung tersinkronisasi otomatis secara real-time ke kartu informasi ronda pada Portal Publik Warga.
+### 3. 🛡️ Perbaikan & Pengaktifan Penuh Fitur "Atur Jadwal Ronda" & "Edit Regu Ronda" (Update 19 Sept 2026)
+- **Masalah Sebelumnya**:
+  - Tombol **"Atur Jadwal Ronda"** di header panel pengurus/dashboard/jimpitan serta tombol **"Edit Regu"** di ke-8 kartu regu ronda malam minggu tidak merespons atau modal tidak dapat dibuka/disimpan.
+  - Terjadi pemblokiran otorisasi ganda pada pengguna pengurus yang sudah aktif di dashboard, serta ketergantungan deklarasi fungsi modal di dalam cakupan tertutup publik portal.
+  - Validasi HTML5 `required` pada baris dinamis anggota regu sempat menahan penyimpanan form.
+- **Solusi & Penyempurnaan yang Diterapkan**:
+  - **Decoupling & Global Exposure**:
+    - Memisahkan dan mengekspos fungsi modal inti ke cakupan global (`window.openManageRondaModal`, `window.renderRondaManageForm`, `window.getRondaGroups`, `window.generateRondaWeekText`, `window.generateAllRondaScheduleText`, `window.openModal`, `window.closeModal`, `window.renderPublicCards`).
+    - Mengaitkan inisialisasi `setupManageRondaModal()` langsung saat `DOMContentLoaded`.
+  - **Dukungan Edit Langsung Per Regu (Regu 1 s.d. 8)**:
+    - Setiap tombol **"Edit Regu"** pada ke-8 kartu ronda di Portal Pengurus kini memiliki pemicu langsung `onclick="window.openManageRondaModal(${g.week})"`.
+    - Modal terbuka dengan tab regu terkait langsung dalam status terpilih (*active*), memuat Komandan Regu dan daftar 10 personel yang bertugas.
+    - Tersedia fitur tambah/hapus personel dinamis, autocomplete nama 71 KK Warga RT.001, tombol reset template standar, dan tombol simpan jadwal.
+  - **Sinkronisasi Navigasi & Tampilan Sidebar**:
+    - Memperbaiki penanganan `switchPengurusTab('ronda')` dan `navigateToView('ronda-pengurus')`: menu sidebar **"Jadwal Regu Ronda"** kini tetap menyala aktif (*highlighted*), dengan judul header otomatis diperbarui menjadi *"Jadwal & Regu Ronda Malam"*.
+  - **Pembaruan Real-Time**:
+    - Setiap perubahan yang disimpan langsung mengupdate `state.rondaGroups`, disimpan ke `localStorage`, dan merefresh tampilan kartu pengurus maupun kartu jadwal di portal publik seketika.
 
 ### 4. 🪙 Modul Kas Jimpitan Ronda Terintegrasi (Update 19 Sept 2026)
 - Penguatan alur pencatatan perolehan uang jimpitan malam minggu untuk akun Bendahara 2 (B2) dan Bendahara 1 (B1).

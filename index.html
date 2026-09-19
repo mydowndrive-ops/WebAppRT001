@@ -3824,7 +3824,7 @@
                 <i class="fa-brands fa-whatsapp"></i> Broadcast Jadwal
               </button>
               <button type="button" class="btn btn-emerald" id="btn-pengurus-modal-ronda" onclick="window.openManageRondaModal(1)">
-                <i class="fa-solid fa-pen-to-square"></i> Atur Susunan Jadwal
+                <i class="fa-solid fa-calendar-days text-gold"></i> Atur Jadwal Ronda
               </button>
             </div>
           </div>
@@ -4881,7 +4881,7 @@
           <h3><i class="fa-solid fa-user-shield text-gold"></i> Kelola Susunan Jadwal Ronda</h3>
           <p class="modal-subtitle">Atur Komandan Regu dan daftar petugas yang bertugas setiap malam Minggu.</p>
         </div>
-        <button class="modal-close" data-close="modal-manage-ronda">&times;</button>
+        <button class="modal-close" data-close="modal-manage-ronda" onclick="closeModal('modal-manage-ronda')">&times;</button>
       </div>
 
       <!-- Datalist for autocomplete with 71 KK Warga RT.001 -->
@@ -4957,7 +4957,7 @@
               <i class="fa-solid fa-rotate-left"></i> Reset Default
             </button>
             <div style="display:flex; gap:0.5rem;">
-              <button type="button" class="btn btn-outline" data-close="modal-manage-ronda">Batal</button>
+              <button type="button" class="btn btn-outline" data-close="modal-manage-ronda" onclick="closeModal('modal-manage-ronda')">Batal</button>
               <button type="submit" class="btn btn-emerald" id="btn-save-ronda-schedule">
                 <i class="fa-solid fa-floppy-disk"></i> Simpan Jadwal
               </button>
