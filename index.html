@@ -269,36 +269,18 @@
       <div class="hub-container">
         <!-- Compact Hero Header -->
         <header class="hub-hero-header">
-          <!-- SVG Displacement Map Filter untuk Simulasi Kain Berriak Dinamis -->
-          <svg class="flag-displacement-svg" aria-hidden="true" width="0" height="0" style="position: absolute; width: 0; height: 0; pointer-events: none; overflow: hidden;">
-            <defs>
-              <filter id="flag-wave-displacement" x="-10%" y="-10%" width="120%" height="120%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.015 0.045" numOctaves="2" result="turbulence" seed="3">
-                  <animate attributeName="baseFrequency" dur="6s" values="0.015 0.045;0.018 0.06;0.013 0.04;0.015 0.045" repeatCount="indefinite" />
-                </feTurbulence>
-                <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="10" xChannelSelector="R" yChannelSelector="G" />
-              </filter>
-            </defs>
-          </svg>
-
-          <!-- Bendera Merah Putih Berkibar Banner Sepanjang Kotak -->
+          <!-- Bendera Merah Putih Video Background Banner Container -->
           <div class="indonesia-flag-waving-banner flag-container" role="banner" aria-label="WARGA RT.001 RW.013">
-            <!-- 1. Lapisan Bendera Merah Putih & Gelombang Kain Realistis -->
-            <div class="flag-cloth-wave flag-cloth">
-              <div class="flag-stripe flag-red flag-red-half"></div>
-              <div class="flag-stripe flag-white flag-white-half"></div>
-              <!-- Riak gelombang 3D kain & kilau angin -->
-              <div class="flag-wave-ripple flag-ripple-1 wave-primary" aria-hidden="true"></div>
-              <div class="flag-wave-ripple flag-ripple-2 wave-secondary" aria-hidden="true"></div>
-              <div class="flag-wave-ripple flag-ripple-3" aria-hidden="true"></div>
-              <div class="flag-wind-shimmer flag-specular-shimmer" aria-hidden="true"></div>
-              <div class="flag-edge-crease flag-vignette" aria-hidden="true"></div>
-            </div>
+            <!-- Video Background Bendera Merah Putih Berkibar (redwihite.webm) -->
+            <video class="flag-video-bg" autoplay loop muted playsinline preload="auto">
+              <source src="redwihite.webm" type="video/webm">
+              <source src="assets/redwihite.webm" type="video/webm">
+            </video>
 
-            <!-- 2. Overlay Pelindung Kontras Semi-Transparan (Memastikan Teks Terbaca Jelas) -->
+            <!-- Overlay Pelindung Kontras Semi-Transparan (Memastikan Teks Terbaca Jelas) -->
             <div class="flag-contrast-scrim" aria-hidden="true"></div>
 
-            <!-- 3. Lapisan Teks Terdepan Persis di Tengah (Center Alignment) -->
+            <!-- Lapisan Teks Terdepan Persis di Tengah (Center Alignment) -->
             <div class="flag-banner-overlay flag-content-centered">
               <h1 class="hub-hero-title flag-h1-title flag-text-warga">
                 <span class="flag-title-main">WARGA RT.001 RW.013</span>

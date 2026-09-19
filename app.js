@@ -11933,7 +11933,10 @@ function setupAsetRtModule() {
   }
 }
 
-
-
-
-
+// Inisialisasi video background bendera merah putih berkibar
+document.addEventListener('DOMContentLoaded', () => {
+  const flagVideo = document.querySelector('.flag-video-bg');
+  if (flagVideo) {
+    flagVideo.play().catch(() => {});
+  }
+});

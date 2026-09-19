@@ -30,19 +30,18 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
 
 ## 🌟 Fitur-Fitur Utama & Pembaruan Terkini (Changelog Terbaru)
 
-### 1. 🇮🇩 Banner Bendera Merah Putih Berkibar Realistis (SVG Displacement & Center Alignment)
+### 1. 🇮🇩 Banner Bendera Merah Putih Berkibar (Video Background `redwihite.webm` & Center Alignment)
 - **Transformasi Kotak Header Hero**:
-  - Mengganti kotak background lama dengan komponen bendera Merah Putih dinamis beranimasi berkibar (*realistic waving cloth animation*) murni HTML dan CSS.
-  - **Efek Visual Gelombang Kain & Ripple Dinamis**:
-    - **Teknik SVG Displacement Map**: Memanfaatkan kombinasi filter `<feTurbulence>` dan `<feDisplacementMap>` beranimasi halus untuk mereplikasi riak gelombang 3D kain bendera yang lentur tertiup angin secara kontinu.
-    - **Latar Bendera Dua Warna**: Merah menyala di atas (50%) dan putih bersih di bawah (50%) dengan sentuhan gradasi kain sutra.
-    - **Riak Pencahayaan (*Cloth Shading & Highlights*)**: 3 lapisan gelombang linier overlay/soft-light yang bergeser dinamis dengan CSS keyframes `@keyframes flagWaveMotion`.
-    - **Kilau Angin (*Wind Shimmer Flow*)**: Spekular kilau sutra bergerak dengan `@keyframes flagShimmerFlow`.
+  - Mengganti latar kotak lama dengan pemutaran video dinamis bendera Merah Putih berkibar asli menggunakan berkas `redwihite.webm` (`<video class="flag-video-bg" autoplay loop muted playsinline preload="auto">`).
+  - **Visual Kain Sinematik Realistis**:
+    - Gerakan kibaran kain bendera merah putih natural dan mulus (*looping seamless*) berformat WebM ringan (~324 KB) dengan performa render perangkat keras instan.
+    - Dilengkapi fallback ganda: `redwihite.webm` (root) dan `assets/redwihite.webm`.
   - **Hierarki Visual & Keterbacaan Kontras (Center Alignment)**:
     - Teks `"WARGA RT.001 RW.013"` diposisikan di lapisan paling depan (*frontmost layer* dengan `z-index: 3`) persis di tengah-tengah kotak (*center alignment*).
-    - Dilengkapi lapisan pelindung kontras (*radial-gradient contrast scrim*) semi-transparan tipis di belakang teks.
-  - **Desain Seamless Tanpa Garis Tepi (*Borderless*)**: Seluruh garis tepi (`border: none`) dan efek *inset stroke highlight* di sekeliling pinggir bendera telah dihilangkan sepenuhnya, menghasilkan visual kain bendera yang bebas batas, bersih, dan menyatu alami dengan latar.
-  - **Performa Ringan**: Dijalankan dengan akselerasi perangkat keras GPU (`transform: translate3d`, `will-change: transform`), sangat ringan dan cocok untuk dashboard maupun layar digital signage.
+    - Dilengkapi lapisan pelindung kontras (*radial-gradient contrast scrim*) semi-transparan tipis di antara teks dan video bendera.
+    - Tipografi *bold* tebal dengan multi-layer shadow gelap pekat (`text-shadow: 0 1px 2px #000, 0 2px 5px rgba(0,0,0,0.95), 0 4px 14px rgba(0,0,0,0.9), 0 0 25px rgba(0,0,0,0.85)`) sehingga teks tetap 100% sangat jelas dan mudah dibaca baik di atas latar merah maupun putih yang sedang bergerak.
+  - **Desain Seamless Tanpa Garis Tepi (*Borderless*)**: Seluruh garis tepi (`border: none; outline: none;`) dan efek *inset stroke highlight* di sekeliling pinggir bendera telah dihilangkan sepenuhnya, menghasilkan visual kain bendera yang bebas batas, bersih, dan menyatu alami dengan latar.
+  - **Performa Ringan**: Ringan dan hemat CPU/GPU, cocok untuk perangkat mobile, desktop, maupun antarmuka digital signage.
 
 ### 2. ⚡ Perbaikan Alur Navigasi Login Pengurus (Direct Landing - Update 19 Sept 2026)
 - **Masalah Sebelumnya**:
