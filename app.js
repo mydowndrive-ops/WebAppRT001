@@ -7500,7 +7500,7 @@ function renderJimpitan() {
           <td>
             ${isPengurus 
               ? `<span class="badge-locked-read" title="Pengurus RT dalam mode pemantauan"><i class="fa-solid fa-lock"></i> Kunci</span>`
-              : `<button class="btn btn-sm btn-outline-rose" data-jimp-delete-income="${r.id}" title="Hapus"><i class="fa-solid fa-trash"></i></button>`
+              : `<button class="btn btn-sm btn-outline-rose" data-jimp-delete-income="${r.id}" onclick="window.deleteJimpitanIncome('${r.id}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>`
             }
           </td>
         </tr>`).join('');
@@ -7525,7 +7525,7 @@ function renderJimpitan() {
           <td>
             ${isPengurus 
               ? `<span class="badge-locked-read" title="Pengurus RT dalam mode pemantauan"><i class="fa-solid fa-lock"></i> Kunci</span>`
-              : `<button class="btn btn-sm btn-outline-rose" data-jimp-delete-expense="${r.id}" title="Hapus"><i class="fa-solid fa-trash"></i></button>`
+              : `<button class="btn btn-sm btn-outline-rose" data-jimp-delete-expense="${r.id}" onclick="window.deleteJimpitanExpense('${r.id}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>`
             }
           </td>
         </tr>`).join('');
@@ -7534,7 +7534,10 @@ function renderJimpitan() {
 }
 
 // Global Modal Opener for Jimpitan Income
-window.openJimpitanIncomeModal = function() {
+window.openJimpitanIncomeModal = function(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+  if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+
   const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
   const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
   if (isPengurus) {
@@ -7542,29 +7545,36 @@ window.openJimpitanIncomeModal = function() {
     return;
   }
 
-  const nextSunday = () => {
-    const today = new Date();
-    const day = today.getDay(); // 0=Sun, 6=Sat
-    const diff = day === 0 ? 0 : 7 - day;
-    const d = new Date(today);
-    d.setDate(today.getDate() + diff);
-    return d.toISOString().split('T')[0];
-  };
+  // Tanggal default: Hari Minggu terdekat (atau hari ini jika hari Minggu) dalam Waktu Lokal (WIB)
+  const today = new Date();
+  const day = today.getDay(); // 0 = Sun, 6 = Sat
+  const diff = day === 0 ? 0 : 7 - day;
+  const sunday = new Date(today.getFullYear(), today.getMonth(), today.getDate() + diff);
+  const yyyy = sunday.getFullYear();
+  const mm = String(sunday.getMonth() + 1).padStart(2, '0');
+  const dd = String(sunday.getDate()).padStart(2, '0');
+  const nextSundayDate = `${yyyy}-${mm}-${dd}`;
 
   const dateInput = document.getElementById('jimp-income-date');
+  const reguInput = document.getElementById('jimp-income-regu');
   const amountInput = document.getElementById('jimp-income-amount');
   const koordInput = document.getElementById('jimp-income-koordinator');
   const notesInput = document.getElementById('jimp-income-notes');
 
-  if (dateInput) dateInput.value = nextSunday();
+  if (dateInput) dateInput.value = nextSundayDate;
+  if (reguInput) reguInput.value = 'Regu 1';
   if (amountInput) amountInput.value = '';
   if (koordInput) koordInput.value = '';
   if (notesInput) notesInput.value = '';
+
   openModal('modal-add-jimpitan-income');
 };
 
 // Global Modal Opener for Jimpitan Expense
-window.openJimpitanExpenseModal = function() {
+window.openJimpitanExpenseModal = function(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+  if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+
   const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
   const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
   if (isPengurus) {
@@ -7572,35 +7582,182 @@ window.openJimpitanExpenseModal = function() {
     return;
   }
 
+  // Tanggal default: Hari ini dalam Waktu Lokal (WIB)
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const todayDate = `${yyyy}-${mm}-${dd}`;
+
   const dateInput = document.getElementById('jimp-expense-date');
+  const categoryInput = document.getElementById('jimp-expense-category');
   const amountInput = document.getElementById('jimp-expense-amount');
   const descInput = document.getElementById('jimp-expense-desc');
 
-  if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+  if (dateInput) dateInput.value = todayDate;
+  if (categoryInput) categoryInput.value = 'Konsumsi Ronda';
   if (amountInput) amountInput.value = '';
   if (descInput) descInput.value = '';
+
   openModal('modal-add-jimpitan-expense');
 };
 
-function setupJimpitanEvents() {
-  const isPengurusUser = () => {
-    const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
-    return currentAcc && currentAcc.accessLevel === 'PENGURUS';
+// Global Submit Handler for Jimpitan Income
+window.handleJimpitanIncomeSubmit = function(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
+  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
+  if (isPengurus) {
+    showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
+    closeModal('modal-add-jimpitan-income');
+    return;
+  }
+
+  const dateInput = document.getElementById('jimp-income-date');
+  const reguInput = document.getElementById('jimp-income-regu');
+  const koordInput = document.getElementById('jimp-income-koordinator');
+  const amountInput = document.getElementById('jimp-income-amount');
+  const notesInput = document.getElementById('jimp-income-notes');
+
+  const date = dateInput ? dateInput.value : '';
+  const regu = reguInput ? reguInput.value : 'Regu 1';
+  const koordinator = koordInput ? koordInput.value.trim() : '';
+  const rawAmount = amountInput ? amountInput.value : '';
+  const amount = parseInt(String(rawAmount).replace(/[^0-9]/g, ''), 10);
+  const notes = notesInput ? notesInput.value.trim() : '';
+
+  if (!date || isNaN(amount) || amount <= 0) {
+    showToast('Harap lengkapi tanggal dan nominal perolehan jimpitan yang valid.', 'error');
+    if (amountInput && (isNaN(amount) || amount <= 0)) amountInput.focus();
+    return;
+  }
+
+  const newRecord = {
+    id: `jimp-in-${Date.now()}`,
+    date,
+    regu,
+    koordinator,
+    amount,
+    notes,
+    createdAt: new Date().toISOString()
   };
 
-  // Delegated click trigger for buttons
+  if (!state.jimpitanIncomes || !Array.isArray(state.jimpitanIncomes)) {
+    state.jimpitanIncomes = [];
+  }
+  state.jimpitanIncomes.push(newRecord);
+  saveState();
+  closeModal('modal-add-jimpitan-income');
+  renderJimpitan();
+  showToast(`✅ Perolehan jimpitan ${formatCurrency(amount)} (${regu}) berhasil dicatat!`, 'success');
+};
+
+// Global Submit Handler for Jimpitan Expense
+window.handleJimpitanExpenseSubmit = function(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+
+  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
+  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
+  if (isPengurus) {
+    showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
+    closeModal('modal-add-jimpitan-expense');
+    return;
+  }
+
+  const dateInput = document.getElementById('jimp-expense-date');
+  const categoryInput = document.getElementById('jimp-expense-category');
+  const descInput = document.getElementById('jimp-expense-desc');
+  const amountInput = document.getElementById('jimp-expense-amount');
+
+  const date = dateInput ? dateInput.value : '';
+  const category = categoryInput ? categoryInput.value : 'Konsumsi Ronda';
+  const desc = descInput ? descInput.value.trim() : '';
+  const rawAmount = amountInput ? amountInput.value : '';
+  const amount = parseInt(String(rawAmount).replace(/[^0-9]/g, ''), 10);
+
+  if (!date || !desc || isNaN(amount) || amount <= 0) {
+    showToast('Harap lengkapi tanggal, keterangan, dan nominal pengeluaran kas jimpitan.', 'error');
+    if (!desc && descInput) descInput.focus();
+    else if (amountInput) amountInput.focus();
+    return;
+  }
+
+  const newRecord = {
+    id: `jimp-ex-${Date.now()}`,
+    date,
+    category,
+    desc,
+    amount,
+    createdAt: new Date().toISOString()
+  };
+
+  if (!state.jimpitanExpenses || !Array.isArray(state.jimpitanExpenses)) {
+    state.jimpitanExpenses = [];
+  }
+  state.jimpitanExpenses.push(newRecord);
+  saveState();
+  closeModal('modal-add-jimpitan-expense');
+  renderJimpitan();
+  showToast(`✅ Pengeluaran kas jimpitan ${formatCurrency(amount)} berhasil dicatat!`, 'success');
+};
+
+// Global Delete Handlers
+window.deleteJimpitanIncome = function(id) {
+  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
+  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
+  if (isPengurus) {
+    showToast('⚠️ Pengurus RT tidak dapat menghapus catatan Kas Jimpitan.', 'warning');
+    return;
+  }
+  if (!confirm('Yakin ingin menghapus catatan perolehan jimpitan ini?')) return;
+  state.jimpitanIncomes = (state.jimpitanIncomes || []).filter(r => r.id !== id);
+  saveState();
+  renderJimpitan();
+  showToast('Catatan perolehan jimpitan dihapus.', 'info');
+};
+
+window.deleteJimpitanExpense = function(id) {
+  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
+  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
+  if (isPengurus) {
+    showToast('⚠️ Pengurus RT tidak dapat menghapus catatan Kas Jimpitan.', 'warning');
+    return;
+  }
+  if (!confirm('Yakin ingin menghapus catatan pengeluaran jimpitan ini?')) return;
+  state.jimpitanExpenses = (state.jimpitanExpenses || []).filter(r => r.id !== id);
+  saveState();
+  renderJimpitan();
+  showToast('Catatan pengeluaran kas jimpitan dihapus.', 'info');
+};
+
+let isJimpitanEventsSetup = false;
+function setupJimpitanEvents() {
+  if (isJimpitanEventsSetup) return;
+  isJimpitanEventsSetup = true;
+
+  // Form submit listeners fallback
+  const formIncome = document.getElementById('form-jimpitan-income');
+  if (formIncome) {
+    formIncome.addEventListener('submit', window.handleJimpitanIncomeSubmit);
+  }
+
+  const formExpense = document.getElementById('form-jimpitan-expense');
+  if (formExpense) {
+    formExpense.addEventListener('submit', window.handleJimpitanExpenseSubmit);
+  }
+
+  // Delegated click trigger for buttons fallback
   document.addEventListener('click', e => {
     const btnInc = e.target.closest('#btn-add-jimpitan-income');
     if (btnInc) {
-      e.preventDefault();
-      window.openJimpitanIncomeModal();
+      // If already handled by inline onclick, do nothing
       return;
     }
 
     const btnExp = e.target.closest('#btn-add-jimpitan-expense');
     if (btnExp) {
-      e.preventDefault();
-      window.openJimpitanExpenseModal();
+      // If already handled by inline onclick, do nothing
       return;
     }
 
@@ -7611,100 +7768,6 @@ function setupJimpitanEvents() {
         window.openManageRondaModal(1);
       }
       return;
-    }
-  });
-
-  // Submit income form
-  document.getElementById('form-jimpitan-income')?.addEventListener('submit', e => {
-    e.preventDefault();
-    if (isPengurusUser()) {
-      showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
-      closeModal('modal-add-jimpitan-income');
-      return;
-    }
-    const date = document.getElementById('jimp-income-date').value;
-    const regu = document.getElementById('jimp-income-regu').value;
-    const koordinator = document.getElementById('jimp-income-koordinator').value.trim();
-    const amount = parseInt(document.getElementById('jimp-income-amount').value);
-    const notes = document.getElementById('jimp-income-notes').value.trim();
-
-    if (!date || !amount || amount <= 0) {
-      showToast('Lengkapi tanggal dan nominal perolehan jimpitan.', 'error');
-      return;
-    }
-
-    const newRecord = {
-      id: `jimp-in-${Date.now()}`,
-      date, regu, koordinator, amount, notes,
-      createdAt: new Date().toISOString()
-    };
-    if (!state.jimpitanIncomes) state.jimpitanIncomes = [];
-    state.jimpitanIncomes.push(newRecord);
-    saveState();
-    closeModal('modal-add-jimpitan-income');
-    renderJimpitan();
-    showToast(`✅ Perolehan jimpitan ${formatCurrency(amount)} (${regu}) berhasil dicatat!`, 'success');
-  });
-
-  // Submit expense form
-  document.getElementById('form-jimpitan-expense')?.addEventListener('submit', e => {
-    e.preventDefault();
-    if (isPengurusUser()) {
-      showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
-      closeModal('modal-add-jimpitan-expense');
-      return;
-    }
-    const date = document.getElementById('jimp-expense-date').value;
-    const category = document.getElementById('jimp-expense-category').value;
-    const desc = document.getElementById('jimp-expense-desc').value.trim();
-    const amount = parseInt(document.getElementById('jimp-expense-amount').value);
-
-    if (!date || !desc || !amount || amount <= 0) {
-      showToast('Lengkapi semua kolom pengeluaran kas jimpitan.', 'error');
-      return;
-    }
-
-    const newRecord = {
-      id: `jimp-ex-${Date.now()}`,
-      date, category, desc, amount,
-      createdAt: new Date().toISOString()
-    };
-    if (!state.jimpitanExpenses) state.jimpitanExpenses = [];
-    state.jimpitanExpenses.push(newRecord);
-    saveState();
-    closeModal('modal-add-jimpitan-expense');
-    renderJimpitan();
-    showToast(`✅ Pengeluaran kas jimpitan ${formatCurrency(amount)} berhasil dicatat!`, 'success');
-  });
-
-  // Delete income / expense via event delegation
-  document.addEventListener('click', e => {
-    // Delete jimpitan income
-    const incomeDelBtn = e.target.closest('[data-jimp-delete-income]');
-    if (incomeDelBtn) {
-      if (isPengurusUser()) {
-        showToast('⚠️ Pengurus RT tidak dapat menghapus atau mengedit data Kas Jimpitan.', 'warning');
-        return;
-      }
-      const id = incomeDelBtn.getAttribute('data-jimp-delete-income');
-      state.jimpitanIncomes = (state.jimpitanIncomes || []).filter(r => r.id !== id);
-      saveState();
-      renderJimpitan();
-      showToast('Catatan perolehan jimpitan dihapus.', 'info');
-      return;
-    }
-    // Delete jimpitan expense
-    const expDelBtn = e.target.closest('[data-jimp-delete-expense]');
-    if (expDelBtn) {
-      if (isPengurusUser()) {
-        showToast('⚠️ Pengurus RT tidak dapat menghapus atau mengedit data Kas Jimpitan.', 'warning');
-        return;
-      }
-      const id = expDelBtn.getAttribute('data-jimp-delete-expense');
-      state.jimpitanExpenses = (state.jimpitanExpenses || []).filter(r => r.id !== id);
-      saveState();
-      renderJimpitan();
-      showToast('Catatan pengeluaran kas jimpitan dihapus.', 'info');
     }
   });
 
@@ -7722,6 +7785,15 @@ function setupJimpitanEvents() {
     link.click();
     showToast('Laporan jimpitan berhasil diekspor ke CSV!', 'success');
   });
+}
+
+// Auto-initialize if DOM is already loaded
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupJimpitanEvents);
+  } else {
+    setupJimpitanEvents();
+  }
 }
 
 // ==================== MODUL STATISTIK DEMOGRAFI WARGA RT.001 RW.013 ====================

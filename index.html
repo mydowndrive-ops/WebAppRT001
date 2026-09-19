@@ -22,7 +22,7 @@
   <!-- Chart.js for Executive Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <link rel="stylesheet" href="styles.css?v=2.8.5">
+  <link rel="stylesheet" href="styles.css?v=2.8.6">
 </head>
 <body>
 
@@ -3067,10 +3067,10 @@
             <button class="btn btn-outline-cyan" id="btn-admin-manage-ronda" onclick="window.openManageRondaModal(1)">
               <i class="fa-solid fa-calendar-days text-gold"></i> Atur Jadwal Ronda
             </button>
-            <button class="btn btn-emerald" id="btn-add-jimpitan-income" onclick="window.openJimpitanIncomeModal()">
+            <button class="btn btn-emerald" id="btn-add-jimpitan-income" onclick="window.openJimpitanIncomeModal(event)">
               <i class="fa-solid fa-plus"></i> Catat Perolehan Jimpitan
             </button>
-            <button class="btn btn-outline" id="btn-add-jimpitan-expense" onclick="window.openJimpitanExpenseModal()">
+            <button class="btn btn-outline" id="btn-add-jimpitan-expense" onclick="window.openJimpitanExpenseModal(event)">
               <i class="fa-solid fa-minus"></i> Catat Pengeluaran Jimpitan
             </button>
           </div>
@@ -4989,12 +4989,12 @@
 
   <!-- Modal: Tambah Perolehan Jimpitan -->
   <div class="modal-backdrop" id="modal-add-jimpitan-income">
-    <div class="modal-content glass-panel luxury-modal" style="max-width:500px;">
+    <div class="modal-content glass-panel luxury-modal" style="max-width:520px;">
       <div class="modal-header">
         <h3><i class="fa-solid fa-coins text-emerald"></i> Catat Perolehan Jimpitan</h3>
-        <button class="modal-close" data-close="modal-add-jimpitan-income">&times;</button>
+        <button type="button" class="modal-close" onclick="closeModal('modal-add-jimpitan-income')" data-close="modal-add-jimpitan-income">&times;</button>
       </div>
-      <form id="form-jimpitan-income" style="padding:1rem 0;">
+      <form id="form-jimpitan-income" onsubmit="event.preventDefault(); window.handleJimpitanIncomeSubmit(event);" style="padding:1rem 0;">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
           <div class="form-group">
             <label class="form-label">Tanggal (Hari Minggu)</label>
@@ -5020,25 +5020,28 @@
         </div>
         <div class="form-group">
           <label class="form-label">Total Perolehan Jimpitan (Rp)</label>
-          <input type="number" class="form-input" id="jimp-income-amount" placeholder="Contoh: 75000" min="0" required>
+          <input type="text" inputmode="numeric" class="form-input" id="jimp-income-amount" placeholder="Contoh: 75.000" required oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')">
         </div>
         <div class="form-group">
           <label class="form-label">Catatan Kondisi Ronda</label>
           <textarea class="form-input" id="jimp-income-notes" rows="2" placeholder="Kondisi ronda, jumlah personil, kejadian penting..."></textarea>
         </div>
-        <button type="submit" class="btn btn-emerald btn-full"><i class="fa-solid fa-floppy-disk"></i> Simpan Perolehan Jimpitan</button>
+        <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:10px; margin-top:1.25rem;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-add-jimpitan-income')">Batal</button>
+          <button type="submit" class="btn btn-emerald"><i class="fa-solid fa-floppy-disk"></i> Simpan Perolehan Jimpitan</button>
+        </div>
       </form>
     </div>
   </div>
 
   <!-- Modal: Tambah Pengeluaran Kas Jimpitan -->
   <div class="modal-backdrop" id="modal-add-jimpitan-expense">
-    <div class="modal-content glass-panel luxury-modal" style="max-width:500px;">
+    <div class="modal-content glass-panel luxury-modal" style="max-width:520px;">
       <div class="modal-header">
         <h3><i class="fa-solid fa-cart-shopping text-rose"></i> Catat Pengeluaran Jimpitan</h3>
-        <button class="modal-close" data-close="modal-add-jimpitan-expense">&times;</button>
+        <button type="button" class="modal-close" onclick="closeModal('modal-add-jimpitan-expense')" data-close="modal-add-jimpitan-expense">&times;</button>
       </div>
-      <form id="form-jimpitan-expense" style="padding:1rem 0;">
+      <form id="form-jimpitan-expense" onsubmit="event.preventDefault(); window.handleJimpitanExpenseSubmit(event);" style="padding:1rem 0;">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
           <div class="form-group">
             <label class="form-label">Tanggal Pengeluaran</label>
@@ -5060,9 +5063,12 @@
         </div>
         <div class="form-group">
           <label class="form-label">Nominal Pengeluaran (Rp)</label>
-          <input type="number" class="form-input" id="jimp-expense-amount" placeholder="Contoh: 35000" min="0" required>
+          <input type="text" inputmode="numeric" class="form-input" id="jimp-expense-amount" placeholder="Contoh: 35.000" min="0" required oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')">
         </div>
-        <button type="submit" class="btn btn-outline-rose btn-full"><i class="fa-solid fa-floppy-disk"></i> Simpan Pengeluaran Jimpitan</button>
+        <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:10px; margin-top:1.25rem;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-add-jimpitan-expense')">Batal</button>
+          <button type="submit" class="btn btn-outline-rose"><i class="fa-solid fa-floppy-disk"></i> Simpan Pengeluaran Jimpitan</button>
+        </div>
       </form>
     </div>
   </div>
@@ -5867,6 +5873,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.8.5"></script>
+  <script src="app.js?v=2.8.6"></script>
 </body>
 </html>

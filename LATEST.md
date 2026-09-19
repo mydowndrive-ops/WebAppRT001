@@ -71,6 +71,28 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
     - Nilai `z-index` pada `.modal-backdrop` dinaikkan menjadi `10000` (didukung `display: flex !important`) agar tampil di atas seluruh elemen header, drawer, maupun popup.
     - Tombol aksi kartu ronda (`.pengurus-ronda-card-actions .btn`) diberikan `position: relative; z-index: 10; pointer-events: auto;` untuk menjamin penerimaan interaksi klik.
   - **Dukungan Edit Langsung Per Regu (Regu 1 s.d. 8)**:
+
+### 4. 🌙 Perbaikan Tuntas Menu Perolehan & Pengeluaran Kas Jimpitan (Admin 2 / Bendahara 2 - Update 19 Sept 2026 - v2.8.6)
+- **Masalah Sebelumnya**:
+  - Pada dashboard Admin 2 (Bendahara 2 / Koordinator Jimpitan), tombol `+ Catat Perolehan Jimpitan` dan `- Catat Pengeluaran Jimpitan` dilaporkan belum bisa digunakan secara optimal.
+  - Modal sebelumnya tidak menyediakan tombol "Batal", tombol silang (&times;) hanya mengandalkan event delegation, dan input nominal bertipe number HTML5 menolak format titik ribuan (misal `75.000`).
+  - Terdapat potensi tumpang tindih event (double trigger) antara atribut inline `onclick` dan delegated event listener di `document`.
+  - Format tanggal default rawan bergeser satu hari ke belakang jika diakses pada jam malam/dini hari akibat konversi UTC `.toISOString()`.
+- **Solusi & Perbaikan Komprehensif**:
+  1. **Fungsi Global Terbuka & Eksplisit**:
+     - `window.openJimpitanIncomeModal(event)` & `window.openJimpitanExpenseModal(event)`.
+     - `window.handleJimpitanIncomeSubmit(event)` & `window.handleJimpitanExpenseSubmit(event)`.
+     - `window.deleteJimpitanIncome(id)` & `window.deleteJimpitanExpense(id)`.
+  2. **Interaktivitas Modal & Tombol Batal**:
+     - Kedua modal (`#modal-add-jimpitan-income` dan `#modal-add-jimpitan-expense`) kini dilengkapi tombol **Batal** sekunder di samping tombol Simpan, serta tombol silang header dengan fungsi tutup langsung `onclick="closeModal(...)"`.
+     - Ditambahkan pemformatan otomatis titik ribuan Rupiah secara real-time saat pengguna mengetik nominal (`oninput="...replace(/\B(?=(\d{3})+(?!\d))/g, '.')"`).
+  3. **Penghitungan Tanggal Lokal Akurat (WIB)**:
+     - Menggunakan perataan waktu lokal `getFullYear()`, `getMonth()`, dan `getDate()` untuk menentukan hari Minggu terdekat (perolehan) dan hari ini (pengeluaran), terbebas dari deviasi UTC.
+  4. **Proteksi Double-Trigger & Event Idempotent**:
+     - Memastikan tombol inline tidak dipicu ulang oleh delegated listener di `document`.
+     - Fungsi `setupJimpitanEvents()` diamankan dengan guard `isJimpitanEventsSetup` dan auto-init baik saat `DOMContentLoaded` maupun jika dokumen telah dimuat.
+  5. **Penyegaran Cache (Cache Busting v2.8.6)**:
+     - Versi aset di `index.html` dan `sw.js` diperbarui ke `v=2.8.6` (`rt-finsmart-cache-v2.8.6`) agar seluruh peramban pengguna dan aplikasi PWA mengunduh berkas JavaScript dan CSS paling mutakhir.
     - Setiap tombol **"Edit Regu"** pada ke-8 kartu ronda memicu langsung `onclick="window.openManageRondaModal(${g.week})"`.
     - Data nama komandan dan anggota ditangani secara aman baik berbentuk objek (`{ name: '...' }`) maupun string langsung.
   - **Cache Busting Resmi (v2.8.5)**:
