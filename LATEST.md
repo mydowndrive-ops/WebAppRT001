@@ -1,15 +1,16 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 15 September 2026  
+**Terakhir Diperbarui:** 19 September 2026  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
-**Aplikasi:** RT-FinSmart PRO (Sistem Keuangan & Jimpitan Ronda Eksekutif)  
-**Cabang Git (Branch):** `main`
+**Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
+**Cabang Git (Branch):** `main`  
+**Repositori GitHub:** `https://github.com/mydowndrive-ops/WebAppRT001.git`
 
 ---
 
 ## 🚀 Ringkasan Proyek & Panduan Melanjutkan (Handover Guide)
 
-Dokumen ini dibuat khusus agar saat berpindah perangkat (laptop) atau akun, proyek ini dapat langsung dipahami dan dilanjutkan tanpa kehilangan konteks apa pun.
+Dokumen ini dibuat khusus agar saat berpindah perangkat (laptop) atau akun, proyek ini dapat langsung dipahami dan dilanjutkan tanpa kehilangan konteks apa pun. Seluruh kode sumber terkini telah tersinkronisasi penuh dengan repositori GitHub.
 
 ---
 
@@ -19,97 +20,91 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
 
 | Peran | Nama Peran | Hak Akses | Default PIN |
 | :--- | :--- | :--- | :--- |
-| **B1** | **Bendahara 1 (Super Admin)** | Akses Penuh: Dashboard, Matriks Checklist, Pos Anggaran, Pengeluaran, Warga, Laporan, Pengaturan, Jimpitan | `1111` |
-| **B2** | **Bendahara 2 (Jimpitan)** | Khusus Modul Uang Jimpitan Ronda (Catat Perolehan Mingguan, Pengeluaran Ronda, Rekap Saldo, Ekspor CSV) | `2222` |
+| **B1** | **Bendahara 1 (Super Admin)** | Akses Penuh: Dashboard, Matriks Checklist, Pos Anggaran, Pengeluaran, Warga, Laporan, Pengaturan, Jimpitan, Pengaturan Ronda | `1111` |
+| **B2** | **Bendahara 2 (Jimpitan & Ronda)** | Khusus Modul Uang Jimpitan Ronda (Catat Perolehan Mingguan, Pengeluaran Ronda, Rekap Saldo, Ekspor CSV, Monitoring Ronda) | `2222` |
 
 - **Email Reset PIN / Bantuan:** `rt001rw013.grahaasri@gmail.com`
 - **Penyimpanan Sesi:** Menggunakan `sessionStorage` (`RT001_LOGIN_SESSION_V1`). Sesi aktif saat browser terbuka dan akan meminta login kembali jika pengguna menekan tombol **Keluar (Logout)** di sidebar atau header atas.
 
 ---
 
-## 🌟 Fitur-Fitur Utama yang Telah Selesai Diimplementasikan
+## 🌟 Fitur-Fitur Utama & Pembaruan Terkini (Changelog Terbaru)
 
-1. **Portal Login Eksekutif (Luxury Glassmorphism & Animated Glow Orbs)**:
-   - Tampilan gelap elegan (*dark luxury*) dengan aksen hijau zamrud (*emerald*) dan emas (*gold*).
-   - Kartu seleksi akun interaktif dengan efek sorot (*glow*) saat dipilih.
-   - Kolom PIN interaktif dengan:
-     - **Tik / Checkbox "Tampilkan Password"** (`#login-toggle-show-pin`).
-     - **Ikon Standar Mata** (`#login-eye-btn` - `fa-eye` / `fa-eye-slash`) yang tersinkronisasi dua arah dengan checkbox.
-     - Animasi *shake* (getar) jika PIN salah dimasukkan.
-     - Tampilan **Lupa PIN?** terhubung ke `rt001rw013.grahaasri@gmail.com` dengan tombol satu-klik **Salin Email** dan tombol kirim email via mailto.
+### 1. 🇮🇩 Banner Bendera Merah Putih Berkibar Realistis (Update 19 Sept 2026)
+- **Transformasi Kotak Header Hero**:
+  - Mengganti kotak cyber badge lama berlabel "WARGA RT.001 RW.013" dengan banner bendera Merah Putih dinamis beranimasi berkibar (*realistic waving cloth animation*) sepanjang kotak header.
+  - **Efek Visual Gelombang Sutra (*Silk Wave Dynamics*)**:
+    - Dual stripes presisi 50% merah menyala (`#e60000`) dan 50% putih bersih (`#ffffff`).
+    - 3 lapisan lipatan kain (*cloth ripples*) dengan animasi `flagWaveMotion` dan gradasi pencahayaan fotorealistik.
+    - Efek kilau angin mengalir (*wind shimmer flow*) dinamis dengan `flagShimmerFlow`.
+    - Bayangan kain (*drop shadows* dan *edge crease*) yang memberikan ilusi kedalaman 3D.
+  - **Keterbacaan Tipografi Maksimal**:
+    - Judul *"WARGA RT.001 RW.013"* dan sub-badge *"GRAHA ASRI - CITARUM"* tetap tampil tajam dan elegan menggunakan multi-layer shadow kontras tinggi (`text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 4px 18px rgba(0,0,0,0.8)`).
+    - Desain sepenuhnya responsif untuk layar smartphone maupun monitor desktop.
 
-2. **Dashboard Eksekutif & Visual KPI**:
-   - Saldo kas terkonsolidasi, total penerimaan, total pengeluaran, dan realisasi iuran wajib bulan berjalan.
-   - **Tampilan Prosentase Pembayaran Iuran Warga Berdasarkan Nama Jalan**:
-     - Membagi data 71 KK ke dalam 5 jalan utama:
-       1. `Jl. Citarum II`
-       2. `Jl. Citarum IVA`
-       3. `Jl. Citarum VIIIB`
-       4. `Jl. Citarum VIIIC`
-       5. `Jl. Citarum IX`
-     - Dilengkapi *progress bar* dinamis, persentase lunas, jumlah KK lunas/total KK per jalan, serta status kategori (*Sangat Tinggi, Tinggi, Sedang, Perlu Ditingkatkan*).
+### 2. ⚡ Perbaikan Alur Navigasi Login Pengurus (Direct Landing - Update 19 Sept 2026)
+- **Masalah Sebelumnya**:
+  - Saat menekan menu "Pengurus" di beranda publik dan sukses memasukkan PIN, pengguna sempat terlempar kembali ke beranda publik yang menampilkan bilah hijau melayang dengan tombol "Kembali ke Dashboard", sehingga pengguna harus mengklik tombol tersebut untuk kedua kalinya agar masuk ke Dashboard Pengurus.
+- **Solusi & Perbaikan**:
+  - Memperbaiki fungsi `hideLoginOverlay(fromPopState = false, isLoginSuccess = false)` dan `attemptLogin()` di `app.js`.
+  - Mencegah eksekusi `popNavHistory()` (`history.back()`) saat login sukses diverifikasi, sehingga tidak ada sinyal `popstate` tumpang tindih yang memicu prioritas kembali ke halaman publik.
+  - Pengguna kini **langsung mendarat 100% instan di Dashboard Pengurus** (`#app` dengan view aktif `#view-dashboard`) tanpa transit ke halaman publik.
 
-3. **Modul Jimpitan Ronda (Khusus Bendahara 2)**:
-   - Pencatatan perolehan uang jimpitan malam minggu berdasarkan regu ronda dan koordinator.
-   - Pencatatan pengeluaran operasional ronda (konsumsi, perlengkapan, operasional).
-   - Rekap saldo jimpitan otomatis dan ekspor data ke format `.CSV`.
+### 3. 🛡️ Pengaturan Jadwal Ronda di Portal Pengurus (Update 19 Sept 2026)
+- Di Portal Pengurus, kini tersedia tab dan panel pengaturan jadwal ronda mingguan (Regu Ronda Senin s.d. Minggu).
+- Pengurus dapat mengelola pembagian nama warga petugas ronda per regu, koordinator lapangan, nomor kontak darurat, serta hari giliran ronda.
+- Perubahan jadwal ronda langsung tersinkronisasi otomatis secara real-time ke kartu informasi ronda pada Portal Publik Warga.
 
-4. **Branding & Logo Elegan**:
-   - Logo RT diperbarui dengan latar belakang putih bersih dan sudut melengkung (*border-radius* elegan).
-   - Aset logo tersedia di `assets/logo.png`, `assets/logo.jpg`, serta ikon PWA (`assets/icon-*.png`).
+### 4. 🪙 Modul Kas Jimpitan Ronda Terintegrasi (Update 19 Sept 2026)
+- Penguatan alur pencatatan perolehan uang jimpitan malam minggu untuk akun Bendahara 2 (B2) dan Bendahara 1 (B1).
+- Otomatis memperbarui total penerimaan jimpitan, mutasi pengeluaran siskamling, dan saldo kas jimpitan yang langsung tampil di kartu Transparansi Keuangan Portal Warga.
 
-5. **Auto-Data Seeding & Google Sheets Fallback**:
-   - Data warga (71 KK) tersimpan di `localStorage` (`RT001_FINSMART_PRO_DATA_V1`).
-   - Jika `localStorage` kosong saat pertama kali dibuka di lokal/offline, sistem otomatis memuat 71 data KK awal dan menyinkronkan dengan CSV Google Sheets:
-     `https://docs.google.com/spreadsheets/d/1zwrXck7x2HzVV6KhFgb3DgdAw5SrIUXm64a2M1mbclo/export?format=csv`
+### 5. 💎 Portal Login Eksekutif (Luxury Glassmorphism & Animated Glow Orbs)
+- Tampilan gelap elegan (*dark luxury*) dengan aksen hijau zamrud (*emerald*) dan emas (*gold*).
+- Kartu seleksi akun interaktif dengan efek sorot (*glow*) saat dipilih.
+- Kolom PIN interaktif dengan:
+  - **Tik / Checkbox "Tampilkan Password"** (`#login-toggle-show-pin`).
+  - **Ikon Standar Mata** (`#login-eye-btn` - `fa-eye` / `fa-eye-slash`) yang tersinkronisasi dua arah dengan checkbox.
+  - Animasi *shake* (getar) jika PIN salah dimasukkan.
+  - Tampilan **Lupa PIN?** terhubung ke `rt001rw013.grahaasri@gmail.com` dengan tombol satu-klik **Salin Email** dan tombol kirim email via mailto.
 
-6. **PWA & Responsivitas Penuh**:
-   - Dilengkapi `manifest.json` dan `sw.js` (Service Worker) siap pasang (*installable*) di Android / iOS / Desktop.
-   - Navigasi mobile bawah (*bottom navigation*) dan tombol cepat keluar di mobile header.
+### 6. 📊 Dashboard Eksekutif & Visual KPI
+- Saldo kas terkonsolidasi, total penerimaan, total pengeluaran, dan realisasi iuran wajib bulan berjalan.
+- **Tampilan Prosentase Pembayaran Iuran Warga Berdasarkan Nama Jalan**:
+  - Membagi data 71 KK ke dalam 5 jalan utama:
+    1. `Jl. Citarum II`
+    2. `Jl. Citarum IVA`
+    3. `Jl. Citarum VIIIB`
+    4. `Jl. Citarum VIIIC`
+    5. `Jl. Citarum IX`
+  - Dilengkapi *progress bar* dinamis, persentase lunas, jumlah KK lunas/total KK per jalan, serta status kategori (*Sangat Tinggi, Tinggi, Sedang, Perlu Ditingkatkan*).
 
-7. **Perbaikan Multi-Role & Switch Account (B1 / B2)**:
-   - Menambahkan fungsi helper `formatCurrency`, `formatDateLong`, `openModal`, dan `closeModal` yang sebelumnya belum terdefinisi sehingga menyebabkan eksekusi `renderAll()` terhenti sebelum `applyRBAC()` & `updateUserProfileUI()`.
-   - Menambahkan sinkronisasi `sessionStorage` saat berganti akun di modal switch account (`#modal-switch-account`).
-   - Otomatis mengarahkan akun B2 ke tampilan Jimpitan Ronda (`#view-jimpitan`) dan mengunci menu khusus B1 (desktop sidebar & mobile bottom nav) dengan visual gembok.
-   - Sidebar footer dinamis menampilkan profil aktif: **B1 – Bendahara 1** (Full Control Keuangan) atau **B2 – Bendahara 2** (Koordinator Jimpitan Ronda) dengan avatar dan badge yang sesuai.
+### 7. 🌐 Portal Publik Warga & Integrasi Terpadu Satu Pintu
+- **Halaman Depan Utama (`#portal-public`)**: Website profil publik resmi RT.001 / RW.013 Graha Asri yang ramah warga dan tamu:
+  - **Navbar Sticky**: Dilengkapi logo resmi, menu navigasi anchor (Tentang, Kegiatan, Layanan & Kas, Pengurus), tombol **Portal Pengurus** (masuk PIN), dan menu responsif mobile hamburger.
+  - **Hero Section**: Tagline *"Melayani dengan Hati, Membangun dalam Kebersamaan"*, banner bendera Merah Putih berkibar, logo RT resolusi tinggi, tombol cepat info kas, dan tombol akses bendahara.
+  - **Tentang Lingkungan**: Menampilkan profil RT dan cakupan 5 rute jalan.
+  - **Agenda Warga**: Program rutin Ronda/Siskamling, pengajian, Qurban & Halal Bihalal, serta kegiatan sosial.
+  - **Transparansi & Digitalisasi RT**: Widget kartu metrik live terhubung langsung ke database lokal (`state.residents` jumlah KK, total saldo kas terhimpun, dan kas jimpitan ronda).
+  - **Struktur Pengurus**: Menampilkan Ketua RT, Sekretaris, Bendahara, dan Humas lengkap dengan tombol kontak langsung ke WhatsApp.
 
-8. **Portal Publik Warga & Integrasi Terpadu Satu Pintu (Opsi A)**:
-   - **Halaman Depan Utama (`#portal-public`)**: Website profil publik resmi RT.001 / RW.013 Graha Asri yang ramah warga dan tamu:
-     - **Navbar Sticky**: Dilengkapi logo resmi, menu navigasi anchor (Tentang, Kegiatan, Layanan & Kas, Pengurus), tombol **Portal Pengurus** (masuk PIN), dan menu responsif mobile hamburger.
-     - **Hero Section**: Tagline *"Melayani dengan Hati, Membangun dalam Kebersamaan"*, logo RT resolusi tinggi, tombol cepat info kas, dan tombol akses bendahara.
-     - **Tentang Lingkungan**: Menampilkan profil RT dan cakupan 5 rute jalan (Jl. Citarum II, IVA, VIIIB, VIIIC, IX).
-     - **Agenda Warga**: Program rutin Ronda/Siskamling, pengajian bapak & ibu, Qurban & Halal Bihalal, serta solidaritas sosial warga.
-     - **Transparansi & Digitalisasi RT**: Widget kartu metrik live terhubung langsung ke database lokal (`state.residents` jumlah KK, total saldo kas terhimpun, dan kas jimpitan ronda).
-     - **Struktur Pengurus**: Menampilkan Ketua RT, Sekretaris, Bendahara, dan Humas lengkap dengan tombol kontak langsung ke WhatsApp.
-   - **Alur Masuk & Keluar Mulus (Seamless Two-Way Navigation)**:
-     - Tombol **"Portal Pengurus"** di beranda publik membuka Modal Login Glassmorphism.
-     - Tombol silang `X` (`#btn-close-login-overlay`) pada login overlay memungkinkan warga kembali ke beranda tanpa terjebak.
-     - Setelah login (PIN B1/B2), sistem langsung membuka dashboard eksekutif RT-FinSmart PRO.
-     - Di sidebar dan header kanan admin, tersedia tombol **"🌐 Web Warga"** untuk meninjau halaman publik sewaktu-waktu. Saat admin membuka halaman publik, muncul bilah hijau atas (**Mode Pengurus Aktif**) dengan tombol **Kembali ke Dashboard** dan **Keluar**.
-     - Tombol **"Keluar (Logout)"** otomatis mengembalikan pengguna ke halaman publik warga dengan aman.
-
-9. **Desain Halaman Muka Premium: Dark Luxury Emerald (Hijau Zamrud Mewah & Profesional)**:
-   - **Palet Warna Eksklusif**: Latar belakang deep emerald gelap (`#02120b` s.d. `#052417`), kombinasi tipografi emas berkilau (`#f59e0b` / `#fbbf24`), serta aksen hijau zamrud bercahaya (`#10b981` / `#34d399`).
-   - **Elemen Visual & Animasi Interaktif**:
-     - *Ambient Aurora Glow Orbs* dengan efek mengambang dinamis (*float animation*) di latar belakang hero.
-     - *Luxury Logo Ring*: Frame logo melingkar mewah dengan pulsing glow radial dan badge resmi.
-     - *Dark Frosted Glassmorphism*: Kartu-kartu agenda, metrik transparansi, dan rute jalan menggunakan `backdrop-filter: blur(18px)`, gradasi border emerald tipis, dan efek sorot kursor hover.
-     - *Live Quick Ticker*: Pills info singkat beranimasi (*71 KK Terdata, Kas Transparan, Siskamling 24 Jam, Warga Rukun*).
-     - *Kartu Pengurus Eksekutif*: Foto pengurus dengan ring bercahaya, badge jabatan, dan tombol integrasi direct WhatsApp.
-
+### 8. 📱 PWA & Auto-Data Seeding
+- Data warga (71 KK) tersimpan di `localStorage` (`RT001_FINSMART_PRO_DATA_V1`) dengan sinkronisasi otomatis Google Sheets fallback.
+- Dilengkapi `manifest.json` dan `sw.js` (Service Worker) siap pasang (*installable*) di Android / iOS / Desktop.
 
 ---
 
-## 📁 Struktur Berkas Penting
+## 📁 Struktur Berkas Proyek
 
 ```
 WORKSPACE RT/
-├── index.html       # Struktur HTML utama, Portal Login Overlay, Modal-modal, & Views
-├── styles.css       # Seluruh CSS design system, tema gelap luxury, animasi, dan responsif
-├── app.js           # Logika aplikasi: Auth, RBAC, CRUD Iuran, Jimpitan, Seeding, Sinkronisasi
+├── index.html       # Struktur HTML utama, Portal Publik, Bendera Berkibar, Modal & Views
+├── styles.css       # Seluruh CSS design system: tema gelap luxury, animasi bendera, dan responsif
+├── app.js           # Logika aplikasi: Auth, RBAC, CRUD Iuran, Jimpitan, Ronda, Navigasi History
 ├── manifest.json    # Konfigurasi PWA Mobile
 ├── sw.js            # Service worker untuk caching dan offline access
-├── LATEST.md        # Dokumen ringkasan handover proyek ini
+├── LATEST.md        # Dokumen ringkasan status terkini & handover proyek ini
+├── APK_BUILD_GUIDE.md # Panduan konversi Web App menjadi APK Android
 └── assets/
     ├── logo.png     # Logo RT resmi dengan sudut rounded elegan
     ├── logo.jpg     # Master logo
@@ -123,31 +118,37 @@ WORKSPACE RT/
 
 1. **Clone Repositori**:
    ```bash
-   git clone <URL_REPO_GITHUB>
+   git clone https://github.com/mydowndrive-ops/WebAppRT001.git
    cd "WORKSPACE RT"
    ```
 
 2. **Menjalankan Aplikasi**:
    - Cukup buka berkas `index.html` langsung di browser mana pun (Chrome, Edge, Firefox, Safari).
-   - Atau gunakan local server (misal VS Code Live Server atau `python -m http.server 8080`).
+   - Atau gunakan local server:
+     ```bash
+     python -m http.server 8080
+     ```
+     lalu buka `http://localhost:8080` di browser.
 
-3. **Login Pertama Kali**:
-   - Klik kartu **Bendahara 1** lalu masukkan PIN `1111` untuk akses penuh.
-   - Atau klik kartu **Bendahara 2** lalu masukkan PIN `2222` untuk akses khusus Jimpitan.
+3. **Login Pengurus**:
+   - Klik menu **Portal Pengurus** di navbar atau tombol **Akses Pengurus** di hero banner.
+   - Pilih kartu **Bendahara 1** lalu masukkan PIN `1111` untuk akses penuh (Keuangan, Warga, Pos Anggaran, Jadwal Ronda).
+   - Atau pilih kartu **Bendahara 2** lalu masukkan PIN `2222` untuk akses khusus Jimpitan & Ronda.
+   - Sistem akan langsung mengarahkan Anda ke Dashboard Pengurus secara instan.
 
 ---
 
-## ⚡ Standar Operasional Pengembang (SOP Wajib)
+## ⚡ Standar Operasional Pengembang (SOP Sinkronisasi GitHub)
 
 > [!IMPORTANT]
 > **SETIAP KALI** selesai melakukan perubahan, perbaikan, atau penambahan fitur:
 > 1. **Commit ke Git lokal**:
 >    ```bash
 >    git add .
->    git commit -m "Deskripsi perubahan yang jelas"
+>    git commit -m "feat/fix/docs: ringkasan perubahan yang dilakukan"
 >    ```
 > 2. **Push ke remote GitHub**:
 >    ```bash
 >    git push origin main
 >    ```
-> 3. **Perbarui berkas `LATEST.md`** jika ada kredensial baru, struktur modul baru, atau alur kerja yang berubah.
+> 3. **Perbarui berkas `LATEST.md`** agar seluruh riwayat dan panduan handover selalu up-to-date.
