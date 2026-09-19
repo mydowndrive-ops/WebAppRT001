@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (01:40 WIB)  
-**Versi Rilis Aktif:** `v2.9.0`  
+**Terakhir Diperbarui:** 20 September 2026 (01:45 WIB)  
+**Versi Rilis Aktif:** `v2.9.1`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -34,7 +34,24 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 💰 Modul Penerimaan Di Luar Iuran Bulanan Khusus Bendahara 1 (Update v2.9.0 - 20 Sept 2026)
+### 1. 💫 Logo Bulat dengan Efek Rotating Orbital Glowing Ring di Sidebar Dashboard Admin (Update v2.9.1 - 20 Sept 2026)
+- **Latar Belakang & Kebutuhan**:
+  - Logo pada header sidebar Dashboard Admin sebelumnya masih berbentuk kotak bersudut tumpul (*rounded square*) biasa tanpa animasi, berbeda dengan estetika logo di halaman depan (*splash loading screen* Gambar 2) yang berbentuk bulat elegan dengan lingkaran orbital berkilau dan berkas cahaya yang berputar mengelilingi logo.
+- **Solusi & Rekayasa Desain (Sesuai Gambar 2)**:
+  1. **Struktur DOM Baru (`.sidebar-logo-wrap`)**:
+     - Menggantikan `.logo-img-wrapper` statis dengan struktur berlapis 4 elemen:
+       - `.sidebar-ambient-halo`: Aura pendaran ambient lembut berdenyut halus (*radial-gradient pulse* warna emas & zamrud).
+       - `.sidebar-orbital-track`: Lintasan orbit melingkar 360 derajat dengan pantulan cahaya halus.
+       - `.sidebar-orbital-spinner`: Berkas cahaya melengkung (*arc beam*) berputar terus-menerus (`rotateOrbitalLight`) dengan kombinasi warna emas menyala (`#fbbf24`), hijau zamrud (`#34d399`), serta titik sorot bintang putih berkilau di ujung putaran.
+       - `.sidebar-logo-circle`: Lencana bulat putih mewah (*circular badge*) `border-radius: 50%` dengan bayangan kedalaman multi-layer, membingkai logo resmi RT.001 / RW.013 Graha Asri secara presisi.
+  2. **Responsivitas & Kondisi Ciut (Collapsed Sidebar)**:
+     - Ketika sidebar diciutkan (`.sidebar.collapsed`), logo otomatis berpusat rapi dan proporsional (44px) tanpa terdistorsi atau terpotong.
+  3. **Penyelarasan Cache Busting ke `v=2.9.1`**:
+     - Berkas [index.html](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/index.html), [styles.css](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/styles.css), [app.js](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/app.js), dan [sw.js](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/sw.js) diselaraskan ke `v2.9.1`.
+
+---
+
+### 2. 💰 Modul Penerimaan Di Luar Iuran Bulanan Khusus Bendahara 1 (Update v2.9.0 - 20 Sept 2026)
 - **Latar Belakang & Kebutuhan**:
   - Pengurus RT membutuhkan pencatatan terpisah dan transparan khusus Bendahara 1 untuk mengelola seluruh dana non-iuran bulanan warga (donasi sukarela, bantuan hibah pemerintah/kelurahan, sewa sarana/fasum RT seperti tenda dan kursi, sponsorship acara warga/17-an, serta hasil penjualan sampah daur ulang/rongsok RT).
 - **Solusi & Rekayasa Arsitektur**:

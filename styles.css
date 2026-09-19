@@ -162,7 +162,96 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 0.85rem;
   min-width: 0;
+  overflow: visible;
+}
+
+/* ==================== SIDEBAR EXECUTIVE GLOWING ORBITAL LOGO (PERSIS GAMBAR 2) ==================== */
+.sidebar-logo-wrap {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Glowing Ambient Halo Pulse */
+.sidebar-logo-wrap .sidebar-ambient-halo {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.45) 0%, rgba(16, 185, 129, 0.35) 45%, transparent 72%);
+  filter: blur(8px);
+  pointer-events: none;
+  animation: splashHaloPulse 2.8s infinite ease-in-out;
+}
+
+/* Circular Orbital Track */
+.sidebar-logo-wrap .sidebar-orbital-track {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1.6px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25), inset 0 0 8px rgba(16, 185, 129, 0.15);
+  pointer-events: none;
+}
+
+/* Rotating Glowing Light Beam Spinner (Emas & Zamrud Berpijar) */
+.sidebar-logo-wrap .sidebar-orbital-spinner {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2.8px solid transparent;
+  border-top-color: #fbbf24; /* Emas berkilau */
+  border-right-color: #34d399; /* Hijau zamrud menyala */
+  border-bottom-color: rgba(245, 158, 11, 0.25);
+  filter: drop-shadow(0 0 8px #fbbf24) drop-shadow(0 0 12px #10b981) drop-shadow(0 0 16px rgba(255, 255, 255, 0.7));
+  animation: rotateOrbitalLight 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+/* Titik Bintang Bercahaya Terang di Kepala Putaran */
+.sidebar-logo-wrap .sidebar-orbital-spinner::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 6px 2px #ffffff, 0 0 10px 3px #fbbf24, 0 0 14px 4px #10b981;
+}
+
+/* Logo Bulat Putih Mewah (Circle Badge) */
+.sidebar-logo-wrap .sidebar-logo-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7), 0 0 14px rgba(245, 158, 11, 0.35), 0 0 20px rgba(16, 185, 129, 0.25);
+  position: relative;
+  z-index: 2;
   overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sidebar-logo-wrap:hover .sidebar-logo-circle {
+  transform: scale(1.06);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.5), 0 0 26px rgba(16, 185, 129, 0.4);
+}
+
+.sidebar-logo-wrap .sidebar-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+  display: block;
 }
 
 .logo-icon, .logo-img-wrapper {
@@ -411,9 +500,17 @@ h1, h2, h3, h4, h5, h6 {
     justify-content: center;
   }
 
-  .sidebar.collapsed .logo-img-wrapper {
+  .sidebar.collapsed .logo-img-wrapper,
+  .sidebar.collapsed .sidebar-logo-wrap {
     width: 44px;
     height: 44px;
+    margin: 0 auto;
+  }
+
+  .sidebar.collapsed .sidebar-logo-wrap .sidebar-logo-circle {
+    width: 38px;
+    height: 38px;
+    padding: 2px;
   }
 
   .sidebar.collapsed .logo-text {
