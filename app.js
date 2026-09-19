@@ -11933,10 +11933,81 @@ function setupAsetRtModule() {
   }
 }
 
-// Inisialisasi video background bendera merah putih berkibar
+// ==================== KOMPONEN ANIMASI SPLIT-TEXT REVEAL ====================
+
+/**
+ * Memecah teks judul menjadi <span class="word"><span class="char"></span></span>
+ * dengan staggered delay bertahap dan IntersectionObserver.
+ */
+function initSplitTextReveal() {
+  const targetTitles = document.querySelectorAll('.split-text-reveal');
+  if (!targetTitles.length) return;
+
+  targetTitles.forEach((titleEl) => {
+    let globalCharIndex = 0;
+
+    // Cek apakah judul memiliki sub-elemen baris (.split-line) atau teks langsung
+    const lineElements = titleEl.querySelectorAll('.split-line');
+    const nodesToSplit = lineElements.length ? Array.from(lineElements) : [titleEl];
+
+    nodesToSplit.forEach((lineEl) => {
+      const originalText = lineEl.textContent.trim();
+      if (!originalText) return;
+
+      // 1. Pecah teks menjadi kata-kata
+      const words = originalText.split(/\s+/);
+      lineEl.innerHTML = ''; // Kosongkan container teks asli
+
+      words.forEach((wordText) => {
+        // 2. Buat container kata (<span class="word">) sebagai area masking
+        const wordSpan = document.createElement('span');
+        wordSpan.className = 'word';
+
+        // 3. Pecah setiap kata menjadi karakter huruf (<span class="char">)
+        const characters = Array.from(wordText);
+        characters.forEach((charText) => {
+          const charSpan = document.createElement('span');
+          charSpan.className = 'char';
+          charSpan.textContent = charText;
+
+          // Suntikkan inline style transition-delay bertahap (stagger: 30ms per huruf)
+          charSpan.style.transitionDelay = `${globalCharIndex * 30}ms`;
+
+          wordSpan.appendChild(charSpan);
+          globalCharIndex++;
+        });
+
+        lineEl.appendChild(wordSpan);
+        // Tambahkan jeda kecil antar kata agar transisi mengalir natural
+        globalCharIndex += 1;
+      });
+    });
+
+    // 4. Trigger Interaktif via IntersectionObserver
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Tambahkan kelas .reveal-active saat judul masuk viewport
+          entry.target.classList.add('reveal-active');
+          obs.unobserve(entry.target); // Animasi sekali jalan
+        }
+      });
+    }, {
+      threshold: 0.15,
+      rootMargin: '0px 0px -20px 0px'
+    });
+
+    observer.observe(titleEl);
+  });
+}
+
+// Inisialisasi video background & Split-Text Reveal pada hero header
 document.addEventListener('DOMContentLoaded', () => {
   const flagVideo = document.querySelector('.flag-video-bg');
   if (flagVideo) {
     flagVideo.play().catch(() => {});
   }
+
+  // Jalankan animasi Split-Text Reveal
+  initSplitTextReveal();
 });

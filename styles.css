@@ -9053,21 +9053,44 @@ h1, h2, h3, h4, h5, h6 {
   box-sizing: border-box;
 }
 
-/* H1 Title with Heavy Shadow & High Contrast */
-.flag-h1-title,
-.flag-text-warga {
-  margin: 0;
-  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
-  font-weight: 900;
-  line-height: 1.15;
-  text-align: center;
+/* ==================== SPLIT-TEXT REVEAL LUXURY COMPONENT ==================== */
+
+.split-text-reveal {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  margin: 0;
+  line-height: 1.15;
+  user-select: none;
 }
 
-.flag-title-main {
-  font-size: clamp(1.65rem, 4.4vw, 2.55rem);
+.split-line {
+  display: block;
+  text-align: center;
+  position: relative;
+}
+
+/* Sub-title: Web Aplikasi Resmi */
+.split-line-sub {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(0.78rem, 1.8vw, 1.05rem);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fef08a; /* Soft elegant gold highlight */
+  margin-bottom: 0.28rem;
+  text-shadow: 
+    0 1px 2px rgba(0, 0, 0, 1),
+    0 2px 6px rgba(0, 0, 0, 0.95),
+    0 0 16px rgba(245, 158, 11, 0.6);
+}
+
+/* Main Title: WARGA RT.001 RW.013 */
+.split-line-main {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(1.5rem, 4.2vw, 2.45rem);
   font-weight: 900;
   letter-spacing: 0.04em;
   color: #ffffff;
@@ -9077,8 +9100,33 @@ h1, h2, h3, h4, h5, h6 {
     0 2px 5px rgba(0, 0, 0, 0.95),
     0 4px 14px rgba(0, 0, 0, 0.9),
     0 0 25px rgba(0, 0, 0, 0.85);
+}
+
+/* Masking Kata & Huruf (Word Masking Container) */
+.split-text-reveal .word {
   display: inline-block;
-  position: relative;
+  overflow: hidden;
+  margin-right: 0.28em;
+  vertical-align: top;
+}
+
+.split-text-reveal .word:last-child {
+  margin-right: 0;
+}
+
+/* Karakter Huruf: Posisi Awal Tersembunyi di Bawah Masking */
+.split-text-reveal .char {
+  display: inline-block;
+  transform: translateY(110%);
+  opacity: 0;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+  will-change: transform, opacity;
+}
+
+/* Staggered Reveal Trigger saat .reveal-active Terpicu */
+.split-text-reveal.reveal-active .char {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 /* Fallback / Backward Compatibility for Cyber Badge */
