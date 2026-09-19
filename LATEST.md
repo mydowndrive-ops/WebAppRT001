@@ -30,12 +30,13 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
 
 ## 🌟 Fitur-Fitur Utama & Pembaruan Terkini (Changelog Terbaru)
 
-### 1. 🇮🇩 Banner Bendera Merah Putih Berkibar (Video Background `redwihite.webm` & Center Alignment)
+### 1. 🇮🇩 Banner Bendera Merah Putih Berkibar (Bebas Watermark & Center Alignment)
 - **Transformasi Kotak Header Hero**:
-  - Mengganti latar kotak lama dengan pemutaran video dinamis bendera Merah Putih berkibar asli menggunakan berkas `redwihite.webm` (`<video class="flag-video-bg" autoplay loop muted playsinline preload="auto">`).
-  - **Visual Kain Sinematik Realistis**:
-    - Gerakan kibaran kain bendera merah putih natural dan mulus (*looping seamless*) berformat WebM ringan (~324 KB) dengan performa render perangkat keras instan.
-    - Dilengkapi fallback ganda: `redwihite.webm` (root) dan `assets/redwihite.webm`.
+  - Mengganti latar kotak lama dengan pemutaran video dinamis bendera Merah Putih berkibar asli menggunakan berkas `redwihite.mp4` / `redwihite.webm` (`<video class="flag-video-bg" autoplay loop muted playsinline preload="auto">`).
+  - **Pembersihan Watermark Shutterstock 100% (*Watermark-Free*)**:
+    - Teks watermark *"shutterstock"* yang semula menempel pada bagian kain putih telah dihilangkan secara sempurna menggunakan teknik rekonstruksi *masked feather inpainting* tanpa merusak dinamika lipatan kain sutra bendera.
+    - Format video telah dioptimalkan dengan H.264 FastStart (`redwihite.mp4`) untuk pemutaran instan tanpa *buffering* di seluruh jenis peramban modern.
+    - Dilengkapi fallback multi-format: `redwihite.mp4`, `assets/redwihite.mp4`, `redwihite.webm`, `assets/redwihite.webm`.
   - **Hierarki Visual & Keterbacaan Kontras (Center Alignment)**:
     - Teks `"WARGA RT.001 RW.013"` diposisikan di lapisan paling depan (*frontmost layer* dengan `z-index: 3`) persis di tengah-tengah kotak (*center alignment*).
     - Dilengkapi lapisan pelindung kontras (*radial-gradient contrast scrim*) semi-transparan tipis di antara teks dan video bendera.
