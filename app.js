@@ -2387,6 +2387,31 @@ function renderDashboard() {
     console.warn('Dashboard asset banner update:', e);
   }
 
+  // Update Dashboard Ronda Banner
+  try {
+    const groups = (typeof window.getRondaGroups === 'function')
+      ? window.getRondaGroups()
+      : ((state.rondaGroups && Array.isArray(state.rondaGroups) && state.rondaGroups.length > 0) ? state.rondaGroups : DEFAULT_RONDA_GROUPS);
+    const curW = (typeof getCurrentRondaActiveWeek === 'function') ? getCurrentRondaActiveWeek() : 1;
+    const activeG = groups.find(g => g.week === curW) || groups[0];
+    const actWeekEl = document.getElementById('dash-ronda-active-week');
+    if (actWeekEl && activeG) {
+      actWeekEl.textContent = `${activeG.weekName} (${activeG.leader ? activeG.leader.name : '-'})`;
+    }
+    const actDescEl = document.getElementById('dash-ronda-active-desc');
+    if (actDescEl && activeG) {
+      actDescEl.innerHTML = `${escapeHtml(activeG.cycle)} &bull; Pukul 21.00 &ndash; 04.00 WIB. Komandan: <strong>${escapeHtml(activeG.leader ? activeG.leader.name : '-')}</strong> bersama ${activeG.members ? activeG.members.length : 10} personel siaga patroli dan penarikan jimpitan warga.`;
+    }
+    const grpCountEl = document.getElementById('dash-ronda-groups-count');
+    if (grpCountEl) grpCountEl.textContent = `${groups.length} Regu`;
+    let totMembers = 0;
+    groups.forEach(g => { totMembers += 1 + (g.members ? g.members.length : 0); });
+    const memCountEl = document.getElementById('dash-ronda-members-count');
+    if (memCountEl) memCountEl.textContent = `${totMembers} Personel`;
+  } catch (e) {
+    console.warn('Dashboard ronda banner update error:', e);
+  }
+
   // Recent Transactions Table
   const tbodyRecent = document.getElementById('tbody-recent-tx');
   if (tbodyRecent) {
@@ -3827,8 +3852,18 @@ function navigateToView(viewId) {
   const isWarga = currentAcc && currentAcc.accessLevel === 'WARGA';
 
   const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur'];
-  const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga'];
+  const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga'];
   const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'aset-rt'];
+
+  // Handle ronda-pengurus alias to open Tab Ronda in pengurus-struktur
+  if (viewId === 'ronda-pengurus') {
+    viewId = 'pengurus-struktur';
+    setTimeout(() => {
+      if (typeof switchPengurusTab === 'function') {
+        switchPengurusTab('ronda');
+      }
+    }, 50);
+  }
 
   // If B2 attempts to navigate outside allowed pages, redirect to jimpitan
   if (isB2 && !B2_ALLOWED_TARGETS.includes(viewId)) {
@@ -6809,8 +6844,14 @@ function setupRondaSchedule() {
     }
   }
 
+  // Expose global getters and text generators for other modules (Pengurus Hub, Jimpitan, Broadcast)
+  window.getRondaGroups = getRondaGroups;
+  window.getCurrentRondaActiveWeek = getCurrentRondaActiveWeek;
+  window.generateRondaWeekText = generateWeekText;
+  window.generateAllRondaScheduleText = generateAllScheduleText;
+
   window.openManageRondaModal = function(weekNum = 1) {
-    // 1. Cek Hak Akses (Admin 2 tidak diizinkan mengatur jadwal ronda)
+    // 1. Cek Hak Akses (Admin 2 / B2 tidak diizinkan mengatur jadwal ronda)
     const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
     const isB2 = currentAcc && currentAcc.accessLevel === 'B2';
     if (isB2) {
@@ -6818,9 +6859,9 @@ function setupRondaSchedule() {
       return;
     }
 
-    // Jika belum terautentikasi sebagai pengurus/b1, minta PIN
-    const isAuthed = (typeof isLoggedIn === 'function' && isLoggedIn()) || ['pengurus', 'b1'].includes(state.currentUser);
-    if (!isAuthed && state.currentUser !== 'pengurus' && state.currentUser !== 'b1') {
+    // Jika belum terautentikasi sebagai pengurus/b1, minta PIN Pengurus
+    const isPengurusOrB1 = ['pengurus', 'b1'].includes(state.currentUser);
+    if (!isPengurusOrB1) {
       window.pendingPengurusAction = () => {
         window.openManageRondaModal(weekNum);
       };
@@ -6891,8 +6932,18 @@ function setupRondaSchedule() {
     state.rondaGroups = JSON.parse(JSON.stringify(draftRondaGroups));
     saveState();
 
-    // Re-render public cards immediately
+    // Re-render all connected views immediately
     renderPublicCards();
+    if (typeof renderPengurusRondaPanel === 'function') {
+      renderPengurusRondaPanel(typeof currentPengurusRondaFilter !== 'undefined' ? currentPengurusRondaFilter : 'all');
+    }
+    if (typeof renderJimpitan === 'function') {
+      renderJimpitan();
+    }
+    if (typeof renderDashboard === 'function') {
+      renderDashboard();
+    }
+
     closeModal('modal-manage-ronda');
     showToast('✅ Susunan Jadwal Ronda & Jimpitan berhasil diperbarui!', 'success');
   });
@@ -6904,6 +6955,14 @@ function setupRondaSchedule() {
 
   // Trigger from Jimpitan Admin View ("Atur Petugas Ronda")
   document.getElementById('btn-admin-manage-ronda')?.addEventListener('click', () => {
+    openManageRondaModal(1);
+  });
+
+  // Trigger from Pengurus Actions Header
+  document.getElementById('btn-pengurus-quick-ronda')?.addEventListener('click', () => {
+    openManageRondaModal(1);
+  });
+  document.getElementById('btn-pengurus-modal-ronda')?.addEventListener('click', () => {
     openManageRondaModal(1);
   });
 
@@ -7044,7 +7103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Definisi izin halaman per peran (Role-Based Access Control)
 const B1_RESTRICTED_TARGETS = ['checklist', 'pos-anggaran', 'pengeluaran', 'laporan', 'pengaturan'];
 const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur'];
-const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga'];
+const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga'];
 const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'aset-rt'];
 
 function applyRBAC() {
@@ -7394,6 +7453,19 @@ function renderJimpitan() {
     setEl('jimp-last-date', 'Belum ada data');
     setEl('jimp-last-amount', '-');
   }
+
+  // Active Ronda Group in Jimpitan View
+  try {
+    const groups = (typeof window.getRondaGroups === 'function')
+      ? window.getRondaGroups()
+      : ((state.rondaGroups && Array.isArray(state.rondaGroups) && state.rondaGroups.length > 0) ? state.rondaGroups : DEFAULT_RONDA_GROUPS);
+    const curW = (typeof getCurrentRondaActiveWeek === 'function') ? getCurrentRondaActiveWeek() : 1;
+    const activeG = groups.find(g => g.week === curW) || groups[0];
+    if (activeG) {
+      setEl('jimp-active-week', activeG.weekName);
+      setEl('jimp-active-leader', `PJ: ${activeG.leader ? activeG.leader.name : '-'} (${activeG.cycle})`);
+    }
+  } catch (e) {}
 
   // Income table
   const tbodyIncome = document.getElementById('tbody-jimpitan-income');
@@ -10494,6 +10566,7 @@ function setupPortalWargaAspirasi() {
 // ==================== PORTAL PENGURUS OPERATIONAL HUB ====================
 
 let currentVerifikasiFilter = 'all';
+let currentPengurusRondaFilter = 'all';
 
 function setupPengurusOperationalHub() {
   // 1. Tab switching
@@ -10506,6 +10579,7 @@ function setupPengurusOperationalHub() {
   });
 
   // 2. Setup Submodules
+  setupPengurusRondaEvents();
   setupPengurusVerifikasiEvents();
   setupPengurusBukuIndukEvents();
   setupBroadcastGenerator();
@@ -10518,6 +10592,7 @@ function switchPengurusTab(tabId) {
 
   const panels = {
     'struktur': 'pengurus-tab-panel-struktur',
+    'ronda': 'pengurus-tab-panel-ronda',
     'verifikasi': 'pengurus-tab-panel-verifikasi',
     'buku-induk': 'pengurus-tab-panel-buku-induk',
     'broadcast': 'pengurus-tab-panel-broadcast'
@@ -10528,13 +10603,196 @@ function switchPengurusTab(tabId) {
     if (el) el.style.display = (key === tabId) ? 'block' : 'none';
   });
 
-  if (tabId === 'verifikasi') {
+  if (tabId === 'ronda') {
+    renderPengurusRondaPanel(currentPengurusRondaFilter);
+  } else if (tabId === 'verifikasi') {
     renderPengurusVerifikasiList(currentVerifikasiFilter);
   } else if (tabId === 'buku-induk') {
     renderBukuIndukWarga();
   } else if (tabId === 'broadcast') {
     updateBroadcastPreview();
   }
+}
+
+function setupPengurusRondaEvents() {
+  // Filter tabs for 8 regu
+  const filterBtns = document.querySelectorAll('#pengurus-ronda-filter-bar button[data-ronda-filter]');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentPengurusRondaFilter = btn.getAttribute('data-ronda-filter') || 'all';
+      renderPengurusRondaPanel(currentPengurusRondaFilter);
+    });
+  });
+
+  // Copy All Schedule
+  document.getElementById('btn-copy-pengurus-ronda-all')?.addEventListener('click', () => {
+    const text = (typeof window.generateAllRondaScheduleText === 'function')
+      ? window.generateAllRondaScheduleText()
+      : '';
+    if (text && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('📋 Seluruh susunan 8 Regu Ronda berhasil disalin ke clipboard!', 'success');
+      }).catch(() => {
+        showToast('📋 Susunan jadwal ronda siap dibagikan.', 'info');
+      });
+    } else {
+      showToast('📋 Susunan jadwal ronda siap dibagikan.', 'info');
+    }
+  });
+
+  // Broadcast Schedule to WhatsApp Group
+  document.getElementById('btn-broadcast-pengurus-ronda')?.addEventListener('click', () => {
+    const text = (typeof window.generateAllRondaScheduleText === 'function')
+      ? window.generateAllRondaScheduleText()
+      : '';
+    if (text) {
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+    }
+  });
+}
+
+function renderPengurusRondaPanel(filterVal = 'all') {
+  const container = document.getElementById('pengurus-ronda-cards-container');
+  if (!container) return;
+
+  const groups = (typeof window.getRondaGroups === 'function')
+    ? window.getRondaGroups()
+    : ((state.rondaGroups && Array.isArray(state.rondaGroups) && state.rondaGroups.length > 0) ? state.rondaGroups : DEFAULT_RONDA_GROUPS);
+
+  const currentWeek = (typeof window.getCurrentRondaActiveWeek === 'function')
+    ? window.getCurrentRondaActiveWeek()
+    : ((typeof getCurrentRondaActiveWeek === 'function') ? getCurrentRondaActiveWeek() : 1);
+
+  // Update quick KPIs in Pengurus Panel
+  const activeGroup = groups.find(g => g.week === currentWeek) || groups[0];
+  const activeWeekNameEl = document.getElementById('pengurus-ronda-active-week-name');
+  if (activeWeekNameEl && activeGroup) {
+    activeWeekNameEl.textContent = `${activeGroup.weekName} • Regu ${activeGroup.leader ? activeGroup.leader.name : '-'}`;
+  }
+
+  let totalPersonnel = 0;
+  groups.forEach(g => {
+    totalPersonnel += 1 + (g.members ? g.members.length : 0);
+  });
+  const totalPersEl = document.getElementById('pengurus-ronda-total-personnel');
+  if (totalPersEl) totalPersEl.textContent = `${totalPersonnel} Orang`;
+
+  // Filter groups
+  const filtered = groups.filter(g => {
+    if (filterVal === 'all') return true;
+    if (filterVal === 'current') return g.week === currentWeek;
+    return g.week === parseInt(filterVal, 10);
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 2.5rem 1rem; color: #94a3b8; background: rgba(15,23,42,0.45); border-radius: 14px;">
+        <i class="fa-solid fa-shield-halved" style="font-size: 2.5rem; color: #64748b; margin-bottom: 0.75rem; display: block;"></i>
+        <h4 style="color:#cbd5e1; margin:0 0 0.25rem 0;">Regu Tidak Ditemukan</h4>
+        <p style="margin:0; font-size:0.85rem;">Tidak ada susunan regu untuk filter yang dipilih.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(g => {
+    const isCurrent = g.week === currentWeek;
+    const leaderInitials = (g.leader && g.leader.initials) ? g.leader.initials : getResidentMonogram(g.leader ? g.leader.name : '');
+    const membersCount = g.members ? g.members.length : 0;
+
+    return `
+      <div class="pengurus-ronda-card ${isCurrent ? 'is-active-week' : ''}" data-week="${g.week}">
+        <div class="pengurus-ronda-card-header">
+          <div class="pengurus-ronda-title-wrap">
+            <h4>
+              <i class="fa-solid fa-shield-halved ${isCurrent ? 'text-gold' : 'text-purple'}"></i>
+              ${escapeHtml(g.weekName)}
+            </h4>
+            <span class="pengurus-ronda-cycle-lbl">${escapeHtml(g.cycle)} &bull; 21.00 - 04.00 WIB</span>
+          </div>
+          ${isCurrent ? `
+            <span class="cyber-badge-sm" style="background:rgba(245,158,11,0.25); color:#fbbf24; border-color:rgba(245,158,11,0.5);">
+              <span class="pulse-dot"></span> Bertugas Pekan Ini
+            </span>
+          ` : `
+            <span class="badge-tag-cyan" style="font-size:0.72rem;">Siklus ke-${g.week}</span>
+          `}
+        </div>
+
+        <div class="pengurus-ronda-leader-box">
+          <div class="pengurus-ronda-leader-avatar">${leaderInitials}</div>
+          <div class="pengurus-ronda-leader-meta">
+            <small><i class="fa-solid fa-crown text-gold"></i> Komandan Regu (PJ Lapangan)</small>
+            <strong>${escapeHtml(g.leader ? g.leader.name : '-')}</strong>
+          </div>
+        </div>
+
+        <div class="pengurus-ronda-members-wrap">
+          <div class="pengurus-ronda-members-title">
+            <span>Anggota Petugas Ronda:</span>
+            <span><strong>${membersCount}</strong> Personel</span>
+          </div>
+          <div class="pengurus-ronda-chips">
+            ${(g.members || []).map(m => `
+              <span class="pengurus-ronda-chip" title="Anggota Regu ${g.week}">
+                <span class="chip-dot"></span> ${escapeHtml(m.name)}
+              </span>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="pengurus-ronda-card-actions">
+          <button type="button" class="btn btn-sm btn-outline-cyan btn-edit-regu flex-grow-1" data-week="${g.week}" title="Atur personel Regu ${g.week}">
+            <i class="fa-solid fa-user-pen"></i> Edit Regu
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-emerald btn-wa-regu" data-week="${g.week}" title="Kirim Pengingat WhatsApp ke Regu ${g.week}">
+            <i class="fa-brands fa-whatsapp"></i> WA
+          </button>
+          <button type="button" class="btn btn-sm btn-outline btn-copy-regu" data-week="${g.week}" title="Salin Jadwal Regu ${g.week}">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Wire buttons inside cards
+  container.querySelectorAll('.btn-edit-regu').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const week = parseInt(btn.getAttribute('data-week'), 10) || 1;
+      if (typeof window.openManageRondaModal === 'function') {
+        window.openManageRondaModal(week);
+      }
+    });
+  });
+
+  container.querySelectorAll('.btn-wa-regu').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const week = parseInt(btn.getAttribute('data-week'), 10) || 1;
+      const text = (typeof window.generateRondaWeekText === 'function')
+        ? window.generateRondaWeekText(week)
+        : '';
+      if (text) {
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+      }
+    });
+  });
+
+  container.querySelectorAll('.btn-copy-regu').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const week = parseInt(btn.getAttribute('data-week'), 10) || 1;
+      const text = (typeof window.generateRondaWeekText === 'function')
+        ? window.generateRondaWeekText(week)
+        : '';
+      if (text && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(`📋 Jadwal Regu ${week} berhasil disalin!`, 'success');
+        });
+      }
+    });
+  });
 }
 
 function setupPengurusVerifikasiEvents() {
