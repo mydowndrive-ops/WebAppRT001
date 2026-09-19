@@ -3,6 +3,25 @@
    Theme: Luxury Emerald (Hijau Zamrud Mewah), Rich Gold, & Glassmorphism
    ========================================================================== */
 
+/* Custom Font: MaskingRenta (Display Font Resmi WARGA RT.001 RW.013) */
+@font-face {
+  font-family: 'MaskingRenta';
+  src: url('MaskingRenta.otf') format('opentype'),
+       url('assets/MaskingRenta.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Masking Renta';
+  src: url('MaskingRenta.otf') format('opentype'),
+       url('assets/MaskingRenta.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg-primary: #04140e;
   --bg-secondary: #072318;
@@ -9184,11 +9203,11 @@ h1, h2, h3, h4, h5, h6 {
     0 0 16px rgba(245, 158, 11, 0.6);
 }
 
-/* Main Title: WARGA RT.001 RW.013 - High Contrast Deep Emerald (#006600) with Solid White Border */
+/* Main Title: WARGA RT.001 RW.013 - MaskingRenta Custom Font with High Contrast Deep Emerald (#006600) */
 .split-line-main {
-  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-family: 'MaskingRenta', 'Masking Renta', var(--font-heading, 'Plus Jakarta Sans'), sans-serif;
   font-size: clamp(1.35rem, 4.4vw, 2.45rem);
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   display: inline-block;
@@ -9223,9 +9242,10 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
 }
 
-/* Pastikan Elemen Kata & Huruf Split-Text Menggunakan Warna Solid #006600 dan Stroke/Shadow yang Sama */
+/* Pastikan Elemen Kata & Huruf Split-Text Menggunakan Font MaskingRenta dan Warna Solid #006600 */
 .split-line-main .word,
 .split-line-main .char {
+  font-family: 'MaskingRenta', 'Masking Renta', var(--font-heading, 'Plus Jakarta Sans'), sans-serif;
   color: #006600 !important;
   -webkit-text-fill-color: #006600 !important;
   background: none !important;
@@ -10524,6 +10544,7 @@ h1, h2, h3, h4, h5, h6 {
 
   /* Optimasi Judul WARGA RT.001 RW.013 Khusus Layar Ponsel (Mobile 90% Pengguna) */
   .split-line-main {
+    font-family: 'MaskingRenta', 'Masking Renta', var(--font-heading, 'Plus Jakarta Sans'), sans-serif !important;
     font-size: clamp(1.12rem, 5vw, 1.5rem) !important;
     letter-spacing: 0.02em;
     line-height: 1.25;
@@ -10533,10 +10554,12 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .split-line-main .word {
+    font-family: 'MaskingRenta', 'Masking Renta', var(--font-heading, 'Plus Jakarta Sans'), sans-serif !important;
     margin-right: 0.22em; /* Jarak antar kata presisi di layar ponsel */
   }
 
   .split-line-main .char {
+    font-family: 'MaskingRenta', 'Masking Renta', var(--font-heading, 'Plus Jakarta Sans'), sans-serif !important;
     -webkit-text-stroke: 0.45px rgba(255, 255, 255, 0.95);
   }
 

@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (02:05 WIB)  
-**Versi Rilis Aktif:** `v2.9.4`  
+**Terakhir Diperbarui:** 20 September 2026 (02:35 WIB)  
+**Versi Rilis Aktif:** `v2.9.5`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -33,6 +33,26 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 ---
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
+
+### 1. 🔤 Penerapan Font Custom "MaskingRenta" pada Teks "WARGA RT.001 RW.013" (Update v2.9.5 - 20 Sept 2026)
+- **Latar Belakang & Kebutuhan**:
+  - Pengguna menyediakan berkas tipografi kustom resmi `MaskingRenta.otf` untuk diterapkan khusus pada elemen judul utama *"WARGA RT.001 RW.013"* di banner bendera merah putih halaman depan agar tampilan teks memiliki identitas visual yang khas, tegas, dan eksklusif.
+- **Solusi & Rekayasa Web Typography**:
+  1. **Integrasi `@font-face` MaskingRenta**:
+     - Mendaftarkan deklarasi font kustom di awal `styles.css` dengan alias `MaskingRenta` dan `Masking Renta`.
+     - Mendukung pemuatan lokal dari root `./MaskingRenta.otf` dan `./assets/MaskingRenta.otf` dengan `font-display: swap` dan rentang bobot fleksibel (`font-weight: 100 900`).
+     - Menyematkan `<link rel="preload" href="MaskingRenta.otf" as="font" type="font/otf" crossorigin>` pada `<head>` di `index.html` untuk memangkas *render blocking* dan mengeliminasi kedipan font (FOUT/FOIT).
+  2. **Penerapan pada Elemen Split-Text**:
+     - Menyetel `font-family: 'MaskingRenta', 'Masking Renta', ...` pada `.split-line-main` dan seluruh sub-elemen kata serta huruf split-text (`.word` dan `.char`).
+     - Mempertahankan warna solid Deep Emerald (`#006600`) dengan pembatas kontras putih solid (`-webkit-text-stroke` dan solid `text-shadow`) agar teks MaskingRenta terbaca jernih di atas bagian merah maupun putih bendera.
+     - Mempertahankan animasi breathing 4 detik (`textLevitation`) dan 3D hover tilt.
+  3. **Preservasi Responsivitas Layar Ponsel (Mobile 90% Pengguna)**:
+     - Memastikan styling font `MaskingRenta` diatur dengan `white-space: nowrap;` dan `font-size: clamp(1.12rem, 5vw, 1.5rem) !important;` pada media query ponsel, menjamin judul tidak patah baris di layar smartphone.
+  4. **Pembaruan Cache Service Worker PWA**:
+     - Berkas font `MaskingRenta.otf` dan `assets/MaskingRenta.otf` didaftarkan ke `ASSETS_TO_CACHE` di `sw.js`.
+     - Parameter aset di `index.html` dan `sw.js` diselaraskan ke `v2.9.5`.
+
+---
 
 ### 1. 🌿 Tipografi Kontras Tinggi & Warna Solid Deep Emerald `#006600` pada "WARGA RT.001 RW.013" serta Optimasi Layar Ponsel (Update v2.9.4 - 20 Sept 2026)
 - **Latar Belakang & Kebutuhan**:
