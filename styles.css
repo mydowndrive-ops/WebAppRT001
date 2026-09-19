@@ -9184,19 +9184,101 @@ h1, h2, h3, h4, h5, h6 {
     0 0 16px rgba(245, 158, 11, 0.6);
 }
 
-/* Main Title: WARGA RT.001 RW.013 */
+/* Main Title: WARGA RT.001 RW.013 - Luxury Modern Metallic Styling */
 .split-line-main {
   font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
   font-size: clamp(1.5rem, 4.2vw, 2.45rem);
   font-weight: 900;
   letter-spacing: 0.04em;
-  color: #ffffff;
   text-transform: uppercase;
+  display: inline-block;
+  position: relative;
+
+  /* 2. Aksen Metalik: Gradasi Logam Perak & Emas Muda Mewah */
+  background: linear-gradient(
+    115deg,
+    #f8fafc 0%,
+    #cbd5e1 18%,
+    #fef08a 35%,
+    #ffffff 50%,
+    #fde047 65%,
+    #cbd5e1 82%,
+    #ffffff 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+
+  /* 1. Tipografi & Soft Glow: Hapus bayangan hitam pekat, gunakan soft outer glow berwarna terang */
   text-shadow: 
-    0 1px 2px rgba(0, 0, 0, 1),
-    0 2px 5px rgba(0, 0, 0, 0.95),
-    0 4px 14px rgba(0, 0, 0, 0.9),
-    0 0 25px rgba(0, 0, 0, 0.85);
+    0 0 16px rgba(254, 240, 138, 0.4),
+    0 0 32px rgba(255, 255, 255, 0.25);
+  filter: 
+    drop-shadow(0 0 14px rgba(254, 240, 138, 0.42))
+    drop-shadow(0 2px 24px rgba(255, 255, 255, 0.28));
+
+  /* 3. Animasi Shimmer (Light Sweep) & 4. Animasi Levitation (Breathing Mulus 4 Detik) */
+  animation: 
+    metallicShimmer 6s ease-in-out infinite,
+    textLevitation 4s ease-in-out infinite;
+
+  /* 5. 3D Hover Tilt: Setup Prespektif & Transisi Halus */
+  transform-style: preserve-3d;
+  perspective: 900px;
+  transform-origin: center center;
+  transition: 
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, filter, background-position;
+  cursor: pointer;
+}
+
+/* Inherit Gradasi & Kliping Teks ke Elemen Kata & Huruf Split-Text */
+.split-line-main .word,
+.split-line-main .char {
+  background: inherit;
+  background-size: inherit;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+/* 5. 3D Hover Tilt: Efek Reaktif Interaktif Saat Kursor Diarahkan */
+.split-line-main:hover {
+  animation: metallicShimmer 6s ease-in-out infinite;
+  transform: perspective(900px) rotateX(7deg) rotateY(-5deg) translateY(-5px) scale(1.025);
+  filter: 
+    drop-shadow(0 10px 26px rgba(254, 240, 138, 0.68))
+    drop-shadow(0 0 40px rgba(255, 255, 255, 0.52));
+}
+
+/* 3. Animasi Shimmer: Garis Kilauan Cahaya Berjalan dari Kiri ke Kanan */
+@keyframes metallicShimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+/* 4. Animasi Levitation: Melayang Statis Naik-Turun (3-5px) Selaras dengan Gelombang Bendera */
+@keyframes textLevitation {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-line-main {
+    animation: none !important;
+  }
 }
 
 /* Masking Kata & Huruf (Word Masking Container) */
