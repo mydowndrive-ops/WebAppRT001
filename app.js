@@ -2272,7 +2272,8 @@ function openModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.classList.add('active');
-    modal.style.display = 'flex';
+    modal.style.setProperty('display', 'flex', 'important');
+    modal.style.setProperty('z-index', '10000', 'important');
     if (typeof pushNavHistory === 'function') {
       pushNavHistory('modal', modalId, `modal-${modalId}`);
     }
@@ -2283,7 +2284,7 @@ function closeModal(modalId, fromPopState = false) {
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.classList.remove('active');
-    modal.style.display = 'none';
+    modal.style.setProperty('display', 'none', 'important');
     if (!fromPopState && typeof popNavHistory === 'function' && window.history.state?.type === 'modal' && window.history.state?.id === modalId) {
       popNavHistory();
     }
@@ -4688,9 +4689,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.8.7';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.8.4')
+      navigator.serviceWorker.register('sw.js?v=2.8.7')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -4705,7 +4707,7 @@ function registerServiceWorker() {
   if ('caches' in window) {
     caches.keys().then((keys) => {
       keys.forEach((key) => {
-        if (key !== 'rt-finsmart-cache-v2.8.4') {
+        if (key !== CURRENT_CACHE_NAME) {
           console.log('Menghapus cache lama browser:', key);
           caches.delete(key);
         }
@@ -7538,13 +7540,6 @@ window.openJimpitanIncomeModal = function(e) {
   if (e && typeof e.preventDefault === 'function') e.preventDefault();
   if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
 
-  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
-  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
-  if (isPengurus) {
-    showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
-    return;
-  }
-
   // Tanggal default: Hari Minggu terdekat (atau hari ini jika hari Minggu) dalam Waktu Lokal (WIB)
   const today = new Date();
   const day = today.getDay(); // 0 = Sun, 6 = Sat
@@ -7575,13 +7570,6 @@ window.openJimpitanExpenseModal = function(e) {
   if (e && typeof e.preventDefault === 'function') e.preventDefault();
   if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
 
-  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
-  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
-  if (isPengurus) {
-    showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
-    return;
-  }
-
   // Tanggal default: Hari ini dalam Waktu Lokal (WIB)
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -7605,14 +7593,6 @@ window.openJimpitanExpenseModal = function(e) {
 // Global Submit Handler for Jimpitan Income
 window.handleJimpitanIncomeSubmit = function(e) {
   if (e && typeof e.preventDefault === 'function') e.preventDefault();
-
-  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
-  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
-  if (isPengurus) {
-    showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
-    closeModal('modal-add-jimpitan-income');
-    return;
-  }
 
   const dateInput = document.getElementById('jimp-income-date');
   const reguInput = document.getElementById('jimp-income-regu');
@@ -7657,14 +7637,6 @@ window.handleJimpitanIncomeSubmit = function(e) {
 window.handleJimpitanExpenseSubmit = function(e) {
   if (e && typeof e.preventDefault === 'function') e.preventDefault();
 
-  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
-  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
-  if (isPengurus) {
-    showToast('⚠️ Pengurus RT hanya memiliki hak pemantauan (Read-Only) pada Kas Jimpitan.', 'warning');
-    closeModal('modal-add-jimpitan-expense');
-    return;
-  }
-
   const dateInput = document.getElementById('jimp-expense-date');
   const categoryInput = document.getElementById('jimp-expense-category');
   const descInput = document.getElementById('jimp-expense-desc');
@@ -7704,12 +7676,6 @@ window.handleJimpitanExpenseSubmit = function(e) {
 
 // Global Delete Handlers
 window.deleteJimpitanIncome = function(id) {
-  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
-  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
-  if (isPengurus) {
-    showToast('⚠️ Pengurus RT tidak dapat menghapus catatan Kas Jimpitan.', 'warning');
-    return;
-  }
   if (!confirm('Yakin ingin menghapus catatan perolehan jimpitan ini?')) return;
   state.jimpitanIncomes = (state.jimpitanIncomes || []).filter(r => r.id !== id);
   saveState();
@@ -7718,12 +7684,6 @@ window.deleteJimpitanIncome = function(id) {
 };
 
 window.deleteJimpitanExpense = function(id) {
-  const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
-  const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
-  if (isPengurus) {
-    showToast('⚠️ Pengurus RT tidak dapat menghapus catatan Kas Jimpitan.', 'warning');
-    return;
-  }
   if (!confirm('Yakin ingin menghapus catatan pengeluaran jimpitan ini?')) return;
   state.jimpitanExpenses = (state.jimpitanExpenses || []).filter(r => r.id !== id);
   saveState();
