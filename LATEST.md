@@ -41,7 +41,7 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
   - **Hierarki Visual & Keterbacaan Kontras (Center Alignment)**:
     - Teks `"WARGA RT.001 RW.013"` diposisikan di lapisan paling depan (*frontmost layer* dengan `z-index: 3`) persis di tengah-tengah kotak (*center alignment*).
     - Dilengkapi lapisan pelindung kontras (*radial-gradient contrast scrim*) semi-transparan tipis di belakang teks.
-    - Tipografi *bold* tebal dengan multi-layer shadow gelap pekat (`text-shadow: 0 1px 2px #000, 0 2px 5px rgba(0,0,0,0.95), 0 4px 14px rgba(0,0,0,0.9), 0 0 25px rgba(0,0,0,0.85)`) sehingga teks tetap 100% sangat jelas dan mudah dibaca baik di atas latar merah maupun putih yang sedang bergerak.
+  - **Desain Seamless Tanpa Garis Tepi (*Borderless*)**: Seluruh garis tepi (`border: none`) dan efek *inset stroke highlight* di sekeliling pinggir bendera telah dihilangkan sepenuhnya, menghasilkan visual kain bendera yang bebas batas, bersih, dan menyatu alami dengan latar.
   - **Performa Ringan**: Dijalankan dengan akselerasi perangkat keras GPU (`transform: translate3d`, `will-change: transform`), sangat ringan dan cocok untuk dashboard maupun layar digital signage.
 
 ### 2. ⚡ Perbaikan Alur Navigasi Login Pengurus (Direct Landing - Update 19 Sept 2026)
