@@ -6,8 +6,7 @@
 /* Custom Font: MaskingRenta (Display Font Resmi WARGA RT.001 RW.013) */
 @font-face {
   font-family: 'MaskingRenta';
-  src: url('MaskingRenta.otf') format('opentype'),
-       url('assets/MaskingRenta.otf') format('opentype');
+  src: url('assets/MaskingRenta.otf') format('opentype');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -15,8 +14,7 @@
 
 @font-face {
   font-family: 'Masking Renta';
-  src: url('MaskingRenta.otf') format('opentype'),
-       url('assets/MaskingRenta.otf') format('opentype');
+  src: url('assets/MaskingRenta.otf') format('opentype');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;

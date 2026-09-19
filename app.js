@@ -6049,7 +6049,7 @@ function setupLoginPortal() {
       showToast(`✅ Selamat datang, ${acc ? acc.name : selectedRole}!`, 'success');
     } else {
       if (errorMsg) {
-        errorMsg.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> PIN salah. Silakan coba lagi (PIN: 1111 / 2222 / 3333).';
+        errorMsg.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> PIN salah. Silakan coba lagi.';
         errorMsg.style.display = 'flex';
         errorMsg.style.animation = 'none';
         requestAnimationFrame(() => { errorMsg.style.animation = ''; });
