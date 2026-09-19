@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (02:00 WIB)  
-**Versi Rilis Aktif:** `v2.9.3`  
+**Terakhir Diperbarui:** 20 September 2026 (02:05 WIB)  
+**Versi Rilis Aktif:** `v2.9.4`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -33,6 +33,22 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 ---
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
+
+### 1. 🌿 Tipografi Kontras Tinggi & Warna Solid Deep Emerald `#006600` pada "WARGA RT.001 RW.013" serta Optimasi Layar Ponsel (Update v2.9.4 - 20 Sept 2026)
+- **Latar Belakang & Kebutuhan**:
+  1. Efek gradasi `background-clip` perak/emas muda dan soft outer glow sebelumnya membuat teks judul *"WARGA RT.001 RW.013"* tampak memudar di atas latar belakang video bendera merah putih yang dinamis.
+  2. Dibutuhkan kontras tinggi dengan warna solid pekat `#006600` (Deep Emerald).
+  3. Penambahan pembatas kontras putih tipis solid (`text-shadow` dan `-webkit-text-stroke` putih solid) untuk memisahkan teks dari area merah bendera yang gelap dan mempertahankan keterbacaan di area putih bendera.
+  4. Animasi 3D hover tilt dan levitation 4 detik (*breathing*) dipertahankan sepenuhnya tanpa merusak warna solid `#006600`.
+  5. Optimasi khusus tampilan ponsel (*mobile-first* 90% pengguna) agar teks tetap dalam satu baris utuh (`white-space: nowrap`), tidak patah kata/baris secara canggung, dan proporsional di seluruh resolusi layar smartphone.
+- **Solusi & Rekayasa CSS**:
+  1. **Warna Solid Deep Emerald (`#006600`)**: Menghapus `background: linear-gradient` dan `-webkit-background-clip: text`. Menyetel `color: #006600; -webkit-text-fill-color: #006600;` pada `.split-line-main` dan seluruh anak elemen split-text (`.word` dan `.char`).
+  2. **Pembatas Kontras Putih Solid**: Menerapkan `-webkit-text-stroke: 0.65px rgba(255, 255, 255, 0.95)` dan multi-directional solid crisp `text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.95), -1px -1px 0px rgba(255, 255, 255, 0.95), 1px -1px 0px rgba(255, 255, 255, 0.95), -1px 1px 0px rgba(255, 255, 255, 0.95), 0px 2px 5px rgba(0, 0, 0, 0.5)` yang menghasilkan rasio kontras 7.24:1 terhadap latar putih dan batas pemisah putih yang tegas terhadap latar merah bendera.
+  3. **Preservasi Animasi**: Mempertahankan `animation: textLevitation 4s ease-in-out infinite;` dan 3D hover tilt `transform: perspective(900px) rotateX(7deg) rotateY(-5deg) translateY(-5px) scale(1.025);`.
+  4. **Optimasi Layar Ponsel (Mobile 90% Pengguna)**: Menerapkan `font-size: clamp(1.12rem, 5vw, 1.5rem) !important;`, `white-space: nowrap;`, `line-height: 1.25;`, dan margin kata yang presisi di dalam media query mobile sehingga judul tertata rapi, proporsional, dan sangat tajam saat dibuka dari smartphone warga.
+  5. **Penyelarasan Cache Busting ke `v=2.9.4`**: Berkas `index.html`, `styles.css`, `app.js`, dan `sw.js` diperbarui ke `v2.9.4`.
+
+---
 
 ### 1. 💼 Transformasi "Pemasukkan NON iuran", Laporan Lengkap Akuntansi & Akses Transparansi Multi-Role (Read-Only) (Update v2.9.3 - 20 Sept 2026)
 - **Latar Belakang & Kebutuhan**:
