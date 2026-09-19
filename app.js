@@ -4689,10 +4689,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.8.7';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.8.8';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.8.7')
+      navigator.serviceWorker.register('sw.js?v=2.8.8')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -7711,13 +7711,19 @@ function setupJimpitanEvents() {
   document.addEventListener('click', e => {
     const btnInc = e.target.closest('#btn-add-jimpitan-income');
     if (btnInc) {
-      // If already handled by inline onclick, do nothing
+      e.preventDefault();
+      if (typeof window.openJimpitanIncomeModal === 'function') {
+        window.openJimpitanIncomeModal(e);
+      }
       return;
     }
 
     const btnExp = e.target.closest('#btn-add-jimpitan-expense');
     if (btnExp) {
-      // If already handled by inline onclick, do nothing
+      e.preventDefault();
+      if (typeof window.openJimpitanExpenseModal === 'function') {
+        window.openJimpitanExpenseModal(e);
+      }
       return;
     }
 
@@ -11256,10 +11262,11 @@ function setupBroadcastGenerator() {
   const btnOpenWA = document.getElementById('btn-open-wa-broadcast');
 
   function refreshContent() {
+    if (typeof BROADCAST_TEMPLATES === 'undefined') return;
     const tplKey = selectTpl ? selectTpl.value : 'kerja-bakti';
     const agendaVal = inputAgenda ? inputAgenda.value : '';
     const fn = BROADCAST_TEMPLATES[tplKey] || BROADCAST_TEMPLATES['kerja-bakti'];
-    const generated = fn(agendaVal);
+    const generated = fn ? fn(agendaVal) : '';
     if (textareaContent) textareaContent.value = generated;
     updateBroadcastPreview();
   }

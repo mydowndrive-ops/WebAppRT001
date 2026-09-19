@@ -99,10 +99,22 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) d
      - Menggunakan `style.setProperty('display', 'flex', 'important')` dan `style.setProperty('z-index', '10000', 'important')`.
   6. **Penyegaran Aset Resmi (Cache Busting v2.8.7)**:
      - `index.html`, `sw.js`, dan `app.js` seluruhnya diselaraskan pada `v=2.8.7`.
-    - Setiap tombol **"Edit Regu"** pada ke-8 kartu ronda memicu langsung `onclick="window.openManageRondaModal(${g.week})"`.
-    - Data nama komandan dan anggota ditangani secara aman baik berbentuk objek (`{ name: '...' }`) maupun string langsung.
-  - **Cache Busting Resmi (v2.8.5)**:
-    - Versi aset pada `index.html` dan `sw.js` diperbarui ke `v=2.8.5` (`CACHE_NAME = 'rt-finsmart-cache-v2.8.5'`) sehingga peramban dan PWA otomatis mengunduh kode terbaru tanpa tertahan cache lama.
+
+### 5. 🎯 Investigasi Mendalam: Akar Masalah Mengapa Tombol Catat Jimpitan Tidak Merespons (Update v2.8.8)
+- **Akar Masalah Fundamental yang Ditemukan**:
+  1. **Struktur DOM Rusak (Unclosed Tag `<div class="modal-backdrop" id="modal-add-account">`)**:
+     - Pada baris 4805 di `index.html`, `<div class="modal-backdrop" id="modal-add-account">` (yang dibuka pada baris 4758) kehilangan tag penutup `</div>`.
+     - Akibatnya, peramban menyisipkan seluruh elemen HTML setelahnya — termasuk modal `#modal-add-jimpitan-income`, `#modal-add-jimpitan-expense`, dan 13 modal lainnya — secara tidak sengaja **sebagai anak (child) di dalam `#modal-add-account`**.
+     - Karena `#modal-add-account` berstatus tertutup (`display: none`), maka menurut spesifikasi CSS peramban, seluruh elemen anak di dalamnya **otomatis tidak dirender sama sekali (bounding box 0x0)** meskipun fungsi JavaScript telah menambahkan kelas `.active` dan `style.display = 'flex'`.
+  2. **Event Delegation Fallback Jimpitan Diblokir di `app.js`**:
+     - Pada `setupJimpitanEvents()`, tombol `#btn-add-jimpitan-income` dan `#btn-add-jimpitan-expense` memiliki penangan delegasi `if (btnInc) return;` yang sengaja tidak melakukan apa-apa jika inline handler tidak terpicu.
+  3. **Temporal Dead Zone (TDZ) ReferenceError pada `BROADCAST_TEMPLATES`**:
+     - Saat inisialisasi awal, pemanggilan `setupPengurusOperationalHub()` memicu `refreshContent()` yang membaca `BROADCAST_TEMPLATES` sebelum dideklarasikan jika `document.readyState !== 'loading'`.
+- **Solusi & Verifikasi Lengkap (v2.8.8)**:
+  1. Menambahkan tag penutup `</div>` pada `#modal-add-account` di `index.html` sehingga pohon DOM modal kembali seimbang sempurna (0 unclosed tags) dan modal langsung bertengger sebagai anak langsung `<body>` dengan ukuran 100% aktif (731x483px).
+  2. Mengaktifkan penangan klik cadangan ganda (*event delegation fallback*) pada `app.js` untuk `#btn-add-jimpitan-income` dan `#btn-add-jimpitan-expense`.
+  3. Memberikan pengaman `typeof BROADCAST_TEMPLATES === 'undefined'` pada `refreshContent()`.
+  4. Meningkatkan versi aset (*cache busting*) ke `v=2.8.8` pada `index.html`, `app.js`, dan `sw.js`.
 
 ### 4. 🪙 Modul Kas Jimpitan Ronda Terintegrasi (Update 19 Sept 2026)
 - Penguatan alur pencatatan perolehan uang jimpitan malam minggu untuk akun Bendahara 2 (B2) dan Bendahara 1 (B1).
