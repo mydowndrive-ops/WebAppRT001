@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (16:30 WIB)  
-**Versi Rilis Aktif:** `v2.9.7`  
+**Terakhir Diperbarui:** 20 September 2026 (16:38 WIB)  
+**Versi Rilis Aktif:** `v2.9.8`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -34,7 +34,23 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📢 Perombakan Pop-Up Event Terdekat Menjadi Model "Luxury Event Flyer Modal" (Update v2.9.7 - 20 Sept 2026)
+### 1. 🇮🇩 Efek Animasi Garis-Garis Merah Putih Memutar Pinggir Kotak EVENT TERDEKAT (Update v2.9.8 - 20 Sept 2026)
+- **Latar Belakang & Kebutuhan**:
+  - Menambahkan animasi bingkai dinamis berupa **garis-garis merah putih yang memutar mengelilingi kotak EVENT TERDEKAT** agar tampilan pop-up semakin eye-catching, hidup, dan kental dengan nuansa Merah Putih warga.
+- **Solusi & Rekayasa CSS Animation**:
+  1. **Border Runner Garis Merah Putih Memutar pada Kotak Modal (`.hub-event-banner`)**:
+     - Menggunakan lapisan animasi `repeating-conic-gradient` dengan segmen garis berselang-seling merah (`#e11d48` / `#dc2626`) dan putih (`#ffffff`) murni.
+     - Digerakkan dengan animasi kontinu 360 derajat `@keyframes rotateRedWhiteBorder` yang diakselerasi perangkat keras (`will-change: transform`).
+     - Lapisan dalam kartu disetel menyisakan bingkai tepi 3.5px yang memancarkan rotasi garis merah putih secara presisi mengikuti kelengkungan *border-radius: 28px*.
+     - Efek pendaran cahaya (*atmospheric neon aura*) merah dan putih di sekeliling kotak saat diam maupun disentuh (hover).
+  2. **Border Runner Merah Putih Memutar pada Kapsul Label "EVENT TERDEKAT" (`.event-live-beacon`)**:
+     - Kapsul label badge di bagian header kartu juga disematkan animasi garis merah putih memutar di sekeliling tepinya, menyempurnakan identitas visual yang serasi dan harmonis.
+  3. **Penyelarasan Cache PWA**:
+     - Seluruh aset diperbarui ke versi `v2.9.8` di `index.html`, `styles.css`, `app.js`, dan `sw.js`.
+
+---
+
+### 2. 📢 Perombakan Pop-Up Event Terdekat Menjadi Model "Luxury Event Flyer Modal" (Update v2.9.7 - 20 Sept 2026)
 - **Latar Belakang & Masalah Sebelumnya**:
   1. Pop-up pengumuman event sebelumnya masih menggunakan format banner horizontal memanjang (880px) yang ditempelkan ke modal overlay.
   2. Muncul scrollbar vertikal di sisi kanan kartu yang memotong tombol navigasi slider (`<` `>`) dan mengganggu estetika visual.

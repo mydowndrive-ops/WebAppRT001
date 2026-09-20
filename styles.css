@@ -9463,8 +9463,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hub-event-banner {
-  background: linear-gradient(168deg, rgba(8, 30, 22, 0.97) 0%, rgba(11, 23, 36, 0.98) 50%, rgba(6, 18, 14, 0.98) 100%);
-  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  background: transparent;
+  border: none;
   border-radius: 28px;
   padding: 1.85rem 2.2rem 1.65rem 2.2rem;
   display: flex;
@@ -9475,8 +9475,50 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 620px;
   width: 100%;
   margin: auto;
-  box-shadow: 0 28px 75px -12px rgba(0, 0, 0, 0.9), 0 0 45px rgba(16, 185, 129, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  box-shadow: 0 28px 75px -12px rgba(0, 0, 0, 0.9), 0 0 40px rgba(220, 38, 38, 0.35), 0 0 22px rgba(255, 255, 255, 0.22);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+/* Garis-Garis Merah Putih Memutar di Pinggir Kotak (Conic Beam Rotating Border) */
+.hub-event-banner::before {
+  content: '';
+  position: absolute;
+  top: -120%;
+  left: -120%;
+  width: 340%;
+  height: 340%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    #e11d48 0deg 15deg,
+    #ffffff 15deg 30deg,
+    #dc2626 30deg 45deg,
+    #ffffff 45deg 60deg
+  );
+  animation: rotateRedWhiteBorder 7s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Badan Kartu Bagian Dalam (Menyisakan 3.5px Border Garis Merah Putih yang Memutar) */
+.hub-event-banner::after {
+  content: '';
+  position: absolute;
+  inset: 3.5px;
+  border-radius: 25px;
+  background: linear-gradient(168deg, rgba(8, 30, 22, 0.98) 0%, rgba(11, 23, 36, 0.99) 50%, rgba(6, 18, 14, 0.99) 100%);
+  z-index: 1;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 24px rgba(0, 0, 0, 0.65);
+}
+
+@keyframes rotateRedWhiteBorder {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .hub-event-banner-wrap.show-popup .hub-event-banner {
@@ -9603,8 +9645,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hub-event-banner:hover {
-  border-color: rgba(52, 211, 153, 0.65);
-  box-shadow: 0 32px 85px -10px rgba(0, 0, 0, 0.92), 0 0 55px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow: 0 32px 85px -10px rgba(0, 0, 0, 0.95), 0 0 55px rgba(220, 38, 38, 0.55), 0 0 32px rgba(255, 255, 255, 0.35);
 }
 
 /* Ambient glow & shimmer effect */
@@ -9617,7 +9658,7 @@ h1, h2, h3, h4, h5, h6 {
   background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(6, 182, 212, 0.08) 45%, transparent 70%);
   pointer-events: none;
   filter: blur(45px);
-  z-index: 0;
+  z-index: 2;
 }
 
 .event-banner-shimmer {
@@ -9630,7 +9671,7 @@ h1, h2, h3, h4, h5, h6 {
   transform: skewX(-25deg);
   animation: bannerShimmer 9s infinite ease-in-out;
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
 }
 
 @keyframes bannerShimmer {
@@ -9654,7 +9695,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Top Badges Row */
 .event-flyer-topline {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -9662,31 +9703,61 @@ h1, h2, h3, h4, h5, h6 {
   padding-right: 3rem;
 }
 
-/* Event Live Beacon Capsule (Kontras Tinggi: Merah dengan Kuning Cerah & Putih) */
+/* Event Live Beacon Capsule (Kotak/Kapsul EVENT TERDEKAT dengan Garis Merah Putih Memutar) */
 .event-live-beacon {
   display: inline-flex !important;
   align-items: center !important;
   gap: 0.55rem !important;
-  background: linear-gradient(135deg, #e11d48 0%, #dc2626 50%, #991b1b 100%) !important;
-  border: 2px solid #fef08a !important;
-  padding: 0.35rem 0.9rem !important;
-  border-radius: 9999px !important;
   position: relative !important;
-  box-shadow: 0 0 18px rgba(220, 38, 38, 0.75), 0 0 8px rgba(254, 240, 138, 0.45), 0 2px 6px rgba(0, 0, 0, 0.4) !important;
-  animation: fastPulseBeacon 1.15s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+  overflow: hidden !important;
+  border-radius: 9999px !important;
+  padding: 0.38rem 0.95rem !important;
+  border: none !important;
+  box-shadow: 0 0 18px rgba(220, 38, 38, 0.75), 0 0 12px rgba(255, 255, 255, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+  animation: fastPulseBeacon 1.25s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
   will-change: transform, box-shadow !important;
+}
+
+.event-live-beacon::before {
+  content: '';
+  position: absolute;
+  top: -150%;
+  left: -150%;
+  width: 400%;
+  height: 400%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    #dc2626 0deg 20deg,
+    #ffffff 20deg 40deg
+  );
+  animation: rotateRedWhiteBorder 3.5s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.event-live-beacon::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #e11d48 0%, #dc2626 50%, #991b1b 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.event-live-beacon > * {
+  position: relative;
+  z-index: 2;
 }
 
 @keyframes fastPulseBeacon {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 14px rgba(220, 38, 38, 0.6), inset 0 0 6px rgba(254, 240, 138, 0.3);
-    border-color: #fef08a;
+    box-shadow: 0 0 14px rgba(220, 38, 38, 0.6), 0 0 8px rgba(255, 255, 255, 0.3);
   }
   50% {
-    transform: scale(1.06);
-    box-shadow: 0 0 26px rgba(239, 68, 68, 0.95), 0 0 35px rgba(254, 240, 138, 0.6), inset 0 0 8px rgba(254, 240, 138, 0.4);
-    border-color: #ffffff;
+    transform: scale(1.05);
+    box-shadow: 0 0 26px rgba(239, 68, 68, 0.95), 0 0 30px rgba(255, 255, 255, 0.6);
   }
 }
 
@@ -10016,6 +10087,10 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1.4rem 1.25rem;
     border-radius: 22px;
     gap: 1rem;
+  }
+  .hub-event-banner::after {
+    inset: 3px;
+    border-radius: 19px;
   }
   .event-flyer-topline {
     padding-right: 2.6rem;
