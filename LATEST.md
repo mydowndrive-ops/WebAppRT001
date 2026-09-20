@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (22:30 WIB)  
-**Versi Rilis Aktif:** `v2.9.27`  
+**Terakhir Diperbarui:** 20 September 2026 (22:38 WIB)  
+**Versi Rilis Aktif:** `v2.9.28`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,21 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🗂️ Restrukturisasi & Urutan Menu Sidebar Admin 1 (Bendahara 1) (Update v2.9.27 - 20 Sept 2026)
+### 1. 🛡️ Penghapusan Informasi Jadwal Ronda dari Dashboard Eksekutif Admin 1 (Update v2.9.28 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Hapus kartu informasi **Jadwal Ronda** (`#dash-ronda-banner`) dari tampilan Dashboard Eksekutif Admin 1 (Bendahara 1).
+  - Modul Jadwal Ronda merupakan domain operasional Seksi Keamanan/Ketertiban yang dikelola di dalam akun portal Pengurus RT.
+- **Implementasi Teknis & Arsitektur RBAC**:
+  - **Penyesuaian HTML (`index.html`)**:
+    - Memberikan penanda peran `data-role-req="PENGURUS"` dan styling bawaan `style="display: none;"` pada `#dash-ronda-banner` di dalam `#view-dashboard` agar secara default tidak dimuat untuk Admin 1.
+  - **Logika Kontrol Akses & DOM Rendering (`app.js`)**:
+    - Pada fungsi `renderDashboard()`: Menambahkan pengecekan role di mana `#dash-ronda-banner` diset `display: none` untuk Admin 1 / Bendahara 1 (`isB1`), dan hanya ditampilkan jika pengguna aktif berstatus Pengurus RT (`isPengurus`).
+    - Pada fungsi `applyRBAC()`: Mempertegas aturan bahwa `#dash-ronda-banner` hanya memiliki izin tampil untuk `isPengurus`, sedangkan disembunyikan untuk `isB1`, `isB2`, dan Warga.
+  - **Peningkatan Cache PWA**:
+    - Meningkatkan versi Service Worker ke `rt-finsmart-cache-v2.9.28` di `sw.js`.
+    - Memperbarui parameter query aset `styles.css?v=2.9.28` dan `app.js?v=2.9.28` di `index.html`.
+
+### 2. 🗂️ Restrukturisasi & Urutan Menu Sidebar Admin 1 (Bendahara 1) (Update v2.9.27 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Pada halaman dashboard Admin 1 (Bendahara 1), atur ulang posisi menu di sidebarnya secara tepat menjadi:
     1. **Dashboard Eksekutif** (`dashboard`)

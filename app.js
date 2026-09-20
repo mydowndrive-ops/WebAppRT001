@@ -2485,27 +2485,35 @@ function renderDashboard() {
     console.warn('Dashboard asset banner update:', e);
   }
 
-  // Update Dashboard Ronda Banner
+  // Update Dashboard Ronda Banner (Hanya untuk peran Pengurus RT, disembunyikan untuk Admin 1 / Bendahara 1)
   try {
-    const groups = (typeof window.getRondaGroups === 'function')
-      ? window.getRondaGroups()
-      : ((state.rondaGroups && Array.isArray(state.rondaGroups) && state.rondaGroups.length > 0) ? state.rondaGroups : DEFAULT_RONDA_GROUPS);
-    const curW = (typeof getCurrentRondaActiveWeek === 'function') ? getCurrentRondaActiveWeek() : 1;
-    const activeG = groups.find(g => g.week === curW) || groups[0];
-    const actWeekEl = document.getElementById('dash-ronda-active-week');
-    if (actWeekEl && activeG) {
-      actWeekEl.textContent = `${activeG.weekName} (${activeG.leader ? activeG.leader.name : '-'})`;
+    const dashRondaBanner = document.getElementById('dash-ronda-banner');
+    const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
+    const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
+    if (dashRondaBanner) {
+      dashRondaBanner.style.display = isPengurus ? '' : 'none';
     }
-    const actDescEl = document.getElementById('dash-ronda-active-desc');
-    if (actDescEl && activeG) {
-      actDescEl.innerHTML = `${escapeHtml(activeG.cycle)} &bull; Pukul 21.00 &ndash; 04.00 WIB. Komandan: <strong>${escapeHtml(activeG.leader ? activeG.leader.name : '-')}</strong> bersama ${activeG.members ? activeG.members.length : 10} personel siaga patroli dan penarikan jimpitan warga.`;
+    if (isPengurus) {
+      const groups = (typeof window.getRondaGroups === 'function')
+        ? window.getRondaGroups()
+        : ((state.rondaGroups && Array.isArray(state.rondaGroups) && state.rondaGroups.length > 0) ? state.rondaGroups : DEFAULT_RONDA_GROUPS);
+      const curW = (typeof getCurrentRondaActiveWeek === 'function') ? getCurrentRondaActiveWeek() : 1;
+      const activeG = groups.find(g => g.week === curW) || groups[0];
+      const actWeekEl = document.getElementById('dash-ronda-active-week');
+      if (actWeekEl && activeG) {
+        actWeekEl.textContent = `${activeG.weekName} (${activeG.leader ? activeG.leader.name : '-'})`;
+      }
+      const actDescEl = document.getElementById('dash-ronda-active-desc');
+      if (actDescEl && activeG) {
+        actDescEl.innerHTML = `${escapeHtml(activeG.cycle)} &bull; Pukul 21.00 &ndash; 04.00 WIB. Komandan: <strong>${escapeHtml(activeG.leader ? activeG.leader.name : '-')}</strong> bersama ${activeG.members ? activeG.members.length : 10} personel siaga patroli dan penarikan jimpitan warga.`;
+      }
+      const grpCountEl = document.getElementById('dash-ronda-groups-count');
+      if (grpCountEl) grpCountEl.textContent = `${groups.length} Regu`;
+      let totMembers = 0;
+      groups.forEach(g => { totMembers += 1 + (g.members ? g.members.length : 0); });
+      const memCountEl = document.getElementById('dash-ronda-members-count');
+      if (memCountEl) memCountEl.textContent = `${totMembers} Personel`;
     }
-    const grpCountEl = document.getElementById('dash-ronda-groups-count');
-    if (grpCountEl) grpCountEl.textContent = `${groups.length} Regu`;
-    let totMembers = 0;
-    groups.forEach(g => { totMembers += 1 + (g.members ? g.members.length : 0); });
-    const memCountEl = document.getElementById('dash-ronda-members-count');
-    if (memCountEl) memCountEl.textContent = `${totMembers} Personel`;
   } catch (e) {
     console.warn('Dashboard ronda banner update error:', e);
   }
@@ -7606,6 +7614,12 @@ function applyRBAC() {
   // Tombol Tambah Aset Baru: Sembunyikan untuk Warga (Read-Only)
   const btnOpenAddAset = document.getElementById('btn-open-add-aset');
   if (btnOpenAddAset) btnOpenAddAset.style.display = isWarga ? 'none' : '';
+
+  // Banner Jadwal Ronda di Dashboard Eksekutif: Hanya ditampilkan untuk Pengurus RT, disembunyikan dari Admin 1 (Bendahara 1)
+  const dashRondaBanner = document.getElementById('dash-ronda-banner');
+  if (dashRondaBanner) {
+    dashRondaBanner.style.display = isPengurus ? '' : 'none';
+  }
 
   // Sesuaikan tampilan kontrol kas Jimpitan sesuai role
   renderJimpitan();
