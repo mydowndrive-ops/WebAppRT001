@@ -6456,21 +6456,28 @@ h1, h2, h3, h4, h5, h6 {
   color: #64748b;
 }
 
+.btn-edit-ronda-member,
 .btn-remove-ronda-member {
-  background: transparent;
-  border: none;
-  color: #64748b;
-  font-size: 1.15rem;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: #38bdf8;
+  font-size: 1rem;
   line-height: 1;
   cursor: pointer;
-  padding: 0.3rem 0.55rem;
+  padding: 0.35rem 0.55rem;
   border-radius: 6px;
   transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.btn-edit-ronda-member:hover,
 .btn-remove-ronda-member:hover {
-  color: #f87171;
-  background: rgba(239, 68, 68, 0.15);
+  color: #ffffff;
+  background: rgba(14, 165, 233, 0.25);
+  border-color: rgba(56, 189, 248, 0.6);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
 }
 
 /* ---- Transparansi & Digitalisasi Section (Luxury Emerald Glow) ---- */
@@ -14263,9 +14270,106 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .pengurus-ronda-card.is-active-week {
-  border-color: rgba(245, 158, 11, 0.6);
-  background: linear-gradient(145deg, rgba(30, 27, 75, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
-  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+  border-width: 2px !important;
+  border-color: #fbbf24 !important;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.28) !important;
+}
+
+/* ==================== 8 DISTINCT REGURONDA COLOR PALETTES ==================== */
+/* Regu 1: Emerald Forest Glow (Hijau Zamrud Mewah) */
+.pengurus-ronda-card[data-week="1"],
+.pw-ronda-group-card[data-week="1"] {
+  background: linear-gradient(145deg, rgba(6, 78, 59, 0.45) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.32);
+}
+.pengurus-ronda-card[data-week="1"]:hover,
+.pw-ronda-group-card[data-week="1"]:hover {
+  border-color: rgba(52, 211, 153, 0.65);
+  box-shadow: 0 10px 25px rgba(6, 78, 59, 0.4);
+}
+
+/* Regu 2: Sapphire Oceanic Glow (Biru Safir Elegan) */
+.pengurus-ronda-card[data-week="2"],
+.pw-ronda-group-card[data-week="2"] {
+  background: linear-gradient(145deg, rgba(30, 58, 138, 0.45) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.32);
+}
+.pengurus-ronda-card[data-week="2"]:hover,
+.pw-ronda-group-card[data-week="2"]:hover {
+  border-color: rgba(96, 165, 250, 0.65);
+  box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
+}
+
+/* Regu 3: Royal Amethyst Glow (Ungu Ningrat Karismatik) */
+.pengurus-ronda-card[data-week="3"],
+.pw-ronda-group-card[data-week="3"] {
+  background: linear-gradient(145deg, rgba(88, 28, 135, 0.45) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.32);
+}
+.pengurus-ronda-card[data-week="3"]:hover,
+.pw-ronda-group-card[data-week="3"]:hover {
+  border-color: rgba(192, 132, 252, 0.65);
+  box-shadow: 0 10px 25px rgba(88, 28, 135, 0.4);
+}
+
+/* Regu 4: Golden Bronze / Amber Glow (Emas Tembaga Berwibawa) */
+.pengurus-ronda-card[data-week="4"],
+.pw-ronda-group-card[data-week="4"] {
+  background: linear-gradient(145deg, rgba(120, 53, 15, 0.45) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.32);
+}
+.pengurus-ronda-card[data-week="4"]:hover,
+.pw-ronda-group-card[data-week="4"]:hover {
+  border-color: rgba(251, 191, 36, 0.65);
+  box-shadow: 0 10px 25px rgba(120, 53, 15, 0.4);
+}
+
+/* Regu 5: Cyber Teal / Turquoise Glow (Toska Laut Tropis) */
+.pengurus-ronda-card[data-week="5"],
+.pw-ronda-group-card[data-week="5"] {
+  background: linear-gradient(145deg, rgba(19, 78, 74, 0.48) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(20, 184, 166, 0.32);
+}
+.pengurus-ronda-card[data-week="5"]:hover,
+.pw-ronda-group-card[data-week="5"]:hover {
+  border-color: rgba(45, 212, 191, 0.65);
+  box-shadow: 0 10px 25px rgba(19, 78, 74, 0.4);
+}
+
+/* Regu 6: Ruby Crimson Wine (Merah Delima Mewah) */
+.pengurus-ronda-card[data-week="6"],
+.pw-ronda-group-card[data-week="6"] {
+  background: linear-gradient(145deg, rgba(136, 19, 55, 0.42) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(244, 63, 94, 0.32);
+}
+.pengurus-ronda-card[data-week="6"]:hover,
+.pw-ronda-group-card[data-week="6"]:hover {
+  border-color: rgba(251, 113, 133, 0.65);
+  box-shadow: 0 10px 25px rgba(136, 19, 55, 0.4);
+}
+
+/* Regu 7: Deep Indigo Glow (Biru Indigo Modern) */
+.pengurus-ronda-card[data-week="7"],
+.pw-ronda-group-card[data-week="7"] {
+  background: linear-gradient(145deg, rgba(49, 46, 129, 0.46) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.32);
+}
+.pengurus-ronda-card[data-week="7"]:hover,
+.pw-ronda-group-card[data-week="7"]:hover {
+  border-color: rgba(129, 140, 248, 0.65);
+  box-shadow: 0 10px 25px rgba(49, 46, 129, 0.4);
+}
+
+/* Regu 8: Terracotta Copper (Oranye Tembaga Hangat) */
+.pengurus-ronda-card[data-week="8"],
+.pw-ronda-group-card[data-week="8"] {
+  background: linear-gradient(145deg, rgba(124, 45, 18, 0.45) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(249, 115, 22, 0.32);
+}
+.pengurus-ronda-card[data-week="8"]:hover,
+.pw-ronda-group-card[data-week="8"]:hover {
+  border-color: rgba(251, 146, 60, 0.65);
+  box-shadow: 0 10px 25px rgba(124, 45, 18, 0.4);
 }
 
 .pengurus-ronda-card-header {

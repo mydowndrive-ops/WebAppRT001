@@ -4003,7 +4003,7 @@ function navigateToView(viewId) {
   const isWarga = isCurrentWarga();
 
   const B2_ALLOWED_TARGETS = ['pengurus-struktur', 'jimpitan', 'aset-rt'];
-  const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga', 'non-iuran'];
+  const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'warga', 'ronda-pengurus', 'jimpitan', 'pengajuan-dana-admin', 'non-iuran', 'aset-rt'];
   const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'non-iuran'];
 
   // If B2 attempts to navigate outside allowed pages, redirect to pengurus-struktur
@@ -4043,9 +4043,9 @@ function navigateToView(viewId) {
     'laporan': { title: 'Laporan & Pembukuan', sub: 'Laporan Pertanggungjawaban Keuangan Siap Cetak' },
     'pengaturan': { title: 'Pengaturan Pos & Sistem', sub: 'Konfigurasi Iuran, Split Anggaran & Cadangan Database' },
     'jimpitan': { title: 'Uang Jimpitan', sub: 'Perolehan & Pengeluaran Kas Ronda Malam Minggu' },
-    'non-iuran': { title: 'Pemasukkan NON iuran', sub: 'Pemasukan, Pengeluaran & Saldo Kas Non-Iuran (Donasi, Hibah, Sewa Fasum & Usaha RT)' },
-    'ronda-pengurus': { title: 'Jadwal & Regu Ronda Malam', sub: 'Tata Kelola 8 Regu Ronda & Penarikan Jimpitan Warga RT.001' },
-    'pengajuan-dana-admin': { title: 'Pengajuan Dana Warga', sub: 'Verifikasi, Persetujuan & Realisasi Pencairan Kas Fasilitas' },
+    'non-iuran': { title: 'Pemasukan NON iuran', sub: 'Pemasukan, Pengeluaran & Saldo Kas Non-Iuran (Donasi, Hibah, Sewa Fasum & Usaha RT)' },
+    'ronda-pengurus': { title: 'Jadwal Ronda', sub: 'Tata Kelola 8 Regu Ronda & Penarikan Jimpitan Warga RT.001' },
+    'pengajuan-dana-admin': { title: 'Pengajuan Dana dari Warga', sub: 'Verifikasi, Persetujuan & Realisasi Pencairan Kas Fasilitas' },
     'pengurus-struktur': { title: 'Bagan & Struktur Pengurus RT', sub: 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027' },
     'aset-rt': { title: 'Inventaris & Aset RT.001', sub: 'Pencatatan Sarana Prasarana & Nilai Perolehan Aset Lingkungan Graha Asri' },
     'portal-warga': { title: 'Portal Mandiri Warga RT.001', sub: 'Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan' }
@@ -6933,21 +6933,23 @@ function renderRondaManageForm(weekNum = 1) {
           <div class="ronda-member-input-wrap" style="flex:1;">
             <input type="text" class="form-input ronda-member-input ronda-member-name-input" value="${escapeHtml(mName)}" placeholder="Ketik nama petugas ronda..." list="ronda-residents-datalist" autocomplete="off">
           </div>
-          <button type="button" class="btn-remove-ronda-member" title="Hapus petugas ini" data-idx="${idx}">
-            <i class="fa-solid fa-trash-can"></i>
+          <button type="button" class="btn-edit-ronda-member btn-remove-ronda-member" title="Ganti / Edit nama petugas ini" data-idx="${idx}">
+            <i class="fa-solid fa-pen-to-square"></i>
           </button>
         </div>
         `;
       }).join('');
 
-      // Wire delete buttons
-      membersContainer.querySelectorAll('.btn-remove-ronda-member').forEach(btn => {
+      // Wire edit buttons: Focus and select input field for quick replacement/edit
+      membersContainer.querySelectorAll('.btn-edit-ronda-member, .btn-remove-ronda-member').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
-          const idx = parseInt(btn.getAttribute('data-idx'), 10);
-          syncCurrentFormToDraft();
-          group.members.splice(idx, 1);
-          renderRondaManageForm(currentEditingWeek);
+          const row = btn.closest('.ronda-member-edit-row');
+          const input = row ? row.querySelector('.ronda-member-name-input') : null;
+          if (input) {
+            input.focus();
+            input.select();
+          }
         });
       });
     }
@@ -7460,7 +7462,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Definisi izin halaman per peran (Role-Based Access Control)
 const B1_RESTRICTED_TARGETS = ['checklist', 'pos-anggaran', 'pengeluaran', 'laporan', 'pengaturan'];
 const B2_ALLOWED_TARGETS = ['pengurus-struktur', 'jimpitan', 'aset-rt'];
-const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga', 'non-iuran'];
+const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'warga', 'ronda-pengurus', 'jimpitan', 'pengajuan-dana-admin', 'non-iuran', 'aset-rt'];
 const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'non-iuran'];
 
 function applyRBAC() {
@@ -7492,13 +7494,24 @@ function applyRBAC() {
         el.style.order = '';
       }
     } else if (isPengurus) {
-      // Pengurus RT (Ketua, Sekr, Humas): Monitoring Dashboard, Struktur, Aset, Jimpitan, Pengajuan Dana, dan Data Warga
-      el.style.order = '';
+      // Pengurus RT: 1. Struktur Pengurus RT, 2. Data Warga, 3. Jadwal Ronda, 4. Uang Jimpitan, 5. Pengajuan Dana dari Warga, 6. Pemasukan NON iuran, 7. Inventaris dan Aset RT
       if (PENGURUS_ALLOWED_TARGETS.includes(target)) {
         el.style.display = '';
         el.classList.remove('menu-item-locked');
+        const pengurusOrder = {
+          'dashboard': 0,
+          'pengurus-struktur': 1,
+          'warga': 2,
+          'ronda-pengurus': 3,
+          'jimpitan': 4,
+          'pengajuan-dana-admin': 5,
+          'non-iuran': 6,
+          'aset-rt': 7
+        };
+        if (typeof pengurusOrder[target] !== 'undefined') el.style.order = pengurusOrder[target];
       } else {
         el.style.display = 'none';
+        el.style.order = '';
       }
     } else if (isWarga) {
       // Warga: Hanya Portal Warga, Struktur, dan Aset RT
@@ -11100,7 +11113,7 @@ function openAllRondaPortalModal() {
         const hasResident = allM.some(m => m.name.toLowerCase() === residentNameLower);
 
         return `
-          <div class="pw-ronda-group-card ${hasResident ? 'highlight-my-group' : ''}">
+          <div class="pw-ronda-group-card ${hasResident ? 'highlight-my-group' : ''}" data-week="${g.week}">
             <div class="pw-group-card-header">
               <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
                 <span class="badge ${hasResident ? 'badge-emerald' : 'badge-outline'}" style="font-weight:700; font-size:0.85rem;">

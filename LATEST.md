@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (21:40 WIB)  
-**Versi Rilis Aktif:** `v2.9.24`  
+**Terakhir Diperbarui:** 20 September 2026 (22:00 WIB)  
+**Versi Rilis Aktif:** `v2.9.25`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,51 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 💼 Restrukturisasi & Penyederhanaan Dashboard Portal Admin 2 (Bendahara) (Update v2.9.24 - 20 Sept 2026)
+### 1. 🛡️ Restrukturisasi Menu Eksekutif, Ikon Edit Ronda & 8 Palet Warna Harmonis Regu (Update v2.9.25 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  1. Di dashboard portal pengurus bagian **Atur Jadwal Ronda**: Ganti ikon **"HAPUS/DELETE"** dengan ikon **"GANTI/EDIT"**.
+  2. Ganti kata **"Jadwal Regu Ronda"** menjadi **"Jadwal Ronda"** saja.
+  3. Pada tampilan semua regu, ganti warna background card rondanya berbeda-beda namun tetap harmonis, elegan, dan nyaman dipandang agar lebih mudah dibedakan.
+  4. Atur ulang susunan menu di **Dashboard Eksekutif** menjadi urutan baku:
+     1. **Struktur Pengurus RT**
+     2. **Data Warga**
+     3. **Jadwal Ronda**
+     4. **Uang Jimpitan**
+     5. **Pengajuan Dana dari Warga** (sebelumnya: *Pengajuan Dana Warga*)
+     6. **Pemasukan NON iuran**
+     7. **Inventaris dan Aset RT**
+- **Implementasi Teknis & Arsitektur DevOps**:
+  - **Ikon Ganti/Edit Interaktif pada Modal Ronda**:
+    - Mengganti elemen ikon tong sampah (`fa-trash-can`) pada baris anggota petugas di modal *Kelola Susunan Jadwal Ronda* (`#modal-manage-ronda`) menjadi ikon edit profesional (`<i class="fa-solid fa-pen-to-square"></i>`).
+    - Menghubungkan tombol `.btn-edit-ronda-member` ke *event listener*: saat diklik, sistem secara instan memfokuskan kursor dan menyeleksi teks input nama petugas (`input.focus()`, `input.select()`), memudahkan penggantian nama petugas dari *datalist* 71 KK warga.
+    - Memperbarui gaya CSS `.btn-edit-ronda-member` dengan nuansa *luxury cyan hover glow* (`#38bdf8`) menggantikan warna merah hapus.
+  - **Standardisasi Penamaan "Jadwal Ronda" & "Pengajuan Dana dari Warga"**:
+    - Memperbarui seluruh label navigasi sidebar, *tooltip*, dan header view dari *"Jadwal Regu Ronda"* menjadi *"Jadwal Ronda"*.
+    - Memperbarui label navigasi sidebar dan *tooltip* modul pengajuan dana dari *"Pengajuan Dana Warga"* menjadi *"Pengajuan Dana dari Warga"*.
+  - **8 Skema Warna Card Regu Ronda Harmonis & Mewah**:
+    - Menerapkan 8 palet warna gradient *dark-mode glassmorphism* yang khas untuk setiap regu ronda (`[data-week="1"]` s.d. `[data-week="8"]`) pada kartu regu pengurus (`.pengurus-ronda-card`) dan kartu regu warga (`.pw-ronda-group-card`):
+      1. **Regu 1**: *Emerald Forest Glow* (Nuansa Zamrud Mewah)
+      2. **Regu 2**: *Sapphire Oceanic Glow* (Nuansa Safir Biru Elegan)
+      3. **Regu 3**: *Royal Amethyst Glow* (Nuansa Ungu Violet Ningrat)
+      4. **Regu 4**: *Golden Bronze / Amber Glow* (Nuansa Emas Tembaga Berwibawa)
+      5. **Regu 5**: *Cyber Teal / Turquoise Glow* (Nuansa Toska Tropis Kristal)
+      6. **Regu 6**: *Ruby Crimson Wine* (Nuansa Merah Delima Mewah)
+      7. **Regu 7**: *Deep Indigo Glow* (Nuansa Biru Indigo Modern)
+      8. **Regu 8**: *Terracotta Copper* (Nuansa Oranye Tembaga Hangat)
+    - Kartu regu yang aktif bertugas pada pekan berjalan (`.is-active-week`) tetap diperkuat dengan *glowing golden border* (`#fbbf24`) dan *pulse indicator*.
+  - **Restrukturisasi Urutan Menu Eksekutif (1 sampai 7)**:
+    - Menata ulang urutan DOM `<nav class="sidebar-menu">` di `index.html` dan aturan Flexbox `el.style.order` di `applyRBAC()` (`app.js`) menjadi:
+      1. `pengurus-struktur` (Struktur Pengurus RT)
+      2. `warga` (Data Warga)
+      3. `ronda-pengurus` (Jadwal Ronda)
+      4. `jimpitan` (Uang Jimpitan)
+      5. `pengajuan-dana-admin` (Pengajuan Dana dari Warga)
+      6. `non-iuran` (Pemasukan NON iuran)
+      7. `aset-rt` (Inventaris dan Aset RT)
+      *(diikuti oleh modul pembukuan kas khusus Admin 1: Checklist Iuran, 6 Pos Anggaran, Pengeluaran, Laporan, Pengaturan)*.
+  - **Peningkatan Cache PWA**: Meningkatkan versi cache Service Worker ke `rt-finsmart-cache-v2.9.25` serta query string aset CSS dan JS.
+
+### 2. 💼 Restrukturisasi & Penyederhanaan Dashboard Portal Admin 2 (Bendahara) (Update v2.9.24 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   1. Pada halaman portal **Admin 2 (Bendahara)**, hilangkan informasi/menu **"Pemasukkan Non Iuran"** dan **"Jadwal regu Ronda"**.
   2. Susun ulang menu dashboard Admin 2 secara spesifik dengan urutan baku:

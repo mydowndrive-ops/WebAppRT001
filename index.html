@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.24">
+  <link rel="stylesheet" href="styles.css?v=2.9.25">
 </head>
 <body>
 
@@ -2335,21 +2335,48 @@
           <i class="fa-solid fa-chart-pie"></i>
           <span>Dashboard Eksekutif</span>
         </a>
+        <!-- 1. Struktur Pengurus RT -->
         <a href="#pengurus-struktur" class="menu-item" data-target="pengurus-struktur" data-role-req="ALL" data-tooltip="Struktur Pengurus RT">
           <i class="fa-solid fa-sitemap text-purple"></i>
           <span>Struktur Pengurus RT</span>
           <span class="counter-badge" style="background: rgba(168, 85, 247, 0.25); color: #c084fc;">2022-2027</span>
         </a>
+        <!-- 2. Data Warga -->
+        <a href="#warga" class="menu-item" data-target="warga" data-role-req="PENGURUS" data-tooltip="Data Warga">
+          <i class="fa-solid fa-users-gear"></i>
+          <span>Data Warga</span>
+        </a>
+        <!-- 3. Jadwal Ronda -->
+        <a href="#ronda-pengurus" class="menu-item" data-target="ronda-pengurus" data-role-req="PENGURUS" data-tooltip="Jadwal Ronda">
+          <i class="fa-solid fa-shield-halved text-gold"></i>
+          <span>Jadwal Ronda</span>
+          <span class="counter-badge" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24;">8 Regu</span>
+        </a>
+        <!-- 4. Uang Jimpitan -->
         <a href="#jimpitan" class="menu-item" data-target="jimpitan" data-role-req="ALL" data-tooltip="Uang Jimpitan">
           <i class="fa-solid fa-moon text-gold"></i>
           <span>Uang Jimpitan</span>
           <span class="counter-badge" id="sidebar-jimpitan-badge" style="background: rgba(16, 185, 129, 0.25); color: #34d399;">Minggu</span>
         </a>
-        <a href="#aset-rt" class="menu-item" data-target="aset-rt" data-role-req="ALL" data-tooltip="Inventaris &amp; Aset RT">
+        <!-- 5. Pengajuan Dana dari Warga -->
+        <a href="#pengajuan-dana-admin" class="menu-item" data-target="pengajuan-dana-admin" data-role-req="PENGURUS" data-tooltip="Pengajuan Dana dari Warga">
+          <i class="fa-solid fa-hand-holding-dollar text-cyan"></i>
+          <span>Pengajuan Dana dari Warga</span>
+          <span class="counter-badge" id="sidebar-pengajuan-badge" style="background: rgba(37, 99, 235, 0.35); color: #60a5fa;">0</span>
+        </a>
+        <!-- 6. Pemasukan NON iuran -->
+        <a href="#non-iuran" class="menu-item" data-target="non-iuran" data-role-req="PENGURUS" data-tooltip="Pemasukan NON iuran">
+          <i class="fa-solid fa-hand-holding-dollar text-cyan"></i>
+          <span>Pemasukan NON iuran</span>
+          <span class="counter-badge" id="sidebar-non-dues-badge" style="background: rgba(6, 182, 212, 0.25); color: #22d3ee;">0</span>
+        </a>
+        <!-- 7. Inventaris dan Aset RT -->
+        <a href="#aset-rt" class="menu-item" data-target="aset-rt" data-role-req="ALL" data-tooltip="Inventaris dan Aset RT">
           <i class="fa-solid fa-boxes-stacked text-emerald"></i>
-          <span>Inventaris &amp; Aset RT</span>
+          <span>Inventaris dan Aset RT</span>
           <span class="counter-badge" id="sidebar-aset-badge" style="background: rgba(16, 185, 129, 0.25); color: #34d399;">33</span>
         </a>
+        <!-- Modul Keuangan Khusus B1 -->
         <a href="#checklist" class="menu-item" data-target="checklist" data-role-req="B1" data-tooltip="Checklist Iuran Wajib">
           <i class="fa-solid fa-list-check"></i>
           <span>Checklist Iuran Wajib</span>
@@ -2362,25 +2389,6 @@
         <a href="#pengeluaran" class="menu-item" data-target="pengeluaran" data-role-req="B1" data-tooltip="Pengeluaran Kas">
           <i class="fa-solid fa-money-bill-transfer"></i>
           <span>Pengeluaran Kas</span>
-        </a>
-        <a href="#non-iuran" class="menu-item" data-target="non-iuran" data-role-req="B1" data-tooltip="Pemasukkan NON iuran">
-          <i class="fa-solid fa-hand-holding-dollar text-cyan"></i>
-          <span>Pemasukkan NON iuran</span>
-          <span class="counter-badge" id="sidebar-non-dues-badge" style="background: rgba(6, 182, 212, 0.25); color: #22d3ee;">0</span>
-        </a>
-        <a href="#ronda-pengurus" class="menu-item" data-target="ronda-pengurus" data-role-req="PENGURUS" data-tooltip="Jadwal Regu Ronda">
-          <i class="fa-solid fa-shield-halved text-gold"></i>
-          <span>Jadwal Regu Ronda</span>
-          <span class="counter-badge" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24;">8 Regu</span>
-        </a>
-        <a href="#pengajuan-dana-admin" class="menu-item" data-target="pengajuan-dana-admin" data-role-req="B1" data-tooltip="Pengajuan Dana Warga">
-          <i class="fa-solid fa-hand-holding-dollar text-cyan"></i>
-          <span>Pengajuan Dana Warga</span>
-          <span class="counter-badge" id="sidebar-pengajuan-badge" style="background: rgba(37, 99, 235, 0.35); color: #60a5fa;">0</span>
-        </a>
-        <a href="#warga" class="menu-item" data-target="warga" data-role-req="B1" data-tooltip="Data Warga">
-          <i class="fa-solid fa-users-gear"></i>
-          <span>Data Warga</span>
         </a>
         <a href="#laporan" class="menu-item" data-target="laporan" data-role-req="B1" data-tooltip="Laporan &amp; Pembukuan">
           <i class="fa-solid fa-file-invoice-dollar"></i>
@@ -4144,7 +4152,7 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
           <div>
             <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
-              <h3 class="text-white mb-0"><i class="fa-solid fa-shield-halved text-gold"></i> Tata Kelola Jadwal &amp; Regu Ronda Malam</h3>
+              <h3 class="text-white mb-0"><i class="fa-solid fa-shield-halved text-gold"></i> Tata Kelola Jadwal Ronda Malam</h3>
               <span class="cyber-badge-sm" id="pengurus-ronda-live-badge"><span class="pulse-dot"></span> LIVE AKTIF</span>
             </div>
             <p class="text-muted mb-0" style="font-size:0.88rem;">
@@ -6509,6 +6517,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.24"></script>
+  <script src="app.js?v=2.9.25"></script>
 </body>
 </html>
