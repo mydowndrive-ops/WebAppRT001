@@ -53,6 +53,8 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
   9. **Sinkronisasi Service Worker & Cache Busting**:
      - Versi cache Service Worker dinaikkan menjadi `rt-finsmart-cache-v2.9.33`.
      - Parameter query string aset `styles.css?v=2.9.33` dan `app.js?v=2.9.33` diperbarui di `index.html` dan `sw.js`.
+  10. **Penyederhanaan & Pembersihan Header Spotlight Grafik Tahunan**:
+     - Menghapus kotak kapsul bertuliskan *"Transparansi Partisipasi Warga RT.001"* dan kalimat sub-keterangan *"Visualisasi performa gotong royong dan kepatuhan pembayaran iuran kas warga setiap bulan (Januari s/d Desember)"* sesuai arahan pengguna agar bagian tampak bersih, modern, dan selaras vertikal dengan tombol switcher kurva/batang dan pemilih tahun.
 
 ### 2. 💼 Financial Engineering Audit & Zero-Error Reconciliation (Update v2.9.32 - 20 Sept 2026)
 - **Latar Belakang & Mandat Financial Engineer**:
