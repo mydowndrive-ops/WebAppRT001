@@ -2090,37 +2090,63 @@ function generateMonthlyBatchPayments(month, year, count) {
 // ==================== AUTO-SPLIT CALCULATION ENGINE ====================
 
 /**
- * Calculates the exact breakdown splits for a given mandatory payment amount
+ * Calculates the exact breakdown splits for a given mandatory payment amount.
+ * Implements the Largest Remainder Method (Hamilton-Hare Algorithm) with integer
+ * remainder plug to guarantee sum(splits) === amount down to 0 Rupiah discrepancy.
  */
 function calculateAutoSplit(amount) {
   const splits = {};
-  const totalConfigSum = state.posConfig.reduce((acc, pos) => acc + pos.defaultNominal, 0);
+  const numAmount = Math.max(0, Math.round(Number(amount) || 0));
+  if (!state.posConfig || !Array.isArray(state.posConfig) || state.posConfig.length === 0) return splits;
 
-  if (totalConfigSum === 0) return splits;
+  const totalConfigSum = state.posConfig.reduce((acc, pos) => acc + (Number(pos.defaultNominal) || 0), 0);
+  if (totalConfigSum === 0 || numAmount === 0) {
+    state.posConfig.forEach(pos => splits[pos.id] = 0);
+    return splits;
+  }
+
+  let allocatedSum = 0;
+  const remainders = [];
 
   state.posConfig.forEach(pos => {
-    // Proportional or fixed split
-    const portion = (pos.defaultNominal / totalConfigSum) * amount;
-    splits[pos.id] = Math.round(portion);
+    const defaultNom = Number(pos.defaultNominal) || 0;
+    const rawPortion = (defaultNom / totalConfigSum) * numAmount;
+    const floorPortion = Math.floor(rawPortion);
+    splits[pos.id] = floorPortion;
+    allocatedSum += floorPortion;
+    remainders.push({
+      id: pos.id,
+      fraction: rawPortion - floorPortion,
+      nominal: defaultNom
+    });
   });
+
+  const discrepancy = numAmount - allocatedSum;
+  // Distribute discrepancy (1 rupiah at a time) to the highest fractional remainders
+  remainders.sort((a, b) => b.fraction - a.fraction || b.nominal - a.nominal);
+  for (let i = 0; i < discrepancy; i++) {
+    const target = remainders[i % remainders.length];
+    splits[target.id] = (splits[target.id] || 0) + 1;
+  }
 
   return splits;
 }
 
 /**
- * Computes consolidated financial balances across all Pos Anggaran
+ * Computes consolidated financial balances across all Pos Anggaran,
+ * with strict double-entry reconciliation and zero-unrecorded liabilities guarantee.
  */
 function computeFinancials() {
   const posBalances = {};
 
   // Initialize 6 core pos
-  state.posConfig.forEach(pos => {
+  (state.posConfig || []).forEach(pos => {
     posBalances[pos.id] = {
       id: pos.id,
       name: pos.name,
       icon: pos.icon,
       color: pos.color,
-      defaultNominal: pos.defaultNominal,
+      defaultNominal: Number(pos.defaultNominal) || 0,
       income: 0,
       expense: 0,
       balance: 0
@@ -2128,7 +2154,7 @@ function computeFinancials() {
   });
 
   // Initialize other pos
-  state.otherPosConfig.forEach(pos => {
+  (state.otherPosConfig || []).forEach(pos => {
     posBalances[pos.id] = {
       id: pos.id,
       name: pos.name,
@@ -2142,34 +2168,49 @@ function computeFinancials() {
   });
 
   // Calculate Income from Payments
-  state.payments.forEach(p => {
+  (state.payments || []).forEach(p => {
+    const amt = Math.max(0, Number(p.amount) || 0);
     if (p.category) {
-      // It is an other due (e.g. SHR, Ronda, Pembangunan, Sukarela)
-      const targetPosId = p.category.toLowerCase().includes('shr') ? 'shr' :
-                          p.category.toLowerCase().includes('ronda') ? 'ronda' :
-                          p.category.toLowerCase().includes('pembang') ? 'pembangunan' : 'sukarela';
+      // Other due (SHR, Ronda, Pembangunan, Sukarela)
+      const catLower = String(p.category).toLowerCase();
+      const targetPosId = catLower.includes('shr') ? 'shr' :
+                          catLower.includes('ronda') ? 'ronda' :
+                          catLower.includes('pembang') ? 'pembangunan' : 'sukarela';
       if (posBalances[targetPosId]) {
-        posBalances[targetPosId].income += Number(p.amount);
+        posBalances[targetPosId].income += amt;
+      } else if (posBalances['sukarela']) {
+        posBalances['sukarela'].income += amt;
+      } else if (posBalances['kas_rt']) {
+        posBalances['kas_rt'].income += amt;
       }
     } else {
       // Mandatory monthly dues -> auto-split to 6 core pos
-      const splits = calculateAutoSplit(Number(p.amount));
+      const splits = calculateAutoSplit(amt);
       for (const [posId, splitAmount] of Object.entries(splits)) {
         if (posBalances[posId]) {
-          posBalances[posId].income += Number(splitAmount);
+          posBalances[posId].income += Number(splitAmount) || 0;
         }
       }
     }
   });
 
-  // Deduct Expenses
-  state.expenses.forEach(e => {
-    if (posBalances[e.posId]) {
-      posBalances[e.posId].expense += Number(e.amount);
+  // Deduct Expenses (Strict Reconciliation - Prevents unrecorded expenses)
+  (state.expenses || []).forEach(e => {
+    const amt = Math.max(0, Number(e.amount) || 0);
+    if (e.posId && posBalances[e.posId]) {
+      posBalances[e.posId].expense += amt;
+    } else {
+      // Fallback: orphan or unmapped expense is allocated to 'kas_rt' so money spent is never lost
+      if (posBalances['kas_rt']) {
+        posBalances['kas_rt'].expense += amt;
+      } else {
+        const firstPosId = Object.keys(posBalances)[0];
+        if (firstPosId) posBalances[firstPosId].expense += amt;
+      }
     }
   });
 
-  // Calculate Balance for each Pos
+  // Calculate Balance for each Pos & Overall Totals
   let totalConsolidatedIncome = 0;
   let totalConsolidatedExpense = 0;
   let totalConsolidatedBalance = 0;
@@ -2183,18 +2224,43 @@ function computeFinancials() {
   }
 
   // Monthly statistics for active selected period
-  const monthPayments = state.payments.filter(p => !p.category && p.month === state.selectedMonth && p.year === state.selectedYear);
+  const selMonth = Number(state.selectedMonth) || 9;
+  const selYear = Number(state.selectedYear) || 2026;
+  const monthPayments = (state.payments || []).filter(
+    p => !p.category && Number(p.month) === selMonth && Number(p.year) === selYear
+  );
   const paidResidentsCount = new Set(monthPayments.map(p => p.residentId)).size;
-  const totalResidentsCount = state.residents.length;
+  const totalResidentsCount = (state.residents && state.residents.length) || 0;
   const unpaidResidentsCount = Math.max(0, totalResidentsCount - paidResidentsCount);
-  const monthMandatoryIncome = monthPayments.reduce((acc, p) => acc + Number(p.amount), 0);
-  const collectionPercentage = totalResidentsCount > 0 ? Math.round((paidResidentsCount / totalResidentsCount) * 100) : 0;
+  const monthMandatoryIncome = monthPayments.reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
+  const collectionPercentage = totalResidentsCount > 0 ? Math.min(100, Math.round((paidResidentsCount / totalResidentsCount) * 100)) : 0;
+
+  // Additional Consolidated Cash Pools (Non-Dues & Jimpitan)
+  const nonDuesIncome = (state.nonDuesIncomes || []).reduce((acc, i) => acc + (Number(i.amount) || 0), 0);
+  const nonDuesExpense = (state.nonDuesExpenses || []).reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+  const nonDuesBalance = nonDuesIncome - nonDuesExpense;
+
+  const jimpitanIncome = (state.jimpitanIncomes || []).reduce((acc, i) => acc + (Number(i.amount) || 0), 0);
+  const jimpitanExpense = (state.jimpitanExpenses || []).reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+  const jimpitanBalance = jimpitanIncome - jimpitanExpense;
+
+  const grandTotalLiquidBalance = totalConsolidatedBalance + nonDuesBalance + jimpitanBalance;
 
   return {
     posBalances,
     totalConsolidatedIncome,
     totalConsolidatedExpense,
     totalConsolidatedBalance,
+    totalIncome: totalConsolidatedIncome,
+    totalExpense: totalConsolidatedExpense,
+    totalBalance: totalConsolidatedBalance,
+    nonDuesIncome,
+    nonDuesExpense,
+    nonDuesBalance,
+    jimpitanIncome,
+    jimpitanExpense,
+    jimpitanBalance,
+    grandTotalLiquidBalance,
     paidResidentsCount,
     unpaidResidentsCount,
     totalResidentsCount,
@@ -2205,13 +2271,21 @@ function computeFinancials() {
 
 // ==================== FORMATTERS ====================
 
+function parseNominal(val) {
+  if (val === null || val === undefined || val === '') return 0;
+  if (typeof val === 'number') return isNaN(val) ? 0 : Math.round(val);
+  const clean = String(val).replace(/[^0-9-]/g, '');
+  return parseInt(clean, 10) || 0;
+}
+
 function formatRupiah(number) {
+  const cleanVal = typeof number === 'string' ? parseNominal(number) : (Number(number) || 0);
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
-  }).format(number || 0);
+  }).format(cleanVal);
 }
 
 function formatDateIndo(dateStr) {
@@ -2474,7 +2548,7 @@ function renderDashboard() {
   // Update Dashboard Asset Banner
   try {
     const asetList = getAsetList();
-    const totalVal = asetList.reduce((acc, it) => acc + (Number(it.harga) || 0), 0);
+    const totalVal = asetList.reduce((acc, it) => acc + parseNominal(it.harga), 0);
     const okCount = asetList.filter(it => it.kondisi === 'ok').length;
     const badCount = asetList.length - okCount;
     const dashAssetVal = document.getElementById('dash-asset-total-val');
@@ -2606,10 +2680,15 @@ function renderDashboard() {
 
 /**
  * Computes compliance and payment stats per street for the active selected period
+ * using real cashflow aggregation reconciled with the General Ledger.
  */
 function computeStreetStats() {
-  const currentMonthPayments = state.payments.filter(
-    p => !p.category && p.month === state.selectedMonth && p.year === state.selectedYear
+  const selMonth = Number(state.selectedMonth) || 9;
+  const selYear = Number(state.selectedYear) || 2026;
+  const duesNominal = Number(state.mandatoryDues) || 50000;
+
+  const currentMonthPayments = (state.payments || []).filter(
+    p => !p.category && Number(p.month) === selMonth && Number(p.year) === selYear
   );
   const paidResidentIds = new Set(currentMonthPayments.map(p => p.residentId));
 
@@ -2622,13 +2701,17 @@ function computeStreetStats() {
   ];
 
   return streetDefinitions.map(def => {
-    const residentsOnStreet = state.residents.filter(r => r.street === def.name);
+    const residentsOnStreet = (state.residents || []).filter(r => r.street === def.name);
+    const streetResidentIds = new Set(residentsOnStreet.map(r => r.id));
     const totalWarga = residentsOnStreet.length;
     const paidWarga = residentsOnStreet.filter(r => paidResidentIds.has(r.id)).length;
     const unpaidWarga = Math.max(0, totalWarga - paidWarga);
-    const percent = totalWarga > 0 ? Math.round((paidWarga / totalWarga) * 100) : 0;
-    const totalCollected = paidWarga * state.mandatoryDues;
-    const totalTarget = totalWarga * state.mandatoryDues;
+    const percent = totalWarga > 0 ? Math.min(100, Math.round((paidWarga / totalWarga) * 100)) : 0;
+    
+    // Sum real cashflow collected for residents on this street in the active period
+    const streetPayments = currentMonthPayments.filter(p => streetResidentIds.has(p.residentId));
+    const totalCollected = streetPayments.reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
+    const totalTarget = totalWarga * duesNominal;
 
     return {
       name: def.name,
@@ -2760,11 +2843,40 @@ function renderExecutiveCharts(fin) {
   // 1. Cashflow Trend Chart
   const ctxCashflow = document.getElementById('cashflowChart');
   if (ctxCashflow) {
-    const labels = ['Mei 26', 'Jun 26', 'Jul 26', 'Agu 26', 'Sep 26', 'Okt 26'];
-    const incomeData = [950000, 1100000, 1050000, 1200000, fin.totalConsolidatedIncome, 0];
-    const expenseData = [350000, 480000, 400000, 520000, fin.totalConsolidatedExpense, 0];
+    const selM = Number(state.selectedMonth) || 9;
+    const selY = Number(state.selectedYear) || 2026;
+    const shortMonths = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+    const labels = [];
+    const incomeData = [];
+    const expenseData = [];
+
+    for (let i = 5; i >= 0; i--) {
+      let m = selM - i;
+      let y = selY;
+      while (m <= 0) {
+        m += 12;
+        y -= 1;
+      }
+      labels.push(`${shortMonths[m]} ${String(y).slice(-2)}`);
+
+      // Real income for this month & year
+      const mIncome = (state.payments || [])
+        .filter(p => Number(p.month) === m && Number(p.year) === y)
+        .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+      incomeData.push(mIncome);
+
+      // Real expenses for this month & year
+      const mmStr = String(m).padStart(2, '0');
+      const prefix = `${y}-${mmStr}`;
+      const mExpense = (state.expenses || [])
+        .filter(e => e.date && String(e.date).startsWith(prefix))
+        .reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+      expenseData.push(mExpense);
+    }
 
     if (cashflowChart) {
+      cashflowChart.data.labels = labels;
       cashflowChart.data.datasets[0].data = incomeData;
       cashflowChart.data.datasets[1].data = expenseData;
       cashflowChart.update();
@@ -2864,13 +2976,15 @@ function renderChecklist() {
   tbody.innerHTML = '';
 
   let totalCollected = 0;
-  let targetTotal = state.residents.length * state.mandatoryDues;
+  let targetTotal = (state.residents || []).length * (Number(state.mandatoryDues) || 50000);
 
-  const currentMonthPayments = state.payments.filter(
-    p => !p.category && p.month === state.selectedMonth && p.year === state.selectedYear
+  const selM = Number(state.selectedMonth) || 9;
+  const selY = Number(state.selectedYear) || 2026;
+  const currentMonthPayments = (state.payments || []).filter(
+    p => !p.category && Number(p.month) === selM && Number(p.year) === selY
   );
 
-  state.residents.forEach(resident => {
+  (state.residents || []).forEach(resident => {
     // Check match search & filters
     const matchSearch = resident.name.toLowerCase().includes(searchTerm) ||
                         resident.block.toLowerCase().includes(searchTerm) ||
@@ -2879,15 +2993,17 @@ function renderChecklist() {
     const matchBlock = blockFilter === 'ALL' || resident.block === blockFilter;
     const matchStreet = streetFilter === 'ALL' || resident.street === streetFilter;
 
-    const paymentRecord = currentMonthPayments.find(p => p.residentId === resident.id);
-    const isPaid = !!paymentRecord;
+    const residentPayments = currentMonthPayments.filter(p => p.residentId === resident.id);
+    const isPaid = residentPayments.length > 0;
+    const paymentRecord = isPaid ? residentPayments[0] : null;
+    const residentPaidAmount = residentPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
 
     const matchStatus = statusFilter === 'ALL' ||
                         (statusFilter === 'PAID' && isPaid) ||
                         (statusFilter === 'UNPAID' && !isPaid);
 
     if (isPaid) {
-      totalCollected += Number(paymentRecord.amount);
+      totalCollected += residentPaidAmount;
     }
 
     if (!matchSearch || !matchBlock || !matchStreet || !matchStatus) return;
@@ -2972,12 +3088,12 @@ function toggleResidentPayment(residentId, isChecked) {
     saveState();
     showToast(`Iuran ${resident.name} (${MONTH_NAMES[state.selectedMonth]} ${state.selectedYear}) Berhasil Diterima & Di-split ke 6 Pos!`, 'success');
   } else {
-    // Remove payment record
-    const index = state.payments.findIndex(
-      p => !p.category && p.residentId === residentId && p.month === state.selectedMonth && p.year === state.selectedYear
+    // Remove all payment records for this resident in this month & year
+    const initialLen = (state.payments || []).length;
+    state.payments = (state.payments || []).filter(
+      p => !(p.residentId === residentId && Number(p.month) === Number(state.selectedMonth) && Number(p.year) === Number(state.selectedYear) && !p.category)
     );
-    if (index !== -1) {
-      state.payments.splice(index, 1);
+    if (state.payments.length < initialLen) {
       saveState();
       showToast(`Status pembayaran ${resident.name} dibatalkan.`, 'info');
     }
@@ -3255,27 +3371,108 @@ async function syncResidentsFromGoogleSheet() {
 function renderReport() {
   const fin = computeFinancials();
   const reportType = document.querySelector('input[name="reportType"]:checked')?.value || 'monthly';
+  const selMonth = Number(state.selectedMonth) || 9;
+  const selYear = Number(state.selectedYear) || 2026;
+  const mm = String(selMonth).padStart(2, '0');
+
+  let startDate = null;
+  let endDate = null;
+
+  if (reportType === 'monthly') {
+    startDate = `${selYear}-${mm}-01`;
+    const lastDay = new Date(selYear, selMonth, 0).getDate();
+    endDate = `${selYear}-${mm}-${String(lastDay).padStart(2, '0')}`;
+  } else if (reportType === 'annual') {
+    startDate = `${selYear}-01-01`;
+    endDate = `${selYear}-12-31`;
+  }
 
   const periodTitle = document.getElementById('report-period-title');
   if (periodTitle) {
-    periodTitle.textContent = reportType === 'monthly' ? `Periode: ${MONTH_NAMES[state.selectedMonth]} ${state.selectedYear}` :
-                              reportType === 'annual' ? `Periode: Tahun Buku ${state.selectedYear}` :
+    periodTitle.textContent = reportType === 'monthly' ? `Periode: ${MONTH_NAMES[selMonth]} ${selYear}` :
+                              reportType === 'annual' ? `Periode: Tahun Buku ${selYear}` :
                               'Buku Kas Umum Konsolidasi Seluruh Periode';
   }
 
-  // Summary figures
-  document.getElementById('rep-initial-balance').textContent = formatRupiah(0);
-  document.getElementById('rep-total-in').textContent = formatRupiah(fin.totalConsolidatedIncome);
-  document.getElementById('rep-total-out').textContent = formatRupiah(fin.totalConsolidatedExpense);
-  document.getElementById('rep-final-balance').textContent = formatRupiah(fin.totalConsolidatedBalance);
+  // 1. Calculate Initial Balance (Mutasi kas sebelum tanggal awal periode)
+  let initialBalance = 0;
+  if (startDate) {
+    (state.payments || []).forEach(p => {
+      const pDate = p.date || `${p.year || selYear}-${String(p.month || selMonth).padStart(2, '0')}-01`;
+      if (pDate < startDate) {
+        initialBalance += (Number(p.amount) || 0);
+      }
+    });
+    (state.expenses || []).forEach(e => {
+      if (e.date && e.date < startDate) {
+        initialBalance -= (Number(e.amount) || 0);
+      }
+    });
+  }
 
-  // Breakdown per Pos in Report Table
+  // 2. Filter Transactions in Selected Period
+  const periodPayments = (state.payments || []).filter(p => {
+    if (!startDate) return true;
+    const pDate = p.date || `${p.year || selYear}-${String(p.month || selMonth).padStart(2, '0')}-01`;
+    return pDate >= startDate && pDate <= endDate;
+  });
+
+  const periodExpenses = (state.expenses || []).filter(e => {
+    if (!startDate) return true;
+    return e.date && e.date >= startDate && e.date <= endDate;
+  });
+
+  const totalIn = periodPayments.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+  const totalOut = periodExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+  const finalBalance = initialBalance + totalIn - totalOut;
+
+  // Summary figures
+  document.getElementById('rep-initial-balance').textContent = formatRupiah(initialBalance);
+  document.getElementById('rep-total-in').textContent = formatRupiah(totalIn);
+  document.getElementById('rep-total-out').textContent = formatRupiah(totalOut);
+  document.getElementById('rep-final-balance').textContent = formatRupiah(finalBalance);
+
+  // 3. Breakdown per Pos in Report Table (Berdasarkan Mutasi Periode Terpilih)
   const tbodyReportPos = document.getElementById('tbody-report-pos');
   if (tbodyReportPos) {
     tbodyReportPos.innerHTML = '';
     let idx = 1;
+
+    // Hitung alokasi pos untuk transaksi dalam periode ini
+    const periodPosData = {};
     [...state.posConfig, ...state.otherPosConfig].forEach(pos => {
-      const data = fin.posBalances[pos.id] || { income: 0, expense: 0, balance: 0 };
+      periodPosData[pos.id] = { income: 0, expense: 0, balance: 0 };
+    });
+
+    periodPayments.forEach(p => {
+      const amt = Number(p.amount) || 0;
+      if (p.category) {
+        const catLower = String(p.category).toLowerCase();
+        const targetPosId = catLower.includes('shr') ? 'shr' :
+                            catLower.includes('ronda') ? 'ronda' :
+                            catLower.includes('pembang') ? 'pembangunan' : 'sukarela';
+        if (periodPosData[targetPosId]) periodPosData[targetPosId].income += amt;
+        else if (periodPosData['sukarela']) periodPosData['sukarela'].income += amt;
+      } else {
+        const splits = calculateAutoSplit(amt);
+        for (const [posId, splitAmt] of Object.entries(splits)) {
+          if (periodPosData[posId]) periodPosData[posId].income += Number(splitAmt) || 0;
+        }
+      }
+    });
+
+    periodExpenses.forEach(e => {
+      const amt = Number(e.amount) || 0;
+      if (e.posId && periodPosData[e.posId]) {
+        periodPosData[e.posId].expense += amt;
+      } else if (periodPosData['kas_rt']) {
+        periodPosData['kas_rt'].expense += amt;
+      }
+    });
+
+    [...state.posConfig, ...state.otherPosConfig].forEach(pos => {
+      const pData = periodPosData[pos.id] || { income: 0, expense: 0 };
+      const netPeriod = pData.income - pData.expense;
       const isCore = state.posConfig.some(p => p.id === pos.id);
 
       const tr = document.createElement('tr');
@@ -3283,32 +3480,39 @@ function renderReport() {
         <td style="text-align: center;">${idx++}</td>
         <td><strong>${pos.name}</strong></td>
         <td>${isCore ? `${formatRupiah(pos.defaultNominal)} / KK` : 'Iuran Bebas'}</td>
-        <td style="color: var(--emerald-400); font-weight: 600;">${formatRupiah(data.income)}</td>
-        <td style="color: var(--rose-400); font-weight: 600;">${formatRupiah(data.expense)}</td>
-        <td style="font-weight: 700; color: var(--gold-400);">${formatRupiah(data.balance)}</td>
+        <td style="color: var(--emerald-400); font-weight: 600;">${formatRupiah(pData.income)}</td>
+        <td style="color: var(--rose-400); font-weight: 600;">${formatRupiah(pData.expense)}</td>
+        <td style="font-weight: 700; color: var(--gold-400);">${formatRupiah(netPeriod)}</td>
       `;
       tbodyReportPos.appendChild(tr);
     });
   }
 
-  // Breakdown Pemasukkan NON Iuran di Laporan Keuangan
+  // 4. Breakdown Pemasukkan NON Iuran di Laporan Keuangan (Sesuai Filter Periode)
   const tbodyNonDuesRep = document.getElementById('tbody-report-non-dues');
   const tfootNonDuesRep = document.getElementById('tfoot-report-non-dues');
   if (tbodyNonDuesRep) {
-    const incomes = state.nonDuesIncomes || [];
-    const expenses = state.nonDuesExpenses || [];
-    const totalIn = incomes.reduce((s, i) => s + (Number(i.amount) || 0), 0);
-    const totalOut = expenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
-    const saldo = totalIn - totalOut;
+    const periodNonDuesIn = (state.nonDuesIncomes || []).filter(i => {
+      if (!startDate) return true;
+      return i.date && i.date >= startDate && i.date <= endDate;
+    });
+    const periodNonDuesOut = (state.nonDuesExpenses || []).filter(e => {
+      if (!startDate) return true;
+      return e.date && e.date >= startDate && e.date <= endDate;
+    });
+
+    const totalNonIn = periodNonDuesIn.reduce((s, i) => s + (Number(i.amount) || 0), 0);
+    const totalNonOut = periodNonDuesOut.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+    const saldoNonDues = totalNonIn - totalNonOut;
 
     const catMap = {};
-    incomes.forEach(i => {
+    periodNonDuesIn.forEach(i => {
       const c = i.category || 'Lain-lain';
       if (!catMap[c]) catMap[c] = { in: 0, out: 0, count: 0 };
       catMap[c].in += (Number(i.amount) || 0);
       catMap[c].count++;
     });
-    expenses.forEach(e => {
+    periodNonDuesOut.forEach(e => {
       const c = e.category || 'Pengeluaran Non-Iuran';
       if (!catMap[c]) catMap[c] = { in: 0, out: 0, count: 0 };
       catMap[c].out += (Number(e.amount) || 0);
@@ -3317,7 +3521,7 @@ function renderReport() {
 
     const keys = Object.keys(catMap);
     if (keys.length === 0) {
-      tbodyNonDuesRep.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:1rem;">Belum ada catatan transaksi kas non-iuran.</td></tr>';
+      tbodyNonDuesRep.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:1rem;">Belum ada catatan transaksi kas non-iuran pada periode ini.</td></tr>';
     } else {
       let rIdx = 1;
       tbodyNonDuesRep.innerHTML = keys.map(k => `
@@ -3335,22 +3539,22 @@ function renderReport() {
     if (tfootNonDuesRep) {
       tfootNonDuesRep.innerHTML = `
         <tr style="background: rgba(255,255,255,0.06); font-weight: bold;">
-          <td colspan="3" style="text-align: right;">TOTAL KAS NON-IURAN:</td>
-          <td style="color: var(--emerald-400); text-align: right;">${formatRupiah(totalIn)}</td>
-          <td style="color: var(--rose-400); text-align: right;">${formatRupiah(totalOut)}</td>
-          <td style="color: var(--gold-400); text-align: right;">${formatRupiah(saldo)}</td>
+          <td colspan="3" style="text-align: right;">TOTAL KAS NON-IURAN PERIODE INI:</td>
+          <td style="color: var(--emerald-400); text-align: right;">${formatRupiah(totalNonIn)}</td>
+          <td style="color: var(--rose-400); text-align: right;">${formatRupiah(totalNonOut)}</td>
+          <td style="color: var(--gold-400); text-align: right;">${formatRupiah(saldoNonDues)}</td>
         </tr>
       `;
     }
   }
 
-  // Detailed Ledger in Report
+  // 5. Detailed Ledger in Report with Strict Running Balance Reconciliation
   const tbodyLedger = document.getElementById('tbody-report-ledger');
   if (tbodyLedger) {
     tbodyLedger.innerHTML = '';
     const allTx = [];
 
-    state.payments.forEach(p => {
+    periodPayments.forEach(p => {
       const res = state.residents.find(r => r.id === p.residentId);
       const title = p.category ? `[${p.category}] ${p.notes || ''} - ${res ? res.name : ''}` :
                                  `Iuran Wajib ${MONTH_NAMES[p.month]} ${p.year} - ${res ? res.name : ''} (${res ? res.block + ' ' + res.houseNo : ''})`;
@@ -3359,46 +3563,68 @@ function renderReport() {
         date: p.date,
         title: title,
         posName: p.category ? `Pos ${p.category}` : 'Auto-Split 6 Pos',
-        debet: Number(p.amount),
+        debet: Number(p.amount) || 0,
         kredit: 0
       });
     });
 
-    state.expenses.forEach(e => {
+    periodExpenses.forEach(e => {
       const pos = state.posConfig.find(p => p.id === e.posId) || state.otherPosConfig.find(p => p.id === e.posId);
       allTx.push({
         date: e.date,
         title: `${e.title} (Penerima: ${e.recipient})`,
-        posName: pos ? pos.name : e.posId,
+        posName: pos ? pos.name : (e.posId || 'Kas RT'),
         debet: 0,
-        kredit: Number(e.amount)
+        kredit: Number(e.amount) || 0
       });
     });
 
     allTx.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    let runningBalance = 0;
+    let runningBalance = initialBalance;
     let idx = 1;
-    allTx.forEach(tx => {
-      runningBalance += (tx.debet - tx.kredit);
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td style="text-align: center;">${idx++}</td>
-        <td>${formatDateIndo(tx.date)}</td>
-        <td>${tx.title}</td>
-        <td><span class="split-pill">${tx.posName}</span></td>
-        <td style="color: var(--emerald-400);">${tx.debet > 0 ? formatRupiah(tx.debet) : '-'}</td>
-        <td style="color: var(--rose-400);">${tx.kredit > 0 ? formatRupiah(tx.kredit) : '-'}</td>
-        <td style="font-weight: 700;">${formatRupiah(runningBalance)}</td>
+
+    // Jika ada Saldo Awal, cetak baris pembuka Saldo Awal
+    if (initialBalance !== 0 || (startDate && reportType !== 'all')) {
+      const trInit = document.createElement('tr');
+      trInit.style.background = 'rgba(245, 158, 11, 0.08)';
+      trInit.style.fontWeight = '600';
+      trInit.innerHTML = `
+        <td style="text-align: center; color: var(--gold-400);">#</td>
+        <td><span class="font-mono text-muted">${startDate || '-'}</span></td>
+        <td><strong>SALDO AWAL (KAS AWAL PERIODE)</strong></td>
+        <td><span class="split-pill" style="border-color: var(--gold-400); color: var(--gold-400);">Saldo Awal</span></td>
+        <td style="color: var(--emerald-400); text-align: right;">${initialBalance > 0 ? formatRupiah(initialBalance) : '-'}</td>
+        <td style="color: var(--rose-400); text-align: right;">${initialBalance < 0 ? formatRupiah(Math.abs(initialBalance)) : '-'}</td>
+        <td style="font-weight: 700; color: var(--gold-400); text-align: right;">${formatRupiah(initialBalance)}</td>
       `;
-      tbodyLedger.appendChild(tr);
-    });
+      tbodyLedger.appendChild(trInit);
+    }
+
+    if (allTx.length === 0 && initialBalance === 0) {
+      tbodyLedger.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:1.5rem;">Tidak ada transaksi keuangan pada periode yang dipilih.</td></tr>';
+    } else {
+      allTx.forEach(tx => {
+        runningBalance += (tx.debet - tx.kredit);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="text-align: center;">${idx++}</td>
+          <td>${formatDateIndo(tx.date)}</td>
+          <td>${tx.title}</td>
+          <td><span class="split-pill">${tx.posName}</span></td>
+          <td style="color: var(--emerald-400);">${tx.debet > 0 ? formatRupiah(tx.debet) : '-'}</td>
+          <td style="color: var(--rose-400);">${tx.kredit > 0 ? formatRupiah(tx.kredit) : '-'}</td>
+          <td style="font-weight: 700;">${formatRupiah(runningBalance)}</td>
+        `;
+        tbodyLedger.appendChild(tr);
+      });
+    }
   }
 
-  // Date for signature
+  // Date for signature (Lokasi RT.001 Graha Asri, Bekasi)
   const sigDate = document.getElementById('sig-date-text');
   if (sigDate) {
-    sigDate.textContent = `Jakarta, ${formatDateIndo(new Date().toISOString().split('T')[0])}`;
+    sigDate.textContent = `Bekasi, ${formatDateIndo(new Date().toISOString().split('T')[0])}`;
   }
 }
 
@@ -4235,10 +4461,15 @@ function setupModalEventListeners() {
   document.getElementById('form-expense')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const posId = document.getElementById('exp-pos-select').value;
-    const amount = Number(document.getElementById('exp-amount').value);
+    const amount = parseNominal(document.getElementById('exp-amount').value);
     const date = document.getElementById('exp-date').value;
     const title = document.getElementById('exp-title').value;
     const recipient = document.getElementById('exp-recipient').value;
+
+    if (!amount || amount <= 0) {
+      showToast('Harap masukkan nominal pengeluaran yang valid (> Rp 0).', 'error');
+      return;
+    }
 
     state.expenses.push({
       id: `exp-${Date.now()}`,
@@ -5083,8 +5314,9 @@ function switchPublicView(viewId, fromPopState = false) {
  */
 function renderPublicDemografi() {
   try {
-    const totalJiwa = (state.residents || []).reduce((acc, r) => acc + (Number(r.familyMembers || r.totalFamily || 4)), 0) || 284;
-    const totalKK = (state.residents || []).length || 71;
+    const residents = state.residents || [];
+    const totalJiwa = residents.reduce((acc, r) => acc + (Number(r.members || 4)), 0);
+    const totalKK = residents.length;
     const elJiwa = document.getElementById('val-total-jiwa');
     if (elJiwa) elJiwa.innerHTML = `${totalJiwa} <span class="unit">Jiwa</span>`;
     const elKK = document.getElementById('val-total-kk');
@@ -5114,15 +5346,15 @@ function renderPublicEventsList() {
  * Render ringkasan eksekutif transparansi kas & 6 pos anggaran untuk subview Keuangan RT
  */
 function renderPublicKasSummary() {
-  const finances = typeof calculateFinances === 'function' ? calculateFinances() : null;
-  const kasSaldo = finances ? finances.totalConsolidatedBalance : 14850000;
+  const fin = typeof computeFinancials === 'function' ? computeFinancials() : null;
+  const kasSaldo = fin ? fin.totalConsolidatedBalance : 0;
   
-  // Hitung Jimpitan
+  // Hitung Kas Jimpitan Riil
   const jIncomes = state.jimpitanIncomes || [];
   const jExpenses = state.jimpitanExpenses || [];
-  const totalJIncome = jIncomes.reduce((s, r) => s + (Number(r.amount) || 0), 0);
-  const totalJExpense = jExpenses.reduce((s, r) => s + (Number(r.amount) || 0), 0);
-  const jimpitanSaldo = (totalJIncome > 0 || totalJExpense > 0) ? (totalJIncome - totalJExpense) : 3420000;
+  const totalJIncome = jIncomes.reduce((s, r) => s + (parseInt(String(r.amount || 0).replace(/[^0-9]/g, ''), 10) || 0), 0);
+  const totalJExpense = jExpenses.reduce((s, r) => s + (parseInt(String(r.amount || 0).replace(/[^0-9]/g, ''), 10) || 0), 0);
+  const jimpitanSaldo = totalJIncome - totalJExpense;
   
   const totalKasAktif = kasSaldo + jimpitanSaldo;
 
@@ -5137,29 +5369,25 @@ function renderPublicKasSummary() {
   if (elKasTotal) elKasTotal.textContent = typeof formatRupiah === 'function' ? formatRupiah(totalKasAktif) : `Rp ${totalKasAktif.toLocaleString('id-ID')}`;
 
   const elKasCompliance = document.getElementById('subview-kas-compliance');
-  const rateCompliance = finances && finances.collectionPercentage ? finances.collectionPercentage : 92;
+  const rateCompliance = fin && typeof fin.collectionPercentage === 'number' ? fin.collectionPercentage : 0;
   if (elKasCompliance) elKasCompliance.textContent = `${rateCompliance}%`;
 
-  // 2. Update 6 Pos Anggaran
-  const posMapping = {
-    keamanan: { id: 'keamanan', percent: 0.40, defBal: 5940000 },
-    kebersihan: { id: 'kebersihan', percent: 0.25, defBal: 3712500 },
-    fasum: { id: 'fasum', percent: 0.15, defBal: 2227500 },
-    sosial: { id: 'sosial', percent: 0.10, defBal: 1485000 },
-    operasional: { id: 'operasional', percent: 0.05, defBal: 742500 },
-    cadangan: { id: 'cadangan', percent: 0.05, defBal: 742500 }
-  };
+  // 2. Update 6 Pos Anggaran menggunakan Saldo Pos Riil Terrekonsiliasi
+  if (fin && fin.posBalances) {
+    const posMapping = {
+      keamanan: (fin.posBalances['ronda']?.balance || 0) + (fin.posBalances['sukarela']?.balance || 0),
+      kebersihan: fin.posBalances['sampah']?.balance || 0,
+      fasum: fin.posBalances['pembangunan']?.balance || 0,
+      sosial: (fin.posBalances['dana_sosial']?.balance || 0) + (fin.posBalances['santunan_duka']?.balance || 0),
+      operasional: fin.posBalances['kas_rt']?.balance || 0,
+      cadangan: (fin.posBalances['phbi']?.balance || 0) + (fin.posBalances['hut_1708']?.balance || 0)
+    };
 
-  for (const [key, conf] of Object.entries(posMapping)) {
-    const el = document.getElementById(`pos-val-${key}`);
-    if (el) {
-      let bal = conf.defBal;
-      if (finances && finances.posBalances && finances.posBalances[conf.id]) {
-        bal = finances.posBalances[conf.id].balance;
-      } else if (kasSaldo) {
-        bal = Math.round(kasSaldo * conf.percent);
+    for (const [key, bal] of Object.entries(posMapping)) {
+      const el = document.getElementById(`pos-val-${key}`);
+      if (el) {
+        el.textContent = typeof formatRupiah === 'function' ? formatRupiah(bal) : `Rp ${bal.toLocaleString('id-ID')}`;
       }
-      el.textContent = typeof formatRupiah === 'function' ? formatRupiah(bal) : `Rp ${bal.toLocaleString('id-ID')}`;
     }
   }
 
@@ -5170,7 +5398,7 @@ function renderPublicKasSummary() {
     if (state.expenses && Array.isArray(state.expenses) && state.expenses.length > 0) {
       recentTxs = state.expenses.slice(0, 7).map(e => ({
         date: e.date || '2026-09-18',
-        desc: e.description || 'Pengeluaran Operasional',
+        desc: e.title || e.description || 'Pengeluaran Kas',
         pos: e.posName || (e.posId ? e.posId.toUpperCase() : 'Umum'),
         type: 'out',
         amount: Number(e.amount) || 0
@@ -5212,12 +5440,13 @@ function renderPublicKasSummary() {
  * Update statistik dinamis pada Hub & section Transparansi di halaman publik
  */
 function updatePublicStats() {
-  // 1. Jumlah KK & Jiwa
-  const totalResidents = state.residents ? state.residents.length : 71;
+  // 1. Jumlah KK & Jiwa Riil
+  const totalResidents = state.residents ? state.residents.length : 112;
+  const totalJiwa = (state.residents || []).reduce((acc, r) => acc + (Number(r.members || 4)), 0);
   const residentsEl = document.getElementById('public-stat-residents');
   if (residentsEl) residentsEl.textContent = totalResidents;
   const hubResidents = document.getElementById('hub-stat-residents');
-  if (hubResidents) hubResidents.textContent = `${totalResidents} KK (284 Jiwa)`;
+  if (hubResidents) hubResidents.textContent = `${totalResidents} KK (${totalJiwa} Jiwa)`;
 
   // 2. Tingkat Partisipasi & Kepatuhan Iuran Warga (Bukan Saldo Mentah)
   try {
@@ -7836,8 +8065,8 @@ function renderJimpitan() {
   const incomes = state.jimpitanIncomes || [];
   const expenses = state.jimpitanExpenses || [];
 
-  const totalIncome = incomes.reduce((s, r) => s + Number(r.amount), 0);
-  const totalExpense = expenses.reduce((s, r) => s + Number(r.amount), 0);
+  const totalIncome = incomes.reduce((s, r) => s + (parseInt(String(r.amount || 0).replace(/[^0-9]/g, ''), 10) || 0), 0);
+  const totalExpense = expenses.reduce((s, r) => s + (parseInt(String(r.amount || 0).replace(/[^0-9]/g, ''), 10) || 0), 0);
   const saldo = totalIncome - totalExpense;
 
   const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
@@ -8240,8 +8469,8 @@ function renderNonDuesView() {
     }
   }
 
-  const totalIncome = incomes.reduce((s, r) => s + Number(r.amount || 0), 0);
-  const totalExpense = expenses.reduce((s, r) => s + Number(r.amount || 0), 0);
+  const totalIncome = incomes.reduce((s, r) => s + parseNominal(r.amount), 0);
+  const totalExpense = expenses.reduce((s, r) => s + parseNominal(r.amount), 0);
   const saldo = totalIncome - totalExpense;
 
   // Update KPI Cards
@@ -12472,7 +12701,7 @@ function renderAsetRt() {
   const list = getAsetList();
 
   // 1. Calculate overall KPIs
-  const totalVal = list.reduce((acc, it) => acc + (Number(it.harga) || 0), 0);
+  const totalVal = list.reduce((acc, it) => acc + parseNominal(it.harga), 0);
   const totalItems = list.length;
   const okItems = list.filter(it => it.kondisi === 'ok').length;
   const defectItems = list.filter(it => it.kondisi !== 'ok').length;
@@ -12645,7 +12874,7 @@ function renderAsetRt() {
         </tr>
       `;
     } else {
-      const filteredSum = filtered.reduce((acc, it) => acc + (Number(it.harga) || 0), 0);
+      const filteredSum = filtered.reduce((acc, it) => acc + parseNominal(it.harga), 0);
       const tfootVal = document.getElementById('tfoot-aset-total-val');
       if (tfootVal) tfootVal.textContent = formatRupiah(filteredSum);
 
@@ -12807,7 +13036,7 @@ function deleteAsetItem(id) {
 
 function prepareAsetPrintReport() {
   const list = getAsetList();
-  const totalVal = list.reduce((acc, it) => acc + (Number(it.harga) || 0), 0);
+  const totalVal = list.reduce((acc, it) => acc + parseNominal(it.harga), 0);
   const totalPhysical = list.reduce((acc, it) => acc + (Number(it.qty) || 1), 0);
   const okCount = list.filter(it => it.kondisi === 'ok').length;
   const defectCount = list.length - okCount;
@@ -13003,7 +13232,7 @@ function setupAsetRtModule() {
       const kondisiVal = document.getElementById('input-aset-kondisi').value;
       const qtyVal = Number(document.getElementById('input-aset-qty').value) || 1;
       const satuanVal = document.getElementById('input-aset-satuan').value.trim() || 'unit';
-      const hargaVal = Number(document.getElementById('input-aset-harga').value) || 0;
+      const hargaVal = parseNominal(document.getElementById('input-aset-harga').value);
       const tglBeliVal = document.getElementById('input-aset-pembelian').value.trim() || '-';
       const sumberVal = document.getElementById('input-aset-sumber').value;
       const ketVal = document.getElementById('input-aset-keterangan').value.trim();

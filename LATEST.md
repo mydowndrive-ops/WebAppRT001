@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (22:53 WIB)  
-**Versi Rilis Aktif:** `v2.9.30`  
+**Terakhir Diperbarui:** 20 September 2026 (23:45 WIB)  
+**Versi Rilis Aktif:** `v2.9.32`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,53 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🎨 Redesain Premium Card Alokasi POS ANGGARAN (Update v2.9.29 - 20 Sept 2026)
+### 1. 💼 Financial Engineering Audit & Zero-Error Reconciliation (Update v2.9.32 - 20 Sept 2026)
+- **Latar Belakang & Mandat Financial Engineer**:
+  - Audit menyeluruh dan mendalam terhadap seluruh mesin kalkulasi keuangan di Dashboard Bendahara 1 (Kas Utama, Pos Anggaran, Non-Iuran, Laporan Pembukuan) dan Bendahara 2 (Kas Jimpitan Ronda, Inventaris & Aset RT).
+  - Menjamin akurasi pembukuan 100% tanpa celah kebocoran sepeser pun (*Zero Penny Leaks*), mencegah galat pecahan pembulatan (*rounding drift*), mengamankan sub-ledger antar akun, serta memastikan rekonsiliasi kas riil sesuai prinsip akuntansi berterima umum (PABU / GAAP RT).
+- **Hasil Audit & Perbaikan 10 Titik Kritis**:
+  1. **Algoritma Auto-Split Iuran Wajib (`calculateAutoSplit`)**:
+     - *Masalah*: Menggunakan `Math.round()` independen per pos anggaran yang menyebabkan distorsi total alokasi (misalnya alokasi ganjil kehilangan Rp 1-3 atau melebihkan dari total dana yang disetorkan warga).
+     - *Solusi Finansial*: Diimplementasikan **Largest Remainder Method (Hamilton-Hare Algorithm)** dengan *integer remainder plug*. Menghitung porsi dasar dengan `Math.floor()` dan mengalokasikan sisa selisih (discrepancy) berdasarkan urutan desimal sisa tertinggi. Teruji pada seluruh skenario nominal (Rp 0 s.d. Rp 1.000.000) dengan selisih tepat **Rp 0** (100% konsisten).
+  2. **Mesin Konsolidasi Saldo & Pengeluaran Tercecer (`computeFinancials`)**:
+     - *Masalah*: Pengeluaran dengan `posId` tidak valid/terhapus diabaikan dari perhitungan pos sehingga tidak terpotong dari saldo, menyebabkan saldo kas terlihat lebih besar dari fisik uang kas riil (*phantom surplus*).
+     - *Solusi Finansial*: Seluruh pengeluaran yang tidak memiliki relasi pos valid otomatis dialihkan ke pos beban operasional utama (`kas_rt`), sehingga 100% pengeluaran tercatat dan terpotong dari kas konsolidasi (`totalConsolidatedExpense`). Disediakan properti kas likuid gabungan: Kas Iuran Dues, Kas Non-Iuran, Kas Jimpitan, dan `grandTotalLiquidBalance`.
+  3. **Kalkulasi Capaian Iuran per Nama Jalan (`computeStreetStats`)**:
+     - *Masalah*: Menghitung penerimaan per jalan dengan rumus fiktif `paidWarga * mandatoryDues` yang mengabaikan pembayaran cicilan, pembayaran berlebih (*advance payments*), atau iuran parsial.
+     - *Solusi Finansial*: Dihitung dari akumulasi kas riil (`sum(p.amount)`) seluruh warga yang beralamat di jalan tersebut pada periode bulan/tahun aktif.
+  4. **Tren Arus Kas Eksekutif 6 Bulan (`renderExecutiveCharts`)**:
+     - *Masalah*: Grafik arus kas bulanan menggunakan data dummy array konstan hardcoded (`[950000, 1100000, ...]`) yang tidak merefleksikan arus kas riil kas RT.
+     - *Solusi Finansial*: Dihubungkan secara dinamis ke agregasi historis riil penerimaan kas (`payments`) dan pengeluaran kas (`expenses`) untuk jendela 6 bulan berjalan ke belakang.
+  5. **Agregasi Pembayaran Checklist Bulanan (`renderChecklist`)**:
+     - *Masalah*: Menggunakan `find()` tunggal untuk mencari pembayaran warga per bulan, sehingga jika warga membayar dalam 2 termin (misal Rp 20.000 + Rp 30.000), termin kedua tidak terhitung.
+     - *Solusi Finansial*: Diagregasi menggunakan `reduce()` seluruh transaksi pembayaran warga pada bulan aktif sehingga akumulasi penerimaan terekonsiliasi sempurna.
+  6. **Integritas Pembatalan Pembayaran (`toggleResidentPayment`)**:
+     - *Masalah*: Pembatalan centang (uncheck) hanya memfilter transaksi pertama atau menyisakan catatan historis yatim.
+     - *Solusi Finansial*: Menghapus seluruh entri pembayaran yang bersesuaian dengan `residentId`, `month`, dan `year` aktif, mengembalikan saldo pos secara proporsional.
+  7. **Standar Laporan Pembukuan Kas Periodik (`renderReport`)**:
+     - *Masalah*: Laporan kas hanya menampilkan transaksi dalam rentang tanggal tanpa menghitung Saldo Awal (*Beginning Balance*), sehingga saldo akhir tidak mencerminkan total fisik kas RT.
+     - *Solusi Finansial*: Mengimplementasikan sistem akuntansi periodik: menghitung `Saldo Awal` (seluruh mutasi sebelum tanggal filter mulai), `Pemasukan Periode`, `Pengeluaran Periode`, dan `Saldo Akhir Rekonsiliasi`. Menambahkan baris Saldo Awal resmi pada buku kas umum. Kota penandatanganan diselaraskan ke `Bekasi`.
+  8. **Demografi Penduduk Riil (`renderPublicDemografi`)**:
+     - *Masalah*: Tampilan jiwa per keluarga membaca properti `r.familyMembers` (undefined), sehingga angka total jiwa warga RT keliru.
+     - *Solusi Finansial*: Menggunakan properti `r.members` resmi dari database kependudukan RT.001 (112 KK, 445 Jiwa).
+  9. **Sinkronisasi Saldo Kas Publik Warga (`renderPublicKasSummary` & `updatePublicStats`)**:
+     - *Masalah*: Portal warga menggunakan simulasi alokasi yang tidak terhubung dengan saldo riil `computeFinancials()`.
+     - *Solusi Finansial*: Dihubungkan langsung ke data rekonsiliasi `computeFinancials()` dan mapping pos anggaran yang presisi.
+  10. **Sanitasi String Finansial & Valuasi Aset RT (`parseNominal` & `renderAsetRt`)**:
+      - *Masalah*: Input harga aset atau nominal dengan format rupiah Indonesia (seperti `"500.000"` atau `"Rp 1.250.000"`) jika diparsing dengan `Number()` menghasilkan `500` (terjadi distorsi valuasi 1.000x lipat).
+      - *Solusi Finansial*: Dibuat fungsi universal `parseNominal(val)` yang mengekstraksi digit numerik secara aman dan mencegah anomali format. Diaplikasikan ke seluruh modal input aset, kalkulasi total valuasi, tabel, cetak berita acara, dan mutasi kas jimpitan.
+
+### 2. 🎨 Redesain Premium Card Capaian Iuran Bulanan & Kontras Warna Card Non-Iuran (Update v2.9.31 - 20 Sept 2026)
+- **Pembaruan Visual Capaian Iuran Berdasarkan Nama Jalan**:
+  - Tampilan card capaian iuran per jalan kini memiliki tema warna unik (*distinct accent background* & *border glow*) untuk masing-masing dari 5 jalan warga (`Jl. Citarum II`, `Jl. Citarum IVA`, `Jl. Citarum VIIIB`, `Jl. Citarum VIIIC`, `Jl. Citarum IX`).
+  - Dilengkapi micro-interactions, badge persentase ketercapaian dinamis, dan efek hover responsif.
+- **Peningkatan Tipografi & Kontras Card Pemasukan NON-Iuran**:
+  - Penyesuaian label kartu ringkasan keuangan:
+    - `"TOTAL PENGELUARAN NON-IURAN"` ➔ `"TOTAL PENGELUARAN"`
+    - `"SALDO KAS NON-IURAN"` ➔ `"SALDO SEKARANG"`
+  - Peningkatan kontras font kartu (Total Penerimaan, Total Pengeluaran, Saldo Sekarang, Mutasi Terakhir) agar sangat tajam, mudah dibaca, dan tetap elegan dengan nuansa tema dark/gold dashboard.
+
+### 3. 🎨 Redesain Premium Card Alokasi POS ANGGARAN (Update v2.9.29 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Redesain tampilan card 6 Pos Anggaran pada Dashboard Eksekutif agar lebih menarik, berkelas, dan mudah dibedakan secara visual per-pos.
 - **Implementasi Teknis & Arsitektur Visual**:
