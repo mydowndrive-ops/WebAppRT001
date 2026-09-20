@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.23">
+  <link rel="stylesheet" href="styles.css?v=2.9.24">
 </head>
 <body>
 
@@ -2340,6 +2340,11 @@
           <span>Struktur Pengurus RT</span>
           <span class="counter-badge" style="background: rgba(168, 85, 247, 0.25); color: #c084fc;">2022-2027</span>
         </a>
+        <a href="#jimpitan" class="menu-item" data-target="jimpitan" data-role-req="ALL" data-tooltip="Uang Jimpitan">
+          <i class="fa-solid fa-moon text-gold"></i>
+          <span>Uang Jimpitan</span>
+          <span class="counter-badge" id="sidebar-jimpitan-badge" style="background: rgba(16, 185, 129, 0.25); color: #34d399;">Minggu</span>
+        </a>
         <a href="#aset-rt" class="menu-item" data-target="aset-rt" data-role-req="ALL" data-tooltip="Inventaris &amp; Aset RT">
           <i class="fa-solid fa-boxes-stacked text-emerald"></i>
           <span>Inventaris &amp; Aset RT</span>
@@ -2358,17 +2363,12 @@
           <i class="fa-solid fa-money-bill-transfer"></i>
           <span>Pengeluaran Kas</span>
         </a>
-        <a href="#non-iuran" class="menu-item" data-target="non-iuran" data-role-req="ALL" data-tooltip="Pemasukkan NON iuran">
+        <a href="#non-iuran" class="menu-item" data-target="non-iuran" data-role-req="B1" data-tooltip="Pemasukkan NON iuran">
           <i class="fa-solid fa-hand-holding-dollar text-cyan"></i>
           <span>Pemasukkan NON iuran</span>
           <span class="counter-badge" id="sidebar-non-dues-badge" style="background: rgba(6, 182, 212, 0.25); color: #22d3ee;">0</span>
         </a>
-        <a href="#jimpitan" class="menu-item" data-target="jimpitan" data-role-req="B2" data-tooltip="Uang Jimpitan">
-          <i class="fa-solid fa-moon text-gold"></i>
-          <span>Uang Jimpitan</span>
-          <span class="counter-badge" id="sidebar-jimpitan-badge" style="background: rgba(16, 185, 129, 0.25); color: #34d399;">Minggu</span>
-        </a>
-        <a href="#ronda-pengurus" class="menu-item" data-target="ronda-pengurus" data-role-req="ALL" data-tooltip="Jadwal Regu Ronda">
+        <a href="#ronda-pengurus" class="menu-item" data-target="ronda-pengurus" data-role-req="PENGURUS" data-tooltip="Jadwal Regu Ronda">
           <i class="fa-solid fa-shield-halved text-gold"></i>
           <span>Jadwal Regu Ronda</span>
           <span class="counter-badge" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24;">8 Regu</span>
@@ -4751,13 +4751,21 @@
         <i class="fa-solid fa-chart-pie"></i>
         <span>Dashboard</span>
       </a>
+      <a href="#pengurus-struktur" class="bnav-item" data-target="pengurus-struktur" data-role-req="ALL">
+        <i class="fa-solid fa-sitemap"></i>
+        <span>Pengurus</span>
+      </a>
+      <a href="#jimpitan" class="bnav-item" data-target="jimpitan" data-role-req="ALL">
+        <i class="fa-solid fa-moon"></i>
+        <span>Jimpitan</span>
+      </a>
+      <a href="#aset-rt" class="bnav-item" data-target="aset-rt" data-role-req="ALL">
+        <i class="fa-solid fa-boxes-stacked"></i>
+        <span>Aset RT</span>
+      </a>
       <a href="#checklist" class="bnav-item" data-target="checklist" data-role-req="B1">
         <i class="fa-solid fa-list-check"></i>
         <span>Checklist</span>
-      </a>
-      <a href="#jimpitan" class="bnav-item" data-target="jimpitan" data-role-req="B2">
-        <i class="fa-solid fa-moon"></i>
-        <span>Jimpitan</span>
       </a>
       <a href="#pengeluaran" class="bnav-item" data-target="pengeluaran" data-role-req="B1">
         <i class="fa-solid fa-money-bill-transfer"></i>
@@ -6501,6 +6509,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.23"></script>
+  <script src="app.js?v=2.9.24"></script>
 </body>
 </html>

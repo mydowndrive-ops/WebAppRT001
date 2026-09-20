@@ -41,9 +41,9 @@ const DEFAULT_ACCOUNTS = [
   {
     id: 'b2',
     name: 'Bendahara 2',
-    roleTitle: 'Bendahara 2 (Koordinator Jimpitan)',
-    desc: 'Koordinator Jimpitan & Ronda',
-    badge: 'JIMPITAN',
+    roleTitle: 'Admin 2 (Bendahara)',
+    desc: 'Struktur Pengurus, Uang Jimpitan & Aset RT',
+    badge: 'BENDAHARA 2',
     badgeClass: 'b2-pill',
     icon: 'fa-solid fa-moon',
     colorClass: 'emerald-icon',
@@ -2329,10 +2329,10 @@ function setupAppHistoryNavigation() {
     if (adminApp && adminApp.style.display !== 'none') {
       const activeAdminSection = document.querySelector('.view-section.active');
       const isWarga = state.currentUser === 'warga';
-      const defaultViewId = isWarga ? 'view-portal-warga' : (state.currentUser === 'b2' ? 'view-jimpitan' : 'view-dashboard');
+      const defaultViewId = isWarga ? 'view-portal-warga' : (state.currentUser === 'b2' ? 'view-pengurus-struktur' : 'view-dashboard');
 
       if (activeAdminSection && activeAdminSection.id !== defaultViewId) {
-        navigateToView(isWarga ? 'portal-warga' : (state.currentUser === 'b2' ? 'jimpitan' : 'dashboard'));
+        navigateToView(isWarga ? 'portal-warga' : (state.currentUser === 'b2' ? 'pengurus-struktur' : 'dashboard'));
         return;
       } else {
         showPublicPortal();
@@ -4002,13 +4002,13 @@ function navigateToView(viewId) {
   const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
   const isWarga = isCurrentWarga();
 
-  const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur', 'ronda-pengurus', 'non-iuran'];
+  const B2_ALLOWED_TARGETS = ['pengurus-struktur', 'jimpitan', 'aset-rt'];
   const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga', 'non-iuran'];
   const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'non-iuran'];
 
-  // If B2 attempts to navigate outside allowed pages, redirect to jimpitan
+  // If B2 attempts to navigate outside allowed pages, redirect to pengurus-struktur
   if (isB2 && !B2_ALLOWED_TARGETS.includes(viewId)) {
-    viewId = 'jimpitan';
+    viewId = 'pengurus-struktur';
   }
 
   // If Pengurus attempts to navigate outside allowed pages, redirect to dashboard
@@ -4907,7 +4907,7 @@ function showPublicPortal() {
   if (isLoggedIn()) {
     if (adminBar) adminBar.style.display = 'block';
     if (adminRoleEl) {
-      if (state.currentUser === 'b2') adminRoleEl.textContent = 'Admin 2 (Jimpitan)';
+      if (state.currentUser === 'b2') adminRoleEl.textContent = 'Admin 2 (Bendahara)';
       else if (state.currentUser === 'pengurus') adminRoleEl.textContent = 'Pengurus RT';
       else if (state.currentUser === 'warga') adminRoleEl.textContent = 'Portal Warga';
       else adminRoleEl.textContent = 'Admin 1 (Keuangan Utama)';
@@ -6306,7 +6306,7 @@ function setupLoginPortal() {
     e.preventDefault();
     if (isLoggedIn() && ['pengurus', 'b1', 'b2'].includes(state.currentUser)) {
       showAdminApp();
-      const targetView = state.currentUser === 'b2' ? 'jimpitan' : 'dashboard';
+      const targetView = state.currentUser === 'b2' ? 'pengurus-struktur' : 'dashboard';
       navigateToView(targetView);
     } else {
       if (typeof window.openRoleLogin === 'function') {
@@ -6421,7 +6421,7 @@ function setupPublicPortalNavigation() {
     e.preventDefault();
     if (isLoggedIn() && ['pengurus', 'b1', 'b2'].includes(state.currentUser)) {
       showAdminApp();
-      const targetView = state.currentUser === 'b2' ? 'jimpitan' : 'dashboard';
+      const targetView = state.currentUser === 'b2' ? 'pengurus-struktur' : 'dashboard';
       navigateToView(targetView);
     } else {
       if (typeof window.openRoleLogin === 'function') {
@@ -7459,7 +7459,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Definisi izin halaman per peran (Role-Based Access Control)
 const B1_RESTRICTED_TARGETS = ['checklist', 'pos-anggaran', 'pengeluaran', 'laporan', 'pengaturan'];
-const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur', 'ronda-pengurus', 'non-iuran'];
+const B2_ALLOWED_TARGETS = ['pengurus-struktur', 'jimpitan', 'aset-rt'];
 const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga', 'non-iuran'];
 const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'non-iuran'];
 
@@ -7478,17 +7478,22 @@ function applyRBAC() {
     if (isB1) {
       // Admin 1 / Bendahara 1 Utama: Akses penuh ke seluruh menu
       el.style.display = '';
+      el.style.order = '';
       el.classList.remove('menu-item-locked');
     } else if (isB2) {
-      // Admin 2 / Koordinator Jimpitan: Fokus pada Jimpitan, Aset RT, dan Struktur
+      // Admin 2 / Bendahara: 1. Struktur Pengurus RT, 2. Uang Jimpitan, 3. Inventaris dan Aset RT
       if (B2_ALLOWED_TARGETS.includes(target)) {
         el.style.display = '';
         el.classList.remove('menu-item-locked');
+        const b2Order = { 'pengurus-struktur': 1, 'jimpitan': 2, 'aset-rt': 3 };
+        if (b2Order[target]) el.style.order = b2Order[target];
       } else {
         el.style.display = 'none';
+        el.style.order = '';
       }
     } else if (isPengurus) {
       // Pengurus RT (Ketua, Sekr, Humas): Monitoring Dashboard, Struktur, Aset, Jimpitan, Pengajuan Dana, dan Data Warga
+      el.style.order = '';
       if (PENGURUS_ALLOWED_TARGETS.includes(target)) {
         el.style.display = '';
         el.classList.remove('menu-item-locked');
@@ -7497,6 +7502,7 @@ function applyRBAC() {
       }
     } else if (isWarga) {
       // Warga: Hanya Portal Warga, Struktur, dan Aset RT
+      el.style.order = '';
       if (WARGA_ALLOWED_TARGETS.includes(target)) {
         el.style.display = '';
         el.classList.remove('menu-item-locked');
@@ -7513,7 +7519,7 @@ function applyRBAC() {
     if (isWarga && !WARGA_ALLOWED_TARGETS.includes(activeTarget)) {
       navigateToView('portal-warga');
     } else if (isB2 && !B2_ALLOWED_TARGETS.includes(activeTarget)) {
-      navigateToView('jimpitan');
+      navigateToView('pengurus-struktur');
     } else if (isPengurus && !PENGURUS_ALLOWED_TARGETS.includes(activeTarget)) {
       navigateToView('dashboard');
     }
@@ -7533,7 +7539,7 @@ function applyRBAC() {
   const backupBtn = document.getElementById('btn-backup-data');
   if (backupBtn) backupBtn.style.display = isWarga ? 'none' : '';
 
-  // Tombol Atur Jadwal Ronda: Sembunyikan untuk Warga (Read-Only)
+  // Tombol Atur Jadwal Ronda: Sembunyikan untuk Warga dan Admin 2 (B2)
   const rondaBtns = [
     'btn-pengurus-quick-ronda',
     'btn-pengurus-modal-ronda',
@@ -7542,7 +7548,7 @@ function applyRBAC() {
   ];
   rondaBtns.forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.display = isWarga ? 'none' : '';
+    if (el) el.style.display = (isWarga || isB2) ? 'none' : '';
   });
 
   // Tombol Tambah Aset Baru: Sembunyikan untuk Warga (Read-Only)

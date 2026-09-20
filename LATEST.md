@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (21:20 WIB)  
-**Versi Rilis Aktif:** `v2.9.23`  
+**Terakhir Diperbarui:** 20 September 2026 (21:40 WIB)  
+**Versi Rilis Aktif:** `v2.9.24`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,32 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🏢 Pembersihan Banner Struktur Pengurus & Penataan Rapi Subtitle Alamat (Update v2.9.23 - 20 Sept 2026)
+### 1. 💼 Restrukturisasi & Penyederhanaan Dashboard Portal Admin 2 (Bendahara) (Update v2.9.24 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  1. Pada halaman portal **Admin 2 (Bendahara)**, hilangkan informasi/menu **"Pemasukkan Non Iuran"** dan **"Jadwal regu Ronda"**.
+  2. Susun ulang menu dashboard Admin 2 secara spesifik dengan urutan baku:
+     1. **Struktur Pengurus RT**
+     2. **Uang Jimpitan**
+     3. **Inventaris dan Aset RT**
+- **Implementasi Teknis & Arsitektur DevOps**:
+  - **Penyederhanaan Hak Akses (RBAC Streamlining)**:
+    - Memperbarui `data-role-req` di `index.html` pada tombol sidebar `non-iuran` dari `ALL` menjadi `B1` (hanya dapat diakses oleh Admin 1/Ketua) dan `ronda-pengurus` dari `ALL` menjadi `PENGURUS` (dikelola oleh jajaran Seksi Keamanan & Ketertiban).
+    - Memperbarui tabel izin `B2_ALLOWED_TARGETS` di `app.js` (`navigateToView` dan `applyRBAC`) sehingga secara ketat hanya mengizinkan 3 view: `['pengurus-struktur', 'jimpitan', 'aset-rt']`.
+    - Jika Admin 2 mencoba mengakses URL atau link view non-otoritas (seperti `non-iuran` atau `ronda-pengurus`), sistem secara otomatis mengalihkannya (*fail-safe redirect*) ke menu default `#view-pengurus-struktur`.
+  - **Penataan Urutan Menu 1-2-3 Presisi**:
+    - Menyusun ulang urutan elemen DOM `<button class="sidebar-item">` di `index.html`:
+      1. `data-target="pengurus-struktur"` (Struktur Pengurus RT)
+      2. `data-target="jimpitan"` (Uang Jimpitan)
+      3. `data-target="aset-rt"` (Inventaris & Aset RT)
+    - Menerapkan CSS Flexbox `el.style.order` dinamis pada `applyRBAC()` (`pengurus-struktur: 1`, `jimpitan: 2`, `aset-rt: 3`), sehingga urutan menu selalu 100% konsisten dan sempurna baik di desktop sidebar maupun mobile navigation drawer.
+  - **Penetapan Default View Login Admin 2**:
+    - Mengarahkan login Admin 2 (`b2` / PIN `2222`) langsung ke halaman **Struktur Pengurus RT** (`pengurus-struktur`) sebagai landing view resmi bendahara 2.
+    - Memperbarui deskripsi role akun Admin 2 pada modal login menjadi: *"Struktur Pengurus, Uang Jimpitan & Aset RT"*.
+  - **Pembersihan Tombol Redundan di View Terkait**:
+    - Menyembunyikan tombol navigasi silang `#btn-admin-manage-ronda` pada halaman Kas Jimpitan khusus saat sesi login `b2` aktif, mencegah kebocoran navigasi ke modul ronda.
+  - **Peningkatan Cache PWA**: Meningkatkan versi cache Service Worker ke `rt-finsmart-cache-v2.9.24` serta query string aset CSS dan JS.
+
+### 2. 🏢 Pembersihan Banner Struktur Pengurus & Penataan Rapi Subtitle Alamat (Update v2.9.23 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   1. Menghilangkan tombol/menu *"Jadwal Regu Ronda"* dari kotak banner *"Struktur Organisasi & Tata Kelola Pengurus"*, karena jadwal ronda kini telah memiliki halaman dedicated sendiri.
   2. Memindahkan kalimat *"• Melayani 71 Kepala Keluarga"* agar berada pas persis di bawah kalimat *"Rukun Tetangga 001 / Rukun Warga 013 Perumahan Graha Asri, Cikarang Utara"*, menghindari pemotongan teks yang canggung.
