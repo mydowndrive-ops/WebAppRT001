@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (17:26 WIB)  
-**Versi Rilis Aktif:** `v2.9.13`  
+**Terakhir Diperbarui:** 20 September 2026 (17:38 WIB)  
+**Versi Rilis Aktif:** `v2.9.14`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -34,7 +34,25 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. ✨ Penambahan Efek Pendaran Cahaya (Outer Glow) Merah Putih di Pinggir Kotak Event (Update v2.9.13 - 20 Sept 2026)
+### 1. 🔧 Perbaikan Bug Navigasi Kartu Hub & Eliminasi Notifikasi Palsu "Tekan sekali lagi untuk keluar" (Update v2.9.14 - 20 Sept 2026)
+- **Latar Belakang & Investigasi Masalah**:
+  - Saat pengguna mengklik salah satu kartu/kotak di beranda utama (misal: Demografi, Kas & Keuangan, Profil & Peta, Kegiatan, dsb.), muncul toast notifikasi di pojok kanan bawah: *"Tekan sekali lagi untuk keluar dari aplikasi"* dan halaman subview gagal terbuka.
+  - **Akar Masalah (Root Cause)**:
+    - Delegasi klik kartu sebelumnya melakukan mutasi hash langsung `window.location.hash = viewId`. Pada browser berbasis Chromium, perubahan hash memicu event `popstate`.
+    - Handler `popstate` saat itu belum memeriksa apakah hash tujuan merupakan subview valid dan langsung menganggap aksi tersebut sebagai tombol Back di beranda (Hub), sehingga memicu proteksi keluar aplikasi (exit guard) dan membatalkan pembukaan halaman.
+- **Solusi & Rekayasa Perbaikan**:
+  1. **Routing Subview Cerdas pada `popstate`**:
+     - Handler `popstate` kini mendeteksi apakah `currentHash` mengarah ke subview publik (`tentang`, `demografi`, `layanan`, `kegiatan`, `pengurus`). Jika ya, subview dibuka secara mulus (`switchPublicView(currentHash, true)`).
+     - Proteksi exit guard ("Tekan sekali lagi untuk keluar dari aplikasi") hanya aktif saat pengguna **benar-benar berada di beranda utama (`#hub` atau kosong)** dan menekan tombol Back browser/ponsel.
+  2. **Panggilan Navigasi Langsung**:
+     - Event listener klik kartu `[data-subview]` kini memanggil `switchPublicView(viewId)` secara langsung tanpa mutasi hash sintetis yang mendahuluinya.
+     - Riwayat browser dicatat secara bersih via `window.history.pushState` tanpa memicu event `popstate` palsu.
+  3. **Penyelarasan Cache PWA**:
+     - Parameter aset dinaikkan ke versi `v2.9.14` pada `index.html`, `styles.css`, `app.js`, dan `sw.js`.
+
+---
+
+### 2. ✨ Penambahan Efek Pendaran Cahaya (Outer Glow) Merah Putih di Pinggir Kotak Event (Update v2.9.13 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Menambahkan efek di pinggir kotak event terdekat seolah menyala (*outer glow*) dengan nuansa merah putih yang anggun dan berkarakter, tanpa elemen putaran latar belakang.
 - **Solusi & Rekayasa CSS Luminous Outerglow**:

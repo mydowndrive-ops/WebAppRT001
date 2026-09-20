@@ -2269,11 +2269,14 @@ function setupAppHistoryNavigation() {
   }
 
   // 2. Global popstate listener (Menangani tombol Back ponsel / gesture Android / browser)
-  window.addEventListener('popstate', () => {
+  window.addEventListener('popstate', (event) => {
     if (isProgrammaticNav) {
       isProgrammaticNav = false;
       return;
     }
+
+    const currentHash = (window.location.hash || '').replace('#', '').trim();
+    const stateObj = event.state || {};
 
     // A. Prioritas 0: Jika Event Popup Banner sedang terbuka
     const bannerWrap = document.getElementById('hub-event-banner-wrap');
@@ -2305,7 +2308,14 @@ function setupAppHistoryNavigation() {
       return;
     }
 
-    // E. Prioritas 4: Jika sedang berada di sub-halaman publik (misal: Kegiatan, Demografi, Layanan, Tentang, Pengurus)
+    // E. Prioritas 4: Jika hash saat ini mengarah ke Subview publik tertentu
+    const knownSubviews = ['tentang', 'demografi', 'layanan', 'kegiatan', 'pengurus', 'pengajuan-dana'];
+    if (knownSubviews.includes(currentHash)) {
+      switchPublicView(currentHash, true);
+      return;
+    }
+
+    // F. Prioritas 5: Jika sedang berada di sub-halaman publik (misal: Kegiatan, Demografi, Layanan, Tentang, Pengurus) dan kembali ke Hub
     const publicPortal = document.getElementById('portal-public');
     const publicHub = document.getElementById('public-home-hub');
     const isPublicVisible = publicPortal && publicPortal.style.display !== 'none';
@@ -2314,7 +2324,7 @@ function setupAppHistoryNavigation() {
       return;
     }
 
-    // F. Prioritas 5: Jika sedang berada di dashboard/portal aplikasi pengurus (bukan portal publik)
+    // G. Prioritas 6: Jika sedang berada di dashboard/portal aplikasi pengurus (bukan portal publik)
     const adminApp = document.getElementById('app');
     if (adminApp && adminApp.style.display !== 'none') {
       const activeAdminSection = document.querySelector('.view-section.active');
@@ -2330,19 +2340,20 @@ function setupAppHistoryNavigation() {
       }
     }
 
-    // G. Prioritas 6: Berada di Beranda Utama (Hub)
-    // Terapkan proteksi ganda agar tidak langsung menutup aplikasi / browser secara tidak sengaja
-    const now = Date.now();
-    if (now - lastRootBackPress < 2000) {
-      // Pengguna menekan Back 2x berturut-turut dalam 2 detik -> izinkan browser keluar
-      window.history.back();
-    } else {
-      lastRootBackPress = now;
-      showToast('Tekan sekali lagi untuk keluar dari aplikasi', 'info');
-      // Push guard state kembali agar back berikutnya tetap bisa dicegat
-      try {
-        window.history.pushState({ appNav: true, type: 'root-guard', time: Date.now() }, '', '#hub');
-      } catch (err) {}
+    // H. Prioritas 7: Berada di Beranda Utama (Hub) - Hanya jika benar-benar di #hub atau kosong
+    if (!currentHash || currentHash === 'hub' || currentHash === 'portal-public') {
+      const now = Date.now();
+      if (now - lastRootBackPress < 2000) {
+        // Pengguna menekan Back 2x berturut-turut dalam 2 detik -> izinkan browser keluar
+        window.history.back();
+      } else {
+        lastRootBackPress = now;
+        showToast('Tekan sekali lagi untuk keluar dari aplikasi', 'info');
+        // Push guard state kembali agar back berikutnya tetap bisa dicegat
+        try {
+          window.history.pushState({ appNav: true, type: 'root-guard', time: Date.now() }, '', '#hub');
+        } catch (err) {}
+      }
     }
   });
 }
@@ -4824,10 +4835,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.13';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.14';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.13')
+      navigator.serviceWorker.register('sw.js?v=2.9.14')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -5040,11 +5051,10 @@ function switchPublicView(viewId, fromPopState = false) {
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (!fromPopState) {
-      if (window.location.hash !== `#${viewId}`) {
-        window.location.hash = viewId;
-      }
       if (typeof pushNavHistory === 'function') {
         pushNavHistory('subview', viewId, viewId);
+      } else if (window.location.hash !== `#${viewId}`) {
+        window.location.hash = viewId;
       }
     }
   }
@@ -6293,11 +6303,7 @@ function setupPublicPortalNavigation() {
       e.preventDefault();
       const viewId = subviewTarget.getAttribute('data-subview');
       if (viewId) {
-        if (window.location.hash !== `#${viewId}`) {
-          window.location.hash = viewId;
-        } else {
-          switchPublicView(viewId);
-        }
+        switchPublicView(viewId);
       }
       return;
     }
