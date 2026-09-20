@@ -9464,7 +9464,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .hub-event-banner {
   background: linear-gradient(168deg, rgba(8, 30, 22, 0.97) 0%, rgba(11, 23, 36, 0.98) 50%, rgba(6, 18, 14, 0.98) 100%);
-  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  border: 1.5px solid rgba(255, 255, 255, 0.75);
   border-radius: 28px;
   padding: 1.85rem 2.2rem 1.65rem 2.2rem;
   display: flex;
@@ -9475,12 +9475,48 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 620px;
   width: 100%;
   margin: auto;
-  box-shadow: 0 28px 75px -12px rgba(0, 0, 0, 0.9), 0 0 45px rgba(16, 185, 129, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  box-shadow: 
+    0 28px 75px -12px rgba(0, 0, 0, 0.95),
+    0 0 16px 2px rgba(239, 68, 68, 0.85),
+    0 0 32px 5px rgba(255, 255, 255, 0.65),
+    0 0 55px 10px rgba(220, 38, 38, 0.45),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  animation: redWhiteOuterGlowPulse 3s ease-in-out infinite alternate;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+@keyframes redWhiteOuterGlowPulse {
+  0% {
+    box-shadow: 
+      0 28px 75px -12px rgba(0, 0, 0, 0.95),
+      0 0 14px 2px rgba(239, 68, 68, 0.8),
+      0 0 26px 4px rgba(255, 255, 255, 0.6),
+      0 0 50px 8px rgba(220, 38, 38, 0.38),
+      inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.75);
+  }
+  50% {
+    box-shadow: 
+      0 28px 75px -12px rgba(0, 0, 0, 0.95),
+      0 0 22px 3px rgba(255, 255, 255, 0.9),
+      0 0 42px 7px rgba(239, 68, 68, 0.9),
+      0 0 72px 14px rgba(220, 38, 38, 0.55),
+      inset 0 1px 1px rgba(255, 255, 255, 0.75);
+    border-color: #ffffff;
+  }
+  100% {
+    box-shadow: 
+      0 28px 75px -12px rgba(0, 0, 0, 0.95),
+      0 0 18px 3px rgba(239, 68, 68, 0.85),
+      0 0 34px 5px rgba(255, 255, 255, 0.68),
+      0 0 58px 10px rgba(220, 38, 38, 0.42),
+      inset 0 1px 1px rgba(255, 255, 255, 0.45);
+    border-color: rgba(254, 202, 202, 0.85);
+  }
 }
 
 .hub-event-banner-wrap.show-popup .hub-event-banner {
-  animation: eventPopupBounceIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: eventPopupBounceIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, redWhiteOuterGlowPulse 3s ease-in-out 0.45s infinite alternate;
 }
 
 .hub-event-banner-wrap.closing .hub-event-banner {
@@ -9603,8 +9639,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hub-event-banner:hover {
-  border-color: rgba(52, 211, 153, 0.65);
-  box-shadow: 0 32px 85px -10px rgba(0, 0, 0, 0.92), 0 0 55px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border-color: #ffffff;
+  box-shadow: 
+    0 32px 85px -10px rgba(0, 0, 0, 0.95),
+    0 0 25px 4px rgba(255, 255, 255, 0.95),
+    0 0 48px 8px rgba(239, 68, 68, 0.95),
+    0 0 82px 16px rgba(220, 38, 38, 0.65),
+    inset 0 1px 1px rgba(255, 255, 255, 0.85);
 }
 
 /* Ambient glow & shimmer effect */
