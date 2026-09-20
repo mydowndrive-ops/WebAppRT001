@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (17:38 WIB)  
-**Versi Rilis Aktif:** `v2.9.14`  
+**Terakhir Diperbarui:** 20 September 2026 (18:10 WIB)  
+**Versi Rilis Aktif:** `v2.9.15`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -34,7 +34,37 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🔧 Perbaikan Bug Navigasi Kartu Hub & Eliminasi Notifikasi Palsu "Tekan sekali lagi untuk keluar" (Update v2.9.14 - 20 Sept 2026)
+### 1. 🎨 Transformasi Desain: Navigasi Orbital Eksekutif (Circular Orbital Navigation Wheel) Menggantikan Kotak-Kotak Grid (Update v2.9.15 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Mengganti deretan kotak-kotak kartu di halaman utama publik dengan desain roda orbital sirkular elegan sesuai diagram ilustrasi referensi pengguna.
+  - Lingkaran merah di pusat diagram difungsikan sebagai **Logo RT Resmi** (seperti yang terdapat di pojok kiri atas navbar), dan 6 lingkaran kecil di luar bertindak sebagai titik akses pengganti kotak layanan.
+- **Implementasi & Detail Arsitektur**:
+  - **Pusat Inti (Center Core)**:
+    - Lingkaran cincin merah elegan (`#dc2626`) dengan efek cahaya luar (*red outer glow*), cincin putih ganda, dan berkas cahaya pemutar (*orbital rotating light spinner*).
+    - Memuat lambang resmi RT.001 Graha Asri (`assets/logo.png?v=2.6.7`) di atas cakram putih bersih dengan lencana emas *"RT.001 / RW.013"*.
+    - Interaktif: Klik pada logo mengembalikan layar ke posisi atas hub secara mulus.
+  - **6 Kelopak Busur Melengkung (Curved Arc Petals)**:
+    - Digambar menggunakan geometri SVG `<path>` dengan ujung panah segitiga terarah presisi ke masing-masing lingkaran luar.
+    - Mengadopsi gradasi warna kromatik spektrum teal-ke-royal blue persis sesuai gambar referensi:
+      1. Sektor 0 (Kanan / Timur - 0°): **Struktur Pengurus** (Gradasi Royal Blue, ikon hierarki `fa-sitemap`).
+      2. Sektor 1 (Kanan-Bawah / Tenggara - 60°): **Portal Warga** (Gradasi Sky Blue, ikon pintu `fa-door-open`).
+      3. Sektor 2 (Kiri-Bawah / Barat Daya - 120°): **Agenda Warga** (Gradasi Cyan-Teal, ikon kalender `fa-calendar-days`).
+      4. Sektor 3 (Kiri / Barat - 180°): **Profil & Peta** (Gradasi Emerald-Teal, ikon lokasi `fa-map-location-dot`).
+      5. Sektor 4 (Kiri-Atas / Barat Laut - 240°): **Statistik Warga** (Gradasi Ocean Cyan, ikon target `fa-bullseye`).
+      6. Sektor 5 (Kanan-Atas / Timur Laut - 300°): **Kas & Keuangan** (Gradasi Deep Blue, ikon jabat tangan `fa-handshake`).
+    - Dilengkapi label teks melengkung sepanjang busur radial yang dirancang selalu terbaca tegak (*right-side up*).
+  - **6 Tombol Node Satelit Luar**:
+    - Tombol lingkaran sirkular dengan border bercahaya emas saat disorot/aktif (`:hover` / `.active`), ikon kontras tinggi, dan responsivitas klik langsung ke subview yang bersangkutan.
+  - **Panel Detail Layanan Interaktif (Underneath Detail Card)**:
+    - Terletak di bawah roda orbital, menampilkan lencana kategori, judul lengkap, deskripsi komprehensif, dan tombol aksi langsung (*Buka Fitur / Masuk ke Portal Warga*).
+    - Sinkron secara *real-time* dengan gerakan *hover*, *focus*, dan *click/tap* pada kelopak maupun tombol satelit (default aktif: Portal Warga RT.001).
+  - **Responsivitas Layar HP & Tablet**:
+    - Skala SVG otomatis menyesuaikan lebar layar ponsel (360px–480px) tanpa menimbulkan scroll horizontal, menjamin estetika mewah di seluruh perangkat.
+  - **Penyegaran Cache (Cache Busting)**:
+    - Service Worker dinaikkan ke `rt-finsmart-cache-v2.9.15`.
+    - Script dan stylesheet menggunakan query parameter `?v=2.9.15`.
+
+### 2. 🔧 Perbaikan Bug Navigasi Kartu Hub & Eliminasi Notifikasi Palsu "Tekan sekali lagi untuk keluar" (Update v2.9.14 - 20 Sept 2026)
 - **Latar Belakang & Investigasi Masalah**:
   - Saat pengguna mengklik salah satu kartu/kotak di beranda utama (misal: Demografi, Kas & Keuangan, Profil & Peta, Kegiatan, dsb.), muncul toast notifikasi di pojok kanan bawah: *"Tekan sekali lagi untuk keluar dari aplikasi"* dan halaman subview gagal terbuka.
   - **Akar Masalah (Root Cause)**:
