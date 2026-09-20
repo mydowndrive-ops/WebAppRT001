@@ -6351,6 +6351,32 @@ const UPCOMING_EVENTS = [
     location: 'Titik Kumpul: Depan Blok B6 & Pos Kamling',
     note: 'Konsumsi & Kopi Pagi Disediakan Pengurus',
     waText: 'Halo Warga RT.001/RW.013! Mengingatkan agenda Kerja Bakti Gotong Royong & Fogging DBD pada Minggu, 20 September 2026 pukul 07:00 WIB di titik kumpul Depan Blok B6. Mari hadir dan guyub rukun!'
+  },
+  {
+    id: 'evt-2',
+    category: 'Ronda & Jimpitan Warga',
+    categoryIcon: 'fa-solid fa-shield-halved',
+    countdown: '2 Hari Lagi',
+    title: 'Ronda Malam & Penarikan Jimpitan Warga RT.001',
+    desc: 'Patroli keliling malam terpadu, pengecekan gembok portal malam jam 23.00, pengambilan uang kas jimpitan di setiap rumah warga, dan silaturahmi ngopi bersama antar-warga.',
+    date: 'Sabtu Malam, 19 September 2026',
+    time: '21:00 – 03:00 WIB',
+    location: 'Pos Ronda Kamling Utama RT.001',
+    note: 'Kopi, Teh Hangat & Kudapan Ronda Disediakan',
+    waText: 'Halo Bapak/Warga RT.001! Mengingatkan jadwal Ronda Malam & Penarikan Jimpitan pada Sabtu Malam, 19 September 2026 mulai pukul 21:00 WIB di Pos Kamling Utama. Jaga lingkungan bersama, guyub rukun!'
+  },
+  {
+    id: 'evt-3',
+    category: 'Kerohanian & PHBI',
+    categoryIcon: 'fa-solid fa-mosque',
+    countdown: '8 Hari Lagi',
+    title: 'Peringatan Maulid Nabi Muhammad SAW 1448 H & Santunan Yatim',
+    desc: 'Tabligh akbar silaturahmi warga, tausiyah hikmah maulid, serta penyaluran santunan anak yatim & dhuafa dari alokasi kas PHBI dan donasi sukarela warga.',
+    date: 'Jumat Malam, 25 September 2026',
+    time: '19:30 WIB (Ba’da Isya)',
+    location: 'Fasum Utama / Masjid RT.001 Graha Asri',
+    note: 'Terbuka untuk Seluruh Keluarga & Warga RT.001',
+    waText: 'Undangan Warga RT.001: Hadirilah Peringatan Maulid Nabi Muhammad SAW 1448 H & Santunan Yatim pada Jumat Malam, 25 September 2026 pukul 19:30 WIB di Fasum Utama. Semoga membawa berkah bagi lingkungan kita!'
   }
 ];
 
@@ -6409,7 +6435,7 @@ function setupUpcomingEventBanner() {
         waBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(evt.waText)}`;
       }
 
-      // Update dots if exists
+      // Update dots
       document.querySelectorAll('#event-banner-dots .event-dot').forEach((dot, dIdx) => {
         dot.classList.toggle('active', dIdx === currentUpcomingEventIdx);
       });
@@ -6418,7 +6444,6 @@ function setupUpcomingEventBanner() {
 
   function startEventAutoPlay() {
     stopEventAutoPlay();
-    if (UPCOMING_EVENTS.length <= 1) return;
     upcomingEventTimer = setInterval(() => {
       renderCurrentEvent(currentUpcomingEventIdx + 1, true);
     }, 7000);

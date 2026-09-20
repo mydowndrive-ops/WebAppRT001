@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.10">
+  <link rel="stylesheet" href="styles.css?v=2.9.11">
 </head>
 <body>
 
@@ -354,15 +354,6 @@
         <!-- BANNER IKLAN / BROADCAST HIGHLIGHT EVENT TERDEKAT (POPUP MODAL LUXURY FLYER) -->
         <div class="hub-event-banner-wrap" id="hub-event-banner-wrap" aria-label="Informasi Event Terdekat" role="dialog" aria-modal="true" style="display: none;">
           <div class="hub-event-banner hub-event-flyer-modal glass-panel">
-            <!-- 1. Pendaran Cahaya Outerglow Merah Putih Memancar ke Luar Kotak -->
-            <div class="event-border-outerglow"></div>
-
-            <!-- 2. Bingkai Garis-Garis Merah Putih Memutar di Pinggir Kotak -->
-            <div class="event-border-rotator-frame">
-              <div class="event-border-rotator"></div>
-              <div class="event-card-inner-base"></div>
-            </div>
-
             <!-- Tombol Tutup Banner (Tanda Silang Mewah) -->
             <button type="button" class="btn-event-popup-close" id="btn-close-event-banner" aria-label="Tutup Pengumuman Event" title="Tutup Pengumuman (X atau Esc)">
               <i class="fa-solid fa-xmark"></i>
@@ -439,6 +430,27 @@
                     <strong class="event-meta-card-value" id="event-banner-note">Konsumsi &amp; Kopi Pagi Disediakan</strong>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <!-- Carousel Controller Bar (Indikator Halaman, Dots & Tombol Prev/Next) -->
+            <div class="event-flyer-carousel-bar">
+              <div class="event-counter-indicator">
+                <i class="fa-solid fa-layer-group text-emerald me-1"></i>
+                <span>Agenda <strong id="event-current-index" class="text-emerald">1</strong> dari <span id="event-total-count">3</span></span>
+              </div>
+              <div class="event-dots-wrap" id="event-banner-dots">
+                <button type="button" class="event-dot active" data-event-idx="0" aria-label="Event 1"></button>
+                <button type="button" class="event-dot" data-event-idx="1" aria-label="Event 2"></button>
+                <button type="button" class="event-dot" data-event-idx="2" aria-label="Event 3"></button>
+              </div>
+              <div class="event-nav-btns">
+                <button type="button" class="btn-event-nav" id="btn-event-prev" aria-label="Event Sebelumnya" title="Agenda Sebelumnya">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button type="button" class="btn-event-nav" id="btn-event-next" aria-label="Event Berikutnya" title="Agenda Berikutnya">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
               </div>
             </div>
 
@@ -6369,6 +6381,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.10"></script>
+  <script src="app.js?v=2.9.11"></script>
 </body>
 </html>

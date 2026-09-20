@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (17:02 WIB)  
-**Versi Rilis Aktif:** `v2.9.10`  
+**Terakhir Diperbarui:** 20 September 2026 (17:15 WIB)  
+**Versi Rilis Aktif:** `v2.9.11`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -34,7 +34,22 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🇮🇩 Transformasi Garis-Garis Merah Putih Menjadi Outerglow Memancar Keliling Kotak (Update v2.9.10 - 20 Sept 2026)
+### 1. 🛡️ Restorasi Kotak Event ke Kondisi Awal Sebelum Efek Merah Putih Memutar di Belakang (Update v2.9.11 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Mengembalikan kotak event ke kondisi awal yang bersih (*clean luxury glassmorphism*) persis sebelum diberikan efek garis merah-putih memutar maupun outerglow di belakangnya.
+- **Tindakan & Restorasi Arsitektur**:
+  1. **Menghapus Seluruh Efek Rotasi Merah Putih di Belakang Kotak**:
+     - Menghapus elemen ekstra `.event-border-outerglow`, `.event-border-rotator-frame`, `.event-border-rotator`, `.event-card-inner-base`, dan halo merah-putih.
+     - Mengembalikan struktur kartu `.hub-event-banner` ke tampilan awal: border emerald mewah `border: 1.5px solid rgba(16, 185, 129, 0.45)`, background deep luxury green gradient, dan bayangan multi-stop halus tanpa perputaran warna merah putih di belakangnya.
+  2. **Pengembalian Carousel Slider & Komponen Asli**:
+     - Mengembalikan Carousel Controller Bar (`.event-flyer-carousel-bar` dengan indikator halaman, slider dots interaktif, tombol navigasi prev/next, dan autoplay rotasi event otomatis 7 detik).
+     - Menampilkan kembali daftar 3 agenda terdekat (Kerja Bakti, Ronda Malam & Penarikan Jimpitan, serta Maulid Nabi & Santunan Yatim).
+  3. **Penyelarasan Cache PWA**:
+     - Parameter aset dinaikkan ke versi `v2.9.11` pada `index.html`, `styles.css`, `app.js`, dan `sw.js`.
+
+---
+
+### 2. 🇮🇩 Transformasi Garis-Garis Merah Putih Menjadi Outerglow Memancar Keliling Kotak (Update v2.9.10 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Mengubah pendaran cahaya pinggir kotak EVENT TERDEKAT di mana garis-garis merah putih yang mengelilingi kotaknya aktif memancarkan **outerglow** (pendaran cahaya bersinar ke luar kotak).
 - **Solusi & Rekayasa Desain 3-Lapis (Tri-Layer Outerglow Architecture)**:
