@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (22:15 WIB)  
-**Versi Rilis Aktif:** `v2.9.26`  
+**Terakhir Diperbarui:** 20 September 2026 (22:30 WIB)  
+**Versi Rilis Aktif:** `v2.9.27`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,41 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📊 Penataan Ulang Tata Letak & Hirarki Konten Dashboard Eksekutif Pengurus (Update v2.9.26 - 20 Sept 2026)
+### 1. 🗂️ Restrukturisasi & Urutan Menu Sidebar Admin 1 (Bendahara 1) (Update v2.9.27 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Pada halaman dashboard Admin 1 (Bendahara 1), atur ulang posisi menu di sidebarnya secara tepat menjadi:
+    1. **Dashboard Eksekutif** (`dashboard`)
+    2. **Data Warga** (`warga`)
+    3. **Checklist Iuran Wajib** (`checklist`)
+    4. **Pemasukan NON iuran** (`non-iuran`)
+    5. **Uang Jimpitan** (`jimpitan`)
+    6. **6POS Anggaran & SHR** (`pos-anggaran`) *(diperbarui dari "6 Pos Anggaran & SHR")*
+    7. **Pengajuan Anggaran dari Warga** (`pengajuan-dana-admin`) *(diperbarui dari "Pengajuan Dana dari Warga")*
+    8. **Pengeluaran Kas** (`pengeluaran`)
+    9. **Laporan & Pembukuan** (`laporan`)
+    10. **Inventaris dan Aset RT** (`aset-rt`)
+    11. **Pengaturan Sistem** (`pengaturan`) *(diperbarui dari "Pengaturan Pos & Sistem")*
+  - Hapus/sembunyikan menu berikut dari sidebar Admin 1 (Bendahara 1):
+    1. **Struktur Pengurus RT** *(tetap tersedia khusus untuk peran Pengurus RT & Admin 2)*
+    2. **Jadwal Ronda** *(tetap tersedia khusus untuk peran Pengurus RT)*
+- **Implementasi Teknis & Arsitektur RBAC**:
+  - **Penataan Ulang HTML Markup (`index.html`)**:
+    - Menyusun ulang urutan 11 item `<a class="menu-item">` di dalam `<nav class="sidebar-menu">` persis dari 1 sampai 11.
+    - Memperbarui teks dan *tooltip*:
+      - `"6 Pos Anggaran & SHR"` ➔ `"6POS Anggaran & SHR"`
+      - `"Pengajuan Dana dari Warga"` ➔ `"Pengajuan Anggaran dari Warga"`
+      - `"Pengaturan Pos & Sistem"` ➔ `"Pengaturan Sistem"`
+    - Memindahkan tombol modul `pengurus-struktur` dan `ronda-pengurus` ke bagian bawah deklarasi sidebar dengan atribut `data-role-req="PENGURUS"`.
+  - **Kontrol Akses Peran RBAC & Flexbox Order di `app.js` (`applyRBAC` & `navigateToView`)**:
+    - Mendefinisikan daftar izin akses resmi Bendahara 1: `B1_ALLOWED_TARGETS = ['dashboard', 'warga', 'checklist', 'non-iuran', 'jimpitan', 'pos-anggaran', 'pengajuan-dana-admin', 'pengeluaran', 'laporan', 'aset-rt', 'pengaturan']`.
+    - Menerapkan CSS `el.style.order` dinamis pada item menu sidebar B1 (1 s.d. 11) dan menyembunyikan (`display: none`) modul `pengurus-struktur` serta `ronda-pengurus` saat pengguna aktif berstatus Bendahara 1.
+    - Memperbarui kamus judul halaman (`titles`) di `navigateToView` agar label header halaman konsisten dengan nama menu baru.
+    - Menambahkan perlindungan *fail-safe redirect* untuk B1 jika mencoba mengakses URL view yang berada di luar hak otoritasnya.
+  - **Peningkatan Cache PWA**:
+    - Meningkatkan versi Service Worker ke `rt-finsmart-cache-v2.9.27` di `sw.js`.
+    - Memperbarui parameter query aset `styles.css?v=2.9.27` dan `app.js?v=2.9.27` di `index.html`.
+
+### 2. 📊 Penataan Ulang Tata Letak & Hirarki Konten Dashboard Eksekutif Pengurus (Update v2.9.26 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Di dalam **Dashboard Eksekutif Pengurus**, atur ulang posisi tampilan modul agar fokus finansial dan operasional tersusun secara logis dan runtut:
     1. **TOTAL KAS TERKONSOLIDASI dan Capaian Iuran Bulan Ini**

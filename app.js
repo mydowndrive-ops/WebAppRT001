@@ -3998,13 +3998,20 @@ function setupNavigation() {
 
 function navigateToView(viewId) {
   const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser);
+  const isB1 = !currentAcc || currentAcc.accessLevel === 'B1';
   const isB2 = currentAcc && currentAcc.accessLevel === 'B2';
   const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
   const isWarga = isCurrentWarga();
 
+  const B1_ALLOWED_TARGETS = ['dashboard', 'warga', 'checklist', 'non-iuran', 'jimpitan', 'pos-anggaran', 'pengajuan-dana-admin', 'pengeluaran', 'laporan', 'aset-rt', 'pengaturan'];
   const B2_ALLOWED_TARGETS = ['pengurus-struktur', 'jimpitan', 'aset-rt'];
   const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'warga', 'ronda-pengurus', 'jimpitan', 'pengajuan-dana-admin', 'non-iuran', 'aset-rt'];
   const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'non-iuran'];
+
+  // If B1 attempts to navigate outside allowed pages, redirect to dashboard
+  if (isB1 && !B1_ALLOWED_TARGETS.includes(viewId)) {
+    viewId = 'dashboard';
+  }
 
   // If B2 attempts to navigate outside allowed pages, redirect to pengurus-struktur
   if (isB2 && !B2_ALLOWED_TARGETS.includes(viewId)) {
@@ -4037,15 +4044,15 @@ function navigateToView(viewId) {
   const titles = {
     'dashboard': { title: 'Dashboard Eksekutif', sub: 'Ringkasan Arus Kas & Pos Anggaran Terkini' },
     'checklist': { title: 'Checklist Iuran Wajib', sub: `Periode: ${MONTH_NAMES[state.selectedMonth]} ${state.selectedYear} (Auto-Split 6 Pos)` },
-    'pos-anggaran': { title: '6 Pos Anggaran & SHR', sub: 'Rekapitulasi Saldo Masuk, Keluar & Sisa Kas Pos' },
+    'pos-anggaran': { title: '6POS Anggaran & SHR', sub: 'Rekapitulasi Saldo Masuk, Keluar & Sisa Kas Pos' },
     'pengeluaran': { title: 'Pengeluaran Kas RT', sub: 'Pencatatan Biaya Operasional & Pembebanan Pos' },
     'warga': { title: 'Data Warga RT.001', sub: 'Daftar Kepala Keluarga, Kontak WA & Status Domisili' },
     'laporan': { title: 'Laporan & Pembukuan', sub: 'Laporan Pertanggungjawaban Keuangan Siap Cetak' },
-    'pengaturan': { title: 'Pengaturan Pos & Sistem', sub: 'Konfigurasi Iuran, Split Anggaran & Cadangan Database' },
+    'pengaturan': { title: 'Pengaturan Sistem', sub: 'Konfigurasi Iuran, Split Anggaran & Cadangan Database' },
     'jimpitan': { title: 'Uang Jimpitan', sub: 'Perolehan & Pengeluaran Kas Ronda Malam Minggu' },
     'non-iuran': { title: 'Pemasukan NON iuran', sub: 'Pemasukan, Pengeluaran & Saldo Kas Non-Iuran (Donasi, Hibah, Sewa Fasum & Usaha RT)' },
     'ronda-pengurus': { title: 'Jadwal Ronda', sub: 'Tata Kelola 8 Regu Ronda & Penarikan Jimpitan Warga RT.001' },
-    'pengajuan-dana-admin': { title: 'Pengajuan Dana dari Warga', sub: 'Verifikasi, Persetujuan & Realisasi Pencairan Kas Fasilitas' },
+    'pengajuan-dana-admin': { title: 'Pengajuan Anggaran dari Warga', sub: 'Verifikasi, Persetujuan & Realisasi Pencairan Kas Fasilitas' },
     'pengurus-struktur': { title: 'Bagan & Struktur Pengurus RT', sub: 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027' },
     'aset-rt': { title: 'Inventaris & Aset RT.001', sub: 'Pencatatan Sarana Prasarana & Nilai Perolehan Aset Lingkungan Graha Asri' },
     'portal-warga': { title: 'Portal Mandiri Warga RT.001', sub: 'Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan' }
@@ -7460,7 +7467,19 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==================== ADMIN 1 / ADMIN 2 / PENGURUS RBAC ACCESS CONTROL ====================
 
 // Definisi izin halaman per peran (Role-Based Access Control)
-const B1_RESTRICTED_TARGETS = ['checklist', 'pos-anggaran', 'pengeluaran', 'laporan', 'pengaturan'];
+const B1_ALLOWED_TARGETS = [
+  'dashboard',
+  'warga',
+  'checklist',
+  'non-iuran',
+  'jimpitan',
+  'pos-anggaran',
+  'pengajuan-dana-admin',
+  'pengeluaran',
+  'laporan',
+  'aset-rt',
+  'pengaturan'
+];
 const B2_ALLOWED_TARGETS = ['pengurus-struktur', 'jimpitan', 'aset-rt'];
 const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'warga', 'ronda-pengurus', 'jimpitan', 'pengajuan-dana-admin', 'non-iuran', 'aset-rt'];
 const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'non-iuran'];
@@ -7478,10 +7497,28 @@ function applyRBAC() {
     if (!target) return;
 
     if (isB1) {
-      // Admin 1 / Bendahara 1 Utama: Akses penuh ke seluruh menu
-      el.style.display = '';
-      el.style.order = '';
-      el.classList.remove('menu-item-locked');
+      // Admin 1 / Bendahara 1: 11 Menu Utama di sidebar, struktur & ronda disembunyikan
+      if (B1_ALLOWED_TARGETS.includes(target)) {
+        el.style.display = '';
+        el.classList.remove('menu-item-locked');
+        const b1Order = {
+          'dashboard': 1,
+          'warga': 2,
+          'checklist': 3,
+          'non-iuran': 4,
+          'jimpitan': 5,
+          'pos-anggaran': 6,
+          'pengajuan-dana-admin': 7,
+          'pengeluaran': 8,
+          'laporan': 9,
+          'aset-rt': 10,
+          'pengaturan': 11
+        };
+        if (b1Order[target]) el.style.order = b1Order[target];
+      } else {
+        el.style.display = 'none';
+        el.style.order = '';
+      }
     } else if (isB2) {
       // Admin 2 / Bendahara: 1. Struktur Pengurus RT, 2. Uang Jimpitan, 3. Inventaris dan Aset RT
       if (B2_ALLOWED_TARGETS.includes(target)) {
@@ -7534,6 +7571,8 @@ function applyRBAC() {
     } else if (isB2 && !B2_ALLOWED_TARGETS.includes(activeTarget)) {
       navigateToView('pengurus-struktur');
     } else if (isPengurus && !PENGURUS_ALLOWED_TARGETS.includes(activeTarget)) {
+      navigateToView('dashboard');
+    } else if (isB1 && !B1_ALLOWED_TARGETS.includes(activeTarget)) {
       navigateToView('dashboard');
     }
   }
