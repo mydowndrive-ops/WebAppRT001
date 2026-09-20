@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (01:10 WIB)  
-**Versi Rilis Aktif:** `v2.9.35`  
+**Terakhir Diperbarui:** 21 September 2026 (01:18 WIB)  
+**Versi Rilis Aktif:** `v2.9.36`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,33 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 💫 Ambient Financial Pulse Backdrop & Zero-Scroll Interactive Annual Chart Modal (Update v2.9.35 - 21 Sept 2026)
+### 1. 🔤 Flagship Typography Enhancement: Larger & Bolder Official Title & Subtitle (Update v2.9.36 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Memperbesar ukuran teks judul utama **"WARGA RT.001 RW.013"** agar saat dibuka di ponsel (smartphone) tampil jauh lebih tegas, jelas, berwibawa, dan mudah dibaca secara instan tanpa menyipitkan mata.
+  - Menyesuaikan secara proporsional ukuran font kalimat penanda di atasnya: **"WEB APLIKASI RESMI"** agar seimbang dan serasi secara visual.
+- **Hasil Optimalisasi Tipografi & Styling**:
+  1. **Judul Utama "WARGA RT.001 RW.013" (`.split-line-main`)**:
+     - **Skala Ponsel / Mobile (`@media (max-width: 768px)`)**:
+       - Dinaikkan dari `clamp(1.12rem, 5vw, 1.5rem)` menjadi **`clamp(1.48rem, 6.2vw, 2.05rem) !important`** (peningkatan ukuran ~35% lebih besar dan tebal).
+       - Menjaga aturan `white-space: nowrap` sehingga judul tetap utuh dalam satu baris megah di layar smartphone tanpa patahan kata canggung.
+       - Garis tepi (*text stroke*) putih dipertebal dari `0.5px` menjadi **`0.75px`** (`-webkit-text-stroke: 0.75px rgba(255, 255, 255, 0.95)`).
+       - *Text shadow* kontras tinggi 4 penjuru (`1.5px`) ditambah bayangan kedalaman (*drop shadow*) `0px 3px 8px rgba(0, 0, 0, 0.7)` untuk memotong latar belakang bendera merah-putih secara tajam.
+     - **Skala Desktop & Layar Lebar**:
+       - Dinaikkan dari `clamp(1.35rem, 4.4vw, 2.45rem)` menjadi **`clamp(1.85rem, 4.8vw, 2.85rem)`**.
+  2. **Sub-Judul "WEB APLIKASI RESMI" (`.split-line-sub`)**:
+     - **Skala Ponsel / Mobile**:
+       - Dinaikkan dari `clamp(0.68rem, 2.5vw, 0.8rem)` menjadi **`clamp(0.85rem, 3.2vw, 1.05rem) !important`**.
+       - Menjaga `font-weight: 800`, spasi huruf elegan (*letter-spacing: 0.22em*), dan aksen warna *soft gold highlight* (`#fef08a`) dengan bayangan neon amber halus (`0 0 16px rgba(245, 158, 11, 0.7)`).
+       - Jarak bawah (*margin-bottom*) diperluas menjadi `0.38rem` untuk memberikan ritme vertikal yang proporsional ke judul utama.
+     - **Skala Desktop & Layar Lebar**:
+       - Dinaikkan dari `clamp(0.78rem, 1.8vw, 1.05rem)` menjadi **`clamp(0.92rem, 2.1vw, 1.25rem)`**.
+  3. **Dimensi Frame Pita Bendera Seluler (`.flag-container`)**:
+     - Ketinggian minimum banner seluler disesuaikan dari `104px` menjadi **`120px`** dengan padding `0.75rem 0.85rem` dan sudut melengkung `border-radius: 18px` agar teks yang lebih besar memiliki ruang bernapas (*breathing room*) vertikal yang mewah dan simetris di tengah kibaran bendera.
+  4. **Penyelarasan Aset & Versi**:
+     - Service Worker cache dinaikkan ke `rt-finsmart-cache-v2.9.36`.
+     - Versi query aset diperbarui ke `styles.css?v=2.9.36` dan `app.js?v=2.9.36`.
+
+### 2. 💫 Ambient Financial Pulse Backdrop & Zero-Scroll Interactive Annual Chart Modal (Update v2.9.35 - 21 Sept 2026)
 - **Latar Belakang & Mandat Pengguna (Solusi 2)**:
   - Berdasarkan sesi *brainstorming* tata letak visual landing hub: pengguna menginginkan tampilan grafik penerimaan kas/iuran bulanan berpadu harmonis dengan roda navigasi orbital melingkar, dengan transparansi yang cukup agar tidak mengganggu font atau teks tombol di depannya.
   - Tujuan utamanya adalah menciptakan tampilan beranda yang **mewah, interaktif, premium, dan profesional**, di mana pengunjung di layar utama **tidak perlu melakukan scrolling (*Zero-Scroll Experience*)**.

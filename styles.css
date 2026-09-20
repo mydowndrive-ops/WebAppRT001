@@ -9520,24 +9520,24 @@ h1, h2, h3, h4, h5, h6 {
 /* Sub-title: Web Aplikasi Resmi */
 .split-line-sub {
   font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
-  font-size: clamp(0.78rem, 1.8vw, 1.05rem);
+  font-size: clamp(0.92rem, 2.1vw, 1.25rem);
   font-weight: 800;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: #fef08a; /* Soft elegant gold highlight */
-  margin-bottom: 0.28rem;
+  margin-bottom: 0.38rem;
   text-shadow: 
     0 1px 2px rgba(0, 0, 0, 1),
     0 2px 6px rgba(0, 0, 0, 0.95),
-    0 0 16px rgba(245, 158, 11, 0.6);
+    0 0 16px rgba(245, 158, 11, 0.7);
 }
 
 /* Main Title: WARGA RT.001 RW.013 - MaskingRenta Custom Font with High Contrast Deep Emerald (#006600) */
 .split-line-main {
   font-family: 'MaskingRenta', 'Masking Renta', var(--font-heading, 'Plus Jakarta Sans'), sans-serif;
-  font-size: clamp(1.35rem, 4.4vw, 2.45rem);
+  font-size: clamp(1.85rem, 4.8vw, 2.85rem);
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.035em;
   text-transform: uppercase;
   display: inline-block;
   position: relative;
@@ -9548,14 +9548,14 @@ h1, h2, h3, h4, h5, h6 {
   background: none;
 
   /* 2. Penyesuaian Kontras Tinggi di Atas Bendera Merah Putih: Stroke & Crisp Solid Text-Shadow */
-  -webkit-text-stroke: 0.65px rgba(255, 255, 255, 0.95);
+  -webkit-text-stroke: 0.8px rgba(255, 255, 255, 0.95);
   text-shadow: 
-    1px 1px 0px rgba(255, 255, 255, 0.95),
-    -1px -1px 0px rgba(255, 255, 255, 0.95),
-    1px -1px 0px rgba(255, 255, 255, 0.95),
-    -1px 1px 0px rgba(255, 255, 255, 0.95),
-    0px 2px 5px rgba(0, 0, 0, 0.5);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+    1.5px 1.5px 0px rgba(255, 255, 255, 0.95),
+    -1.5px -1.5px 0px rgba(255, 255, 255, 0.95),
+    1.5px -1.5px 0px rgba(255, 255, 255, 0.95),
+    -1.5px 1.5px 0px rgba(255, 255, 255, 0.95),
+    0px 3px 8px rgba(0, 0, 0, 0.6);
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
 
   /* 3. Integrasi Animasi: Levitation Halus (Breathing Mulus 4 Detik) */
   animation: textLevitation 4s ease-in-out infinite;
@@ -9580,12 +9580,12 @@ h1, h2, h3, h4, h5, h6 {
   background: none !important;
   -webkit-background-clip: initial !important;
   background-clip: initial !important;
-  -webkit-text-stroke: 0.55px rgba(255, 255, 255, 0.95);
+  -webkit-text-stroke: 0.75px rgba(255, 255, 255, 0.95);
   text-shadow: 
-    1px 1px 0px rgba(255, 255, 255, 0.95),
-    -1px -1px 0px rgba(255, 255, 255, 0.95),
-    1px -1px 0px rgba(255, 255, 255, 0.95),
-    -1px 1px 0px rgba(255, 255, 255, 0.95);
+    1.5px 1.5px 0px rgba(255, 255, 255, 0.95),
+    -1.5px -1.5px 0px rgba(255, 255, 255, 0.95),
+    1.5px -1.5px 0px rgba(255, 255, 255, 0.95),
+    -1.5px 1.5px 0px rgba(255, 255, 255, 0.95);
 }
 
 /* 3D Hover Tilt: Efek Reaktif Interaktif Saat Kursor Diarahkan */
@@ -11693,33 +11693,39 @@ h1, h2, h3, h4, h5, h6 {
 
   .indonesia-flag-waving-banner,
   .flag-container {
-    min-height: 104px;
-    border-radius: 16px;
+    min-height: 120px;
+    border-radius: 18px;
     margin-bottom: 0.75rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.55), 0 0 15px rgba(16, 185, 129, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65), 0 0 18px rgba(16, 185, 129, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .flag-banner-overlay,
   .flag-content-centered {
-    padding: 0.6rem 0.75rem;
+    padding: 0.75rem 0.85rem;
   }
 
   .flag-title-main,
   .flag-text-warga {
-    font-size: 1.35rem;
-    letter-spacing: 0.02em;
+    font-size: 1.55rem;
+    letter-spacing: 0.025em;
   }
 
   /* Optimasi Judul WARGA RT.001 RW.013 Khusus Layar Ponsel (Mobile 90% Pengguna) */
   .split-line-main {
     font-family: 'MaskingRenta', 'Masking Renta', var(--font-heading, 'Plus Jakarta Sans'), sans-serif !important;
-    font-size: clamp(1.12rem, 5vw, 1.5rem) !important;
-    letter-spacing: 0.02em;
-    line-height: 1.25;
+    font-size: clamp(1.48rem, 6.2vw, 2.05rem) !important;
+    letter-spacing: 0.025em;
+    line-height: 1.2;
     white-space: nowrap; /* Teks satu baris utuh, tidak patah canggung di ponsel */
     max-width: 100%;
-    -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.95);
+    -webkit-text-stroke: 0.75px rgba(255, 255, 255, 0.95);
+    text-shadow: 
+      1.5px 1.5px 0px rgba(255, 255, 255, 0.95),
+      -1.5px -1.5px 0px rgba(255, 255, 255, 0.95),
+      1.5px -1.5px 0px rgba(255, 255, 255, 0.95),
+      -1.5px 1.5px 0px rgba(255, 255, 255, 0.95),
+      0px 3px 8px rgba(0, 0, 0, 0.7);
   }
 
   .split-line-main .word {
@@ -11729,13 +11735,18 @@ h1, h2, h3, h4, h5, h6 {
 
   .split-line-main .char {
     font-family: 'MaskingRenta', 'Masking Renta', var(--font-heading, 'Plus Jakarta Sans'), sans-serif !important;
-    -webkit-text-stroke: 0.45px rgba(255, 255, 255, 0.95);
+    -webkit-text-stroke: 0.7px rgba(255, 255, 255, 0.95);
   }
 
   .split-line-sub {
-    font-size: clamp(0.68rem, 2.5vw, 0.8rem);
-    letter-spacing: 0.16em;
-    margin-bottom: 0.2rem;
+    font-size: clamp(0.85rem, 3.2vw, 1.05rem) !important;
+    letter-spacing: 0.22em;
+    font-weight: 800;
+    margin-bottom: 0.38rem;
+    text-shadow: 
+      0 1px 2px rgba(0, 0, 0, 1),
+      0 2px 6px rgba(0, 0, 0, 0.95),
+      0 0 16px rgba(245, 158, 11, 0.7);
   }
 
   .cyber-badge-h1 {
