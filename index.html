@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.21">
+  <link rel="stylesheet" href="styles.css?v=2.9.22">
 </head>
 <body>
 
@@ -645,7 +645,7 @@
         </section>
 
         <!-- ==================== SPOTLIGHT GRAFIK PENERIMAAN IURAN TAHUNAN (PALING BAWAH BERANDA PUBLIK) ==================== -->
-        <section class="hub-chart-spotlight mb-4" aria-label="Grafik Performa Iuran Warga">
+        <section class="hub-chart-spotlight" aria-label="Grafik Performa Iuran Warga">
           <div class="public-annual-dues-card glass-panel" id="public-annual-dues-card">
             <div class="annual-dues-header">
               <div class="annual-dues-title-group">
@@ -678,23 +678,13 @@
                     <select id="select-annual-chart-year" class="annual-year-select" aria-label="Pilih Tahun Grafik Iuran">
                       <option value="2026" selected>2026 (Berjalan)</option>
                       <option value="2025">2025 (Arsip)</option>
+                      <option value="2024">2024 (Arsip)</option>
+                      <option value="2023">2023 (Arsip)</option>
+                      <option value="2022">2022 (Arsip)</option>
+                      <option value="2021">2021 (Arsip)</option>
                     </select>
                     <i class="fa-solid fa-chevron-down annual-select-arrow" aria-hidden="true"></i>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 1 KOTAK TUNGGAL: Performa dan partisipasi Pembayaran warga -->
-            <div class="annual-kpi-grid public-kpi-single">
-              <div class="annual-kpi-box single-box">
-                <div class="annual-kpi-icon bg-emerald-glow">
-                  <i class="fa-solid fa-users-gear text-emerald"></i>
-                </div>
-                <div class="annual-kpi-info">
-                  <span class="annual-kpi-label">Performa dan Partisipasi Pembayaran Warga</span>
-                  <strong class="annual-kpi-val text-emerald" id="public-annual-stat-single-compliance">88% Partisipasi Aktif</strong>
-                  <span class="annual-kpi-sub" id="public-annual-stat-single-sub">Tingkat kelancaran gotong royong 71 Kepala Keluarga RT.001</span>
                 </div>
               </div>
             </div>
@@ -1843,11 +1833,15 @@
                   </button>
                 </div>
                 <div class="annual-filter-group">
-                  <label for="select-annual-chart-year" class="annual-filter-label"><i class="fa-regular fa-calendar"></i> Tahun:</label>
+                  <label for="select-keuangan-chart-year" class="annual-filter-label"><i class="fa-regular fa-calendar"></i> Tahun:</label>
                   <div class="annual-select-wrap">
-                    <select id="select-annual-chart-year" class="annual-year-select">
-                      <option value="2026" selected>2026</option>
-                      <option value="2025">2025</option>
+                    <select id="select-keuangan-chart-year" class="annual-year-select">
+                      <option value="2026" selected>2026 (Berjalan)</option>
+                      <option value="2025">2025 (Arsip)</option>
+                      <option value="2024">2024 (Arsip)</option>
+                      <option value="2023">2023 (Arsip)</option>
+                      <option value="2022">2022 (Arsip)</option>
+                      <option value="2021">2021 (Arsip)</option>
                     </select>
                     <i class="fa-solid fa-chevron-down annual-select-arrow"></i>
                   </div>
@@ -1857,7 +1851,7 @@
 
             <div class="annual-chart-container">
               <div class="annual-chart-canvas-wrap">
-                <canvas id="chartPublicAnnualDues"></canvas>
+                <canvas id="chartKeuanganAnnualDues"></canvas>
               </div>
             </div>
 
@@ -4666,6 +4660,10 @@
                   <select id="select-warga-chart-year" class="annual-year-select" aria-label="Pilih Tahun Grafik Iuran Warga">
                     <option value="2026" selected>2026 (Berjalan)</option>
                     <option value="2025">2025 (Arsip)</option>
+                    <option value="2024">2024 (Arsip)</option>
+                    <option value="2023">2023 (Arsip)</option>
+                    <option value="2022">2022 (Arsip)</option>
+                    <option value="2021">2021 (Arsip)</option>
                   </select>
                   <i class="fa-solid fa-chevron-down annual-select-arrow" aria-hidden="true"></i>
                 </div>
@@ -6504,6 +6502,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.21"></script>
+  <script src="app.js?v=2.9.22"></script>
 </body>
 </html>

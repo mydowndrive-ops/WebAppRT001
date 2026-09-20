@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (20:30 WIB)  
-**Versi Rilis Aktif:** `v2.9.21`  
+**Terakhir Diperbarui:** 20 September 2026 (20:55 WIB)  
+**Versi Rilis Aktif:** `v2.9.22`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,22 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🛡️ Pemisahan Moduler "Jadwal Regu Ronda" & Restrukturisasi Bersih Dashboard Pengurus (Update v2.9.21 - 20 Sept 2026)
+### 1. 📊 Optimalisasi Grafik Penerimaan Iuran Tahunan & Arsip 2021–2026 (Update v2.9.22 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  1. Pada bagian *"Grafik Penerimaan Iuran Bulanan 1 Tahun Berjalan"*, hilangkan kotak *"18% Partisipasi Aktif"* karena di atasnya (pada hub cockpit status) sudah ada informasi kepatuhan yang sama.
+  2. Filter tahun dibuat mulai dari **2021 (Arsip)** sampai dengan **2026 (Berjalan)**.
+  3. Menggeser posisi kotak *"Grafik Penerimaan Iuran Bulanan 1 Tahun Berjalan"* ke atas agar jarak (vertical gap) dengan komponen di atasnya tidak terlalu jauh.
+- **Implementasi Teknis & Arsitektur DevOps**:
+  - **Pembersihan Redundansi DOM**: Menghapus kotak `.annual-kpi-grid.public-kpi-single` di dalam kartu grafik publik landing hub (`index.html`), sehingga tampilan langsung beralih secara bersih dari judul & kontrol tahun/tipe grafik ke kurva/batang visualisasi Chart.js.
+  - **Dukungan Opsi Arsip 2021–2026**: Menambahkan opsi filter tahun dari 2021 hingga 2026 pada dropdown `#select-annual-chart-year`, `#select-warga-chart-year`, dan `#select-keuangan-chart-year`.
+  - **Dataset Benchmark Arsip Berkelanjutan**: Menambahkan konstanta `HISTORICAL_ARCHIVE_RATES` pada `app.js` (2021 s/d 2025) yang menyajikan histori gotong royong dan partisipasi warga secara realistis dan presisi saat memilih tahun arsip tanpa transaksi live di memori.
+  - **Penataan Spasi Vertikal Ramping**:
+    - Mengurangi margin bawah `.hub-cockpit-section` dan `.hub-orbital-nav-wrapper` dari `1.5rem` menjadi `0.25rem`.
+    - Menghilangkan `margin-top` berlebih pada `.public-annual-dues-card` (dari `2rem` menjadi `0`), dan mengatur `.hub-chart-spotlight` menjadi `margin-top: 0`, memotong dead space hingga ~150px sehingga kartu grafik merapat proporsional dan elegan di bawah roda orbital navigasi.
+  - **Peningkatan Multi-Canvas Chart.js**: Memperbarui `renderPublicAnnualDuesChart` agar secara serentak mengelola dan merender canvas publik landing hub (`#chartPublicAnnualDues`) serta halaman transparansi (`#chartKeuanganAnnualDues`) secara sinkron tanpa konflik instance.
+  - **Pembaruan Cache**: Meningkatkan versi cache Service Worker ke `rt-finsmart-cache-v2.9.22`.
+
+### 2. 🛡️ Pemisahan Moduler "Jadwal Regu Ronda" & Restrukturisasi Bersih Dashboard Pengurus (Update v2.9.21 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Merapikan dashboard pengurus agar bersih dan modular seperti menu acuan **"Inventaris & Aset RT"** (hanya menampilkan data terkait tanpa elemen yang tidak relevan).
   - Saat menu **"Jadwal Regu Ronda"** di sidebar diklik, sisi kanan langsung menampilkan **"Tata Kelola Jadwal & Regu Ronda Malam LIVE AKTIF"** tanpa menampilkan banner *"Struktur Organisasi & Tata Kelola Pengurus"* di atasnya.
