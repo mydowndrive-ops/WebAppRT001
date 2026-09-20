@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.25">
+  <link rel="stylesheet" href="styles.css?v=2.9.26">
 </head>
 <body>
 
@@ -2548,74 +2548,25 @@
           </div>
         </div>
 
-        <!-- Ringkasan Inventaris & Aset RT -->
-        <div class="dash-asset-banner glass-panel mt-4" id="dash-asset-banner">
-          <div class="dash-asset-banner-left">
-            <div class="dash-asset-icon-box">
-              <i class="fa-solid fa-boxes-stacked text-emerald"></i>
-            </div>
-            <div>
-              <div class="dash-asset-badge-row">
-                <span class="badge-tag-emerald"><i class="fa-solid fa-shield-halved"></i> Inventaris RT.001</span>
-                <span class="badge-tag-gold" id="dash-asset-update-badge"><i class="fa-solid fa-check-double"></i> Terverifikasi Juli 2023</span>
-              </div>
-              <h3 class="dash-asset-title">Valuasi Aset Lingkungan Terdata: <span class="text-gold" id="dash-asset-total-val">Rp 20.742.884</span></h3>
-              <p class="dash-asset-sub">Tercatat <strong>33 ragam inventaris</strong> (192+ fisik barang) dengan <strong>97% kondisi prima laik pakai</strong> untuk kegiatan dan fasilitas warga.</p>
-            </div>
-          </div>
-          <div class="dash-asset-banner-right">
-            <div class="dash-asset-mini-stats">
-              <div class="dash-asset-mini-stat">
-                <span class="val text-emerald" id="dash-asset-ok-count">32 Aset</span>
-                <span class="lbl">Laik Pakai (97%)</span>
-              </div>
-              <div class="dash-asset-mini-stat">
-                <span class="val text-rose" id="dash-asset-bad-count">1 Rusak / 1 Hilang</span>
-                <span class="lbl">Perlu Penggantian</span>
-              </div>
-            </div>
-            <button type="button" class="btn btn-outline-gold" id="btn-dash-open-aset" title="Buka Daftar Inventaris & Aset RT">
-              <i class="fa-solid fa-arrow-right"></i> Kelola Daftar Aset Lengkap
-            </button>
-          </div>
-        </div>
-
-        <!-- Ringkasan Keamanan & Jadwal Ronda Malam -->
-        <div class="dash-ronda-banner glass-panel mt-4" id="dash-ronda-banner">
-          <div class="dash-asset-banner-left">
-            <div class="dash-asset-icon-box" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3);">
-              <i class="fa-solid fa-shield-halved text-gold"></i>
-            </div>
-            <div>
-              <div class="dash-asset-badge-row">
-                <span class="badge-tag-gold"><i class="fa-solid fa-moon"></i> Ronda &amp; Jimpitan Warga</span>
-                <span class="badge-tag-emerald" id="dash-ronda-active-status"><i class="fa-solid fa-circle-dot dot-pulse"></i> Bertugas Pekan Ini</span>
-              </div>
-              <h3 class="dash-asset-title">Jadwal Ronda: <span class="text-gold" id="dash-ronda-active-week">Regu 1 (Wageyanto)</span></h3>
-              <p class="dash-asset-sub" id="dash-ronda-active-desc">Patroli rutin malam minggu pukul 21.00 &ndash; 04.00 WIB bersama 11 personel siap jaga kamtibmas dan penarikan koin jimpitan warga.</p>
-            </div>
-          </div>
-          <div class="dash-asset-banner-right">
-            <div class="dash-asset-mini-stats">
-              <div class="dash-asset-mini-stat">
-                <span class="val text-gold" id="dash-ronda-groups-count">8 Regu</span>
-                <span class="lbl">Siklus Bergilir</span>
-              </div>
-              <div class="dash-asset-mini-stat">
-                <span class="val text-emerald" id="dash-ronda-members-count">88 Personel</span>
-                <span class="lbl">Total Petugas</span>
-              </div>
-            </div>
-            <button type="button" class="btn btn-outline-cyan" id="btn-dash-manage-ronda" onclick="window.openManageRondaModal(1)" title="Atur Susunan Komandan & Anggota Ronda">
-              <i class="fa-solid fa-calendar-days text-gold"></i> Atur Jadwal Ronda
-            </button>
-          </div>
-        </div>
-
-        <!-- Capaian Iuran Berdasarkan Nama Jalan -->
+        <!-- 2. Alokasi POS ANGGARAN -->
         <div class="section-title-bar mt-4">
           <div>
-            <h3><i class="fa-solid fa-road text-gold"></i> Capaian Iuran Berdasarkan Nama Jalan</h3>
+            <h3><i class="fa-solid fa-layer-group text-gold"></i> Alokasi POS ANGGARAN</h3>
+            <p>Setiap iuran Rp 50.000 otomatis dialokasikan ke masing-masing pos di bawah ini</p>
+          </div>
+          <button class="btn btn-sm btn-outline" id="btn-goto-pos">
+            <span>Rincian &amp; Transaksi Pos</span> <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <div class="pos-cards-grid" id="dashboard-pos-grid">
+          <!-- Dynamically populated pos cards -->
+        </div>
+
+        <!-- 3. Capaian Iuran Bulanan -->
+        <div class="section-title-bar mt-4">
+          <div>
+            <h3><i class="fa-solid fa-road text-gold"></i> Capaian Iuran Bulanan</h3>
             <p>Prosentase warga yang sudah membayar iuran wajib bulanan per ruas jalan RT.001</p>
           </div>
           <div class="street-header-badge" id="dash-street-period-badge">
@@ -2627,23 +2578,8 @@
           <!-- Dynamically populated street cards -->
         </div>
 
-        <!-- 6 Pos Anggaran Cards Grid -->
-        <div class="section-title-bar">
-          <div>
-            <h3><i class="fa-solid fa-layer-group text-gold"></i> Realokasi Otomatis 6 Pos Anggaran Utama</h3>
-            <p>Setiap iuran Rp 50.000 otomatis dialokasikan ke masing-masing pos di bawah ini</p>
-          </div>
-          <button class="btn btn-sm btn-outline" id="btn-goto-pos">
-            <span>Rincian & Transaksi Pos</span> <i class="fa-solid fa-chevron-right"></i>
-          </button>
-        </div>
-
-        <div class="pos-cards-grid" id="dashboard-pos-grid">
-          <!-- Dynamically populated pos cards -->
-        </div>
-
-        <!-- Charts & Activity Row -->
-        <div class="dashboard-analytics-grid">
+        <!-- 4. Tren Arus Kas Bulanan dan Komposisi Saldo per Pos -->
+        <div class="dashboard-analytics-grid mt-4">
           <div class="chart-card glass-panel">
             <div class="card-header-flex">
               <div>
@@ -2669,11 +2605,11 @@
           </div>
         </div>
 
-        <!-- Recent Transactions Table -->
-        <div class="recent-transactions-card glass-panel">
+        <!-- 5. Transaksi Kas Terbaru -->
+        <div class="recent-transactions-card glass-panel mt-4">
           <div class="card-header-flex">
             <div>
-              <h3><i class="fa-solid fa-clock-rotate-left text-gold"></i> Transaksi Kas Terkini</h3>
+              <h3><i class="fa-solid fa-clock-rotate-left text-gold"></i> Transaksi Kas Terbaru</h3>
               <p>Riwayat transaksi iuran warga, iuran lain (SHR), dan pengeluaran</p>
             </div>
             <button class="btn btn-sm btn-outline" id="btn-view-all-tx">Lihat Semua di Laporan</button>
@@ -2695,6 +2631,70 @@
                 <!-- Dynamically populated -->
               </tbody>
             </table>
+          </div>
+        </div>
+
+        <!-- 6. Valuasi Aset Lingkungan Terdata -->
+        <div class="dash-asset-banner glass-panel mt-4" id="dash-asset-banner">
+          <div class="dash-asset-banner-left">
+            <div class="dash-asset-icon-box">
+              <i class="fa-solid fa-boxes-stacked text-emerald"></i>
+            </div>
+            <div>
+              <div class="dash-asset-badge-row">
+                <span class="badge-tag-emerald"><i class="fa-solid fa-shield-halved"></i> Inventaris RT.001</span>
+                <span class="badge-tag-gold" id="dash-asset-update-badge"><i class="fa-solid fa-check-double"></i> Terverifikasi Juli 2023</span>
+              </div>
+              <h3 class="dash-asset-title">Valuasi Aset Lingkungan Terdata: <span class="text-gold" id="dash-asset-total-val">Rp 20.742.884</span></h3>
+              <p class="dash-asset-sub">Tercatat <strong>33 ragam inventaris</strong> (192+ fisik barang) dengan <strong>97% kondisi prima laik pakai</strong> untuk kegiatan dan fasilitas warga.</p>
+            </div>
+          </div>
+          <div class="dash-asset-banner-right">
+            <div class="dash-asset-mini-stats">
+              <div class="dash-asset-mini-stat">
+                <span class="val text-emerald" id="dash-asset-ok-count">32 Aset</span>
+                <span class="lbl">Laik Pakai (97%)</span>
+              </div>
+              <div class="dash-asset-mini-stat">
+                <span class="val text-rose" id="dash-asset-bad-count">1 Rusak / 1 Hilang</span>
+                <span class="lbl">Perlu Penggantian</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-gold" id="btn-dash-open-aset" title="Buka Daftar Inventaris &amp; Aset RT">
+              <i class="fa-solid fa-arrow-right"></i> Kelola Daftar Aset Lengkap
+            </button>
+          </div>
+        </div>
+
+        <!-- 7. Jadwal Ronda -->
+        <div class="dash-ronda-banner glass-panel mt-4" id="dash-ronda-banner">
+          <div class="dash-asset-banner-left">
+            <div class="dash-asset-icon-box" style="background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3);">
+              <i class="fa-solid fa-shield-halved text-gold"></i>
+            </div>
+            <div>
+              <div class="dash-asset-badge-row">
+                <span class="badge-tag-gold"><i class="fa-solid fa-moon"></i> Ronda &amp; Jimpitan Warga</span>
+                <span class="badge-tag-emerald" id="dash-ronda-active-status"><i class="fa-solid fa-circle-dot dot-pulse"></i> Bertugas Pekan Ini</span>
+              </div>
+              <h3 class="dash-asset-title">Jadwal Ronda: <span class="text-gold" id="dash-ronda-active-week">Regu 1 (Wageyanto)</span></h3>
+              <p class="dash-asset-sub" id="dash-ronda-active-desc">Patroli rutin malam minggu pukul 21.00 &ndash; 04.00 WIB bersama 11 personel siap jaga kamtibmas dan penarikan koin jimpitan warga.</p>
+            </div>
+          </div>
+          <div class="dash-asset-banner-right">
+            <div class="dash-asset-mini-stats">
+              <div class="dash-asset-mini-stat">
+                <span class="val text-gold" id="dash-ronda-groups-count">8 Regu</span>
+                <span class="lbl">Siklus Bergilir</span>
+              </div>
+              <div class="dash-asset-mini-stat">
+                <span class="val text-emerald" id="dash-ronda-members-count">88 Personel</span>
+                <span class="lbl">Total Petugas</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-outline-cyan" id="btn-dash-manage-ronda" onclick="window.openManageRondaModal(1)" title="Atur Susunan Komandan &amp; Anggota Ronda">
+              <i class="fa-solid fa-calendar-days text-gold"></i> Atur Jadwal Ronda
+            </button>
           </div>
         </div>
       </section>
@@ -6517,6 +6517,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.25"></script>
+  <script src="app.js?v=2.9.26"></script>
 </body>
 </html>

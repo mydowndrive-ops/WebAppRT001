@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (22:00 WIB)  
-**Versi Rilis Aktif:** `v2.9.25`  
+**Terakhir Diperbarui:** 20 September 2026 (22:15 WIB)  
+**Versi Rilis Aktif:** `v2.9.26`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,28 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🛡️ Restrukturisasi Menu Eksekutif, Ikon Edit Ronda & 8 Palet Warna Harmonis Regu (Update v2.9.25 - 20 Sept 2026)
+### 1. 📊 Penataan Ulang Tata Letak & Hirarki Konten Dashboard Eksekutif Pengurus (Update v2.9.26 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Di dalam **Dashboard Eksekutif Pengurus**, atur ulang posisi tampilan modul agar fokus finansial dan operasional tersusun secara logis dan runtut:
+    1. **TOTAL KAS TERKONSOLIDASI dan Capaian Iuran Bulan Ini**
+    2. **Alokasi POS ANGGARAN** (sebelumnya: *Realokasi Otomatis 6 Pos Anggaran Utama*)
+    3. **Capaian Iuran Bulanan** (sebelumnya: *Capaian Iuran Berdasarkan Nama Jalan*)
+    4. **Tren Arus Kas Bulanan dan Komposisi Saldo per Pos**
+    5. **Transaksi Kas Terbaru** (sebelumnya: *Transaksi Kas Terkini*)
+    6. **Valuasi Aset Lingkungan Terdata**
+    7. **Jadwal Ronda**
+- **Implementasi Teknis & Arsitektur DevOps**:
+  - **Penataan Ulang Posisi Elemen DOM di `#view-dashboard` (`index.html`)**:
+    - **Posisi 1**: Tetap mempertahankan `.hero-card-grid` (*Total Kas Terkonsolidasi* & *Capaian Iuran Bulan Ini*).
+    - **Posisi 2**: Memindahkan blok 6 pos anggaran (`#dashboard-pos-grid`) ke urutan kedua langsung di bawah hero card, serta memperbarui judulnya menjadi `<h3><i class="fa-solid fa-layer-group text-gold"></i> Alokasi POS ANGGARAN</h3>`.
+    - **Posisi 3**: Memindahkan kartu kepatuhan ruas jalan (`#dashboard-street-grid`) ke urutan ketiga dan memperbarui judulnya menjadi `<h3><i class="fa-solid fa-road text-gold"></i> Capaian Iuran Bulanan</h3>`.
+    - **Posisi 4**: Memindahkan grid grafik analitik visual (`.dashboard-analytics-grid` berisi *Tren Arus Kas Bulanan* dan *Komposisi Saldo per Pos*) ke urutan keempat.
+    - **Posisi 5**: Memindahkan tabel transaksi terkini (`.recent-transactions-card`) ke urutan kelima dan memperbarui judulnya menjadi `<h3><i class="fa-solid fa-clock-rotate-left text-gold"></i> Transaksi Kas Terbaru</h3>`.
+    - **Posisi 6**: Memindahkan banner ringkasan inventaris (`#dash-asset-banner` *Valuasi Aset Lingkungan Terdata*) ke urutan keenam.
+    - **Posisi 7**: Memindahkan banner jadwal ronda aktif (`#dash-ronda-banner` *Jadwal Ronda*) ke posisi penutup di bagian bawah dashboard.
+  - **Peningkatan Cache PWA**: Meningkatkan versi cache Service Worker ke `rt-finsmart-cache-v2.9.26` serta query string aset CSS dan JS.
+
+### 2. 🛡️ Restrukturisasi Menu Eksekutif, Ikon Edit Ronda & 8 Palet Warna Harmonis Regu (Update v2.9.25 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   1. Di dashboard portal pengurus bagian **Atur Jadwal Ronda**: Ganti ikon **"HAPUS/DELETE"** dengan ikon **"GANTI/EDIT"**.
   2. Ganti kata **"Jadwal Regu Ronda"** menjadi **"Jadwal Ronda"** saja.
