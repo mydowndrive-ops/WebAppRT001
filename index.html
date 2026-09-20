@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.19">
+  <link rel="stylesheet" href="styles.css?v=2.9.20">
 </head>
 <body>
 
@@ -1681,7 +1681,7 @@
           <div class="subview-breadcrumb">
             <span class="subview-breadcrumb-root">Beranda</span>
             <i class="fa-solid fa-chevron-right"></i>
-            <span class="subview-breadcrumb-current">Transparansi Kas &amp; Jimpitan</span>
+            <span class="subview-breadcrumb-current">Transparansi Kas &amp; Keuangan RT</span>
           </div>
         </div>
         <div class="subview-header-right">
@@ -1695,65 +1695,226 @@
       <!-- TRANSPARANSI & DATA DIGITAL (LUXURY EMERALD GLOW) -->
       <section id="layanan" class="public-section public-bg-emerald-gradient">
         <div class="public-container">
-          <div class="public-section-header public-header-light">
+          <div class="public-section-header public-header-light text-center">
             <div class="public-badge-light">
-              <i class="fa-solid fa-scale-balanced text-gold"></i> Keterbukaan Publik &amp; Digitalisasi
+              <i class="fa-solid fa-scale-balanced text-gold"></i> Keterbukaan Publik &amp; Akuntabilitas Kas
             </div>
-            <h2 class="public-title-light">Pusat Transparansi Kas &amp; Data RT</h2>
-            <p class="public-desc-light">
-              Pengelolaan dana iuran warga dan kas operasional dicatat secara realtime dan terbagi otomatis ke 6 pos anggaran berlandaskan asas keterbukaan dan akuntabilitas mutlak.
+            <h2 class="public-title-light">Pusat Transparansi Kas &amp; Keuangan RT.001</h2>
+            <p class="public-desc-light" style="max-width: 720px; margin: 0 auto;">
+              Pengelolaan dana iuran warga dan kas operasional dicatat secara realtime dan terbagi otomatis ke 6 pos anggaran berlandaskan asas keterbukaan, profesionalisme, dan akuntabilitas mutlak bagi 71 KK Graha Asri.
             </p>
           </div>
 
+          <!-- 4 Executive Vault Stat Cards -->
           <div class="public-stats-grid">
             <div class="public-stat-box">
-              <div class="public-stat-icon-wrap">
-                <i class="fa-solid fa-users-viewfinder"></i>
+              <div class="public-stat-icon-wrap bg-emerald-glow">
+                <i class="fa-solid fa-vault text-emerald"></i>
               </div>
-              <h3 id="public-stat-residents">71</h3>
-              <p>Kepala Keluarga (KK) Terdata</p>
-              <span class="public-stat-tag"><i class="fa-solid fa-circle-check text-emerald"></i> 5 Klaster Jalan</span>
+              <h3 id="subview-kas-operasional">Rp 0</h3>
+              <p>Saldo Kas Operasional RT</p>
+              <span class="public-stat-tag"><i class="fa-solid fa-circle-check text-emerald"></i> Terverifikasi Realtime</span>
             </div>
 
             <div class="public-stat-box">
-              <div class="public-stat-icon-wrap">
-                <i class="fa-solid fa-chart-pie"></i>
+              <div class="public-stat-icon-wrap bg-cyan-glow">
+                <i class="fa-solid fa-coins text-cyan"></i>
               </div>
-              <h3>100%</h3>
-              <p>Transparansi Pembukuan Kas</p>
-              <span class="public-stat-tag"><i class="fa-solid fa-circle-check text-gold"></i> 6 Pos Anggaran Terbagi</span>
+              <h3 id="subview-kas-jimpitan" class="text-cyan">Rp 0</h3>
+              <p>Saldo Kas Jimpitan Ronda</p>
+              <span class="public-stat-tag"><i class="fa-solid fa-person-military-pointing text-cyan"></i> Patroli Rutin Malam</span>
             </div>
 
             <div class="public-stat-box public-stat-highlight">
-              <div class="public-stat-icon-wrap">
-                <i class="fa-solid fa-chart-line text-gold"></i>
+              <div class="public-stat-icon-wrap bg-gold-glow">
+                <i class="fa-solid fa-scale-balanced text-gold"></i>
               </div>
-              <h3 id="public-subview-compliance" class="text-gold">92%</h3>
-              <p>Tingkat Kepatuhan Warga</p>
-              <span class="public-stat-tag"><i class="fa-solid fa-circle-check text-emerald"></i> Partisipasi Aktif</span>
+              <h3 id="subview-kas-total" class="text-gold">Rp 0</h3>
+              <p>Total Kas Aktif Terkonsolidasi</p>
+              <span class="public-stat-tag"><i class="fa-solid fa-shield-halved text-gold"></i> 100% Akuntabilitas Terbuka</span>
             </div>
 
             <div class="public-stat-box">
-              <div class="public-stat-icon-wrap">
-                <i class="fa-solid fa-vault text-cyan"></i>
+              <div class="public-stat-icon-wrap bg-purple-glow">
+                <i class="fa-solid fa-chart-line text-purple"></i>
               </div>
-              <h3 class="text-cyan">6 Pos</h3>
-              <p>Alokasi Pos Anggaran Kas RT</p>
-              <span class="public-stat-tag"><i class="fa-solid fa-circle-check text-emerald"></i> Transparan &amp; Realtime</span>
+              <h3 id="subview-kas-compliance" class="text-purple">92%</h3>
+              <p>Tingkat Kepatuhan Iuran Warga</p>
+              <span class="public-stat-tag"><i class="fa-solid fa-circle-check text-emerald"></i> 71 KK Partisipasi Aktif</span>
             </div>
           </div>
 
-          <!-- Highlight Banner Balik ke Grafik Beranda -->
-          <div class="public-chart-link-banner glass-panel mt-4 p-4 text-center" style="background: rgba(6, 28, 20, 0.6); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px;">
-            <i class="fa-solid fa-chart-area text-emerald mb-2" style="font-size: 2rem;"></i>
-            <h4 style="color: #fff; margin-bottom: 0.35rem;">Grafik Performa Iuran Bulanan 1 Tahun Berjalan</h4>
-            <p style="color: #94a3b8; font-size: 0.85rem; max-width: 540px; margin: 0 auto 1rem;">
-              Grafik penerimaan iuran bulanan warga RT.001 tampil secara interaktif dan realtime di Halaman Utama.
-            </p>
-            <button type="button" class="btn btn-emerald" data-action="back-hub">
-              <i class="fa-solid fa-chart-pie"></i> Lihat Grafik di Beranda Utama
-            </button>
+          <!-- 6 POS ANGGARAN UTAMA KAS RT -->
+          <div class="public-pos-section">
+            <div class="public-section-header text-center mb-4">
+              <div class="public-badge-light">
+                <i class="fa-solid fa-layer-group text-emerald"></i> Pembagian Alokasi Iuran Warga
+              </div>
+              <h3 class="public-title-light">6 Pos Anggaran Terbuka Kas RT.001</h3>
+              <p class="public-desc-light" style="max-width: 680px; margin: 0 auto;">
+                Setiap rupiah dana iuran bulanan warga secara otomatis dialokasikan ke 6 pos pilar operasional lingkungan berlandaskan transparansi dan prinsip kebersamaan.
+              </p>
+            </div>
+
+            <div class="public-pos-grid" id="public-pos-grid">
+              <div class="public-pos-card glass-panel" data-pos="keamanan">
+                <div class="public-pos-top">
+                  <div class="public-pos-icon bg-emerald-glow text-emerald"><i class="fa-solid fa-shield-halved"></i></div>
+                  <span class="public-pos-percent">40%</span>
+                </div>
+                <h4>Keamanan &amp; Portal</h4>
+                <p>Petugas jaga portal malam, honor keamanan, perlengkapan ronda &amp; HT paguyuban.</p>
+                <div class="public-pos-bar-track"><div class="public-pos-bar-fill bg-emerald-gradient" style="width: 40%;"></div></div>
+                <div class="public-pos-footer"><span>Saldo Pos:</span><strong id="pos-val-keamanan" class="text-emerald">Rp 0</strong></div>
+              </div>
+
+              <div class="public-pos-card glass-panel" data-pos="kebersihan">
+                <div class="public-pos-top">
+                  <div class="public-pos-icon bg-cyan-glow text-cyan"><i class="fa-solid fa-broom"></i></div>
+                  <span class="public-pos-percent">25%</span>
+                </div>
+                <h4>Kebersihan &amp; Sampah</h4>
+                <p>Retribusi angkut sampah rutin perumahan, perawatan gerobak &amp; bak sampah warga.</p>
+                <div class="public-pos-bar-track"><div class="public-pos-bar-fill bg-cyan-gradient" style="width: 25%;"></div></div>
+                <div class="public-pos-footer"><span>Saldo Pos:</span><strong id="pos-val-kebersihan" class="text-cyan">Rp 0</strong></div>
+              </div>
+
+              <div class="public-pos-card glass-panel" data-pos="fasum">
+                <div class="public-pos-top">
+                  <div class="public-pos-icon bg-gold-glow text-gold"><i class="fa-solid fa-wrench"></i></div>
+                  <span class="public-pos-percent">15%</span>
+                </div>
+                <h4>Pemeliharaan Fasum</h4>
+                <p>Perawatan lampu penerangan jalan (PJU), perbaikan jalan, pos ronda &amp; gorong-gorong.</p>
+                <div class="public-pos-bar-track"><div class="public-pos-bar-fill bg-gold-gradient" style="width: 15%;"></div></div>
+                <div class="public-pos-footer"><span>Saldo Pos:</span><strong id="pos-val-fasum" class="text-gold">Rp 0</strong></div>
+              </div>
+
+              <div class="public-pos-card glass-panel" data-pos="sosial">
+                <div class="public-pos-top">
+                  <div class="public-pos-icon bg-rose-glow text-rose"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                  <span class="public-pos-percent">10%</span>
+                </div>
+                <h4>Sosial &amp; Santunan Duka</h4>
+                <p>Bantuan santunan warga berduka cita, warga sakit rawat inap &amp; kepedulian bersama.</p>
+                <div class="public-pos-bar-track"><div class="public-pos-bar-fill bg-rose-gradient" style="width: 10%;"></div></div>
+                <div class="public-pos-footer"><span>Saldo Pos:</span><strong id="pos-val-sosial" class="text-rose">Rp 0</strong></div>
+              </div>
+
+              <div class="public-pos-card glass-panel" data-pos="operasional">
+                <div class="public-pos-top">
+                  <div class="public-pos-icon bg-purple-glow text-purple"><i class="fa-solid fa-briefcase"></i></div>
+                  <span class="public-pos-percent">5%</span>
+                </div>
+                <h4>Operasional Sekretariat</h4>
+                <p>ATK administrasi surat pengantar, stempel RT, konsumsi rapat warga &amp; koordinasi desa.</p>
+                <div class="public-pos-bar-track"><div class="public-pos-bar-fill bg-purple-gradient" style="width: 5%;"></div></div>
+                <div class="public-pos-footer"><span>Saldo Pos:</span><strong id="pos-val-operasional" class="text-purple">Rp 0</strong></div>
+              </div>
+
+              <div class="public-pos-card glass-panel" data-pos="cadangan">
+                <div class="public-pos-top">
+                  <div class="public-pos-icon bg-blue-glow text-blue"><i class="fa-solid fa-piggy-bank"></i></div>
+                  <span class="public-pos-percent">5%</span>
+                </div>
+                <h4>Dana Cadangan &amp; Darurat</h4>
+                <p>Tabungan cadangan darurat kebencanaan dan persiapan pembangunan fasilitas jangka panjang.</p>
+                <div class="public-pos-bar-track"><div class="public-pos-bar-fill bg-blue-gradient" style="width: 5%;"></div></div>
+                <div class="public-pos-footer"><span>Saldo Pos:</span><strong id="pos-val-cadangan" class="text-blue">Rp 0</strong></div>
+              </div>
+            </div>
           </div>
+
+          <!-- GRAFIK PENERIMAAN IURAN TAHUNAN -->
+          <div class="public-annual-dues-card">
+            <div class="annual-dues-header">
+              <div class="annual-header-text">
+                <span class="annual-badge"><i class="fa-solid fa-chart-area"></i> Akuntabilitas Iuran Publik</span>
+                <h3 class="annual-title">Grafik Performa Iuran Bulanan 1 Tahun Berjalan</h3>
+                <p class="annual-subtitle">Tingkat kelancaran dan partisipasi gotong royong warga RT.001 dalam memenuhi kewajiban iuran lingkungan bulanan.</p>
+              </div>
+              <div class="annual-controls-row">
+                <div class="annual-chart-type-toggle">
+                  <button type="button" class="annual-toggle-btn active" data-chart-type="line" title="Grafik Area Halus">
+                    <i class="fa-solid fa-chart-line"></i> <span>Area</span>
+                  </button>
+                  <button type="button" class="annual-toggle-btn" data-chart-type="bar" title="Grafik Batang Presisi">
+                    <i class="fa-solid fa-chart-simple"></i> <span>Batang</span>
+                  </button>
+                </div>
+                <div class="annual-filter-group">
+                  <label for="select-annual-chart-year" class="annual-filter-label"><i class="fa-regular fa-calendar"></i> Tahun:</label>
+                  <div class="annual-select-wrap">
+                    <select id="select-annual-chart-year" class="annual-year-select">
+                      <option value="2026" selected>2026</option>
+                      <option value="2025">2025</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down annual-select-arrow"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="annual-chart-container">
+              <div class="annual-chart-canvas-wrap">
+                <canvas id="chartPublicAnnualDues"></canvas>
+              </div>
+            </div>
+
+            <div class="annual-chart-footer">
+              <div class="annual-legend-list">
+                <div class="annual-legend-item">
+                  <span class="annual-legend-bar bg-emerald-gradient"></span>
+                  <span>Realisasi Penerimaan Bulanan</span>
+                </div>
+                <div class="annual-legend-item">
+                  <span class="annual-legend-line border-gold-dashed"></span>
+                  <span>Rata-Rata Partisipasi Warga</span>
+                </div>
+              </div>
+              <div class="annual-single-stat-box" style="display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fa-solid fa-circle-check text-emerald" style="font-size: 1.2rem;"></i>
+                <div>
+                  <strong id="public-annual-stat-single-compliance" class="text-emerald" style="display: block; font-size: 0.95rem;">--% Partisipasi Aktif</strong>
+                  <span id="public-annual-stat-single-sub" style="font-size: 0.75rem; color: #94a3b8;">Tingkat kelancaran gotong royong 71 KK RT.001</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BUKU KAS & ARUS TRANSAKSI TERKINI -->
+          <div class="public-tx-section">
+            <div class="public-section-header text-center mb-4">
+              <div class="public-badge-light">
+                <i class="fa-solid fa-receipt text-gold"></i> Transparansi Mutasi
+              </div>
+              <h3 class="public-title-light">Catatan Arus Transaksi Kas Terkini</h3>
+              <p class="public-desc-light" style="max-width: 680px; margin: 0 auto;">
+                Daftar pengeluaran dan pemasukan operasional RT.001 yang telah diverifikasi dan dicatat oleh Bendahara RT.
+              </p>
+            </div>
+
+            <div class="public-tx-table-wrap glass-panel">
+              <div class="table-responsive">
+                <table class="public-tx-table">
+                  <thead>
+                    <tr>
+                      <th><i class="fa-regular fa-calendar"></i> Tanggal</th>
+                      <th><i class="fa-solid fa-file-lines"></i> Uraian &amp; Keperluan</th>
+                      <th><i class="fa-solid fa-tags"></i> Pos Anggaran</th>
+                      <th><i class="fa-solid fa-arrow-right-arrow-left"></i> Jenis</th>
+                      <th class="text-right"><i class="fa-solid fa-money-bill-wave"></i> Nominal</th>
+                      <th class="text-center"><i class="fa-solid fa-circle-check"></i> Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="subview-recent-tx-tbody">
+                    <!-- Diisi dinamis oleh JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -2073,9 +2234,13 @@
                 <i class="fa-regular fa-eye" id="login-warga-eye-icon"></i>
               </button>
             </div>
-            <div class="login-options-row">
+            <div class="login-options-row" style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.6rem;">
+              <button type="button" class="btn-demo-quick-login" id="btn-quick-demo-warga" style="background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.35); color: #38bdf8; border-radius: 10px; padding: 0.5rem 0.85rem; font-size: 0.82rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s ease;">
+                <i class="fa-solid fa-wand-magic-sparkles text-gold"></i>
+                <span>Coba Akses Akun Demo (Bpk. Wageyanto - B6 No. 02)</span>
+              </button>
               <span class="login-hint-badge" style="font-size:0.75rem;">
-                <i class="fa-brands fa-whatsapp text-emerald"></i> Info passwordnya silakan WA ke Admin-1
+                <i class="fa-brands fa-whatsapp text-emerald"></i> Info password akun rumah warga silakan hubungi Admin RT
               </span>
             </div>
             <div class="login-error" id="login-warga-error-msg" style="display:none; margin-top: 0.5rem;">
@@ -6440,6 +6605,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.19"></script>
+  <script src="app.js?v=2.9.20"></script>
 </body>
 </html>

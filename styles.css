@@ -10803,6 +10803,203 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
+   PUBLIC POS ANGGARAN & CASH LEDGER TABLE (SUBVIEW KEUANGAN RT)
+   ========================================================================== */
+.public-pos-section {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.public-pos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 992px) {
+  .public-pos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .public-pos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.public-pos-card {
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(6, 28, 20, 0.75) 0%, rgba(3, 18, 12, 0.9) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.public-pos-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.public-pos-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.public-pos-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.public-pos-percent {
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-family: var(--font-heading);
+}
+
+.public-pos-card h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.4rem;
+  font-family: var(--font-heading);
+}
+
+.public-pos-card p {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-bottom: 1.1rem;
+  flex-grow: 1;
+}
+
+.public-pos-bar-track {
+  height: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.public-pos-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.public-pos-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.public-pos-footer strong {
+  font-size: 1rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+}
+
+.bg-cyan-gradient {
+  background: linear-gradient(90deg, #06b6d4, #38bdf8);
+}
+.bg-gold-gradient {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+.bg-rose-gradient {
+  background: linear-gradient(90deg, #f43f5e, #fb7185);
+}
+.bg-purple-gradient {
+  background: linear-gradient(90deg, #a855f7, #c084fc);
+}
+.bg-blue-gradient {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+/* Transaksi Terkini Table */
+.public-tx-section {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.public-tx-table-wrap {
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(6, 28, 20, 0.85) 0%, rgba(3, 18, 12, 0.95) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 1.25rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.public-tx-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.public-tx-table th {
+  padding: 0.85rem 1rem;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.76rem;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: left;
+}
+
+.public-tx-table td {
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  vertical-align: middle;
+}
+
+.public-tx-table tr:hover td {
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.badge-tx-in {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.badge-tx-out {
+  background: rgba(244, 63, 94, 0.2);
+  color: #fb7185;
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+/* ==========================================================================
    RESPONSIVE BREAKPOINTS (DRAWER & HUB)
    ========================================================================== */
 @media (max-width: 1080px) {

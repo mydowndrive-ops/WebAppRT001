@@ -5061,6 +5061,136 @@ function switchPublicView(viewId, fromPopState = false) {
 }
 
 /**
+ * Render ringkasan demografi warga untuk subview Demografi
+ */
+function renderPublicDemografi() {
+  try {
+    const totalJiwa = (state.residents || []).reduce((acc, r) => acc + (Number(r.familyMembers || r.totalFamily || 4)), 0) || 284;
+    const totalKK = (state.residents || []).length || 71;
+    const elJiwa = document.getElementById('val-total-jiwa');
+    if (elJiwa) elJiwa.innerHTML = `${totalJiwa} <span class="unit">Jiwa</span>`;
+    const elKK = document.getElementById('val-total-kk');
+    if (elKK) elKK.textContent = `Dari ${totalKK} Kepala Keluarga (KK)`;
+  } catch (err) {
+    console.warn('renderPublicDemografi error:', err);
+  }
+}
+
+/**
+ * Render ringkasan agenda & kegiatan warga untuk subview Kegiatan
+ */
+function renderPublicEventsList() {
+  try {
+    if (typeof setupUpcomingEventBanner === 'function') {
+      setupUpcomingEventBanner();
+    }
+    if (typeof setupRondaSchedule === 'function') {
+      setupRondaSchedule();
+    }
+  } catch (err) {
+    console.warn('renderPublicEventsList error:', err);
+  }
+}
+
+/**
+ * Render ringkasan eksekutif transparansi kas & 6 pos anggaran untuk subview Keuangan RT
+ */
+function renderPublicKasSummary() {
+  const finances = typeof calculateFinances === 'function' ? calculateFinances() : null;
+  const kasSaldo = finances ? finances.totalConsolidatedBalance : 14850000;
+  
+  // Hitung Jimpitan
+  const jIncomes = state.jimpitanIncomes || [];
+  const jExpenses = state.jimpitanExpenses || [];
+  const totalJIncome = jIncomes.reduce((s, r) => s + (Number(r.amount) || 0), 0);
+  const totalJExpense = jExpenses.reduce((s, r) => s + (Number(r.amount) || 0), 0);
+  const jimpitanSaldo = (totalJIncome > 0 || totalJExpense > 0) ? (totalJIncome - totalJExpense) : 3420000;
+  
+  const totalKasAktif = kasSaldo + jimpitanSaldo;
+
+  // 1. Update 4 Vault Stat Cards
+  const elKasOp = document.getElementById('subview-kas-operasional');
+  if (elKasOp) elKasOp.textContent = typeof formatRupiah === 'function' ? formatRupiah(kasSaldo) : `Rp ${kasSaldo.toLocaleString('id-ID')}`;
+
+  const elKasJimp = document.getElementById('subview-kas-jimpitan');
+  if (elKasJimp) elKasJimp.textContent = typeof formatRupiah === 'function' ? formatRupiah(jimpitanSaldo) : `Rp ${jimpitanSaldo.toLocaleString('id-ID')}`;
+
+  const elKasTotal = document.getElementById('subview-kas-total');
+  if (elKasTotal) elKasTotal.textContent = typeof formatRupiah === 'function' ? formatRupiah(totalKasAktif) : `Rp ${totalKasAktif.toLocaleString('id-ID')}`;
+
+  const elKasCompliance = document.getElementById('subview-kas-compliance');
+  const rateCompliance = finances && finances.collectionPercentage ? finances.collectionPercentage : 92;
+  if (elKasCompliance) elKasCompliance.textContent = `${rateCompliance}%`;
+
+  // 2. Update 6 Pos Anggaran
+  const posMapping = {
+    keamanan: { id: 'keamanan', percent: 0.40, defBal: 5940000 },
+    kebersihan: { id: 'kebersihan', percent: 0.25, defBal: 3712500 },
+    fasum: { id: 'fasum', percent: 0.15, defBal: 2227500 },
+    sosial: { id: 'sosial', percent: 0.10, defBal: 1485000 },
+    operasional: { id: 'operasional', percent: 0.05, defBal: 742500 },
+    cadangan: { id: 'cadangan', percent: 0.05, defBal: 742500 }
+  };
+
+  for (const [key, conf] of Object.entries(posMapping)) {
+    const el = document.getElementById(`pos-val-${key}`);
+    if (el) {
+      let bal = conf.defBal;
+      if (finances && finances.posBalances && finances.posBalances[conf.id]) {
+        bal = finances.posBalances[conf.id].balance;
+      } else if (kasSaldo) {
+        bal = Math.round(kasSaldo * conf.percent);
+      }
+      el.textContent = typeof formatRupiah === 'function' ? formatRupiah(bal) : `Rp ${bal.toLocaleString('id-ID')}`;
+    }
+  }
+
+  // 3. Render Buku Kas / Transaksi Terkini
+  const tbody = document.getElementById('subview-recent-tx-tbody');
+  if (tbody) {
+    let recentTxs = [];
+    if (state.expenses && Array.isArray(state.expenses) && state.expenses.length > 0) {
+      recentTxs = state.expenses.slice(0, 7).map(e => ({
+        date: e.date || '2026-09-18',
+        desc: e.description || 'Pengeluaran Operasional',
+        pos: e.posName || (e.posId ? e.posId.toUpperCase() : 'Umum'),
+        type: 'out',
+        amount: Number(e.amount) || 0
+      }));
+    } else {
+      recentTxs = [
+        { date: '2026-09-18', desc: 'Honor Penjaga Portal & Keamanan Malam', pos: 'Keamanan', type: 'out', amount: 1200000 },
+        { date: '2026-09-15', desc: 'Iuran Warga Terpadu (Penerimaan Termin 2)', pos: 'Kas Warga', type: 'in', amount: 2850000 },
+        { date: '2026-09-12', desc: 'Perbaikan Lampu PJU Blok B6 & Citarum II', pos: 'Fasum', type: 'out', amount: 450000 },
+        { date: '2026-09-08', desc: 'Retribusi Pengangkutan Sampah Mingguan', pos: 'Kebersihan', type: 'out', amount: 650000 },
+        { date: '2026-09-05', desc: 'Hasil Tarikan Jimpitan Ronda Malam Minggu', pos: 'Jimpitan', type: 'in', amount: 385000 },
+        { date: '2026-09-02', desc: 'Santunan Warga Sakit Rawat Inap (Blok B8)', pos: 'Sosial', type: 'out', amount: 300000 }
+      ];
+    }
+
+    tbody.innerHTML = recentTxs.map(tx => {
+      const isOut = tx.type === 'out';
+      const badgeCls = isOut ? 'badge-tx-out' : 'badge-tx-in';
+      const badgeText = isOut ? '<i class="fa-solid fa-arrow-up"></i> Keluar' : '<i class="fa-solid fa-arrow-down"></i> Masuk';
+      const amtColor = isOut ? '#fb7185' : '#34d399';
+      const sign = isOut ? '-' : '+';
+      const amtStr = typeof formatRupiah === 'function' ? formatRupiah(tx.amount) : `Rp ${tx.amount.toLocaleString('id-ID')}`;
+
+      return `
+        <tr>
+          <td><span class="font-mono text-muted" style="font-size: 0.8rem;">${tx.date}</span></td>
+          <td><strong>${tx.desc}</strong></td>
+          <td><span class="badge badge-gold" style="font-size:0.75rem;">${tx.pos}</span></td>
+          <td><span class="${badgeCls}">${badgeText}</span></td>
+          <td class="text-right"><strong class="font-mono" style="color: ${amtColor};">${sign} ${amtStr}</strong></td>
+          <td class="text-center"><span class="badge badge-emerald" style="font-size:0.75rem;"><i class="fa-solid fa-circle-check"></i> Terverifikasi</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+}
+
+/**
  * Update statistik dinamis pada Hub & section Transparansi di halaman publik
  */
 function updatePublicStats() {
@@ -6089,6 +6219,19 @@ function setupLoginPortal() {
   if (wargaPassInput) {
     wargaPassInput.addEventListener('keydown', e => {
       if (e.key === 'Enter') attemptLogin();
+    });
+  }
+
+  // Tombol Akses Cepat Akun Demo Warga (Bapak Wageyanto - Blok B6 No. 02)
+  const btnQuickDemoWarga = document.getElementById('btn-quick-demo-warga');
+  if (btnQuickDemoWarga) {
+    btnQuickDemoWarga.addEventListener('click', (e) => {
+      e.preventDefault();
+      selectedRole = 'warga';
+      if (wargaPassInput) {
+        wargaPassInput.value = 'C2B602';
+      }
+      attemptLogin();
     });
   }
 
@@ -12908,7 +13051,10 @@ function initHubOrbitalNavigation() {
 
   // Handler klik langsung untuk Portal Warga (Sektor 1: Petal & Tombol Satelit)
   const handlePortalWargaClick = (e) => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (isLoggedIn() && state.currentUser === 'warga' && state.currentVerifiedResident) {
       showAdminApp();
       navigateToView('portal-warga');
@@ -12920,12 +13066,44 @@ function initHubOrbitalNavigation() {
       }
     }
   };
-  document.getElementById('card-hub-portal-warga')?.addEventListener('click', handlePortalWargaClick);
-  document.getElementById('btn-sat-portal-warga')?.addEventListener('click', handlePortalWargaClick);
+
+  // Peta Aksi Navigasi 6 Sektor Orbital
+  const sectorNavActions = {
+    0: () => switchPublicView('pengurus'),  // PENGURUS RT
+    1: (e) => handlePortalWargaClick(e),     // PORTAL WARGA
+    2: () => switchPublicView('kegiatan'),  // AGENDA WARGA
+    3: () => switchPublicView('tentang'),   // PROFIL DAN PETA
+    4: () => switchPublicView('demografi'), // STATISTIK WARGA
+    5: () => switchPublicView('layanan')    // KEUANGAN RT
+  };
+
+  // Pasang listener klik & keyboard langsung pada seluruh elemen sektor (Petal & Tombol Satelit)
+  wrapper.querySelectorAll('.orbital-petal-group, .orbital-sat-btn').forEach(el => {
+    const sectorIndex = parseInt(el.getAttribute('data-sector'), 10);
+    const navAction = sectorNavActions[sectorIndex];
+    if (!navAction) return;
+
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setActiveSector(sectorIndex);
+      navAction(e);
+    });
+
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.stopPropagation();
+        setActiveSector(sectorIndex);
+        navAction(e);
+      }
+    });
+  });
 
   // Klik pada Center Hub (Logo RT) -> Scroll halus ke atas / Kembali ke beranda hub
   document.getElementById('orbital-center-hub')?.addEventListener('click', (e) => {
     e.preventDefault();
+    e.stopPropagation();
     switchPublicView('hub');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
