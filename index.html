@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.15">
+  <link rel="stylesheet" href="styles.css?v=2.9.16">
 </head>
 <body>
 
@@ -303,54 +303,6 @@
           </p>
         </header>
 
-        <!-- Executive Realtime Ticker Status RT -->
-        <section class="hub-ticker-bar" aria-label="Status Terkini RT.001">
-          <div class="hub-ticker-item">
-            <div class="hub-ticker-icon bg-emerald-glow">
-              <i class="fa-solid fa-users text-emerald"></i>
-            </div>
-            <div class="hub-ticker-info">
-              <span class="hub-ticker-label">Total Warga</span>
-              <strong class="hub-ticker-val" id="hub-stat-residents">71 KK (284 Jiwa)</strong>
-            </div>
-          </div>
-
-          <div class="hub-ticker-item">
-            <div class="hub-ticker-icon bg-cyan-glow">
-              <i class="fa-solid fa-road text-cyan"></i>
-            </div>
-            <div class="hub-ticker-info">
-              <span class="hub-ticker-label">Cakupan Wilayah</span>
-              <strong class="hub-ticker-val text-cyan">5 Ruas Lorong Jalan</strong>
-            </div>
-          </div>
-
-          <div class="hub-ticker-item">
-            <div class="hub-ticker-icon bg-gold-glow">
-              <i class="fa-solid fa-chart-line text-gold"></i>
-            </div>
-            <div class="hub-ticker-info">
-              <span class="hub-ticker-label">Performa Iuran 2026</span>
-              <strong class="hub-ticker-val text-gold" id="hub-stat-compliance">Grafik Bulanan Aktif</strong>
-            </div>
-          </div>
-
-          <div class="hub-ticker-item hub-ticker-status">
-            <div class="hub-ticker-icon bg-emerald-glow">
-              <i class="fa-solid fa-circle-check text-emerald"></i>
-            </div>
-            <div class="hub-ticker-info">
-              <span class="hub-ticker-label">Status Lingkungan</span>
-              <strong class="hub-ticker-val text-emerald">Aman &bull; Guyub Rukun</strong>
-            </div>
-            <button type="button" class="btn-hub-event-trigger" id="btn-reopen-event-popup" title="Buka Pengumuman Event Terdekat">
-              <span class="event-trigger-dot"></span>
-              <i class="fa-solid fa-bullhorn"></i>
-              <span>Event Terdekat</span>
-            </button>
-          </div>
-        </section>
-
         <!-- BANNER IKLAN / BROADCAST HIGHLIGHT EVENT TERDEKAT (POPUP MODAL LUXURY FLYER) -->
         <div class="hub-event-banner-wrap" id="hub-event-banner-wrap" aria-label="Informasi Event Terdekat" role="dialog" aria-modal="true" style="display: none;">
           <div class="hub-event-banner hub-event-flyer-modal glass-panel">
@@ -469,176 +421,243 @@
           </div>
         </div>
 
-        <!-- 6 INTERACTIVE ACTION CARDS GRID (EXECUTIVE HUB) -->
-        <section class="hub-grid-section" id="hub-services-section" aria-label="Menu Utama Layanan Warga">
-          <div class="hub-section-header">
-            <div class="hub-section-badge">
-              <i class="fa-solid fa-layer-group text-emerald"></i>
-              <span>Menu Layanan &amp; Portal Digital</span>
+        <!-- UNIFIED EXECUTIVE HUB COCKPIT (ORBITAL WHEEL + 4 FLANKING STAT CARDS + EVENT BUTTON) -->
+        <section class="hub-cockpit-section" id="hub-orbital-nav-wrapper" aria-label="Pusat Navigasi &amp; Status Layanan Warga RT.001">
+          <div class="hub-cockpit-grid">
+
+            <!-- Left Flank: Total Warga & Performa Iuran (Stacked at Top-Left as in Image 2) -->
+            <div class="hub-cockpit-flank hub-cockpit-flank-left">
+              <div class="hub-cockpit-card">
+                <div class="hub-ticker-icon bg-emerald-glow">
+                  <i class="fa-solid fa-users text-emerald"></i>
+                </div>
+                <div class="hub-ticker-info">
+                  <span class="hub-ticker-label">Total Warga</span>
+                  <strong class="hub-ticker-val" id="hub-stat-residents">112 KK (284 Jiwa)</strong>
+                </div>
+              </div>
+
+              <div class="hub-cockpit-card">
+                <div class="hub-ticker-icon bg-gold-glow">
+                  <i class="fa-solid fa-chart-line text-gold"></i>
+                </div>
+                <div class="hub-ticker-info">
+                  <span class="hub-ticker-label">Performa Iuran 2026</span>
+                  <strong class="hub-ticker-val text-gold" id="hub-stat-compliance">18% Partisipasi Warga</strong>
+                </div>
+              </div>
             </div>
-            <span class="hub-section-hint">6 Akses Fitur Utama Warga</span>
-          </div>
-          <!-- ORBITAL CIRCULAR WHEEL NAVIGATION (REPLACING OLD RECTANGLES) -->
-          <div class="hub-orbital-nav-wrapper" id="hub-orbital-nav-wrapper">
-            <div class="hub-orbital-container">
-              <svg class="hub-orbital-svg" viewBox="0 0 600 600" role="img" aria-label="Diagram Navigasi Orbital Layanan Warga RT.001">
-                <defs>
-                  <!-- Teal to Blue chromatic gradients matching user mockup -->
-                  <linearGradient id="orb-grad-0" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#2563eb"/>
-                    <stop offset="100%" stop-color="#1d4ed8"/>
-                  </linearGradient>
-                  <linearGradient id="orb-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#3b82f6"/>
-                    <stop offset="100%" stop-color="#2563eb"/>
-                  </linearGradient>
-                  <linearGradient id="orb-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#0284c7"/>
-                    <stop offset="100%" stop-color="#0d9488"/>
-                  </linearGradient>
-                  <linearGradient id="orb-grad-3" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#0d9488"/>
-                    <stop offset="100%" stop-color="#059669"/>
-                  </linearGradient>
-                  <linearGradient id="orb-grad-4" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#0891b2"/>
-                    <stop offset="100%" stop-color="#0284c7"/>
-                  </linearGradient>
-                  <linearGradient id="orb-grad-5" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#1d4ed8"/>
-                    <stop offset="100%" stop-color="#2563eb"/>
-                  </linearGradient>
 
-                  <!-- Text Paths along radius 146px -->
-                  <path id="orb-txt-0" d="M 437.2 250.07 A 146 146 0 0 1 437.2 349.93"/>
-                  <path id="orb-txt-1" d="M 325.35 443.78 A 146 146 0 0 0 411.84 393.85"/>
-                  <path id="orb-txt-2" d="M 188.16 393.85 A 146 146 0 0 0 274.65 443.78"/>
-                  <path id="orb-txt-3" d="M 162.8 349.93 A 146 146 0 0 1 162.8 250.07"/>
-                  <path id="orb-txt-4" d="M 188.16 206.15 A 146 146 0 0 1 274.65 156.22"/>
-                  <path id="orb-txt-5" d="M 325.35 156.22 A 146 146 0 0 1 411.84 206.15"/>
-                </defs>
+            <!-- Center: Circular Orbital Navigation Wheel with 2-Line Curved Petals -->
+            <div class="hub-cockpit-center">
+              <div class="hub-orbital-container">
+                <svg class="hub-orbital-svg" viewBox="0 0 600 600" role="img" aria-label="Diagram Navigasi Orbital Layanan Warga RT.001">
+                  <defs>
+                    <!-- Teal to Blue chromatic gradients matching user mockup -->
+                    <linearGradient id="orb-grad-0" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#2563eb"/>
+                      <stop offset="100%" stop-color="#1d4ed8"/>
+                    </linearGradient>
+                    <linearGradient id="orb-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#3b82f6"/>
+                      <stop offset="100%" stop-color="#2563eb"/>
+                    </linearGradient>
+                    <linearGradient id="orb-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#0284c7"/>
+                      <stop offset="100%" stop-color="#0d9488"/>
+                    </linearGradient>
+                    <linearGradient id="orb-grad-3" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#0d9488"/>
+                      <stop offset="100%" stop-color="#059669"/>
+                    </linearGradient>
+                    <linearGradient id="orb-grad-4" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#0891b2"/>
+                      <stop offset="100%" stop-color="#0284c7"/>
+                    </linearGradient>
+                    <linearGradient id="orb-grad-5" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#1d4ed8"/>
+                      <stop offset="100%" stop-color="#2563eb"/>
+                    </linearGradient>
 
-                <!-- Background Track Guide Rings -->
-                <circle cx="300" cy="300" r="245" fill="none" stroke="rgba(56, 189, 248, 0.22)" stroke-width="1.8" stroke-dasharray="4 6"/>
-                <circle cx="300" cy="300" r="115" fill="none" stroke="rgba(56, 189, 248, 0.45)" stroke-width="2.2"/>
-                <circle cx="300" cy="300" r="107" fill="none" stroke="rgba(255, 255, 255, 0.7)" stroke-width="1.5"/>
+                    <!-- 2-Line Text Paths per Sector (Inner R=136, Outer R=158) -->
+                    <!-- Sector 4: Top-Left (240 deg) -->
+                    <path id="orb-txt-4-1" d="M 180.76 196.34 A 158 158 0 0 1 269.85 144.9"/>
+                    <path id="orb-txt-4-2" d="M 197.36 210.78 A 136 136 0 0 1 274.05 166.5"/>
 
-                <!-- 6 Curved Arc Petals with Pointy Tips -->
-                <!-- Sector 0: East (Struktur Pengurus) -->
-                <g class="orbital-petal-group" data-sector="0" data-subview="pengurus" role="button" tabindex="0" aria-label="Struktur Organisasi Pengurus RT">
-                  <path class="orbital-petal-shape" d="M 405.06 253.23 L 462.61 227.6 A 178 178 0 0 1 477.45 286.03 L 498 300 L 477.45 313.97 A 178 178 0 0 1 462.61 372.4 L 405.06 346.77 A 115 115 0 0 0 405.06 253.23 Z" fill="url(#orb-grad-0)"/>
-                  <text class="orbital-petal-label"><textPath href="#orb-txt-0" startOffset="50%" text-anchor="middle">Pengurus RT</textPath></text>
-                </g>
+                    <!-- Sector 5: Top-Right (300 deg) -->
+                    <path id="orb-txt-5-1" d="M 330.15 144.9 A 158 158 0 0 1 419.24 196.34"/>
+                    <path id="orb-txt-5-2" d="M 325.95 166.5 A 136 136 0 0 1 402.64 210.78"/>
 
-                <!-- Sector 1: South-East (Portal Mandiri Warga RT.001) -->
-                <g class="orbital-petal-group" data-sector="1" id="card-hub-portal-warga" role="button" tabindex="0" aria-label="Portal Mandiri Warga RT.001">
-                  <path class="orbital-petal-shape" d="M 393.04 367.6 L 444.01 404.63 A 178 178 0 0 1 400.82 446.69 L 399 471.47 L 376.63 460.66 A 178 178 0 0 1 318.61 477.02 L 312.02 414.37 A 115 115 0 0 0 393.04 367.6 Z" fill="url(#orb-grad-1)"/>
-                  <text class="orbital-petal-label"><textPath href="#orb-txt-1" startOffset="50%" text-anchor="middle">Portal Warga</textPath></text>
-                </g>
+                    <!-- Sector 1: Bottom-Right (60 deg) -->
+                    <path id="orb-txt-1-1" d="M 325.95 433.5 A 136 136 0 0 0 402.64 389.22"/>
+                    <path id="orb-txt-1-2" d="M 330.15 455.1 A 158 158 0 0 0 419.24 403.66"/>
 
-                <!-- Sector 2: South-West (Agenda Rutin & Kegiatan Warga) -->
-                <g class="orbital-petal-group" data-sector="2" data-subview="kegiatan" role="button" tabindex="0" aria-label="Agenda Rutin & Kegiatan Warga">
-                  <path class="orbital-petal-shape" d="M 287.98 414.37 L 281.39 477.02 A 178 178 0 0 1 223.37 460.66 L 201 471.47 L 199.18 446.69 A 178 178 0 0 1 155.99 404.63 L 206.96 367.6 A 115 115 0 0 0 287.98 414.37 Z" fill="url(#orb-grad-2)"/>
-                  <text class="orbital-petal-label"><textPath href="#orb-txt-2" startOffset="50%" text-anchor="middle">Agenda Warga</textPath></text>
-                </g>
+                    <!-- Sector 2: Bottom-Left (120 deg) -->
+                    <path id="orb-txt-2-1" d="M 197.36 389.22 A 136 136 0 0 0 274.05 433.5"/>
+                    <path id="orb-txt-2-2" d="M 180.76 403.66 A 158 158 0 0 0 269.85 455.1"/>
+                  </defs>
 
-                <!-- Sector 3: West (Profil & Peta Cakupan Wilayah) -->
-                <g class="orbital-petal-group" data-sector="3" data-subview="tentang" role="button" tabindex="0" aria-label="Profil & Peta Cakupan Wilayah">
-                  <path class="orbital-petal-shape" d="M 194.94 346.77 L 137.39 372.4 A 178 178 0 0 1 122.55 313.97 L 102 300 L 122.55 286.03 A 178 178 0 0 1 137.39 227.6 L 194.94 253.23 A 115 115 0 0 0 194.94 346.77 Z" fill="url(#orb-grad-3)"/>
-                  <text class="orbital-petal-label"><textPath href="#orb-txt-3" startOffset="50%" text-anchor="middle">Profil &amp; Peta</textPath></text>
-                </g>
+                  <!-- Background Track Guide Rings -->
+                  <circle cx="300" cy="300" r="245" fill="none" stroke="rgba(56, 189, 248, 0.22)" stroke-width="1.8" stroke-dasharray="4 6"/>
+                  <circle cx="300" cy="300" r="115" fill="none" stroke="rgba(56, 189, 248, 0.45)" stroke-width="2.2"/>
+                  <circle cx="300" cy="300" r="107" fill="none" stroke="rgba(255, 255, 255, 0.7)" stroke-width="1.5"/>
 
-                <!-- Sector 4: North-West (Data & Statistik Kependudukan) -->
-                <g class="orbital-petal-group" data-sector="4" data-subview="demografi" role="button" tabindex="0" aria-label="Data & Statistik Kependudukan">
-                  <path class="orbital-petal-shape" d="M 206.96 232.4 L 155.99 195.37 A 178 178 0 0 1 199.18 153.31 L 201 128.53 L 223.37 139.34 A 178 178 0 0 1 281.39 122.98 L 287.98 185.63 A 115 115 0 0 0 206.96 232.4 Z" fill="url(#orb-grad-4)"/>
-                  <text class="orbital-petal-label"><textPath href="#orb-txt-4" startOffset="50%" text-anchor="middle">Statistik Warga</textPath></text>
-                </g>
+                  <!-- 6 Curved Arc Petals with Pointy Tips & 2-Line Labels -->
+                  <!-- Sector 0: East (Struktur Pengurus RT) -->
+                  <g class="orbital-petal-group" data-sector="0" data-subview="pengurus" role="button" tabindex="0" aria-label="Struktur Organisasi Pengurus RT">
+                    <path class="orbital-petal-shape" d="M 405.06 253.23 L 462.61 227.6 A 178 178 0 0 1 477.45 286.03 L 498 300 L 477.45 313.97 A 178 178 0 0 1 462.61 372.4 L 405.06 346.77 A 115 115 0 0 0 405.06 253.23 Z" fill="url(#orb-grad-0)"/>
+                    <text class="orbital-petal-label" x="442" y="295" text-anchor="middle">PENGURUS</text>
+                    <text class="orbital-petal-label" x="442" y="313" text-anchor="middle">RT</text>
+                  </g>
 
-                <!-- Sector 5: North-East (Transparansi Kas & Keuangan RT) -->
-                <g class="orbital-petal-group" data-sector="5" data-subview="layanan" role="button" tabindex="0" aria-label="Transparansi Kas & Keuangan RT">
-                  <path class="orbital-petal-shape" d="M 312.02 185.63 L 318.61 122.98 A 178 178 0 0 1 376.63 139.34 L 399 128.53 L 400.82 153.31 A 178 178 0 0 1 444.01 195.37 L 393.04 232.4 A 115 115 0 0 0 312.02 185.63 Z" fill="url(#orb-grad-5)"/>
-                  <text class="orbital-petal-label"><textPath href="#orb-txt-5" startOffset="50%" text-anchor="middle">Kas &amp; Keuangan</textPath></text>
-                </g>
+                  <!-- Sector 1: South-East (Portal Mandiri Warga RT.001) -->
+                  <g class="orbital-petal-group" data-sector="1" id="card-hub-portal-warga" role="button" tabindex="0" aria-label="Portal Mandiri Warga RT.001">
+                    <path class="orbital-petal-shape" d="M 393.04 367.6 L 444.01 404.63 A 178 178 0 0 1 400.82 446.69 L 399 471.47 L 376.63 460.66 A 178 178 0 0 1 318.61 477.02 L 312.02 414.37 A 115 115 0 0 0 393.04 367.6 Z" fill="url(#orb-grad-1)"/>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-1-1" startOffset="50%" text-anchor="middle">PORTAL</textPath></text>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-1-2" startOffset="50%" text-anchor="middle">WARGA</textPath></text>
+                  </g>
 
-                <!-- 6 Satellite Node Buttons via foreignObject for 100% Crisp FontAwesome Icons & Native Hover -->
-                <!-- Sat 0: East (Struktur Pengurus - Sitemap) [545, 300] -->
-                <foreignObject x="515" y="270" width="60" height="60" class="orbital-fo-node">
-                  <button type="button" class="orbital-sat-btn" data-sector="0" data-subview="pengurus" title="Struktur Pengurus RT" aria-label="Buka Struktur Pengurus RT">
-                    <i class="fa-solid fa-sitemap"></i>
-                  </button>
-                </foreignObject>
+                  <!-- Sector 2: South-West (Agenda Rutin & Kegiatan Warga) -->
+                  <g class="orbital-petal-group" data-sector="2" data-subview="kegiatan" role="button" tabindex="0" aria-label="Agenda Rutin & Kegiatan Warga">
+                    <path class="orbital-petal-shape" d="M 287.98 414.37 L 281.39 477.02 A 178 178 0 0 1 223.37 460.66 L 201 471.47 L 199.18 446.69 A 178 178 0 0 1 155.99 404.63 L 206.96 367.6 A 115 115 0 0 0 287.98 414.37 Z" fill="url(#orb-grad-2)"/>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-2-1" startOffset="50%" text-anchor="middle">AGENDA</textPath></text>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-2-2" startOffset="50%" text-anchor="middle">WARGA</textPath></text>
+                  </g>
 
-                <!-- Sat 1: South-East (Portal Warga - Door) [422.5, 512.2] -->
-                <foreignObject x="392.5" y="482.2" width="60" height="60" class="orbital-fo-node">
-                  <button type="button" class="orbital-sat-btn orbital-sat-vip" data-sector="1" id="btn-sat-portal-warga" title="Portal Mandiri Warga RT.001" aria-label="Masuk ke Portal Warga">
-                    <i class="fa-solid fa-door-open"></i>
-                  </button>
-                </foreignObject>
+                  <!-- Sector 3: West (Profil dan Peta Cakupan Wilayah) -->
+                  <g class="orbital-petal-group" data-sector="3" data-subview="tentang" role="button" tabindex="0" aria-label="Profil dan Peta Cakupan Wilayah">
+                    <path class="orbital-petal-shape" d="M 194.94 346.77 L 137.39 372.4 A 178 178 0 0 1 122.55 313.97 L 102 300 L 122.55 286.03 A 178 178 0 0 1 137.39 227.6 L 194.94 253.23 A 115 115 0 0 0 194.94 346.77 Z" fill="url(#orb-grad-3)"/>
+                    <text class="orbital-petal-label" x="158" y="295" text-anchor="middle">PROFIL</text>
+                    <text class="orbital-petal-label" x="158" y="313" text-anchor="middle">DAN PETA</text>
+                  </g>
 
-                <!-- Sat 2: South-West (Agenda Warga - Calendar) [177.5, 512.2] -->
-                <foreignObject x="147.5" y="482.2" width="60" height="60" class="orbital-fo-node">
-                  <button type="button" class="orbital-sat-btn" data-sector="2" data-subview="kegiatan" title="Agenda & Kegiatan Warga" aria-label="Buka Agenda Kegiatan">
-                    <i class="fa-solid fa-calendar-days"></i>
-                  </button>
-                </foreignObject>
+                  <!-- Sector 4: North-West (Data & Statistik Kependudukan) -->
+                  <g class="orbital-petal-group" data-sector="4" data-subview="demografi" role="button" tabindex="0" aria-label="Data & Statistik Kependudukan">
+                    <path class="orbital-petal-shape" d="M 206.96 232.4 L 155.99 195.37 A 178 178 0 0 1 199.18 153.31 L 201 128.53 L 223.37 139.34 A 178 178 0 0 1 281.39 122.98 L 287.98 185.63 A 115 115 0 0 0 206.96 232.4 Z" fill="url(#orb-grad-4)"/>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-4-1" startOffset="50%" text-anchor="middle">STATISTIK</textPath></text>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-4-2" startOffset="50%" text-anchor="middle">WARGA</textPath></text>
+                  </g>
 
-                <!-- Sat 3: West (Profil & Peta - Map) [55, 300] -->
-                <foreignObject x="25" y="270" width="60" height="60" class="orbital-fo-node">
-                  <button type="button" class="orbital-sat-btn" data-sector="3" data-subview="tentang" title="Profil & Peta Wilayah" aria-label="Buka Profil & Peta">
-                    <i class="fa-solid fa-map-location-dot"></i>
-                  </button>
-                </foreignObject>
+                  <!-- Sector 5: North-East (Keuangan RT) -->
+                  <g class="orbital-petal-group" data-sector="5" data-subview="layanan" role="button" tabindex="0" aria-label="Keuangan & Kas RT">
+                    <path class="orbital-petal-shape" d="M 312.02 185.63 L 318.61 122.98 A 178 178 0 0 1 376.63 139.34 L 399 128.53 L 400.82 153.31 A 178 178 0 0 1 444.01 195.37 L 393.04 232.4 A 115 115 0 0 0 312.02 185.63 Z" fill="url(#orb-grad-5)"/>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-5-1" startOffset="50%" text-anchor="middle">KEUANGAN</textPath></text>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-5-2" startOffset="50%" text-anchor="middle">RT</textPath></text>
+                  </g>
 
-                <!-- Sat 4: North-West (Data Statistik - Bullseye) [177.5, 87.8] -->
-                <foreignObject x="147.5" y="57.8" width="60" height="60" class="orbital-fo-node">
-                  <button type="button" class="orbital-sat-btn" data-sector="4" data-subview="demografi" title="Data & Statistik Warga" aria-label="Buka Statistik Kependudukan">
-                    <i class="fa-solid fa-bullseye"></i>
-                  </button>
-                </foreignObject>
+                  <!-- 6 Satellite Node Buttons via foreignObject for 100% Crisp FontAwesome Icons & Native Hover -->
+                  <!-- Sat 0: East (Struktur Pengurus - Sitemap) [545, 300] -->
+                  <foreignObject x="515" y="270" width="60" height="60" class="orbital-fo-node">
+                    <button type="button" class="orbital-sat-btn" data-sector="0" data-subview="pengurus" title="Struktur Pengurus RT" aria-label="Buka Struktur Pengurus RT">
+                      <i class="fa-solid fa-sitemap"></i>
+                    </button>
+                  </foreignObject>
 
-                <!-- Sat 5: North-East (Kas & Keuangan - Handshake) [422.5, 87.8] -->
-                <foreignObject x="392.5" y="57.8" width="60" height="60" class="orbital-fo-node">
-                  <button type="button" class="orbital-sat-btn" data-sector="5" data-subview="layanan" title="Transparansi Kas & Keuangan" aria-label="Buka Transparansi Kas">
-                    <i class="fa-solid fa-handshake"></i>
-                  </button>
-                </foreignObject>
+                  <!-- Sat 1: South-East (Portal Warga - Door) [422.5, 512.2] -->
+                  <foreignObject x="392.5" y="482.2" width="60" height="60" class="orbital-fo-node">
+                    <button type="button" class="orbital-sat-btn orbital-sat-vip" data-sector="1" id="btn-sat-portal-warga" title="Portal Mandiri Warga RT.001" aria-label="Masuk ke Portal Warga">
+                      <i class="fa-solid fa-door-open"></i>
+                    </button>
+                  </foreignObject>
 
-                <!-- Center Red Hub Circle containing RT.001 Logo -->
-                <foreignObject x="195" y="195" width="210" height="210" class="orbital-fo-center">
-                  <div class="orbital-center-core" id="orbital-center-hub" title="RT.001 / RW.013 Graha Asri" role="button" tabindex="0">
-                    <div class="orbital-center-red-ring"></div>
-                    <div class="orbital-center-spinner"></div>
-                    <div class="orbital-center-disc">
-                      <img src="assets/logo.png?v=2.6.7" alt="Logo RT.001" class="orbital-center-logo-img">
-                      <div class="orbital-center-badge">
-                        <span>RT.001 / RW.013</span>
+                  <!-- Sat 2: South-West (Agenda Warga - Calendar) [177.5, 512.2] -->
+                  <foreignObject x="147.5" y="482.2" width="60" height="60" class="orbital-fo-node">
+                    <button type="button" class="orbital-sat-btn" data-sector="2" data-subview="kegiatan" title="Agenda & Kegiatan Warga" aria-label="Buka Agenda Kegiatan">
+                      <i class="fa-solid fa-calendar-days"></i>
+                    </button>
+                  </foreignObject>
+
+                  <!-- Sat 3: West (Profil & Peta - Map) [55, 300] -->
+                  <foreignObject x="25" y="270" width="60" height="60" class="orbital-fo-node">
+                    <button type="button" class="orbital-sat-btn" data-sector="3" data-subview="tentang" title="Profil & Peta Wilayah" aria-label="Buka Profil & Peta">
+                      <i class="fa-solid fa-map-location-dot"></i>
+                    </button>
+                  </foreignObject>
+
+                  <!-- Sat 4: North-West (Data Statistik - Bullseye) [177.5, 87.8] -->
+                  <foreignObject x="147.5" y="57.8" width="60" height="60" class="orbital-fo-node">
+                    <button type="button" class="orbital-sat-btn" data-sector="4" data-subview="demografi" title="Data & Statistik Warga" aria-label="Buka Statistik Kependudukan">
+                      <i class="fa-solid fa-bullseye"></i>
+                    </button>
+                  </foreignObject>
+
+                  <!-- Sat 5: North-East (Kas & Keuangan - Handshake) [422.5, 87.8] -->
+                  <foreignObject x="392.5" y="57.8" width="60" height="60" class="orbital-fo-node">
+                    <button type="button" class="orbital-sat-btn" data-sector="5" data-subview="layanan" title="Keuangan & Kas RT" aria-label="Buka Laporan Keuangan">
+                      <i class="fa-solid fa-handshake"></i>
+                    </button>
+                  </foreignObject>
+
+                  <!-- Center Red Hub Circle containing RT.001 Logo -->
+                  <foreignObject x="195" y="195" width="210" height="210" class="orbital-fo-center">
+                    <div class="orbital-center-core" id="orbital-center-hub" title="RT.001 / RW.013 Graha Asri" role="button" tabindex="0">
+                      <div class="orbital-center-red-ring"></div>
+                      <div class="orbital-center-spinner"></div>
+                      <div class="orbital-center-disc">
+                        <img src="assets/logo.png?v=2.6.7" alt="Logo RT.001" class="orbital-center-logo-img">
+                        <div class="orbital-center-badge">
+                          <span>RT.001 / RW.013</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </foreignObject>
-              </svg>
+                  </foreignObject>
+                </svg>
+              </div>
             </div>
 
-            <!-- Dynamic Executive Detail Card Below Wheel -->
-            <div class="hub-orbital-detail-panel" id="hub-orbital-detail-card">
-              <div class="orbital-detail-top">
-                <span class="hub-card-badge badge-cyan" id="orbital-detail-badge">
-                  <i class="fa-solid fa-shield-halved"></i> Khusus Warga RT
-                </span>
-                <span class="orbital-detail-hint">
-                  <i class="fa-solid fa-arrow-pointer"></i> Klik lingkaran untuk membuka
-                </span>
+            <!-- Right Flank: Cakupan Wilayah & Status Lingkungan + Glowing Event Terdekat Button (Image 2) -->
+            <div class="hub-cockpit-flank hub-cockpit-flank-right">
+              <div class="hub-cockpit-card">
+                <div class="hub-ticker-icon bg-cyan-glow">
+                  <i class="fa-solid fa-road text-cyan"></i>
+                </div>
+                <div class="hub-ticker-info">
+                  <span class="hub-ticker-label">Cakupan Wilayah</span>
+                  <strong class="hub-ticker-val text-cyan">5 Ruas Lorong Jalan</strong>
+                </div>
               </div>
-              <h3 class="orbital-detail-title" id="orbital-detail-title">Portal Mandiri Warga RT.001</h3>
-              <p class="orbital-detail-desc" id="orbital-detail-desc">
-                Masuk ke akun warga Anda untuk cek status iuran rumah, jadwal ronda malam minggu, dan mengajukan dana perbaikan fasilitas lingkungan.
-              </p>
-              <div class="orbital-detail-footer">
-                <button type="button" class="btn-orbital-action" id="btn-orbital-action">
-                  <span id="orbital-action-text">Masuk ke Portal Warga</span>
-                  <i class="fa-solid fa-arrow-right"></i>
+
+              <div class="hub-cockpit-card">
+                <div class="hub-ticker-icon bg-emerald-glow">
+                  <i class="fa-solid fa-circle-check text-emerald"></i>
+                </div>
+                <div class="hub-ticker-info">
+                  <span class="hub-ticker-label">Status Lingkungan</span>
+                  <strong class="hub-ticker-val text-emerald">Aman &bull; Guyub Rukun</strong>
+                </div>
+              </div>
+
+              <!-- Glowing Event Terdekat Button Docked at Bottom-Right -->
+              <div class="hub-cockpit-event-dock">
+                <button type="button" class="btn-hub-event-trigger" id="btn-reopen-event-popup" title="Buka Pengumuman Event Terdekat">
+                  <span class="event-trigger-dot"></span>
+                  <i class="fa-solid fa-bullhorn"></i>
+                  <span>Event Terdekat</span>
                 </button>
               </div>
+            </div>
+
+          </div>
+
+          <!-- Dynamic Executive Detail Card Below Wheel -->
+          <div class="hub-orbital-detail-panel" id="hub-orbital-detail-card">
+            <div class="orbital-detail-top">
+              <span class="hub-card-badge badge-cyan" id="orbital-detail-badge">
+                <i class="fa-solid fa-shield-halved"></i> Khusus Warga RT
+              </span>
+              <span class="orbital-detail-hint">
+                <i class="fa-solid fa-arrow-pointer"></i> Klik lingkaran untuk membuka
+              </span>
+            </div>
+            <h3 class="orbital-detail-title" id="orbital-detail-title">Portal Mandiri Warga RT.001</h3>
+            <p class="orbital-detail-desc" id="orbital-detail-desc">
+              Masuk ke akun warga Anda untuk cek status iuran rumah, jadwal ronda malam minggu, dan mengajukan dana perbaikan fasilitas lingkungan.
+            </p>
+            <div class="orbital-detail-footer">
+              <button type="button" class="btn-orbital-action" id="btn-orbital-action">
+                <span id="orbital-action-text">Masuk ke Portal Warga</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
             </div>
           </div>
         </section>
@@ -6439,6 +6458,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.15"></script>
+  <script src="app.js?v=2.9.16"></script>
 </body>
 </html>

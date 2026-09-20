@@ -10112,9 +10112,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
-   HUB ORBITAL CIRCULAR WHEEL NAVIGATION
-   High-Tech Executive Circular Navigation replacing square grid cards
+   HUB COCKPIT & ORBITAL CIRCULAR WHEEL NAVIGATION
+   Unified Executive Layout: Left Flank + Orbital Center Wheel + Right Flank
    ========================================================================== */
+.hub-cockpit-section,
 .hub-orbital-nav-wrapper {
   display: flex;
   flex-direction: column;
@@ -10123,15 +10124,74 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0.5rem auto 1.5rem;
 }
 
+.hub-cockpit-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr 240px;
+  align-items: start;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.hub-cockpit-flank {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  z-index: 5;
+  padding-top: 1.25rem;
+}
+
+.hub-cockpit-flank-right {
+  align-items: flex-end;
+}
+
+.hub-cockpit-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: linear-gradient(145deg, rgba(6, 34, 23, 0.82) 0%, rgba(4, 20, 13, 0.92) 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.25);
+  border-radius: 16px;
+  padding: 0.85rem 1.15rem;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45), 0 0 12px rgba(16, 185, 129, 0.08);
+  width: 100%;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hub-cockpit-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(52, 211, 153, 0.6);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(16, 185, 129, 0.25);
+}
+
+.hub-cockpit-event-dock {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.hub-cockpit-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .hub-orbital-container {
   width: 100%;
-  max-width: 550px;
+  max-width: 530px;
   position: relative;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
   user-select: none;
+  margin: 0 auto;
 }
 
 .hub-orbital-svg {
@@ -10170,9 +10230,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .orbital-petal-label {
   font-family: var(--font-heading, system-ui, sans-serif);
-  font-size: 13.5px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.6px;
   fill: #ffffff;
   text-transform: uppercase;
   pointer-events: none;
@@ -10381,12 +10441,48 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(135deg, #047857 0%, #059669 100%);
 }
 
+@media (max-width: 1024px) {
+  .hub-cockpit-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .hub-cockpit-flank {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+    max-width: 530px;
+    gap: 0.75rem;
+    padding-top: 0;
+  }
+  .hub-cockpit-flank-right {
+    align-items: stretch;
+  }
+  .hub-cockpit-event-dock {
+    grid-column: span 2;
+    justify-content: center;
+    margin-top: 0.25rem;
+  }
+  .hub-cockpit-event-dock .btn-hub-event-trigger {
+    margin-left: 0 !important;
+  }
+}
+
 @media (max-width: 600px) {
+  .hub-cockpit-flank {
+    grid-template-columns: 1fr;
+  }
+  .hub-cockpit-event-dock {
+    grid-column: span 1;
+    justify-content: center;
+  }
   .hub-orbital-container {
     max-width: 100%;
   }
   .orbital-petal-label {
-    font-size: 12px;
+    font-size: 10px;
+    letter-spacing: 0.4px;
   }
   .orbital-sat-btn {
     width: 48px;

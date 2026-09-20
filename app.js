@@ -12885,7 +12885,7 @@ function initSplitTextReveal() {
 // INISIALISASI NAVIGASI ORBITAL WHEEL HUB (6 FITUR LAYANAN WARGA)
 // ==========================================================================
 function initHubOrbitalNavigation() {
-  const wrapper = document.getElementById('hub-orbital-nav-wrapper');
+  const wrapper = document.getElementById('hub-orbital-nav-wrapper') || document.querySelector('.hub-cockpit-section');
   if (!wrapper) return;
 
   const ORBITAL_SECTORS_DATA = {
@@ -12895,13 +12895,13 @@ function initHubOrbitalNavigation() {
       badgeClass: 'badge-emerald',
       title: 'Struktur Organisasi Pengurus RT',
       desc: 'Susunan pengurus amanah: Ketua RT, Sekretaris, Bendahara (Admin 1 & 2), Seksi Humas lengkap dengan kontak WhatsApp resmi.',
-      actionText: 'Lihat Pengurus & Kontak'
+      actionText: 'Buka Pengurus RT'
     },
     1: {
       subview: null, // portal-warga special login
       badgeHtml: '<i class="fa-solid fa-shield-halved text-cyan"></i> Khusus Warga RT',
       badgeClass: 'badge-cyan',
-      title: 'Portal Mandiri Warga RT.001',
+      title: 'Portal Warga RT.001',
       desc: 'Masuk ke akun warga Anda untuk cek status iuran rumah, jadwal ronda malam minggu, dan mengajukan dana perbaikan fasilitas lingkungan.',
       actionText: 'Masuk ke Portal Warga'
     },
@@ -12909,33 +12909,33 @@ function initHubOrbitalNavigation() {
       subview: 'kegiatan',
       badgeHtml: '<i class="fa-solid fa-handshake text-purple"></i> Gotong Royong',
       badgeClass: 'badge-purple',
-      title: 'Agenda Rutin & Kegiatan Warga',
+      title: 'Agenda Warga & Kegiatan Rutin',
       desc: 'Jadwal ronda & jimpitan rutin malam minggu, jam portal malam (23.00-05.00), kerja bakti gotong royong, peringatan PHBI & HUT RI.',
-      actionText: 'Lihat Agenda Kegiatan'
+      actionText: 'Buka Agenda Warga'
     },
     3: {
       subview: 'tentang',
       badgeHtml: '<i class="fa-solid fa-signs-post text-rose"></i> 5 Jalur Jalan',
       badgeClass: 'badge-rose',
-      title: 'Profil & Peta Cakupan Wilayah',
+      title: 'Profil dan Peta Wilayah RT.001',
       desc: 'Peta satelit batas resmi RT.001 (garis merah), 5 jalur jalan (Jl. Citarum II, IVA, VIIIB, VIIIC, IX), dan semangat Cipta Karya Bersama.',
-      actionText: 'Lihat Peta & Profil'
+      actionText: 'Buka Profil dan Peta'
     },
     4: {
       subview: 'demografi',
       badgeHtml: '<i class="fa-solid fa-users text-emerald"></i> 71 KK / 284 Jiwa',
       badgeClass: 'badge-emerald',
-      title: 'Data & Statistik Kependudukan',
+      title: 'Statistik Warga & Kependudukan',
       desc: 'Visualisasi interaktif komposisi gender pria/wanita, 50 remaja, serta 5 kelompok usia (balita s/d lansia) terverifikasi.',
-      actionText: 'Lihat Statistik Demografi'
+      actionText: 'Buka Statistik Warga'
     },
     5: {
       subview: 'layanan',
       badgeHtml: '<i class="fa-solid fa-scale-balanced text-gold"></i> 6 Pos Anggaran',
       badgeClass: 'badge-gold',
-      title: 'Transparansi Kas & Keuangan RT',
+      title: 'Keuangan & Kas RT',
       desc: 'Grafik penerimaan iuran bulanan 1 tahun berjalan (Jan-Des), pembukuan digital 6 pos anggaran, serta mutasi jimpitan ronda.',
-      actionText: 'Buka Transparansi & Grafik Kas'
+      actionText: 'Buka Laporan Keuangan'
     }
   };
 

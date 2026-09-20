@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (18:10 WIB)  
-**Versi Rilis Aktif:** `v2.9.15`  
+**Terakhir Diperbarui:** 20 September 2026 (18:45 WIB)  
+**Versi Rilis Aktif:** `v2.9.16`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -15,26 +15,28 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ---
 
-## 🔐 Kredensial & Matriks Akses Pengguna (Role-Based Access Control)
-
-Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) yang mendukung 4 tingkat peran (*roles*):
-
-| Peran | Nama Akun / Entitas | Hak Akses Utama | Kredensial Masuk | Mode Status |
-| :--- | :--- | :--- | :--- | :--- |
-| **B1** | **Bendahara 1 (Super Admin)** | Akses Penuh: Dashboard, Matriks Checklist, 6 Pos Anggaran & SHR, Pengeluaran Kas, **Pemasukkan NON iuran (Kelola Penerimaan, Pengeluaran, Saldo & Laporan Lengkap)**, Data 71 KK, Laporan & Pembukuan, Pengaturan Pos, Kas Jimpitan Ronda, Atur Jadwal Ronda, Pengajuan Dana Warga, Inventaris Aset RT | PIN: `1111` | **Full Read & Write** |
-| **B2** | **Bendahara 2 (Admin 2 / Jimpitan)** | Pengelolaan Uang Jimpitan Ronda (Catat & Rekap Mingguan), **Monitoring Pemasukkan NON iuran (Read/View Only)**, Monitoring Inventaris Aset RT, dan Struktur Pengurus | PIN: `2222` | **Limited Read & Write (Read-Only di Non-Iuran)** |
-| **PENGURUS** | **Pengurus RT (Ketua, Sekr, Humas)** | Monitoring Dashboard Eksekutif, Struktur Organisasi, Jadwal Ronda, Inventaris Aset RT, Pemantauan Jimpitan, Verifikasi Usulan Fasum, Buku Induk Warga, dan **Monitoring Pemasukkan NON iuran (Read/View Only)** | PIN: `3333` | **Operational Read & Write (Read-Only di Non-Iuran)** |
-| **WARGA** | **Warga RT.001 Terverifikasi** | Portal Mandiri Warga (Kartu Iuran 12 Bulan, Kwitansi Digital, Jadwal Ronda, **Transparansi Pemasukkan NON iuran RT & Laporan Lengkap (Read/View Only)**, Layanan e-Surat, Pengajuan Fasum, Kotak Aspirasi) | Password Rumah per KK (112 KK, contoh: `C2B602` untuk Blok B6 No. 02) | **STRICT READ / VIEW ONLY** |
-
-- **Pengunjung Publik / Belum Login**: Otomatis dibatasi dalam mode **READ ONLY** (tidak dapat memodifikasi jadwal ronda, aset, kas, maupun pengajuan dana).
-- **Email Bantuan / Lupa PIN:** `rt001rw013.grahaasri@gmail.com`
-- **Penyimpanan Sesi:** Menggunakan `sessionStorage` (`RT001_LOGIN_SESSION_V1`). Sesi aktif selama jendela tab terbuka dan akan meminta verifikasi ulang jika pengguna menekan tombol **Keluar (Logout)**.
-
----
-
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🎨 Transformasi Desain: Navigasi Orbital Eksekutif (Circular Orbital Navigation Wheel) Menggantikan Kotak-Kotak Grid (Update v2.9.15 - 20 Sept 2026)
+### 1. 🛸 Desain Unified Cockpit & Label Petal 2-Baris Rapi (Update v2.9.16 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Menyatukan bilah ticker atas dan header sebelumnya (Gambar 1) menjadi satu kesatuan kokpit elegan bersama roda navigasi orbital sirkular (Gambar 2) agar tidak memenuhi halaman (*space-efficient* & berkelas).
+  - Melengkapi dan merapikan seluruh kalimat sektor kelopak roda navigasi menjadi **2-baris kalimat** agar terbaca utuh tanpa terpotong (clipping):
+    1. **STATISTIK WARGA** (`STATISTIK` / `WARGA`)
+    2. **KEUANGAN** (`KEUANGAN` / `RT`) *(dari sebelumnya KAS & KEUANGAN)*
+    3. **PORTAL WARGA** (`PORTAL` / `WARGA`)
+    4. **AGENDA WARGA** (`AGENDA` / `WARGA`)
+    5. **PROFIL dan PETA** (`PROFIL` / `DAN PETA`)
+    6. **PENGURUS RT** (`PENGURUS` / `RT`)
+- **Implementasi Layout Cockpit**:
+  - Mengapit diagram orbital di bagian tengah dengan kartu metrik di kiri & kanan:
+    - **Sisi Kiri (Top-Left):** Kartu *Total Warga* (`112 KK (284 Jiwa)`) & *Performa Iuran 2026* (`18% Partisipasi Warga`).
+    - **Sisi Kanan (Top-Right):** Kartu *Cakupan Wilayah* (`5 Ruas Lorong Jalan`) & *Status Lingkungan* (`Aman • Guyub Rukun`).
+    - **Pojok Kanan Bawah (Bottom-Right):** Tombol mewah menyala *Event Terdekat* (`#btn-reopen-event-popup`) dengan aura glow merah-putih.
+  - Menghilangkan duplikasi `.hub-ticker-bar` dan `.hub-section-header` terpisah, menghemat tinggi vertikal halaman sebesar ~400px sehingga seluruh kokpit tampil instan tanpa perlu scrolling panjang di layar desktop.
+  - Geometri teks lengkung SVG ganda (`#orb-txt-*-1` dan `#orb-txt-*-2`) dengan radius presisi ($R=158$ dan $R=136$) memastikan tipografi 11px tetap tajam dan proporsional di semua resolusi layar.
+  - Responsivitas adaptif penuh: grid kokpit otomatis bertransisi ke layout 2-kolom pada layar tablet/ponsel pintar.
+
+### 2. 🎨 Transformasi Desain: Navigasi Orbital Eksekutif (Circular Orbital Navigation Wheel) Menggantikan Kotak-Kotak Grid (Update v2.9.15 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Mengganti deretan kotak-kotak kartu di halaman utama publik dengan desain roda orbital sirkular elegan sesuai diagram ilustrasi referensi pengguna.
   - Lingkaran merah di pusat diagram difungsikan sebagai **Logo RT Resmi** (seperti yang terdapat di pojok kiri atas navbar), dan 6 lingkaran kecil di luar bertindak sebagai titik akses pengganti kotak layanan.
