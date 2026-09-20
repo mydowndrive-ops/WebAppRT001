@@ -5491,9 +5491,55 @@ function updatePublicStats() {
 }
 
 /**
+ * Membuka Modal Detail Grafik Penerimaan Iuran 1 Tahun (Zero-Scroll Solution)
+ * Memastikan Chart.js merender dan menghitung dimensi canvas secara akurat saat modal aktif.
+ */
+function openAnnualChartModal() {
+  if (typeof openModal === 'function') {
+    openModal('modal-annual-chart-detail');
+  } else {
+    const modal = document.getElementById('modal-annual-chart-detail');
+    if (modal) {
+      modal.classList.add('active');
+      modal.style.setProperty('display', 'flex', 'important');
+    }
+  }
+
+  // Gunakan requestAnimationFrame agar browser selesai melakukan layout reflow
+  requestAnimationFrame(() => {
+    setupPublicAnnualDuesChartEvents();
+    const activeSel = document.getElementById('select-annual-chart-year');
+    const currentYear = activeSel ? parseInt(activeSel.value, 10) : 2026;
+    renderPublicAnnualDuesChart(currentYear, currentAnnualChartType);
+    setTimeout(() => {
+      if (window.publicAnnualChartList && Array.isArray(window.publicAnnualChartList)) {
+        window.publicAnnualChartList.forEach(c => {
+          try { c.resize(); } catch (e) {}
+        });
+      }
+    }, 60);
+  });
+}
+window.openAnnualChartModal = openAnnualChartModal;
+
+function closeAnnualChartModal() {
+  if (typeof closeModal === 'function') {
+    closeModal('modal-annual-chart-detail');
+  } else {
+    const modal = document.getElementById('modal-annual-chart-detail');
+    if (modal) {
+      modal.classList.remove('active');
+      modal.style.setProperty('display', 'none', 'important');
+    }
+  }
+}
+window.closeAnnualChartModal = closeAnnualChartModal;
+
+/**
  * Setup Event Listeners untuk Grafik Penerimaan Iuran Tahunan Publik:
  * - Ganti Tahun (2026 s/d 2021)
  * - Ganti Model Grafik (Smooth Area Spline vs Rounded Bar Chart)
+ * - Trigger Pembuka Modal Grafik dari Kartu Performa Iuran & Tombol Shortcut
  */
 function setupPublicAnnualDuesChartEvents() {
   const yearSelects = [
@@ -5527,6 +5573,29 @@ function setupPublicAnnualDuesChartEvents() {
           renderPublicAnnualDuesChart(currentYear, currentAnnualChartType);
         }
       });
+    }
+  });
+
+  // Trigger Pembuka Modal Grafik dari Kartu Performa Iuran (Left Flank)
+  const complianceTrigger = document.getElementById('card-hub-compliance-trigger');
+  if (complianceTrigger && !complianceTrigger.dataset.bound) {
+    complianceTrigger.dataset.bound = 'true';
+    complianceTrigger.addEventListener('click', () => {
+      openAnnualChartModal();
+    });
+    complianceTrigger.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openAnnualChartModal();
+      }
+    });
+  }
+
+  // Trigger Pembuka Modal Grafik dari semua elemen bertanda data-action="open-annual-chart"
+  document.querySelectorAll('[data-action="open-annual-chart"]').forEach(el => {
+    if (!el.dataset.bound) {
+      el.dataset.bound = 'true';
+      el.addEventListener('click', () => openAnnualChartModal());
     }
   });
 }

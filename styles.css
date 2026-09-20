@@ -10499,6 +10499,76 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55), 0 0 20px rgba(16, 185, 129, 0.25);
 }
 
+/* Interactive Cockpit Card (Performa Iuran Trigger) */
+.hub-cockpit-card.hub-cockpit-card-interactive {
+  cursor: pointer;
+  position: relative;
+  border-color: rgba(245, 158, 11, 0.35);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.09) 0%, rgba(6, 28, 20, 0.82) 100%);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hub-cockpit-card.hub-cockpit-card-interactive:hover,
+.hub-cockpit-card.hub-cockpit-card-interactive:focus-visible {
+  border-color: rgba(245, 158, 11, 0.75);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.7), 0 0 22px rgba(245, 158, 11, 0.28);
+  outline: none;
+}
+
+.hub-cockpit-card.hub-cockpit-card-interactive:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.hub-card-action-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  padding: 0.3rem 0.65rem;
+  border-radius: 9999px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.hub-cockpit-card.hub-cockpit-card-interactive:hover .hub-card-action-badge {
+  background: rgba(245, 158, 11, 0.28);
+  border-color: #fbbf24;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+
+.hub-action-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 8px #fbbf24;
+  animation: hubPulseDotAnim 1.6s infinite;
+}
+
+@keyframes hubPulseDotAnim {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.4); opacity: 1; box-shadow: 0 0 12px #fbbf24; }
+}
+
+.hub-action-arrow {
+  font-size: 0.68rem;
+  opacity: 0.8;
+  transition: transform 0.2s ease;
+}
+
+.hub-cockpit-card.hub-cockpit-card-interactive:hover .hub-action-arrow {
+  transform: translate(1.5px, -1.5px);
+  opacity: 1;
+}
+
 .hub-cockpit-event-dock {
   margin-top: 1.25rem;
   display: flex;
@@ -10525,12 +10595,141 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 auto;
 }
 
+/* ==================== AMBIENT FINANCIAL PULSE BACKDROP (ZERO-SCROLL ORBITAL WHEEL) ==================== */
+.hub-orbital-ambient-pulse {
+  position: absolute;
+  inset: -20px;
+  z-index: 1;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  user-select: none;
+}
+
+.ambient-pulse-halo {
+  position: absolute;
+  width: 88%;
+  height: 88%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.14) 0%, rgba(6, 182, 212, 0.07) 45%, transparent 70%);
+  filter: blur(30px);
+  animation: ambientHaloBreathe 6s ease-in-out infinite alternate;
+}
+
+.ambient-pulse-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+
+.ambient-radar-ring {
+  fill: none;
+  stroke: rgba(56, 189, 248, 0.12);
+  stroke-dasharray: 6 8;
+  transform-origin: 300px 300px;
+}
+
+.ring-outer {
+  stroke-width: 1.2;
+  animation: ambientRadarRotate 45s linear infinite;
+}
+
+.ring-mid {
+  stroke-width: 1.0;
+  stroke: rgba(16, 185, 129, 0.14);
+  stroke-dasharray: 4 6;
+  animation: ambientRadarRotateRev 32s linear infinite;
+}
+
+.ambient-pulse-area {
+  opacity: 0.65;
+  filter: blur(8px);
+  animation: ambientAreaPulse 5.5s ease-in-out infinite alternate;
+}
+
+.ambient-pulse-wave {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wave-primary {
+  animation: ambientWaveFloat1 7s ease-in-out infinite alternate;
+}
+
+.wave-secondary {
+  animation: ambientWaveFloat2 8.5s ease-in-out infinite alternate;
+}
+
+.ambient-data-dot {
+  fill: #38bdf8;
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
+  animation: ambientDotPulse 2.5s ease-in-out infinite;
+}
+
+.ambient-data-dot.dot-peak {
+  fill: #fbbf24;
+  filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.95));
+  animation: ambientPeakPulse 2.2s ease-in-out infinite;
+}
+
+.ambient-data-dot.dot-1 { animation-delay: 0.2s; }
+.ambient-data-dot.dot-2 { animation-delay: 0.7s; }
+.ambient-data-dot.dot-3 { animation-delay: 1.2s; }
+.ambient-data-dot.dot-4 { animation-delay: 1.8s; }
+
+@keyframes ambientRadarRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ambientRadarRotateRev {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes ambientHaloBreathe {
+  0% { transform: scale(0.92); opacity: 0.45; }
+  100% { transform: scale(1.08); opacity: 0.8; }
+}
+
+@keyframes ambientAreaPulse {
+  0% { opacity: 0.4; transform: translateY(4px); }
+  100% { opacity: 0.75; transform: translateY(-4px); }
+}
+
+@keyframes ambientWaveFloat1 {
+  0% { transform: translateY(0px) scaleY(1); }
+  50% { transform: translateY(-6px) scaleY(1.04); }
+  100% { transform: translateY(3px) scaleY(0.97); }
+}
+
+@keyframes ambientWaveFloat2 {
+  0% { transform: translateY(0px) scaleY(1); }
+  50% { transform: translateY(5px) scaleY(0.96); }
+  100% { transform: translateY(-4px) scaleY(1.03); }
+}
+
+@keyframes ambientDotPulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.35); opacity: 1; }
+}
+
+@keyframes ambientPeakPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.5); opacity: 1; filter: drop-shadow(0 0 16px rgba(251, 191, 36, 1)); }
+}
+
 .hub-orbital-svg {
   width: 100%;
   height: 100%;
   display: block;
   overflow: visible;
   filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.6));
+  position: relative;
+  z-index: 2;
 }
 
 /* 6 Curved Arc Petals */
@@ -10937,6 +11136,19 @@ h1, h2, h3, h4, h5, h6 {
 .btn-hub-footer-login:hover {
   background: #f59e0b;
   color: #04140e;
+}
+
+.btn-hub-footer-chart {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+
+.btn-hub-footer-chart:hover {
+  background: rgba(16, 185, 129, 0.28);
+  border-color: #34d399;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
 }
 
 .btn-hub-footer-drawer {
@@ -12966,6 +13178,129 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   margin-top: 0;
   margin-bottom: 2rem;
+}
+
+/* ==================== LUXURY MODAL / BOTTOM SHEET: ANNUAL DUES CHART (ZERO-SCROLL) ==================== */
+.modal-annual-chart-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 12, 8, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 10005;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-annual-chart-backdrop.active {
+  display: flex !important;
+}
+
+.modal-annual-chart-content {
+  width: 100%;
+  max-width: 980px;
+  max-height: 92vh;
+  background: linear-gradient(145deg, rgba(6, 32, 22, 0.96) 0%, rgba(3, 18, 12, 0.98) 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.35);
+  border-radius: 26px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 45px rgba(16, 185, 129, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 1.5rem 1.75rem;
+  position: relative;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  animation: slideUpAnnualModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpAnnualModal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal-annual-chart-content .public-annual-dues-card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  backdrop-filter: none !important;
+}
+
+.annual-modal-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.85rem;
+  margin-bottom: 1.15rem;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.18);
+}
+
+.annual-modal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #34d399;
+  letter-spacing: 0.03em;
+}
+
+.annual-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  animation: hubPulseDotAnim 1.6s infinite;
+}
+
+.annual-modal-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.annual-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #f87171;
+  transform: scale(1.08);
+}
+
+@media (max-width: 768px) {
+  .modal-annual-chart-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal-annual-chart-backdrop .modal-annual-chart-content {
+    width: 100%;
+    max-width: 100%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    max-height: 88vh;
+    padding: 1.25rem 1rem 2rem;
+  }
 }
 
 .public-annual-dues-card {

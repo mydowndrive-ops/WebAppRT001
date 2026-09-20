@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (00:50 WIB)  
-**Versi Rilis Aktif:** `v2.9.34`  
+**Terakhir Diperbarui:** 21 September 2026 (01:10 WIB)  
+**Versi Rilis Aktif:** `v2.9.35`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,35 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🛡️ Native Mobile App-Like Experience & Inactivity Auto-Logout Security (Update v2.9.34 - 21 Sept 2026)
+### 1. 💫 Ambient Financial Pulse Backdrop & Zero-Scroll Interactive Annual Chart Modal (Update v2.9.35 - 21 Sept 2026)
+- **Latar Belakang & Mandat Pengguna (Solusi 2)**:
+  - Berdasarkan sesi *brainstorming* tata letak visual landing hub: pengguna menginginkan tampilan grafik penerimaan kas/iuran bulanan berpadu harmonis dengan roda navigasi orbital melingkar, dengan transparansi yang cukup agar tidak mengganggu font atau teks tombol di depannya.
+  - Tujuan utamanya adalah menciptakan tampilan beranda yang **mewah, interaktif, premium, dan profesional**, di mana pengunjung di layar utama **tidak perlu melakukan scrolling (*Zero-Scroll Experience*)**.
+  - Pengguna memilih dan menyetujui implementasi **Solusi 2**: *"Ambient Financial Pulse Wave di balik roda kemudi + trigger interaktif kartu kepatuhan iuran membuka visualisasi grafik lengkap via Luxury Modal / Slide-Up Bottom Sheet"*.
+- **Hasil Implementasi & Optimalisasi Arsitektur**:
+  1. **Ambient Cybernetic Financial Pulse Wave di Belakang Roda Orbital (`.hub-orbital-ambient-pulse`)**:
+     - Ditambahkan elemen grafis SVG beranimasi halus tepat di bawah roda navigasi melingkar (`z-index: 1`, sedangkan roda orbital di `z-index: 2`).
+     - Menggunakan gelombang kurva Bézier bercahaya (*luminous sine waves*) bergradien emerald (`#10b981`), cyan (`#06b6d4`), dan gold (`#fbbf24`) yang berdenyut (*breathing glow*), cincin radar sibernetik ganda yang berputar perlahan, serta titik konstelasi data (*data pulse dots*) dengan titik puncak berwarna emas.
+     - Didesain secara murni ambient tanpa angka kaku atau teks grid yang bertabrakan dengan tipografi kelopak (*petals*) roda navigasi, memberikan kedalaman estetika futuristik 60fps berbasis GPU tanpa beban komputasi.
+  2. **Kartu Performa Iuran Menjadi Tombol Aksi Interaktif (`#card-hub-compliance-trigger`)**:
+     - Kartu *"Performa Iuran 2026: 18% Partisipasi Warga"* pada sayap kiri (*left flank*) dashboard diubah menjadi tombol pemicu interaktif dengan `role="button"`, `tabindex="0"`, dan kursor jari.
+     - Dilengkapi badge aksi eksklusif: dot berdenyut emas, ikon grafik mini, teks *"Buka Grafik"*, dan panah sudut melayang.
+     - Diberikan efek hover berkilau (*gold shimmer border & soft glow*), respons skala tekan (*active scale: 0.98*), dan dukungan navigasi keyboard (`Enter` / `Spasi`).
+  3. **Visualisasi Grafik 1 Tahun Penuh Berpindah ke Luxury Modal & Bottom Sheet (100% Zero-Scroll)**:
+     - Kartu grafik penerimaan iuran tahunan dipindahkan dari aliran dokumen beranda ke dalam kontainer modal mewah berlatar belakang kabut gelap (*dark glassmorphism backdrop blur 14px*): `#modal-annual-chart-detail`.
+     - **Tampilan Desktop & Tablet**: Membuka modal dialog lebar (maksimal 980px) dengan transisi mulus dan animasi *slide-up*.
+     - **Tampilan Mobile (Smartphone)**: Berfungsi otomatis sebagai *Slide-Up Bottom Sheet* mewah berujung melengkung (*border-radius: 24px 24px 0 0*) yang sangat nyaman dioperasikan dengan satu jempol.
+     - Seluruh fitur interaktif Chart.js dipertahankan secara utuh: pemilihan tahun (2021 s/d 2026 berjalan), *switcher* Kurva Cahaya vs Batang Mewah, *tooltips* detail, dan legenda transparansi privasi kas.
+     - Menghilangkan keharusan menggulir layar (*Zero-Scroll*) di beranda publik utama.
+  4. **Kalkulasi & Resizing Responsif Chart.js (`openAnnualChartModal`)**:
+     - Menyediakan fungsi kontrol `openAnnualChartModal()` dan `closeAnnualChartModal()` terintegrasi dengan `openModal` dan `pushNavHistory` aplikasi.
+     - Menggunakan `requestAnimationFrame` dan penundaan mikro 60ms saat modal dibuka agar Chart.js mengkalkulasi ulang lebar kanvas (`chart.resize()`) secara instan dan tajam (*pixel-perfect*).
+     - Menambahkan tombol pintasan cadangan di bilah footer bawah: `.btn-hub-footer-chart`.
+  5. **Pembaruan Service Worker & Versi Aset**:
+     - Cache Service Worker dinaikkan ke `rt-finsmart-cache-v2.9.35`.
+     - Aset `styles.css?v=2.9.35` dan `app.js?v=2.9.35` diperbarui untuk *cache busting* instan.
+
+### 2. 🛡️ Native Mobile App-Like Experience & Inactivity Auto-Logout Security (Update v2.9.34 - 21 Sept 2026)
 - **Latar Belakang & Mandat Peningkatan**:
   - Memenuhi 3 kebutuhan spesifik pengguna saat web aplikasi dibuka di ponsel:
     1. Memindahkan banner video bendera merah putih berkibar dan judul web aplikasi ke posisi **paling atas** layar ponsel agar warga langsung mengetahui identitas resmi web aplikasi sejak pertama kali dibuka.

@@ -29,7 +29,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.34">
+  <link rel="stylesheet" href="styles.css?v=2.9.35">
 </head>
 <body>
 
@@ -441,7 +441,7 @@
                 </div>
               </div>
 
-              <div class="hub-cockpit-card">
+              <div class="hub-cockpit-card hub-cockpit-card-interactive" id="card-hub-compliance-trigger" role="button" tabindex="0" title="Klik untuk membuka Grafik Performa Iuran 1 Tahun">
                 <div class="hub-ticker-icon bg-gold-glow">
                   <i class="fa-solid fa-chart-line text-gold"></i>
                 </div>
@@ -449,12 +449,64 @@
                   <span class="hub-ticker-label">Performa Iuran 2026</span>
                   <strong class="hub-ticker-val text-gold" id="hub-stat-compliance">18% Partisipasi Warga</strong>
                 </div>
+                <div class="hub-card-action-badge">
+                  <span class="hub-action-pulse-dot"></span>
+                  <i class="fa-solid fa-chart-simple"></i>
+                  <span>Buka Grafik</span>
+                  <i class="fa-solid fa-arrow-up-right-from-square hub-action-arrow"></i>
+                </div>
               </div>
             </div>
 
-            <!-- Center: Circular Orbital Navigation Wheel with 2-Line Curved Petals -->
+            <!-- Center: Circular Orbital Navigation Wheel with Ambient Financial Pulse Backdrop -->
             <div class="hub-cockpit-center">
               <div class="hub-orbital-container">
+                <!-- Ambient Cybernetic Financial Pulse Background Wave (Zero-Interference Luxury Glow) -->
+                <div class="hub-orbital-ambient-pulse" aria-hidden="true">
+                  <div class="ambient-pulse-halo"></div>
+                  <svg class="ambient-pulse-svg" viewBox="0 0 600 600">
+                    <defs>
+                      <linearGradient id="amb-grad-emerald" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#10b981" stop-opacity="0.05" />
+                        <stop offset="30%" stop-color="#06b6d4" stop-opacity="0.8" />
+                        <stop offset="70%" stop-color="#10b981" stop-opacity="0.9" />
+                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.1" />
+                      </linearGradient>
+                      <linearGradient id="amb-grad-gold" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.1" />
+                        <stop offset="50%" stop-color="#f59e0b" stop-opacity="0.85" />
+                        <stop offset="100%" stop-color="#fbbf24" stop-opacity="0.1" />
+                      </linearGradient>
+                      <linearGradient id="amb-grad-area" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="rgba(16, 185, 129, 0.28)" />
+                        <stop offset="60%" stop-color="rgba(6, 182, 212, 0.08)" />
+                        <stop offset="100%" stop-color="rgba(4, 20, 14, 0)" />
+                      </linearGradient>
+                      <filter id="amb-glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="5" result="blur" />
+                        <feMerge>
+                          <feMergeNode in="blur" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+                    </defs>
+                    <!-- Subtle cybernetic grid radar rings -->
+                    <circle cx="300" cy="300" r="280" class="ambient-radar-ring ring-outer" />
+                    <circle cx="300" cy="300" r="215" class="ambient-radar-ring ring-mid" />
+                    
+                    <!-- Soft glowing financial trend area & curves -->
+                    <path class="ambient-pulse-area" d="M 40,360 Q 150,250 260,330 T 440,240 T 560,280 L 560,520 L 40,520 Z" fill="url(#amb-grad-area)" />
+                    <path class="ambient-pulse-wave wave-primary" d="M 40,360 Q 150,250 260,330 T 440,240 T 560,280" fill="none" stroke="url(#amb-grad-emerald)" stroke-width="3" filter="url(#amb-glow-filter)" />
+                    <path class="ambient-pulse-wave wave-secondary" d="M 40,400 Q 170,460 300,340 T 480,310 T 560,350" fill="none" stroke="url(#amb-grad-gold)" stroke-width="2.2" filter="url(#amb-glow-filter)" />
+
+                    <!-- Glowing constellation / data pulse nodes -->
+                    <circle cx="150" cy="275" r="4" class="ambient-data-dot dot-1" />
+                    <circle cx="260" cy="330" r="5" class="ambient-data-dot dot-2" />
+                    <circle cx="380" cy="270" r="4.5" class="ambient-data-dot dot-3" />
+                    <circle cx="440" cy="240" r="6" class="ambient-data-dot dot-peak" />
+                    <circle cx="510" cy="265" r="4" class="ambient-data-dot dot-4" />
+                  </svg>
+                </div>
                 <svg class="hub-orbital-svg" viewBox="0 0 600 600" role="img" aria-label="Diagram Navigasi Orbital Layanan Warga RT.001">
                   <defs>
                     <!-- Teal to Blue chromatic gradients matching user mockup -->
@@ -648,72 +700,85 @@
           </div>
         </section>
 
-        <!-- ==================== SPOTLIGHT GRAFIK PENERIMAAN IURAN TAHUNAN (PALING BAWAH BERANDA PUBLIK) ==================== -->
-        <section class="hub-chart-spotlight" aria-label="Grafik Performa Iuran Warga">
-          <div class="public-annual-dues-card glass-panel" id="public-annual-dues-card">
-            <div class="annual-dues-header">
-              <div class="annual-dues-title-group">
-                <h3 class="annual-title">Grafik Penerimaan Iuran Bulanan 1 Tahun Berjalan</h3>
+        <!-- ==================== LUXURY MODAL / BOTTOM SHEET: GRAFIK PENERIMAAN IURAN (ZERO-SCROLL) ==================== -->
+        <div class="modal-backdrop modal-annual-chart-backdrop" id="modal-annual-chart-detail" role="dialog" aria-modal="true" aria-labelledby="annual-modal-title" style="display: none;">
+          <div class="modal-content modal-annual-chart-content glass-panel">
+            <div class="annual-modal-top-bar">
+              <div class="annual-modal-badge">
+                <span class="annual-pulse-dot"></span>
+                <i class="fa-solid fa-chart-line text-emerald"></i>
+                <span>Audit Transparansi & Partisipasi Finansial RT.001</span>
               </div>
+              <button type="button" class="annual-modal-close-btn modal-close" data-close="modal-annual-chart-detail" aria-label="Tutup Tampilan Grafik">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
 
-              <div class="annual-controls-row">
-                <!-- Toggle Switcher Tipe Grafik: Smooth Area vs Rounded Bar -->
-                <div class="annual-chart-type-toggle" role="tablist" aria-label="Pilihan Tipe Visualisasi Grafik">
-                  <button type="button" class="annual-toggle-btn active" id="btn-chart-type-area" data-chart-type="area" title="Tampilan Kurva Bergradien Mewah">
-                    <i class="fa-solid fa-chart-area"></i>
-                    <span>Kurva Cahaya</span>
-                  </button>
-                  <button type="button" class="annual-toggle-btn" id="btn-chart-type-bar" data-chart-type="bar" title="Tampilan Batang Mewah">
-                    <i class="fa-solid fa-chart-column"></i>
-                    <span>Batang Mewah</span>
-                  </button>
+            <div class="public-annual-dues-card" id="public-annual-dues-card">
+              <div class="annual-dues-header">
+                <div class="annual-dues-title-group">
+                  <h3 class="annual-title" id="annual-modal-title">Grafik Penerimaan Iuran Bulanan 1 Tahun Berjalan</h3>
                 </div>
 
-                <div class="annual-filter-group">
-                  <label for="select-annual-chart-year" class="annual-filter-label">
-                    <i class="fa-regular fa-calendar-check text-emerald"></i> Tahun:
-                  </label>
-                  <div class="annual-select-wrap">
-                    <select id="select-annual-chart-year" class="annual-year-select" aria-label="Pilih Tahun Grafik Iuran">
-                      <option value="2026" selected>2026 (Berjalan)</option>
-                      <option value="2025">2025 (Arsip)</option>
-                      <option value="2024">2024 (Arsip)</option>
-                      <option value="2023">2023 (Arsip)</option>
-                      <option value="2022">2022 (Arsip)</option>
-                      <option value="2021">2021 (Arsip)</option>
-                    </select>
-                    <i class="fa-solid fa-chevron-down annual-select-arrow" aria-hidden="true"></i>
+                <div class="annual-controls-row">
+                  <!-- Toggle Switcher Tipe Grafik: Smooth Area vs Rounded Bar -->
+                  <div class="annual-chart-type-toggle" role="tablist" aria-label="Pilihan Tipe Visualisasi Grafik">
+                    <button type="button" class="annual-toggle-btn active" id="btn-chart-type-area" data-chart-type="area" title="Tampilan Kurva Bergradien Mewah">
+                      <i class="fa-solid fa-chart-area"></i>
+                      <span>Kurva Cahaya</span>
+                    </button>
+                    <button type="button" class="annual-toggle-btn" id="btn-chart-type-bar" data-chart-type="bar" title="Tampilan Batang Mewah">
+                      <i class="fa-solid fa-chart-column"></i>
+                      <span>Batang Mewah</span>
+                    </button>
+                  </div>
+
+                  <div class="annual-filter-group">
+                    <label for="select-annual-chart-year" class="annual-filter-label">
+                      <i class="fa-regular fa-calendar-check text-emerald"></i> Tahun:
+                    </label>
+                    <div class="annual-select-wrap">
+                      <select id="select-annual-chart-year" class="annual-year-select" aria-label="Pilih Tahun Grafik Iuran">
+                        <option value="2026" selected>2026 (Berjalan)</option>
+                        <option value="2025">2025 (Arsip)</option>
+                        <option value="2024">2024 (Arsip)</option>
+                        <option value="2023">2023 (Arsip)</option>
+                        <option value="2022">2022 (Arsip)</option>
+                        <option value="2021">2021 (Arsip)</option>
+                      </select>
+                      <i class="fa-solid fa-chevron-down annual-select-arrow" aria-hidden="true"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Canvas Chart Wrapper -->
-            <div class="annual-chart-container">
-              <div class="annual-chart-canvas-wrap">
-                <canvas id="chartPublicAnnualDues"></canvas>
-              </div>
-            </div>
-
-            <!-- Interactive Legend & Privacy Note -->
-            <div class="annual-chart-footer">
-              <div class="annual-legend-list">
-                <div class="annual-legend-item">
-                  <span class="annual-legend-bar bg-emerald-gradient"></span>
-                  <span>Indeks Partisipasi Bulanan (%)</span>
-                </div>
-                <div class="annual-legend-item">
-                  <span class="annual-legend-line bg-gold-line"></span>
-                  <span>Rata-rata Partisipasi Warga</span>
+              <!-- Canvas Chart Wrapper -->
+              <div class="annual-chart-container">
+                <div class="annual-chart-canvas-wrap">
+                  <canvas id="chartPublicAnnualDues"></canvas>
                 </div>
               </div>
-              <div class="annual-chart-note">
-                <i class="fa-solid fa-user-shield text-gold"></i>
-                <span>Rincian nominal kas bersifat privat khusus warga RT.001. Silakan masuk ke <strong>Portal Warga</strong> untuk melihat audit finansial detail.</span>
+
+              <!-- Interactive Legend & Privacy Note -->
+              <div class="annual-chart-footer">
+                <div class="annual-legend-list">
+                  <div class="annual-legend-item">
+                    <span class="annual-legend-bar bg-emerald-gradient"></span>
+                    <span>Indeks Partisipasi Bulanan (%)</span>
+                  </div>
+                  <div class="annual-legend-item">
+                    <span class="annual-legend-line bg-gold-line"></span>
+                    <span>Rata-rata Partisipasi Warga</span>
+                  </div>
+                </div>
+                <div class="annual-chart-note">
+                  <i class="fa-solid fa-user-shield text-gold"></i>
+                  <span>Rincian nominal kas bersifat privat khusus warga RT.001. Silakan masuk ke <strong>Portal Warga</strong> untuk melihat audit finansial detail.</span>
+                </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
         <!-- Compact Bottom Footer on Hub -->
         <footer class="hub-mini-footer">
@@ -722,6 +787,10 @@
             <span class="hub-footer-copy">&copy; 2026 Cipta Karya Bersama</span>
           </div>
           <div class="hub-mini-footer-right">
+            <button type="button" class="btn-hub-footer-chart" data-action="open-annual-chart" title="Buka Visualisasi Grafik Iuran 1 Tahun">
+              <i class="fa-solid fa-chart-line text-emerald"></i>
+              <span>Grafik Iuran</span>
+            </button>
             <button type="button" class="btn-hub-footer-login" id="btn-open-login-footer">
               <i class="fa-solid fa-lock"></i>
               <span>Portal Pengurus</span>
@@ -6519,6 +6588,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.34"></script>
+  <script src="app.js?v=2.9.35"></script>
 </body>
 </html>
