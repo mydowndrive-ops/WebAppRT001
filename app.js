@@ -12888,70 +12888,7 @@ function initHubOrbitalNavigation() {
   const wrapper = document.getElementById('hub-orbital-nav-wrapper') || document.querySelector('.hub-cockpit-section');
   if (!wrapper) return;
 
-  const ORBITAL_SECTORS_DATA = {
-    0: {
-      subview: 'pengurus',
-      badgeHtml: '<i class="fa-solid fa-crown text-emerald"></i> Periode 2024–2027',
-      badgeClass: 'badge-emerald',
-      title: 'Struktur Organisasi Pengurus RT',
-      desc: 'Susunan pengurus amanah: Ketua RT, Sekretaris, Bendahara (Admin 1 & 2), Seksi Humas lengkap dengan kontak WhatsApp resmi.',
-      actionText: 'Buka Pengurus RT'
-    },
-    1: {
-      subview: null, // portal-warga special login
-      badgeHtml: '<i class="fa-solid fa-shield-halved text-cyan"></i> Khusus Warga RT',
-      badgeClass: 'badge-cyan',
-      title: 'Portal Warga RT.001',
-      desc: 'Masuk ke akun warga Anda untuk cek status iuran rumah, jadwal ronda malam minggu, dan mengajukan dana perbaikan fasilitas lingkungan.',
-      actionText: 'Masuk ke Portal Warga'
-    },
-    2: {
-      subview: 'kegiatan',
-      badgeHtml: '<i class="fa-solid fa-handshake text-purple"></i> Gotong Royong',
-      badgeClass: 'badge-purple',
-      title: 'Agenda Warga & Kegiatan Rutin',
-      desc: 'Jadwal ronda & jimpitan rutin malam minggu, jam portal malam (23.00-05.00), kerja bakti gotong royong, peringatan PHBI & HUT RI.',
-      actionText: 'Buka Agenda Warga'
-    },
-    3: {
-      subview: 'tentang',
-      badgeHtml: '<i class="fa-solid fa-signs-post text-rose"></i> 5 Jalur Jalan',
-      badgeClass: 'badge-rose',
-      title: 'Profil dan Peta Wilayah RT.001',
-      desc: 'Peta satelit batas resmi RT.001 (garis merah), 5 jalur jalan (Jl. Citarum II, IVA, VIIIB, VIIIC, IX), dan semangat Cipta Karya Bersama.',
-      actionText: 'Buka Profil dan Peta'
-    },
-    4: {
-      subview: 'demografi',
-      badgeHtml: '<i class="fa-solid fa-users text-emerald"></i> 71 KK / 284 Jiwa',
-      badgeClass: 'badge-emerald',
-      title: 'Statistik Warga & Kependudukan',
-      desc: 'Visualisasi interaktif komposisi gender pria/wanita, 50 remaja, serta 5 kelompok usia (balita s/d lansia) terverifikasi.',
-      actionText: 'Buka Statistik Warga'
-    },
-    5: {
-      subview: 'layanan',
-      badgeHtml: '<i class="fa-solid fa-scale-balanced text-gold"></i> 6 Pos Anggaran',
-      badgeClass: 'badge-gold',
-      title: 'Keuangan & Kas RT',
-      desc: 'Grafik penerimaan iuran bulanan 1 tahun berjalan (Jan-Des), pembukuan digital 6 pos anggaran, serta mutasi jimpitan ronda.',
-      actionText: 'Buka Laporan Keuangan'
-    }
-  };
-
-  const badgeEl = document.getElementById('orbital-detail-badge');
-  const titleEl = document.getElementById('orbital-detail-title');
-  const descEl = document.getElementById('orbital-detail-desc');
-  const actionTextEl = document.getElementById('orbital-action-text');
-  const actionBtn = document.getElementById('btn-orbital-action');
-  let currentActiveSector = 1;
-
   function setActiveSector(sectorIndex) {
-    currentActiveSector = sectorIndex;
-    const data = ORBITAL_SECTORS_DATA[sectorIndex];
-    if (!data) return;
-
-    // Update kelas aktif pada petal SVG dan tombol satelit
     wrapper.querySelectorAll('.orbital-petal-group, .orbital-sat-btn').forEach(el => {
       const elSector = parseInt(el.getAttribute('data-sector'), 10);
       if (elSector === sectorIndex) {
@@ -12960,51 +12897,31 @@ function initHubOrbitalNavigation() {
         el.classList.remove('active');
       }
     });
-
-    // Update konten pada kartu detail panel di bawah diagram
-    if (badgeEl) {
-      badgeEl.className = `hub-card-badge ${data.badgeClass}`;
-      badgeEl.innerHTML = data.badgeHtml;
-    }
-    if (titleEl) titleEl.textContent = data.title;
-    if (descEl) descEl.textContent = data.desc;
-    if (actionTextEl) actionTextEl.textContent = data.actionText;
   }
 
-  // Set default aktif awal: Portal Mandiri Warga RT.001 (Sector 1)
-  setActiveSector(1);
-
-  // Hover & Focus listeners pada seluruh elemen sektor
+  // Hover & Focus listeners pada seluruh elemen sektor untuk efek pendaran cahaya (glow)
   wrapper.querySelectorAll('.orbital-petal-group, .orbital-sat-btn').forEach(el => {
     const sectorIndex = parseInt(el.getAttribute('data-sector'), 10);
     el.addEventListener('mouseenter', () => setActiveSector(sectorIndex));
     el.addEventListener('focus', () => setActiveSector(sectorIndex));
-    el.addEventListener('click', () => setActiveSector(sectorIndex));
   });
 
-  // Tombol aksi di kartu detail panel
-  if (actionBtn) {
-    actionBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const data = ORBITAL_SECTORS_DATA[currentActiveSector];
-      if (!data) return;
-      if (data.subview) {
-        switchPublicView(data.subview);
+  // Handler klik langsung untuk Portal Warga (Sektor 1: Petal & Tombol Satelit)
+  const handlePortalWargaClick = (e) => {
+    e.preventDefault();
+    if (isLoggedIn() && state.currentUser === 'warga' && state.currentVerifiedResident) {
+      showAdminApp();
+      navigateToView('portal-warga');
+    } else {
+      if (typeof window.openRoleLogin === 'function') {
+        window.openRoleLogin('warga');
       } else {
-        // Sector 1: Portal Warga
-        if (isLoggedIn() && state.currentUser === 'warga' && state.currentVerifiedResident) {
-          showAdminApp();
-          navigateToView('portal-warga');
-        } else {
-          if (typeof window.openRoleLogin === 'function') {
-            window.openRoleLogin('warga');
-          } else {
-            showLoginOverlay('warga');
-          }
-        }
+        showLoginOverlay('warga');
       }
-    });
-  }
+    }
+  };
+  document.getElementById('card-hub-portal-warga')?.addEventListener('click', handlePortalWargaClick);
+  document.getElementById('btn-sat-portal-warga')?.addEventListener('click', handlePortalWargaClick);
 
   // Klik pada Center Hub (Logo RT) -> Scroll halus ke atas / Kembali ke beranda hub
   document.getElementById('orbital-center-hub')?.addEventListener('click', (e) => {

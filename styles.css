@@ -10366,80 +10366,6 @@ h1, h2, h3, h4, h5, h6 {
   white-space: nowrap;
 }
 
-/* Dynamic Executive Detail Card Below Wheel */
-.hub-orbital-detail-panel {
-  width: 100%;
-  max-width: 550px;
-  background: linear-gradient(145deg, rgba(6, 34, 23, 0.85) 0%, rgba(4, 20, 13, 0.92) 100%);
-  border: 1.5px solid rgba(16, 185, 129, 0.28);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 20px;
-  padding: 1.25rem 1.45rem;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.55), 0 0 20px rgba(16, 185, 129, 0.12);
-  margin-top: 1.15rem;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.orbital-detail-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.65rem;
-}
-
-.orbital-detail-hint {
-  font-size: 0.76rem;
-  color: #94a3b8;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.orbital-detail-title {
-  font-family: var(--font-heading);
-  font-size: 1.18rem;
-  font-weight: 800;
-  color: #ffffff;
-  margin: 0 0 0.4rem 0;
-  line-height: 1.25;
-}
-
-.orbital-detail-desc {
-  font-size: 0.84rem;
-  color: #cbd5e1;
-  line-height: 1.5;
-  margin: 0 0 0.9rem 0;
-  min-height: 2.5rem;
-}
-
-.orbital-detail-footer {
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.btn-orbital-action {
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-  border: 1px solid rgba(52, 211, 153, 0.4);
-  color: #ffffff;
-  font-size: 0.86rem;
-  font-weight: 700;
-  padding: 0.55rem 1.35rem;
-  border-radius: 12px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
-  transition: all 0.25s ease;
-}
-
-.btn-orbital-action:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
-  background: linear-gradient(135deg, #047857 0%, #059669 100%);
-}
 
 @media (max-width: 1024px) {
   .hub-cockpit-grid {
@@ -10488,13 +10414,6 @@ h1, h2, h3, h4, h5, h6 {
     width: 48px;
     height: 48px;
     font-size: 1.1rem;
-  }
-  .hub-orbital-detail-panel {
-    padding: 1rem 1.15rem;
-  }
-  .btn-orbital-action {
-    width: 100%;
-    justify-content: center;
   }
 }
 

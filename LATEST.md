@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (18:45 WIB)  
-**Versi Rilis Aktif:** `v2.9.16`  
+**Terakhir Diperbarui:** 20 September 2026 (19:05 WIB)  
+**Versi Rilis Aktif:** `v2.9.17`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,18 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🛸 Desain Unified Cockpit & Label Petal 2-Baris Rapi (Update v2.9.16 - 20 Sept 2026)
+### 1. 🧹 Penyempurnaan Tampilan Bersih: Penghapusan Kotak Panel Detail di Bawah Roda Navigasi (Update v2.9.17 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Menghilangkan kotak panel detail di bawah roda navigasi (`#hub-orbital-detail-card`) sesuai tangkapan layar pengguna (*"Hilangkan kotak ini"*).
+  - Dengan dihapusnya kotak ini, komposisi roda navigasi orbital sirkular menjadi lebih bersih, minimalis, dan tidak menghabiskan ruang halaman.
+- **Interaksi Navigasi Langsung (*Direct Interaction*)**:
+  - Klik langsung pada kelopak ataupun tombol satelit luar langsung membuka fitur terkait:
+    - **Portal Warga (Sektor 1):** Langsung membuka form login / portal mandiri warga.
+    - **Sektor Lain (0, 2, 3, 4, 5):** Langsung membuka subview terkait (*Pengurus RT, Agenda Warga, Profil dan Peta, Statistik Warga, Keuangan RT*).
+  - Efek sorot visual (*glowing aura*) pada roda navigasi tetap bekerja mulus saat kursor melintas.
+  - Menghapus aturan CSS dan dependensi DOM yang tidak terpakai sehingga ukuran bundle lebih ringan.
+
+### 2. 🛸 Desain Unified Cockpit & Label Petal 2-Baris Rapi (Update v2.9.16 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Menyatukan bilah ticker atas dan header sebelumnya (Gambar 1) menjadi satu kesatuan kokpit elegan bersama roda navigasi orbital sirkular (Gambar 2) agar tidak memenuhi halaman (*space-efficient* & berkelas).
   - Melengkapi dan merapikan seluruh kalimat sektor kelopak roda navigasi menjadi **2-baris kalimat** agar terbaca utuh tanpa terpotong (clipping):
