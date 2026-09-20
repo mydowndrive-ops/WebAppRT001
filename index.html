@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.9">
+  <link rel="stylesheet" href="styles.css?v=2.9.10">
 </head>
 <body>
 
@@ -354,8 +354,14 @@
         <!-- BANNER IKLAN / BROADCAST HIGHLIGHT EVENT TERDEKAT (POPUP MODAL LUXURY FLYER) -->
         <div class="hub-event-banner-wrap" id="hub-event-banner-wrap" aria-label="Informasi Event Terdekat" role="dialog" aria-modal="true" style="display: none;">
           <div class="hub-event-banner hub-event-flyer-modal glass-panel">
-            <!-- Pendaran Cahaya Merah Putih yang Mengelilingi Kotak Event -->
-            <div class="event-card-redwhite-halo"></div>
+            <!-- 1. Pendaran Cahaya Outerglow Merah Putih Memancar ke Luar Kotak -->
+            <div class="event-border-outerglow"></div>
+
+            <!-- 2. Bingkai Garis-Garis Merah Putih Memutar di Pinggir Kotak -->
+            <div class="event-border-rotator-frame">
+              <div class="event-border-rotator"></div>
+              <div class="event-card-inner-base"></div>
+            </div>
 
             <!-- Tombol Tutup Banner (Tanda Silang Mewah) -->
             <button type="button" class="btn-event-popup-close" id="btn-close-event-banner" aria-label="Tutup Pengumuman Event" title="Tutup Pengumuman (X atau Esc)">
@@ -6363,6 +6369,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.9"></script>
+  <script src="app.js?v=2.9.10"></script>
 </body>
 </html>

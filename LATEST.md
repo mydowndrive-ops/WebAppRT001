@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (16:55 WIB)  
-**Versi Rilis Aktif:** `v2.9.9`  
+**Terakhir Diperbarui:** 20 September 2026 (17:02 WIB)  
+**Versi Rilis Aktif:** `v2.9.10`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -34,7 +34,24 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🌟 Rampingkan Pop-Up Event Terdekat (1 Item) & Efek Pendaran Cahaya Merah Putih Memutari Kotak (Update v2.9.9 - 20 Sept 2026)
+### 1. 🇮🇩 Transformasi Garis-Garis Merah Putih Menjadi Outerglow Memancar Keliling Kotak (Update v2.9.10 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Mengubah pendaran cahaya pinggir kotak EVENT TERDEKAT di mana garis-garis merah putih yang mengelilingi kotaknya aktif memancarkan **outerglow** (pendaran cahaya bersinar ke luar kotak).
+- **Solusi & Rekayasa Desain 3-Lapis (Tri-Layer Outerglow Architecture)**:
+  1. **Lapisan Outerglow (`.event-border-outerglow`)**:
+     - Diposisikan di belakang kotak (`z-index: 0`, `inset: -12px`) dengan `border-radius: 38px`.
+     - Menggunakan `repeating-conic-gradient` 24 strip merah-putih murni (`#ef4444` dan `#ffffff`) dengan akselerasi hardware.
+     - Diberi filter `blur(18px)` dan opacity tinggi (0.95), berputar 360° secara halus (`rotateRedWhiteOuterglow 6s linear infinite`) dipadukan dengan efek denyut bernapas dinamis (`redWhiteOuterglowPulse 3s ease-in-out infinite alternate`).
+  2. **Lapisan Garis Merah-Putih Pinggir Kotak (`.event-border-rotator-frame`)**:
+     - Membungkus pinggir kotak dengan garis-garis merah putih berputar tepat pada frame kartu (`z-index: 1`), dipadukan dengan background dasar kartu (`.event-card-inner-base`, `z-index: 2`).
+  3. **Z-Index Konsisten untuk Konten Interaktif**:
+     - Seluruh elemen flyer (`.event-flyer-topline`, `.event-banner-main`, `.event-flyer-footer-actions`, `.btn-event-popup-close`) berada di `z-index: 5-25`, memastikan teks tajam, kontras, dan tombol interaktif 100% responsif.
+  4. **Penyelarasan Cache PWA**:
+     - Parameter aset dinaikkan ke versi `v2.9.10` pada `index.html`, `styles.css`, `app.js`, dan `sw.js`.
+
+---
+
+### 2. 🌟 Rampingkan Pop-Up Event Terdekat (1 Item) & Efek Pendaran Cahaya Merah Putih Memutari Kotak (Update v2.9.9 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   1. Menampilkan **hanya 1 item agenda terdekat utama saja** (Kerja Bakti & Fogging DBD) agar ukuran kartu pop-up menjadi jauh lebih ramping, proporsional, dan ringkas.
   2. Menghilangkan kontrol slider carousel yang memakan tempat.
