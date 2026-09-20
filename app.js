@@ -5148,6 +5148,9 @@ function isLoggedIn() {
 
 function setSession(role) {
   sessionStorage.setItem(LOGIN_SESSION_KEY, role);
+  if (typeof recordUserActivity === 'function') {
+    recordUserActivity();
+  }
 }
 
 function clearSession() {
@@ -7634,6 +7637,162 @@ function setupLogout() {
   document.getElementById('btn-top-logout')?.addEventListener('click', doLogout);
 }
 
+// ==========================================================================
+// ENTERPRISE INACTIVITY AUTO-LOGOUT SECURITY MANAGER
+// Melindungi data keuangan RT dari akses tidak sah saat perangkat ditinggalkan
+// ==========================================================================
+
+const INACTIVITY_CONFIG = {
+  TIMEOUT_MS: 15 * 60 * 1000,      // 15 Menit inaktif -> Auto Logout
+  WARNING_MS: 60 * 1000,           // Peringatan 60 detik sebelum logout
+  CHECK_INTERVAL_MS: 3000,         // Interval ticker per 3 detik
+  THROTTLE_ACTIVITY_MS: 1500       // Batas throttle perekaman aktivitas
+};
+
+let lastUserActivityTime = Date.now();
+let lastThrottleRecordedTime = 0;
+let inactivityTimerInterval = null;
+let isWarningBannerVisible = false;
+
+function recordUserActivity() {
+  const now = Date.now();
+  if (now - lastThrottleRecordedTime < INACTIVITY_CONFIG.THROTTLE_ACTIVITY_MS) {
+    return;
+  }
+  lastThrottleRecordedTime = now;
+  lastUserActivityTime = now;
+
+  // Jika banner peringatan sedang aktif, sembunyikan kembali karena ada aktivitas
+  if (isWarningBannerVisible) {
+    hideInactivityWarning();
+  }
+}
+
+function showInactivityWarning(secondsLeft) {
+  isWarningBannerVisible = true;
+  let banner = document.getElementById('inactivity-security-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'inactivity-security-banner';
+    banner.className = 'inactivity-security-banner';
+    banner.innerHTML = `
+      <div class="inactivity-security-content">
+        <div class="inactivity-beacon-pulse">
+          <i class="fa-solid fa-shield-halved text-gold"></i>
+        </div>
+        <div class="inactivity-text-wrap">
+          <strong class="inactivity-title">Peringatan Keamanan Sesi</strong>
+          <span class="inactivity-desc">
+            Sesi Anda akan berakhir dalam <strong id="inactivity-timer-countdown" class="text-gold">60</strong> detik karena tidak ada aktivitas. Sentuh layar atau klik untuk melanjutkan.
+          </span>
+        </div>
+        <button type="button" class="btn-stay-logged-in" id="btn-stay-logged-in">
+          <i class="fa-solid fa-arrow-rotate-right"></i> Tetap Masuk
+        </button>
+      </div>
+    `;
+    document.body.appendChild(banner);
+    document.getElementById('btn-stay-logged-in')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      recordUserActivity();
+    });
+  }
+
+  const countdownEl = document.getElementById('inactivity-timer-countdown');
+  if (countdownEl) {
+    countdownEl.textContent = Math.max(1, Math.ceil(secondsLeft));
+  }
+  banner.classList.add('active');
+}
+
+function hideInactivityWarning() {
+  isWarningBannerVisible = false;
+  const banner = document.getElementById('inactivity-security-banner');
+  if (banner) {
+    banner.classList.remove('active');
+  }
+}
+
+function performAutoLogout() {
+  hideInactivityWarning();
+  
+  // Pastikan pengguna memang sedang berstatus login
+  if (!isLoggedIn() && !state.currentUser) return;
+
+  console.warn('🔒 [SECURITY] Sesi pengguna diakhiri otomatis karena inaktivitas > 15 menit.');
+  
+  clearSession();
+  state.currentUser = null;
+  state.currentVerifiedResident = null;
+  saveState();
+  showPublicPortal();
+
+  // Reset input PIN form
+  const pinInput = document.getElementById('login-pin-input');
+  if (pinInput) {
+    pinInput.value = '';
+    pinInput.type = 'password';
+  }
+  const eyeIcon = document.getElementById('login-eye-icon');
+  if (eyeIcon) eyeIcon.className = 'fa-regular fa-eye';
+
+  // Tutup overlay login jika terbuka
+  if (typeof hideLoginOverlay === 'function') {
+    hideLoginOverlay(false, true);
+  }
+
+  // Notifikasi keamanan berbobot resmi
+  showToast('🔒 Sesi Anda telah diakhiri otomatis demi menjaga keamanan data keuangan RT karena tidak ada aktivitas.', 'warning', 8000);
+}
+
+function checkInactivityTimeout() {
+  // Hanya aktif jika pengguna sedang login
+  if (!isLoggedIn() && !state.currentUser) {
+    hideInactivityWarning();
+    return;
+  }
+
+  const now = Date.now();
+  const idleTime = now - lastUserActivityTime;
+
+  if (idleTime >= INACTIVITY_CONFIG.TIMEOUT_MS) {
+    performAutoLogout();
+  } else if (idleTime >= (INACTIVITY_CONFIG.TIMEOUT_MS - INACTIVITY_CONFIG.WARNING_MS)) {
+    const remainingSeconds = (INACTIVITY_CONFIG.TIMEOUT_MS - idleTime) / 1000;
+    showInactivityWarning(remainingSeconds);
+  } else {
+    if (isWarningBannerVisible) {
+      hideInactivityWarning();
+    }
+  }
+}
+
+function setupInactivitySecurity() {
+  // 1. Catat aktivitas awal
+  lastUserActivityTime = Date.now();
+
+  // 2. Pasang sensor deteksi aktivitas pengguna (Throttled)
+  const activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click', 'wheel'];
+  activityEvents.forEach(evt => {
+    window.addEventListener(evt, recordUserActivity, { passive: true });
+  });
+
+  // 3. Ticker interval pemeriksaan rutin
+  if (inactivityTimerInterval) clearInterval(inactivityTimerInterval);
+  inactivityTimerInterval = setInterval(checkInactivityTimeout, INACTIVITY_CONFIG.CHECK_INTERVAL_MS);
+
+  // 4. Deteksi perpindahan tab / layar mati ponsel (Visibility & Focus)
+  // Menangani situasi di mana peramban ponsel menidurkan timer saat layar terkunci
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      checkInactivityTimeout();
+    }
+  });
+  window.addEventListener('focus', () => {
+    checkInactivityTimeout();
+  });
+}
+
 /**
  * 1-Click Smooth Scroll to Top Luxury Feature
  */
@@ -7694,6 +7853,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupRondaSchedule();
   setupManageRondaModal();
   setupLogout();
+  setupInactivitySecurity();
   registerServiceWorker();
   initDemografi();
   setupFundRequestModule();

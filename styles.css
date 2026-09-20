@@ -76,7 +76,7 @@
   --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Reset & Base Setup */
+/* Reset & Base Setup (Native Mobile App-Like Precision) */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -88,11 +88,25 @@ button, a, select, input, textarea, [role="button"] {
   touch-action: manipulation;
 }
 
+.bnav-item, 
+.public-brand, 
+.sidebar-brand, 
+.mobile-menu-toggle, 
+.btn-icon-action, 
+.annual-toggle-btn,
+.hub-cockpit-card,
+.orbital-petal-label {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
 html {
   font-size: 15px;
   scroll-behavior: smooth;
   background-color: var(--bg-primary);
   color: var(--text-primary);
+  overscroll-behavior-y: contain;
 }
 
 body {
@@ -105,6 +119,7 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  overscroll-behavior-y: contain;
 }
 
 /* Typography Utilities */
@@ -4586,6 +4601,7 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom: 1px solid rgba(16, 185, 129, 0.22);
   box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.65), 0 0 20px rgba(16, 185, 129, 0.08);
   transition: var(--transition);
+  padding-top: var(--sat);
 }
 .public-nav-container {
   max-width: 1240px;
@@ -11411,34 +11427,49 @@ h1, h2, h3, h4, h5, h6 {
     gap: 1.15rem;
   }
 
-  /* Urutan Re-Ordering di HP: Header -> Menu Layanan (ATAS) -> Event Banner -> Ticker -> Grafik -> Footer */
+  /* Urutan Re-Ordering di HP:
+     1. Header Banner Bendera & Judul Resmi (PALING ATAS)
+     2. Cockpit Navigasi Lingkaran Orbital & Kartu Status Warga
+     3. Event Banner Wrap
+     4. Ticker Capaian Kas
+     5. Grafik Penerimaan Iuran
+     6. Mini Footer Warga
+  */
   .hub-hero-header {
-    order: 1;
-    margin-bottom: 0.5rem;
+    order: 1 !important;
+    margin-bottom: 0.85rem;
+    width: 100%;
+  }
+
+  .hub-cockpit-section,
+  .hub-orbital-nav-wrapper {
+    order: 2 !important;
+    margin-bottom: 1.25rem;
+    width: 100%;
   }
 
   .hub-grid-section {
-    order: 2;
+    order: 3 !important;
     margin-bottom: 1.25rem;
   }
 
   .hub-event-banner-wrap {
-    order: 99;
-    margin-bottom: 0;
+    order: 4 !important;
+    margin-bottom: 0.5rem;
   }
 
   .hub-ticker-bar {
-    order: 3;
+    order: 5 !important;
     margin-bottom: 1.25rem;
   }
 
   .hub-chart-spotlight {
-    order: 4;
+    order: 6 !important;
     margin-bottom: 1.25rem;
   }
 
   .hub-mini-footer {
-    order: 5;
+    order: 7 !important;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.85rem;
@@ -11450,9 +11481,11 @@ h1, h2, h3, h4, h5, h6 {
 
   .indonesia-flag-waving-banner,
   .flag-container {
-    min-height: 98px;
-    border-radius: 14px;
-    margin-bottom: 0.6rem;
+    min-height: 104px;
+    border-radius: 16px;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.55), 0 0 15px rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
   }
 
   .flag-banner-overlay,
@@ -14818,6 +14851,117 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
   pointer-events: auto;
 }
+
+/* ==========================================================================
+   INACTIVITY AUTO-LOGOUT SECURITY BANNER (ENTERPRISE FINTECH STYLE)
+   ========================================================================== */
+.inactivity-security-banner {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(-150%);
+  z-index: 100000;
+  max-width: 540px;
+  width: calc(100% - 2rem);
+  background: rgba(6, 26, 18, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(245, 158, 11, 0.7);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8), 0 0 30px rgba(245, 158, 11, 0.25);
+  border-radius: 18px;
+  padding: 1rem 1.25rem;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.inactivity-security-banner.active {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.inactivity-security-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.inactivity-beacon-pulse {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+  animation: beaconPulseAnim 1.8s infinite ease-in-out;
+}
+
+@keyframes beaconPulseAnim {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+  50% { transform: scale(1.06); box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+}
+
+.inactivity-text-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.inactivity-title {
+  font-size: 0.95rem;
+  color: #ffffff;
+  font-family: var(--font-heading);
+  letter-spacing: -0.01em;
+}
+
+.inactivity-desc {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.35;
+}
+
+.btn-stay-logged-in {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #000000;
+  border: none;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-stay-logged-in:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 640px) {
+  .inactivity-security-banner {
+    top: calc(0.75rem + var(--sat));
+    padding: 0.85rem 1rem;
+  }
+  .inactivity-security-content {
+    flex-wrap: wrap;
+  }
+  .btn-stay-logged-in {
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.25rem;
+  }
+}
+
 
 
 

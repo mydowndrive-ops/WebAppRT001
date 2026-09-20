@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (00:25 WIB)  
-**Versi Rilis Aktif:** `v2.9.33`  
+**Terakhir Diperbarui:** 21 September 2026 (00:50 WIB)  
+**Versi Rilis Aktif:** `v2.9.34`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,33 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📱 Flagship Mobile & Tablet Responsiveness & Luxury UI Overhaul (Update v2.9.33 - 21 Sept 2026)
+### 1. 🛡️ Native Mobile App-Like Experience & Inactivity Auto-Logout Security (Update v2.9.34 - 21 Sept 2026)
+- **Latar Belakang & Mandat Peningkatan**:
+  - Memenuhi 3 kebutuhan spesifik pengguna saat web aplikasi dibuka di ponsel:
+    1. Memindahkan banner video bendera merah putih berkibar dan judul web aplikasi ke posisi **paling atas** layar ponsel agar warga langsung mengetahui identitas resmi web aplikasi sejak pertama kali dibuka.
+    2. Menghadirkan *look-and-feel* antarmuka seluler yang menyerupai aplikasi terinstal pada umumnya (*Native Installed App-like Experience*).
+    3. Menerapkan sistem keamanan mutakhir **Auto-Logout Sesi Inaktif (*Inactivity Session Timeout*)** untuk melindungi data kas RT dan mencegah akses tidak sah jika perangkat ditinggalkan tanpa pengawasan saat masih berstatus login.
+- **Hasil Perbaikan & Optimalisasi Arsitektur**:
+  1. **Reposisi Banner Bendera & Judul Resmi ke Paling Atas Layar Ponsel**:
+     - *Masalah*: Pada layar smartphone sebelumnya, diagram lingkaran navigasi orbital (*cockpit section*) tampil mendahului header banner bendera, sehingga nama web aplikasi berada di bawah lipatan layar pertama.
+     - *Solusi*: Mengatur ulang urutan Flexbox `.hub-container` di `@media (max-width: 768px)` sehingga `.hub-hero-header` (Banner video bendera merah putih berkibar, H1 *"Web Aplikasi Resmi WARGA RT.001 RW.013"*, sub-judul wilayah Graha Asri, dan slogan) menjadi `order: 1 !important` (posisi paling atas), disusul oleh `.hub-cockpit-section` di `order: 2 !important`.
+     - Frame kartu banner bendera disempurnakan dengan `min-height: 104px`, `border-radius: 16px`, border halus, dan bayangan kedalaman (*shadow glow*) mewah.
+  2. **Tampilan & Rasa Mirip Aplikasi Terinstal (*Native App Experience*)**:
+     - **PWA Meta Tags & Manifest**: Menyesuaikan `theme_color` dan `background_color` menjadi `#04140e` (*Dark Emerald*) pada `manifest.json` dan `index.html`. Menambahkan tag `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style: black-translucent`, dan `mobile-web-app-capable: yes` agar bilah status ponsel menyatu mulus tanpa garis abu-abu browser.
+     - **Eliminasi Efek Pantulan (*Overscroll Containment*)**: Menerapkan `overscroll-behavior-y: contain;` pada `html` dan `body` untuk mencegah tarikan layar putih (*white rubber-banding / accidental pull-to-refresh*) bawaan peramban mobile.
+     - **Pencegahan Seleksi Teks Tidak Sengaja**: Menambahkan `user-select: none; -webkit-user-select: none;` pada tombol, navbar, badge, dan kartu navigasi agar antarmuka terasa kokoh (*solid*) layaknya aplikasi native saat disentuh.
+     - **Integrasi Notch & Safe Area Top**: Menambahkan `padding-top: var(--sat);` pada `.public-navbar` sehingga bilah atas berada rapi di bawah area poni/Dynamic Island iPhone dan kamera punch-hole Android.
+  3. **Sistem Keamanan Auto-Logout Inactivity Session Timeout (`InactivitySecurityManager`)**:
+     - Diimplementasikan modul keamanan mandiri di `app.js` dengan batas waktu inaktif default **15 Menit** (`TIMEOUT_MS = 15 * 60 * 1000`).
+     - **Sensor Multi-Aktivitas Throttled**: Memantau interaksi pengguna (`touchstart`, `click`, `scroll`, `mousemove`, `keydown`, `wheel`) dengan mekanisme *throttling* (update stempel waktu maksimal sekali per 1.5 detik) sehingga konsumsi CPU tetap 0%.
+     - **Peringatan Hitung Mundur Melayang (*Floating Security Banner*)**: Pada sisa waktu 60 detik (menit ke-14), sistem memunculkan banner peringatan bertema *cybersecurity gold* lengkap dengan animasi denyut perisai, teks sisa detik, dan tombol *"Tetap Masuk"*. Jika pengguna menyentuh layar atau mengklik tombol, timer otomatis direset.
+     - **Ketahanan Layar Mati / Background Tab (*Dormancy Resilience*)**: Memanfaatkan event `visibilitychange` dan `focus` yang langsung membandingkan `Date.now() - lastUserActivityTime`. Jika ponsel ditinggalkan dalam kondisi terkunci atau tab diminimalkan lebih dari 15 menit, saat dibuka kembali sistem langsung mengakhiri sesi dan berstatus *logged-out*.
+     - **Eksekusi Logout Aman**: Membersihkan `sessionStorage`, mengosongkan `state.currentUser`, mengembalikan tampilan ke portal publik, mereset form PIN, dan menampilkan notifikasi keamanan: *"🔒 Sesi Anda telah diakhiri otomatis demi menjaga keamanan data keuangan RT karena tidak ada aktivitas."*
+  4. **Penyelarasan Service Worker & Cache Busting**:
+     - Cache Service Worker diperbarui menjadi `rt-finsmart-cache-v2.9.34`.
+     - Parameter aset diperbarui menjadi `styles.css?v=2.9.34` dan `app.js?v=2.9.34`.
+
+### 2. 📱 Flagship Mobile & Tablet Responsiveness & Luxury UI Overhaul (Update v2.9.33 - 21 Sept 2026)
 - **Latar Belakang & Mandat Master Full Stack**:
   - Pelaksanaan perbaikan menyeluruh terhadap arsitektur antarmuka aplikasi seluler (smartphone 360px–430px) dan tablet (768px–1024px) menyusul audit mendalam. Menjadikan aplikasi berstandar *Tier-1 Enterprise / Flagship PWA*, responsif, mewah (*dark luxury emerald with warm gold accents*), sangat nyaman digunakan dengan satu tangan (*one-hand thumb zone*), dan bebas dari bug bawaan peramban mobile (seperti auto-zoom liar di iOS Safari dan horizontal page blowout).
 - **Hasil Perbaikan & Optimalisasi Arsitektur**:
