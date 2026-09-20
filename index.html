@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>RT-FinSmart Pro | Keuangan Eksekutif RT.001 RW.013</title>
   <meta name="description" content="Sistem Manajemen Keuangan Eksekutif RT.001 RW.013 - Auto Split Pos Anggaran, Checklist Cepat & Laporan Akuntansi Berkelas">
   <meta name="theme-color" content="#0b0f19">
@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.32">
+  <link rel="stylesheet" href="styles.css?v=2.9.33">
 </head>
 <body>
 
@@ -3259,61 +3259,67 @@
 
           <!-- Breakdown per Pos Anggaran in Report -->
           <h4 class="report-section-heading"><i class="fa-solid fa-pie-chart"></i> Rincian Realisasi Tiap Pos Anggaran</h4>
-          <table class="report-table">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Nama Pos Anggaran</th>
-                <th>Porsi / Tarif</th>
-                <th>Penerimaan</th>
-                <th>Pengeluaran</th>
-                <th>Sisa Saldo Pos</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-report-pos">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama Pos Anggaran</th>
+                  <th>Porsi / Tarif</th>
+                  <th>Penerimaan</th>
+                  <th>Pengeluaran</th>
+                  <th>Sisa Saldo Pos</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-report-pos">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
 
           <!-- Rekapitulasi Kas Pemasukkan NON Iuran RT -->
           <h4 class="report-section-heading mt-4"><i class="fa-solid fa-hand-holding-dollar text-cyan"></i> Rekapitulasi Kas Pemasukkan NON Iuran</h4>
-          <table class="report-table">
-            <thead>
-              <tr>
-                <th style="width:40px; text-align:center;">No</th>
-                <th>Kategori Sumber / Pos Non-Iuran</th>
-                <th style="text-align:center;">Jumlah Transaksi</th>
-                <th style="text-align:right;">Pemasukan (Debet)</th>
-                <th style="text-align:right;">Pengeluaran (Kredit)</th>
-                <th style="text-align:right;">Saldo Kas</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-report-non-dues">
-              <!-- Dynamically populated via JS -->
-            </tbody>
-            <tfoot id="tfoot-report-non-dues">
-              <!-- Summary totals -->
-            </tfoot>
-          </table>
+          <div class="table-responsive">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th style="width:40px; text-align:center;">No</th>
+                  <th>Kategori Sumber / Pos Non-Iuran</th>
+                  <th style="text-align:center;">Jumlah Transaksi</th>
+                  <th style="text-align:right;">Pemasukan (Debet)</th>
+                  <th style="text-align:right;">Pengeluaran (Kredit)</th>
+                  <th style="text-align:right;">Saldo Kas</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-report-non-dues">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+              <tfoot id="tfoot-report-non-dues">
+                <!-- Summary totals -->
+              </tfoot>
+            </table>
+          </div>
 
           <!-- Detailed Ledger Transactions in Report -->
           <h4 class="report-section-heading mt-4"><i class="fa-solid fa-list-ol"></i> Rincian Buku Kas Masuk & Keluar</h4>
-          <table class="report-table">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Tanggal</th>
-                <th>Keterangan Transaksi</th>
-                <th>Pos Terkait</th>
-                <th>Penerimaan (Debet)</th>
-                <th>Pengeluaran (Kredit)</th>
-                <th>Saldo Berjalan</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-report-ledger">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Tanggal</th>
+                  <th>Keterangan Transaksi</th>
+                  <th>Pos Terkait</th>
+                  <th>Penerimaan (Debet)</th>
+                  <th>Pengeluaran (Kredit)</th>
+                  <th>Saldo Berjalan</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-report-ledger">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
 
           <div class="report-signatures">
             <div class="sig-box">
@@ -4758,36 +4764,28 @@
       </section>
     </main>
 
-    <!-- Mobile Bottom Navigation Bar (App Experience) -->
-    <nav class="mobile-bottom-nav">
-      <a href="#dashboard" class="bnav-item active" data-target="dashboard" data-role-req="B1">
+    <!-- Mobile Bottom Navigation Bar (Flagship 5-Tab Mobile Experience) -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav" aria-label="Navigasi Utama Mobile">
+      <a href="#dashboard" class="bnav-item active" data-target="dashboard" id="bnav-tab-dashboard">
         <i class="fa-solid fa-chart-pie"></i>
         <span>Dashboard</span>
       </a>
-      <a href="#pengurus-struktur" class="bnav-item" data-target="pengurus-struktur" data-role-req="ALL">
-        <i class="fa-solid fa-sitemap"></i>
-        <span>Pengurus</span>
+      <a href="#checklist" class="bnav-item" data-target="checklist" id="bnav-tab-checklist">
+        <i class="fa-solid fa-list-check"></i>
+        <span>Iuran Kas</span>
       </a>
-      <a href="#jimpitan" class="bnav-item" data-target="jimpitan" data-role-req="ALL">
+      <a href="#jimpitan" class="bnav-item" data-target="jimpitan" id="bnav-tab-jimpitan">
         <i class="fa-solid fa-moon"></i>
         <span>Jimpitan</span>
       </a>
-      <a href="#aset-rt" class="bnav-item" data-target="aset-rt" data-role-req="ALL">
+      <a href="#aset-rt" class="bnav-item" data-target="aset-rt" id="bnav-tab-aset">
         <i class="fa-solid fa-boxes-stacked"></i>
         <span>Aset RT</span>
       </a>
-      <a href="#checklist" class="bnav-item" data-target="checklist" data-role-req="B1">
-        <i class="fa-solid fa-list-check"></i>
-        <span>Checklist</span>
-      </a>
-      <a href="#pengeluaran" class="bnav-item" data-target="pengeluaran" data-role-req="B1">
-        <i class="fa-solid fa-money-bill-transfer"></i>
-        <span>Pengeluaran</span>
-      </a>
-      <a href="#laporan" class="bnav-item" data-target="laporan" data-role-req="B1">
-        <i class="fa-solid fa-file-invoice-dollar"></i>
-        <span>Laporan</span>
-      </a>
+      <button type="button" class="bnav-item bnav-more-btn" id="bnav-btn-more" aria-label="Menu Selengkapnya">
+        <i class="fa-solid fa-bars-staggered"></i>
+        <span>Menu</span>
+      </button>
     </nav>
   </div>
 
@@ -6522,6 +6520,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.32"></script>
+  <script src="app.js?v=2.9.33"></script>
 </body>
 </html>

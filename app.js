@@ -4185,7 +4185,13 @@ function setupNavigation() {
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
+      // Handle "More" button in mobile bottom navigation
+      if (link.id === 'bnav-btn-more' || link.classList.contains('bnav-more-btn')) {
+        toggleSidebarMobile(true);
+        return;
+      }
       const target = link.getAttribute('data-target');
+      if (!target) return;
       navigateToView(target);
 
       // Close mobile sidebar if open on mobile devices

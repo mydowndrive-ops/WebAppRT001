@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (23:45 WIB)  
-**Versi Rilis Aktif:** `v2.9.32`  
+**Terakhir Diperbarui:** 21 September 2026 (00:25 WIB)  
+**Versi Rilis Aktif:** `v2.9.33`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,44 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 💼 Financial Engineering Audit & Zero-Error Reconciliation (Update v2.9.32 - 20 Sept 2026)
+### 1. 📱 Flagship Mobile & Tablet Responsiveness & Luxury UI Overhaul (Update v2.9.33 - 21 Sept 2026)
+- **Latar Belakang & Mandat Master Full Stack**:
+  - Pelaksanaan perbaikan menyeluruh terhadap arsitektur antarmuka aplikasi seluler (smartphone 360px–430px) dan tablet (768px–1024px) menyusul audit mendalam. Menjadikan aplikasi berstandar *Tier-1 Enterprise / Flagship PWA*, responsif, mewah (*dark luxury emerald with warm gold accents*), sangat nyaman digunakan dengan satu tangan (*one-hand thumb zone*), dan bebas dari bug bawaan peramban mobile (seperti auto-zoom liar di iOS Safari dan horizontal page blowout).
+- **Hasil Perbaikan & Optimalisasi Arsitektur**:
+  1. **Eliminasi Bug iOS Safari Auto-Zoom**:
+     - *Masalah*: Standar WebKit iOS Safari secara otomatis memperbesar (zoom-in) seluruh viewport ketika pengguna mengetuk kolom input dengan `font-size < 16px`, merusak tata letak dan memaksa pengguna melakukan pinch-to-zoom manual.
+     - *Solusi*: Ditambahkan aturan global `@media (max-width: 768px)` yang mewajibkan `font-size: 16px !important` pada seluruh elemen input (`input`, `select`, `textarea`, search boxes, filter dropdowns, modal inputs, demografi calc, dsb.) tanpa merusak kerapian visual antarmuka.
+  2. **Dukungan Edge-to-Edge Safe-Area Insets (iPhone & Android)**:
+     - Meta tag viewport diperbarui: `<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">`.
+     - Token CSS variabel di `:root`: `--sat`, `--sar`, `--sab`, `--sal` memanfaatkan `env(safe-area-inset-*)`.
+     - Bilah navigasi bawah (`.mobile-bottom-nav`) dan lembar modal bawah kini memiliki bantalan aman (`padding-bottom: calc(0.45rem + var(--sab))`), mencegah tab dan tombol tertutup oleh *home indicator pill* iPhone atau bilah navigasi gestur Android. Konten utama memiliki *scroll clearance* (`calc(75px + var(--sab))`).
+  3. **Redesain Flagship 5-Tab Ergonomic Mobile Bottom Navigation**:
+     - Menghadirkan bilah navigasi bawah 5 tab ergonomis dengan penataan thumb zone:
+       - 🏠 **Dashboard** (`#dashboard`) — Ikhtisar kas & analitik utama.
+       - 📋 **Iuran Kas** (`#checklist`) — Checklist pembayaran iuran warga per bulan.
+       - 🌙 **Jimpitan** (`#jimpitan`) — Pembukuan kas jimpitan ronda malam.
+       - 📦 **Aset RT** (`#aset-rt`) — Inventarisasi dan valuasi aset RT.
+       - ☰ **Menu** (`#bnav-btn-more`) — Tombol pemicu laci navigasi lengkap (*mobile sidebar drawer*).
+     - Desain *ultra-luxury glassmorphism* (`background: rgba(4, 20, 14, 0.94)`, `backdrop-filter: blur(24px) saturate(180%)`), active tab pill indicator berwarna gradasi emas-zamrud, animasi lift icon dengan drop shadow lembut, serta tactile micro-interaction (`transform: scale(0.92)` saat ditekan).
+  4. **Luxury Mobile Slide-Up Bottom Sheet Drawer**:
+     - Seluruh modal dialog pada layar ponsel (`<= 640px`) bertransformasi dari pop-up kaku di tengah layar menjadi *bottom sheet drawer* modern yang meluncur mulus dari bawah layar (`@keyframes slideUpBottomSheet`).
+     - Dilengkapi *drag handle pill* di bagian atas, sudut melengkung mewah `24px 24px 0 0`, batas tinggi `88dvh`, `overscroll-behavior-y: contain`, dan padding safe area bawah yang terintegrasi.
+  5. **Standar Touch Target 44×44px (Apple HIG & Material 3 Compliance)**:
+     - Diterapkan `-webkit-tap-highlight-color: transparent` untuk menghilangkan kedipan kotak abu-abu yang mengganggu saat mengetuk tombol pada peramban mobile.
+     - Diterapkan `touch-action: manipulation` pada seluruh elemen tombol, tautan, dan form control untuk menghilangkan latensi tap 300ms.
+     - Seluruh tombol aksi tabel, tombol hamburger, dan tombol tutup modal diperluas hit target-nya menjadi minimal 44×44px atau bantalan sentuh proporsional.
+  6. **Eliminasi Page Blowout pada Laporan Keuangan**:
+     - Seluruh tabel pada `#view-laporan` (Pos Anggaran, Non-Iuran, Buku Kas Ledger Umum) dibungkus dengan wadah `<div class="table-responsive">`.
+     - Ditambahkan properti `-webkit-overflow-scrolling: touch` dan `overscroll-behavior-x: contain`, memastikan tabel dapat digeser horizontal dengan halus (*momentum scrolling*) tanpa menyebabkan seluruh halaman website goyang ke samping.
+  7. **Optimalisasi Grid 2-Kolom untuk Tablet (768px–1024px)**:
+     - Layar tablet/iPad kini mempertahankan tata letak 2 kolom (`grid-template-columns: repeat(2, 1fr)`) untuk card statistik hero dan analitik, mencegah pemborosan ruang layar yang sebelumnya menciut menjadi 1 kolom terlalu dini.
+  8. **Tipografi Dinamis Berbasis Clamp**:
+     - Diterapkan fungsi `clamp()` pada judul halaman (`clamp(1.2rem, 4.2vw, 1.75rem)`) dan saldo total kas RT (`clamp(1.6rem, 5.5vw, 2.4rem)`), menjamin nominal kas hingga ratusan juta rupiah tetap proporsional dan tidak terpotong pada smartphone berlayar sempit (360px–390px).
+  9. **Sinkronisasi Service Worker & Cache Busting**:
+     - Versi cache Service Worker dinaikkan menjadi `rt-finsmart-cache-v2.9.33`.
+     - Parameter query string aset `styles.css?v=2.9.33` dan `app.js?v=2.9.33` diperbarui di `index.html` dan `sw.js`.
+
+### 2. 💼 Financial Engineering Audit & Zero-Error Reconciliation (Update v2.9.32 - 20 Sept 2026)
 - **Latar Belakang & Mandat Financial Engineer**:
   - Audit menyeluruh dan mendalam terhadap seluruh mesin kalkulasi keuangan di Dashboard Bendahara 1 (Kas Utama, Pos Anggaran, Non-Iuran, Laporan Pembukuan) dan Bendahara 2 (Kas Jimpitan Ronda, Inventaris & Aset RT).
   - Menjamin akurasi pembukuan 100% tanpa celah kebocoran sepeser pun (*Zero Penny Leaks*), mencegah galat pecahan pembulatan (*rounding drift*), mengamankan sub-ledger antar akun, serta memastikan rekonsiliasi kas riil sesuai prinsip akuntansi berterima umum (PABU / GAAP RT).
