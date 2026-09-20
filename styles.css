@@ -1275,72 +1275,130 @@ h1, h2, h3, h4, h5, h6 {
 /* 6 Pos Anggaran Cards */
 .pos-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.35rem;
   margin-bottom: 2rem;
 }
 
+/* ─── Premium Pos Card Redesign ─── */
 .pos-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  --pos-accent: #10b981;          /* fallback; overridden inline per-card */
+  background: linear-gradient(
+    135deg,
+    rgba(var(--bg-card-rgb, 15,23,30), 0.95) 0%,
+    color-mix(in srgb, var(--pos-accent) 6%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--pos-accent) 35%, transparent);
+  border-left: 4px solid var(--pos-accent);
   border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  transition: var(--transition);
+  padding: 1.4rem 1.4rem 1.15rem;
+  transition: var(--transition), box-shadow 0.25s ease;
   position: relative;
   overflow: hidden;
+  cursor: default;
+}
+
+/* glow orb behind the icon */
+.pos-card::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: -30px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--pos-accent) 18%, transparent) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* diagonal shimmer stripe */
+.pos-card::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    110deg,
+    transparent 60%,
+    color-mix(in srgb, var(--pos-accent) 4%, transparent) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
 }
 
 .pos-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(245, 158, 11, 0.4);
-  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.6);
+  transform: translateY(-5px) scale(1.015);
+  box-shadow:
+    0 16px 40px -8px rgba(0, 0, 0, 0.65),
+    0 0 0 1px color-mix(in srgb, var(--pos-accent) 50%, transparent),
+    0 4px 20px -4px color-mix(in srgb, var(--pos-accent) 30%, transparent);
 }
 
 .pos-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .pos-icon-box {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
+  font-size: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--pos-accent) 25%, transparent);
+  box-shadow: 0 2px 12px -3px color-mix(in srgb, var(--pos-accent) 40%, transparent);
 }
 
 .pos-portion-tag {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--gold-400);
-  background: rgba(245, 158, 11, 0.12);
-  padding: 3px 8px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--pos-accent) 100%, #fff 20%);
+  background: color-mix(in srgb, var(--pos-accent) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pos-accent) 30%, transparent);
+  padding: 3px 9px;
   border-radius: var(--radius-full);
 }
 
 .pos-card h4 {
-  font-size: 0.95rem;
-  margin-bottom: 0.25rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
 }
 
 .pos-card-balance {
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #fff;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.85rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .pos-mini-flow {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
-  padding-top: 0.6rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.74rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid color-mix(in srgb, var(--pos-accent) 15%, rgba(255,255,255,0.05));
+  gap: 0.5rem;
 }
+
+.pos-mini-flow span {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 600;
+}
+
 
 /* Analytics & Charts */
 .dashboard-analytics-grid {

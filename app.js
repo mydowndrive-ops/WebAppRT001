@@ -2444,13 +2444,15 @@ function renderDashboard() {
   const posGrid = document.getElementById('dashboard-pos-grid');
   if (posGrid) {
     posGrid.innerHTML = '';
-    state.posConfig.forEach(pos => {
+    state.posConfig.forEach((pos, idx) => {
       const data = fin.posBalances[pos.id] || { balance: 0, income: 0, expense: 0 };
       const card = document.createElement('div');
       card.className = 'pos-card';
+      // Inject per-card accent colour as a CSS custom property
+      card.style.setProperty('--pos-accent', pos.color);
       card.innerHTML = `
         <div class="pos-card-header">
-          <div class="pos-icon-box" style="background: ${pos.color}20; color: ${pos.color}">
+          <div class="pos-icon-box" style="background: ${pos.color}22; color: ${pos.color}">
             <i class="${pos.icon}"></i>
           </div>
           <span class="pos-portion-tag">${formatRupiah(pos.defaultNominal)} / kk</span>
@@ -2458,8 +2460,8 @@ function renderDashboard() {
         <h4>${pos.name}</h4>
         <div class="pos-card-balance">${formatRupiah(data.balance)}</div>
         <div class="pos-mini-flow">
-          <span><i class="fa-solid fa-arrow-down text-emerald"></i> ${formatRupiah(data.income)}</span>
-          <span><i class="fa-solid fa-arrow-up text-rose"></i> ${formatRupiah(data.expense)}</span>
+          <span><i class="fa-solid fa-arrow-trend-down" style="color:#34d399"></i> ${formatRupiah(data.income)}</span>
+          <span><i class="fa-solid fa-arrow-trend-up" style="color:#fb7185"></i> ${formatRupiah(data.expense)}</span>
         </div>
       `;
       posGrid.appendChild(card);

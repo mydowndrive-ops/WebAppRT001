@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (22:38 WIB)  
-**Versi Rilis Aktif:** `v2.9.28`  
+**Terakhir Diperbarui:** 20 September 2026 (22:47 WIB)  
+**Versi Rilis Aktif:** `v2.9.29`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,38 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🛡️ Penghapusan Informasi Jadwal Ronda dari Dashboard Eksekutif Admin 1 (Update v2.9.28 - 20 Sept 2026)
+### 1. 🎨 Redesain Premium Card Alokasi POS ANGGARAN (Update v2.9.29 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Redesain tampilan card 6 Pos Anggaran pada Dashboard Eksekutif agar lebih menarik, berkelas, dan mudah dibedakan secara visual per-pos.
+- **Implementasi Teknis & Arsitektur Visual**:
+  - **Sistem Warna Per-Card via CSS Custom Property (`styles.css`)**:
+    - Menggunakan variabel CSS `--pos-accent` per card yang di-inject secara dinamis lewat JavaScript, sehingga setiap card memiliki **palet warna unik** yang diwariskan dari konfigurasi pos (`pos.color`):
+      - 🟢 Sampah & Kebersihan: `#10b981` (emerald)
+      - 🟡 Kas RT: `#f59e0b` (amber)
+      - 🩵 Dana Sosial: `#06b6d4` (cyan)
+      - 🔵 Santunan Duka: `#6366f1` (indigo)
+      - 🟣 Keagamaan (PHBI): `#a855f7` (purple)
+      - 🔴 HUT RI: `#f43f5e` (rose)
+    - Setiap card memiliki `border-left: 4px solid var(--pos-accent)` sebagai identitas warna dominan.
+    - Latar belakang card menggunakan `linear-gradient` halus bertema warna accent (`color-mix(in srgb, var(--pos-accent) 6%, transparent)`).
+    - **Glow orb** (::before) — lingkaran cahaya radial di pojok kiri atas card.
+    - **Diagonal shimmer stripe** (::after) — garis kilap diagonal tipis di kanan card.
+  - **Efek Hover yang Meningkat**:
+    - Animasi `translateY(-5px) scale(1.015)` saat card dihover.
+    - Drop shadow berlapis dengan warna accent: shadow gelap + ring highlight + glow warna pos.
+  - **Typography & Icon Box yang Disempurnakan**:
+    - Icon box diperbesar (46×46px) dengan `border` dan `box-shadow` berwarna accent.
+    - Label nama pos menjadi uppercase dengan letter-spacing (terkesan lebih profesional).
+    - Balance nominal lebih besar (1.5rem) dengan `letter-spacing: -0.02em` untuk kesan modern.
+    - Tag alokasi per-KK kini berwarna dinamis menyesuaikan pos.
+    - Icon arus kas diupdate ke `fa-arrow-trend-down` / `fa-arrow-trend-up` yang lebih modern.
+  - **Perubahan di `app.js`**:
+    - Menambahkan `card.style.setProperty('--pos-accent', pos.color)` pada loop render dashboard.
+  - **Peningkatan Cache PWA**:
+    - Service Worker ke `rt-finsmart-cache-v2.9.29`.
+    - Query aset `styles.css?v=2.9.29` dan `app.js?v=2.9.29`.
+
+### 2. 🛡️ Penghapusan Informasi Jadwal Ronda dari Dashboard Eksekutif Admin 1 (Update v2.9.28 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Hapus kartu informasi **Jadwal Ronda** (`#dash-ronda-banner`) dari tampilan Dashboard Eksekutif Admin 1 (Bendahara 1).
   - Modul Jadwal Ronda merupakan domain operasional Seksi Keamanan/Ketertiban yang dikelola di dalam akun portal Pengurus RT.
