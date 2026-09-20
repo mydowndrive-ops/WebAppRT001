@@ -4002,23 +4002,9 @@ function navigateToView(viewId) {
   const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
   const isWarga = isCurrentWarga();
 
-  const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur'];
-  const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga'];
-  const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt'];
-
-  const originalTarget = viewId;
-  let isRondaPengurus = false;
-
-  // Handle ronda-pengurus alias to open Tab Ronda in pengurus-struktur
-  if (viewId === 'ronda-pengurus') {
-    viewId = 'pengurus-struktur';
-    isRondaPengurus = true;
-    setTimeout(() => {
-      if (typeof switchPengurusTab === 'function') {
-        switchPengurusTab('ronda');
-      }
-    }, 50);
-  }
+  const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur', 'ronda-pengurus', 'non-iuran'];
+  const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga', 'non-iuran'];
+  const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'non-iuran'];
 
   // If B2 attempts to navigate outside allowed pages, redirect to jimpitan
   if (isB2 && !B2_ALLOWED_TARGETS.includes(viewId)) {
@@ -4045,11 +4031,7 @@ function navigateToView(viewId) {
   if (targetSec) targetSec.classList.add('active');
 
   // Activate matching links
-  if (isRondaPengurus) {
-    document.querySelectorAll('[data-target="ronda-pengurus"]').forEach(link => link.classList.add('active'));
-  } else {
-    document.querySelectorAll(`[data-target="${viewId}"]`).forEach(link => link.classList.add('active'));
-  }
+  document.querySelectorAll(`[data-target="${viewId}"]`).forEach(link => link.classList.add('active'));
 
   // Update Page Title
   const titles = {
@@ -4060,22 +4042,20 @@ function navigateToView(viewId) {
     'warga': { title: 'Data Warga RT.001', sub: 'Daftar Kepala Keluarga, Kontak WA & Status Domisili' },
     'laporan': { title: 'Laporan & Pembukuan', sub: 'Laporan Pertanggungjawaban Keuangan Siap Cetak' },
     'pengaturan': { title: 'Pengaturan Pos & Sistem', sub: 'Konfigurasi Iuran, Split Anggaran & Cadangan Database' },
-    'jimpitan': { title: 'Uang Jimpitan Ronda', sub: 'Perolehan & Pengeluaran Kas Ronda Malam Minggu' },
+    'jimpitan': { title: 'Uang Jimpitan', sub: 'Perolehan & Pengeluaran Kas Ronda Malam Minggu' },
     'non-iuran': { title: 'Pemasukkan NON iuran', sub: 'Pemasukan, Pengeluaran & Saldo Kas Non-Iuran (Donasi, Hibah, Sewa Fasum & Usaha RT)' },
+    'ronda-pengurus': { title: 'Jadwal & Regu Ronda Malam', sub: 'Tata Kelola 8 Regu Ronda & Penarikan Jimpitan Warga RT.001' },
     'pengajuan-dana-admin': { title: 'Pengajuan Dana Warga', sub: 'Verifikasi, Persetujuan & Realisasi Pencairan Kas Fasilitas' },
     'pengurus-struktur': { title: 'Bagan & Struktur Pengurus RT', sub: 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027' },
     'aset-rt': { title: 'Inventaris & Aset RT.001', sub: 'Pencatatan Sarana Prasarana & Nilai Perolehan Aset Lingkungan Graha Asri' },
     'portal-warga': { title: 'Portal Mandiri Warga RT.001', sub: 'Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan' }
   };
 
-  if (isRondaPengurus) {
+  if (titles[viewId]) {
     const pTitle = document.getElementById('page-title');
     const pSub = document.getElementById('page-subtitle');
-    if (pTitle) pTitle.textContent = 'Jadwal & Regu Ronda Malam';
-    if (pSub) pSub.textContent = 'Tata Kelola 8 Regu Ronda & Penarikan Jimpitan Warga RT.001';
-  } else if (titles[viewId]) {
-    document.getElementById('page-title').textContent = titles[viewId].title;
-    document.getElementById('page-subtitle').textContent = titles[viewId].sub;
+    if (pTitle) pTitle.textContent = titles[viewId].title;
+    if (pSub) pSub.textContent = titles[viewId].sub;
   }
 
   // Re-render specific view if needed
@@ -4088,6 +4068,9 @@ function navigateToView(viewId) {
   if (viewId === 'pengaturan') renderSettings();
   if (viewId === 'dashboard') renderDashboard();
   if (viewId === 'jimpitan') renderJimpitan();
+  if (viewId === 'ronda-pengurus' && typeof renderPengurusRondaPanel === 'function') {
+    renderPengurusRondaPanel(typeof currentPengurusRondaFilter !== 'undefined' ? currentPengurusRondaFilter : 'all');
+  }
   if (viewId === 'pengajuan-dana-admin') renderAdminFundRequests();
   if (viewId === 'pengurus-struktur') renderPengurusStruktur();
   if (viewId === 'aset-rt') renderAsetRt();
@@ -7418,7 +7401,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Definisi izin halaman per peran (Role-Based Access Control)
 const B1_RESTRICTED_TARGETS = ['checklist', 'pos-anggaran', 'pengeluaran', 'laporan', 'pengaturan'];
-const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur', 'non-iuran'];
+const B2_ALLOWED_TARGETS = ['jimpitan', 'aset-rt', 'pengurus-struktur', 'ronda-pengurus', 'non-iuran'];
 const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'jimpitan', 'pengajuan-dana-admin', 'warga', 'non-iuran'];
 const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'non-iuran'];
 
@@ -11550,15 +11533,25 @@ function setupPengurusOperationalHub() {
 }
 
 function switchPengurusTab(tabId) {
+  if (tabId === 'ronda') {
+    navigateToView('ronda-pengurus');
+    return;
+  }
+  if (tabId === 'verifikasi') {
+    navigateToView('pengajuan-dana-admin');
+    return;
+  }
+  if (tabId === 'buku-induk') {
+    navigateToView('warga');
+    return;
+  }
+
   document.querySelectorAll('.pengurus-tab-btn').forEach(b => {
     b.classList.toggle('active', b.getAttribute('data-pengurus-tab') === tabId);
   });
 
   const panels = {
     'struktur': 'pengurus-tab-panel-struktur',
-    'ronda': 'pengurus-tab-panel-ronda',
-    'verifikasi': 'pengurus-tab-panel-verifikasi',
-    'buku-induk': 'pengurus-tab-panel-buku-induk',
     'broadcast': 'pengurus-tab-panel-broadcast'
   };
 
@@ -11570,28 +11563,16 @@ function switchPengurusTab(tabId) {
   const pTitle = document.getElementById('page-title');
   const pSub = document.getElementById('page-subtitle');
 
-  if (tabId === 'ronda') {
-    document.querySelectorAll('.menu-item, .bnav-item').forEach(link => {
-      link.classList.toggle('active', link.getAttribute('data-target') === 'ronda-pengurus');
-    });
-    if (pTitle) pTitle.textContent = 'Jadwal & Regu Ronda Malam';
-    if (pSub) pSub.textContent = 'Tata Kelola 8 Regu Ronda & Penarikan Jimpitan Warga RT.001';
-    renderPengurusRondaPanel(currentPengurusRondaFilter);
+  if (tabId === 'broadcast') {
+    if (pTitle) pTitle.textContent = 'Broadcast & Edaran WA Resmi';
+    if (pSub) pSub.textContent = 'Generator Pesan Pengumuman WhatsApp Resmi RT.001';
+    if (typeof updateBroadcastPreview === 'function') updateBroadcastPreview();
   } else {
-    if (tabId === 'struktur') {
-      document.querySelectorAll('.menu-item, .bnav-item').forEach(link => {
-        link.classList.toggle('active', link.getAttribute('data-target') === 'pengurus-struktur');
-      });
-      if (pTitle) pTitle.textContent = 'Bagan & Struktur Pengurus RT';
-      if (pSub) pSub.textContent = 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027';
-    }
-    if (tabId === 'verifikasi') {
-      renderPengurusVerifikasiList(currentVerifikasiFilter);
-    } else if (tabId === 'buku-induk') {
-      renderBukuIndukWarga();
-    } else if (tabId === 'broadcast') {
-      updateBroadcastPreview();
-    }
+    document.querySelectorAll('.menu-item, .bnav-item').forEach(link => {
+      link.classList.toggle('active', link.getAttribute('data-target') === 'pengurus-struktur');
+    });
+    if (pTitle) pTitle.textContent = 'Bagan & Struktur Pengurus RT';
+    if (pSub) pSub.textContent = 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027';
   }
 }
 

@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (20:15 WIB)  
-**Versi Rilis Aktif:** `v2.9.20`  
+**Terakhir Diperbarui:** 20 September 2026 (20:30 WIB)  
+**Versi Rilis Aktif:** `v2.9.21`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,21 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🚀 Integrasi Navigasi Langsung 6 Sektor Orbital & Transformasi Dashboard Keuangan Mewah (Update v2.9.20 - 20 Sept 2026)
+### 1. 🛡️ Pemisahan Moduler "Jadwal Regu Ronda" & Restrukturisasi Bersih Dashboard Pengurus (Update v2.9.21 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Merapikan dashboard pengurus agar bersih dan modular seperti menu acuan **"Inventaris & Aset RT"** (hanya menampilkan data terkait tanpa elemen yang tidak relevan).
+  - Saat menu **"Jadwal Regu Ronda"** di sidebar diklik, sisi kanan langsung menampilkan **"Tata Kelola Jadwal & Regu Ronda Malam LIVE AKTIF"** tanpa menampilkan banner *"Struktur Organisasi & Tata Kelola Pengurus"* di atasnya.
+  - Mempertahankan integritas menu yang sudah benar: **"Data Warga"**, **"Pengajuan Dana Warga"**, dan **"Inventaris & Aset RT"**.
+  - Mengubah penamaan menu sidebar dari *"Uang Jimpitan Ronda"* menjadi **"Uang Jimpitan"** saja.
+- **Implementasi Teknis & Arsitektur DevOps**:
+  - **Ekstraksi Dedicated View**: Mengekstrak panel `#pengurus-tab-panel-ronda` keluar dari `#view-pengurus-struktur` dan menjadikannya sebuah `<section class="view-section" id="view-ronda-pengurus">` mandiri.
+  - **Tampilan Langsung Bersih**: Saat membuka `ronda-pengurus`, pengguna langsung disajikan header *"Tata Kelola Jadwal & Regu Ronda Malam LIVE AKTIF"*, KPI metrik siaga (Regu Aktif, Total Personel 88 orang, Siklus 8 Minggu, Jam Operasional), filter 8 regu, dan kartu komandan/petugas ronda.
+  - **Pembersihan Struktur Pengurus**: Menghilangkan tab-tab duplikasi (ronda, verifikasi fasum, dan buku induk warga) dari `view-pengurus-struktur`, sehingga menu **"Struktur Pengurus RT"** 100% fokus murni pada bagan alur hierarki organisasi, katalog kartu eksekutif, cetak bagan, dan kontak WhatsApp resmi.
+  - **Penamaan Uang Jimpitan**: Memperbarui teks sidebar dan judul modul kas menjadi **"Uang Jimpitan"** (menghilangkan kata "Ronda" sesuai instruksi).
+  - **Routing 1-ke-1 di `app.js`**: Menghapus mekanisme redirection/alias lama di `navigateToView`, sehingga `ronda-pengurus` langsung mengaktifkan `#view-ronda-pengurus` secara instan tanpa lag.
+  - **Sinkronisasi RBAC & Navigasi**: Memperbarui tabel izin `B2_ALLOWED_TARGETS`, `PENGURUS_ALLOWED_TARGETS`, `WARGA_ALLOWED_TARGETS`, serta Service Worker Cache `v2.9.21`.
+
+### 2. 🚀 Integrasi Navigasi Langsung 6 Sektor Orbital & Transformasi Dashboard Keuangan Mewah (Update v2.9.20 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Mengaktifkan interaksi klik pada setiap bagian roda navigasi orbital (**STATISTIK WARGA**, **KEUANGAN RT**, **PENGURUS RT**, **PORTAL WARGA**, **AGENDA WARGA**, **PROFIL DAN PETA**) agar masing-masing membuka halaman terkait.
   - Menghubungkan halaman yang sudah ada serta meningkatkan tampilan halaman menjadi mewah, elegan, interaktif, dan profesional agar pengunjung merasa nyaman dan senang.

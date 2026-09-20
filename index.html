@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.20">
+  <link rel="stylesheet" href="styles.css?v=2.9.21">
 </head>
 <body>
 
@@ -2369,12 +2369,12 @@
           <span>Pemasukkan NON iuran</span>
           <span class="counter-badge" id="sidebar-non-dues-badge" style="background: rgba(6, 182, 212, 0.25); color: #22d3ee;">0</span>
         </a>
-        <a href="#jimpitan" class="menu-item" data-target="jimpitan" data-role-req="B2" data-tooltip="Uang Jimpitan Ronda">
+        <a href="#jimpitan" class="menu-item" data-target="jimpitan" data-role-req="B2" data-tooltip="Uang Jimpitan">
           <i class="fa-solid fa-moon text-gold"></i>
-          <span>Uang Jimpitan Ronda</span>
+          <span>Uang Jimpitan</span>
           <span class="counter-badge" id="sidebar-jimpitan-badge" style="background: rgba(16, 185, 129, 0.25); color: #34d399;">Minggu</span>
         </a>
-        <a href="#ronda-pengurus" class="menu-item" data-target="ronda-pengurus" data-role-req="ALL" data-tooltip="Jadwal &amp; Regu Ronda">
+        <a href="#ronda-pengurus" class="menu-item" data-target="ronda-pengurus" data-role-req="ALL" data-tooltip="Jadwal Regu Ronda">
           <i class="fa-solid fa-shield-halved text-gold"></i>
           <span>Jadwal Regu Ronda</span>
           <span class="counter-badge" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24;">8 Regu</span>
@@ -3495,12 +3495,12 @@
         </div>
       </section>
 
-      <!-- View: Uang Jimpitan Ronda Section -->
+      <!-- View: Uang Jimpitan Section -->
       <section class="view-section" id="view-jimpitan">
         <div class="section-page-header">
           <div>
             <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 4px;">
-              <h2 style="margin: 0;"><i class="fa-solid fa-moon text-gold"></i> Pengelolaan Uang Jimpitan Ronda</h2>
+              <h2 style="margin: 0;"><i class="fa-solid fa-moon text-gold"></i> Pengelolaan Uang Jimpitan</h2>
               <div id="jimpitan-role-badge" class="jimp-role-badge"></div>
             </div>
             <p>Perolehan & Pengeluaran Kas Ronda Malam Minggu • Input Setiap Hari Minggu</p>
@@ -3620,9 +3620,9 @@
               <p class="org-hero-subtitle">Rukun Tetangga 001 / Rukun Warga 013 Perumahan Graha Asri, Cikarang Utara &bull; Melayani 71 Kepala Keluarga</p>
             </div>
             <div class="org-actions-bar">
-              <button type="button" class="btn btn-outline-cyan" id="btn-pengurus-quick-ronda" onclick="window.openManageRondaModal(1)" title="Atur Komandan dan Petugas Ronda 8 Regu">
-                <i class="fa-solid fa-user-shield text-gold"></i>
-                <span>Atur Jadwal Ronda</span>
+              <button type="button" class="btn btn-outline-cyan" id="btn-pengurus-quick-ronda" onclick="navigateToView('ronda-pengurus')" title="Buka Tata Kelola Jadwal &amp; Regu Ronda Malam">
+                <i class="fa-solid fa-shield-halved text-gold"></i>
+                <span>Jadwal Regu Ronda</span>
               </button>
               <button type="button" class="btn btn-outline-gold" id="btn-print-org" title="Cetak Dokumen Resmi Format Kop RT">
                 <i class="fa-solid fa-print"></i>
@@ -3673,20 +3673,6 @@
           <button type="button" class="pengurus-tab-btn active" data-pengurus-tab="struktur">
             <i class="fa-solid fa-sitemap text-purple"></i>
             <span>Bagan Struktur &amp; Personel</span>
-          </button>
-          <button type="button" class="pengurus-tab-btn" data-pengurus-tab="ronda">
-            <i class="fa-solid fa-shield-halved text-gold"></i>
-            <span>Jadwal &amp; Regu Ronda Malam</span>
-            <span class="pengurus-badge-pill" style="background:rgba(245,158,11,0.25); color:#fbbf24; border-color:rgba(245,158,11,0.4);">8 Regu</span>
-          </button>
-          <button type="button" class="pengurus-tab-btn" data-pengurus-tab="verifikasi">
-            <i class="fa-solid fa-hand-holding-dollar text-cyan"></i>
-            <span>Pusat Verifikasi Fasum Warga</span>
-            <span class="pengurus-badge-pill" id="pengurus-tab-badge-usulan">0</span>
-          </button>
-          <button type="button" class="pengurus-tab-btn" data-pengurus-tab="buku-induk">
-            <i class="fa-solid fa-address-book text-emerald"></i>
-            <span>Buku Induk Kependudukan 71 KK</span>
           </button>
           <button type="button" class="pengurus-tab-btn" data-pengurus-tab="broadcast">
             <i class="fa-brands fa-whatsapp text-emerald"></i>
@@ -4087,94 +4073,7 @@
         </div>
       </div> <!-- End #pengurus-tab-panel-struktur -->
 
-      <!-- ==================== TAB 2: PUSAT VERIFIKASI FASUM WARGA ==================== -->
-      <div id="pengurus-tab-panel-verifikasi" class="pengurus-tab-panel" style="display:none;">
-        <div class="glass-panel p-4 mb-4">
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
-            <div>
-              <h3 class="text-white mb-1"><i class="fa-solid fa-hand-holding-dollar text-cyan"></i> Pusat Verifikasi &amp; Penyetujuan Fasum Warga</h3>
-              <p class="text-muted mb-0" style="font-size:0.88rem;">Tinjau proposal usulan perbaikan fasilitas umum, lampu jalan, dan sarana lingkungan yang diajukan mandiri oleh warga.</p>
-            </div>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-sm btn-outline-cyan" id="btn-refresh-pengurus-verifikasi">
-                <i class="fa-solid fa-arrows-rotate"></i> Segarkan Data
-              </button>
-            </div>
-          </div>
-
-          <!-- Status Filter Bar -->
-          <div class="pengurus-filter-bar mb-3">
-            <button type="button" class="btn-filter-verifikasi active" data-filter="all">Semua Usulan (<span id="count-verif-all">0</span>)</button>
-            <button type="button" class="btn-filter-verifikasi" data-filter="pending"><i class="fa-solid fa-clock text-gold"></i> Menunggu Review (<span id="count-verif-pending">0</span>)</button>
-            <button type="button" class="btn-filter-verifikasi" data-filter="approved"><i class="fa-solid fa-check text-emerald"></i> Disetujui (<span id="count-verif-approved">0</span>)</button>
-            <button type="button" class="btn-filter-verifikasi" data-filter="disbursed"><i class="fa-solid fa-money-bill-check text-cyan"></i> Dicairkan (<span id="count-verif-disbursed">0</span>)</button>
-            <button type="button" class="btn-filter-verifikasi" data-filter="rejected"><i class="fa-solid fa-xmark text-rose"></i> Ditolak (<span id="count-verif-rejected">0</span>)</button>
-          </div>
-
-          <!-- Container List of Proposals -->
-          <div id="pengurus-verifikasi-list" class="pengurus-proposals-grid">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-      </div>
-
-      <!-- ==================== TAB 3: BUKU INDUK KEPENDUDUKAN 71 KK ==================== -->
-      <div id="pengurus-tab-panel-buku-induk" class="pengurus-tab-panel" style="display:none;">
-        <div class="glass-panel p-4 mb-4">
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
-            <div>
-              <h3 class="text-white mb-1"><i class="fa-solid fa-address-book text-emerald"></i> Buku Induk Kependudukan 71 Kepala Keluarga</h3>
-              <p class="text-muted mb-0" style="font-size:0.88rem;">Direktori resmi data kependudukan, klaster lorong jalan, dan kontak cepat komunikasi warga RT.001 / RW.013.</p>
-            </div>
-            <div class="d-flex gap-2">
-              <button type="button" class="btn btn-sm btn-outline-emerald" id="btn-export-buku-induk-csv">
-                <i class="fa-solid fa-file-csv"></i> Unduh Data KK (CSV)
-              </button>
-            </div>
-          </div>
-
-          <!-- Search & Filter Controls -->
-          <div class="d-flex gap-3 flex-wrap align-items-center mb-3">
-            <div class="search-input-wrap flex-grow-1" style="position:relative; min-width:240px;">
-              <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#94a3b8;"></i>
-              <input type="text" id="input-search-buku-induk" class="custom-input" placeholder="Cari nama warga, nomor rumah, atau nomor WhatsApp..." style="padding-left:38px; width:100%;">
-            </div>
-            <div style="min-width:180px;">
-              <select id="select-buku-induk-street" class="custom-select" style="width:100%;">
-                <option value="all">Semua Ruas Jalan (5)</option>
-                <option value="Jl. Citarum II">Jl. Citarum II</option>
-                <option value="Jl. Citarum III">Jl. Citarum III</option>
-                <option value="Jl. Citarum IV">Jl. Citarum IV</option>
-                <option value="Jl. Citarum V">Jl. Citarum V</option>
-                <option value="Jl. Cisokan">Jl. Cisokan</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Table 71 KK -->
-          <div class="table-responsive" style="max-height: 520px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;">
-            <table class="luxury-table w-100" id="table-buku-induk-warga">
-              <thead>
-                <tr>
-                  <th style="width:50px;">No</th>
-                  <th>Blok &amp; No</th>
-                  <th>Nama Kepala Keluarga</th>
-                  <th>Ruas Jalan</th>
-                  <th>Jiwa</th>
-                  <th>Status Hunian</th>
-                  <th>Jadwal Ronda</th>
-                  <th style="text-align:center;">Aksi Kontak</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-buku-induk-warga">
-                <!-- Dynamically populated -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- ==================== TAB 4: BROADCAST & EDARAN WA RESMI ==================== -->
+      <!-- ==================== TAB 2: BROADCAST & EDARAN WA RESMI ==================== -->
       <div id="pengurus-tab-panel-broadcast" class="pengurus-tab-panel" style="display:none;">
         <div class="glass-panel p-4 mb-4">
           <div class="mb-3">
@@ -4244,75 +4143,75 @@
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- ==================== TAB 5: JADWAL & REGU RONDA MALAM ==================== -->
-      <div id="pengurus-tab-panel-ronda" class="pengurus-tab-panel" style="display:none;">
-        <div class="glass-panel p-4 mb-4">
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
-            <div>
-              <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
-                <h3 class="text-white mb-0"><i class="fa-solid fa-shield-halved text-gold"></i> Tata Kelola Jadwal &amp; Regu Ronda Malam</h3>
-                <span class="cyber-badge-sm" id="pengurus-ronda-live-badge"><span class="pulse-dot"></span> LIVE AKTIF</span>
-              </div>
-              <p class="text-muted mb-0" style="font-size:0.88rem;">
-                Pengaturan 8 regu beranggotakan masing-masing 11 petugas ronda (1 Komandan Regu + 10 Anggota) &bull; Siklus patroli malam minggu pukul 21.00 &ndash; 04.00 WIB.
-              </p>
+    <!-- ==================== VIEW: JADWAL & REGU RONDA MALAM (PENGURUS) ==================== -->
+    <section class="view-section" id="view-ronda-pengurus">
+      <div class="glass-panel p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+          <div>
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+              <h3 class="text-white mb-0"><i class="fa-solid fa-shield-halved text-gold"></i> Tata Kelola Jadwal &amp; Regu Ronda Malam</h3>
+              <span class="cyber-badge-sm" id="pengurus-ronda-live-badge"><span class="pulse-dot"></span> LIVE AKTIF</span>
             </div>
-            <div class="d-flex gap-2 flex-wrap">
-              <button type="button" class="btn btn-outline-gold" id="btn-copy-pengurus-ronda-all">
-                <i class="fa-regular fa-copy"></i> Salin Seluruh Jadwal
-              </button>
-              <button type="button" class="btn btn-outline-emerald" id="btn-broadcast-pengurus-ronda">
-                <i class="fa-brands fa-whatsapp"></i> Broadcast Jadwal
-              </button>
-              <button type="button" class="btn btn-emerald" id="btn-pengurus-modal-ronda" onclick="window.openManageRondaModal(1)">
-                <i class="fa-solid fa-calendar-days text-gold"></i> Atur Jadwal Ronda
-              </button>
-            </div>
+            <p class="text-muted mb-0" style="font-size:0.88rem;">
+              Pengaturan 8 regu beranggotakan masing-masing 11 petugas ronda (1 Komandan Regu + 10 Anggota) &bull; Siklus patroli malam minggu pukul 21.00 &ndash; 04.00 WIB.
+            </p>
           </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-outline-gold" id="btn-copy-pengurus-ronda-all">
+              <i class="fa-regular fa-copy"></i> Salin Seluruh Jadwal
+            </button>
+            <button type="button" class="btn btn-outline-emerald" id="btn-broadcast-pengurus-ronda">
+              <i class="fa-brands fa-whatsapp"></i> Broadcast Jadwal
+            </button>
+            <button type="button" class="btn btn-emerald" id="btn-pengurus-modal-ronda" onclick="window.openManageRondaModal(1)">
+              <i class="fa-solid fa-calendar-days text-gold"></i> Atur Jadwal Ronda
+            </button>
+          </div>
+        </div>
 
-          <!-- Quick Statistics Strip -->
-          <div class="ronda-kpi-strip mb-4">
-            <div class="ronda-kpi-card glass-panel">
-              <span class="kpi-lbl"><i class="fa-solid fa-calendar-week text-gold"></i> Regu Aktif Pekan Ini</span>
-              <strong class="kpi-val text-gold" id="pengurus-ronda-active-week-name">Regu 1 (Wageyanto)</strong>
-              <small class="text-muted">Bertugas Sabtu malam ini</small>
-            </div>
-            <div class="ronda-kpi-card glass-panel">
-              <span class="kpi-lbl"><i class="fa-solid fa-users text-cyan"></i> Total Personel Siaga</span>
-              <strong class="kpi-val text-cyan" id="pengurus-ronda-total-personnel">88 Orang</strong>
-              <small class="text-muted">8 Komandan + 80 Petugas</small>
-            </div>
-            <div class="ronda-kpi-card glass-panel">
-              <span class="kpi-lbl"><i class="fa-solid fa-rotate text-emerald"></i> Siklus Perputaran</span>
-              <strong class="kpi-val text-emerald">8 Malam Minggu</strong>
-              <small class="text-muted">Bergilir setiap 2 bulan sekali</small>
-            </div>
-            <div class="ronda-kpi-card glass-panel">
-              <span class="kpi-lbl"><i class="fa-solid fa-clock text-purple"></i> Jam Operasional</span>
-              <strong class="kpi-val text-purple">21.00 - 04.00 WIB</strong>
-              <small class="text-muted">Patroli gang, portal, jimpitan</small>
-            </div>
+        <!-- Quick Statistics Strip -->
+        <div class="ronda-kpi-strip mb-4">
+          <div class="ronda-kpi-card glass-panel">
+            <span class="kpi-lbl"><i class="fa-solid fa-calendar-week text-gold"></i> Regu Aktif Pekan Ini</span>
+            <strong class="kpi-val text-gold" id="pengurus-ronda-active-week-name">Regu 1 (Wageyanto)</strong>
+            <small class="text-muted">Bertugas Sabtu malam ini</small>
           </div>
+          <div class="ronda-kpi-card glass-panel">
+            <span class="kpi-lbl"><i class="fa-solid fa-users text-cyan"></i> Total Personel Siaga</span>
+            <strong class="kpi-val text-cyan" id="pengurus-ronda-total-personnel">88 Orang</strong>
+            <small class="text-muted">8 Komandan + 80 Petugas</small>
+          </div>
+          <div class="ronda-kpi-card glass-panel">
+            <span class="kpi-lbl"><i class="fa-solid fa-rotate text-emerald"></i> Siklus Perputaran</span>
+            <strong class="kpi-val text-emerald">8 Malam Minggu</strong>
+            <small class="text-muted">Bergilir setiap 2 bulan sekali</small>
+          </div>
+          <div class="ronda-kpi-card glass-panel">
+            <span class="kpi-lbl"><i class="fa-solid fa-clock text-purple"></i> Jam Operasional</span>
+            <strong class="kpi-val text-purple">21.00 - 04.00 WIB</strong>
+            <small class="text-muted">Patroli gang, portal, jimpitan</small>
+          </div>
+        </div>
 
-          <!-- Filter Tabs for 8 Regu -->
-          <div class="pengurus-filter-bar mb-3" id="pengurus-ronda-filter-bar">
-            <button type="button" class="btn-filter-verifikasi active" data-ronda-filter="all">Semua Regu (8)</button>
-            <button type="button" class="btn-filter-verifikasi" data-ronda-filter="current"><i class="fa-solid fa-star text-gold"></i> Pekan Ini</button>
-            <button type="button" class="btn-filter-verifikasi" data-ronda-filter="1">Regu 1</button>
-            <button type="button" class="btn-filter-verifikasi" data-ronda-filter="2">Regu 2</button>
-            <button type="button" class="btn-filter-verifikasi" data-ronda-filter="3">Regu 3</button>
-            <button type="button" class="btn-filter-verifikasi" data-ronda-filter="4">Regu 4</button>
-            <button type="button" class="btn-filter-verifikasi" data-ronda-filter="5">Regu 5</button>
-            <button type="button" class="btn-filter-verifikasi" data-ronda-filter="6">Regu 6</button>
-            <button type="button" class="btn-filter-verifikasi" data-ronda-filter="7">Regu 7</button>
-            <button type="button" class="btn-filter-verifikasi" data-ronda-filter="8">Regu 8</button>
-          </div>
+        <!-- Filter Tabs for 8 Regu -->
+        <div class="pengurus-filter-bar mb-3" id="pengurus-ronda-filter-bar">
+          <button type="button" class="btn-filter-verifikasi active" data-ronda-filter="all">Semua Regu (8)</button>
+          <button type="button" class="btn-filter-verifikasi" data-ronda-filter="current"><i class="fa-solid fa-star text-gold"></i> Pekan Ini</button>
+          <button type="button" class="btn-filter-verifikasi" data-ronda-filter="1">Regu 1</button>
+          <button type="button" class="btn-filter-verifikasi" data-ronda-filter="2">Regu 2</button>
+          <button type="button" class="btn-filter-verifikasi" data-ronda-filter="3">Regu 3</button>
+          <button type="button" class="btn-filter-verifikasi" data-ronda-filter="4">Regu 4</button>
+          <button type="button" class="btn-filter-verifikasi" data-ronda-filter="5">Regu 5</button>
+          <button type="button" class="btn-filter-verifikasi" data-ronda-filter="6">Regu 6</button>
+          <button type="button" class="btn-filter-verifikasi" data-ronda-filter="7">Regu 7</button>
+          <button type="button" class="btn-filter-verifikasi" data-ronda-filter="8">Regu 8</button>
+        </div>
 
-          <!-- Container Cards 8 Regu Ronda for Pengurus -->
-          <div class="pengurus-ronda-grid" id="pengurus-ronda-cards-container">
-            <!-- Dynamically populated by renderPengurusRondaPanel() -->
-          </div>
+        <!-- Container Cards 8 Regu Ronda for Pengurus -->
+        <div class="pengurus-ronda-grid" id="pengurus-ronda-cards-container">
+          <!-- Dynamically populated by renderPengurusRondaPanel() -->
         </div>
       </div>
     </section>
@@ -6605,6 +6504,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.20"></script>
+  <script src="app.js?v=2.9.21"></script>
 </body>
 </html>
