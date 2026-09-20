@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (17:15 WIB)  
-**Versi Rilis Aktif:** `v2.9.11`  
+**Terakhir Diperbarui:** 20 September 2026 (17:18 WIB)  
+**Versi Rilis Aktif:** `v2.9.12`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -34,7 +34,23 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🛡️ Restorasi Kotak Event ke Kondisi Awal Sebelum Efek Merah Putih Memutar di Belakang (Update v2.9.11 - 20 Sept 2026)
+### 1. 🧹 Pembersihan Total Efek Merah Putih & Sinkronisasi Cache Registration (Update v2.9.12 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Memastikan seluruh efek merah putih yang berputar di belakang kotak event benar-benar bersih dan hilang.
+  - Memperbaiki registrasi Service Worker di `app.js` yang sebelumnya mempertahankan nama cache lama sehingga browser klien terus menampilkan cache usang.
+- **Tindakan & Solusi**:
+  1. **Konfirmasi Nol Elemen & Animasi Rotasi Merah Putih**:
+     - `styles.css` dan `index.html` diverifikasi 100% bebas dari segala rotasi conic/outerglow merah-putih di belakang kotak event.
+     - Kotak kembali berlatar luxury dark emerald glassmorphism dengan garis tepi emerald halus (`border: 1.5px solid rgba(16, 185, 129, 0.45)`).
+  2. **Pembersihan Cache PWA Agresif**:
+     - `CURRENT_CACHE_NAME` dan URL registrasi SW pada `app.js` diselaraskan ke `v2.9.12`.
+     - `sw.js` cache name diperbarui ke `rt-finsmart-cache-v2.9.12` dan membersihkan seluruh cache lama secara otomatis saat aktivasi.
+  3. **Penyelarasan Versi**:
+     - Parameter query aset dinaikkan ke versi `v2.9.12` pada `index.html`, `styles.css`, `app.js`, dan `sw.js`.
+
+---
+
+### 2. 🛡️ Restorasi Kotak Event ke Kondisi Awal Sebelum Efek Merah Putih Memutar di Belakang (Update v2.9.11 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Mengembalikan kotak event ke kondisi awal yang bersih (*clean luxury glassmorphism*) persis sebelum diberikan efek garis merah-putih memutar maupun outerglow di belakangnya.
 - **Tindakan & Restorasi Arsitektur**:
