@@ -6540,6 +6540,13 @@ function setupUpcomingEventBanner() {
     }
   });
 
+  // 5. Tutup jika klik di area latar luar (backdrop overlay)
+  bannerWrap.addEventListener('click', (e) => {
+    if (e.target === bannerWrap) {
+      window.closeEventPopupBanner();
+    }
+  });
+
   // Initial render content
   renderCurrentEvent(0, false);
 

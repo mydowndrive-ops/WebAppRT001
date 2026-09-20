@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.6">
+  <link rel="stylesheet" href="styles.css?v=2.9.7">
 </head>
 <body>
 
@@ -351,32 +351,36 @@
           </div>
         </section>
 
-        <!-- BANNER IKLAN / BROADCAST HIGHLIGHT EVENT TERDEKAT (POPUP BANNER) -->
+        <!-- BANNER IKLAN / BROADCAST HIGHLIGHT EVENT TERDEKAT (POPUP MODAL LUXURY FLYER) -->
         <div class="hub-event-banner-wrap" id="hub-event-banner-wrap" aria-label="Informasi Event Terdekat" role="dialog" aria-modal="true" style="display: none;">
-          <div class="hub-event-banner glass-panel">
-            <!-- Tombol Tutup Banner (Tanda Silang) -->
-            <button type="button" class="btn-event-popup-close" id="btn-close-event-banner" aria-label="Tutup Pengumuman Event" title="Tutup Pengumuman (X)">
+          <div class="hub-event-banner hub-event-flyer-modal glass-panel">
+            <!-- Tombol Tutup Banner (Tanda Silang Mewah) -->
+            <button type="button" class="btn-event-popup-close" id="btn-close-event-banner" aria-label="Tutup Pengumuman Event" title="Tutup Pengumuman (X atau Esc)">
               <i class="fa-solid fa-xmark"></i>
             </button>
 
+            <!-- Decorative Ambient Glow & Top Accent Line -->
             <div class="event-banner-ambient"></div>
             <div class="event-banner-shimmer"></div>
+            <div class="event-flyer-top-accent"></div>
 
-            <div class="event-banner-main">
-              <div class="event-banner-topline">
-                <div class="event-live-beacon">
-                  <span class="beacon-pulse"></span>
-                  <span class="beacon-dot"></span>
-                  <span class="beacon-text">EVENT TERDEKAT</span>
-                </div>
-                <span class="event-category-badge" id="event-banner-category">
-                  <i class="fa-solid fa-broom"></i> Kerja Bakti &amp; Lingkungan
-                </span>
-                <span class="event-countdown-pill" id="event-banner-countdown">
-                  <i class="fa-regular fa-clock"></i> <strong>3 Hari Lagi</strong>
-                </span>
+            <!-- Flyer Top Badges (Beacon, Category, Countdown) -->
+            <div class="event-flyer-topline">
+              <div class="event-live-beacon">
+                <span class="beacon-pulse"></span>
+                <span class="beacon-dot"></span>
+                <span class="beacon-text">EVENT TERDEKAT</span>
               </div>
+              <span class="event-category-badge" id="event-banner-category">
+                <i class="fa-solid fa-broom"></i> Kerja Bakti &amp; Lingkungan
+              </span>
+              <span class="event-countdown-pill" id="event-banner-countdown">
+                <i class="fa-regular fa-clock"></i> <strong>3 Hari Lagi</strong>
+              </span>
+            </div>
 
+            <!-- Flyer Main Dynamic Content (Judul & Narasi Event) -->
+            <div class="event-banner-main">
               <h3 class="event-banner-title" id="event-banner-title">
                 Kerja Bakti Gotong Royong &amp; Fogging DBD Antisipasi Musim Hujan
               </h3>
@@ -385,57 +389,82 @@
                 Pembersihan serentak saluran drainase 5 klaster jalan, pemangkasan dahan pohon, pembagian abate, serta fogging nyamuk DBD demi kesehatan bersama warga RT.001.
               </p>
 
-              <div class="event-banner-meta-chips">
-                <div class="event-meta-chip">
-                  <i class="fa-regular fa-calendar text-emerald"></i>
-                  <span id="event-banner-date">Minggu, 20 September 2026</span>
+              <!-- 4 Detail Kartu Grid Acara (Modern 2x2 Glass Cards) -->
+              <div class="event-flyer-meta-grid">
+                <div class="event-meta-card">
+                  <div class="event-meta-card-icon icon-emerald">
+                    <i class="fa-regular fa-calendar-check"></i>
+                  </div>
+                  <div class="event-meta-card-body">
+                    <span class="event-meta-card-label">Hari &amp; Tanggal</span>
+                    <strong class="event-meta-card-value" id="event-banner-date">Minggu, 20 September 2026</strong>
+                  </div>
                 </div>
-                <div class="event-meta-chip">
-                  <i class="fa-regular fa-clock text-cyan"></i>
-                  <span id="event-banner-time">07:00 &ndash; 10:30 WIB</span>
+
+                <div class="event-meta-card">
+                  <div class="event-meta-card-icon icon-cyan">
+                    <i class="fa-regular fa-clock"></i>
+                  </div>
+                  <div class="event-meta-card-body">
+                    <span class="event-meta-card-label">Waktu Pelaksanaan</span>
+                    <strong class="event-meta-card-value" id="event-banner-time">07:00 &ndash; 10:30 WIB</strong>
+                  </div>
                 </div>
-                <div class="event-meta-chip">
-                  <i class="fa-solid fa-location-dot text-rose"></i>
-                  <span id="event-banner-location">Titik Kumpul: Depan Blok B6</span>
+
+                <div class="event-meta-card">
+                  <div class="event-meta-card-icon icon-rose">
+                    <i class="fa-solid fa-location-dot"></i>
+                  </div>
+                  <div class="event-meta-card-body">
+                    <span class="event-meta-card-label">Lokasi / Titik Kumpul</span>
+                    <strong class="event-meta-card-value" id="event-banner-location">Titik Kumpul: Depan Blok B6</strong>
+                  </div>
                 </div>
-                <div class="event-meta-chip">
-                  <i class="fa-solid fa-mug-hot text-gold"></i>
-                  <span id="event-banner-note">Konsumsi &amp; Kopi Pagi Disediakan</span>
+
+                <div class="event-meta-card">
+                  <div class="event-meta-card-icon icon-gold">
+                    <i class="fa-solid fa-mug-hot"></i>
+                  </div>
+                  <div class="event-meta-card-body">
+                    <span class="event-meta-card-label">Konsumsi &amp; Fasilitas</span>
+                    <strong class="event-meta-card-value" id="event-banner-note">Konsumsi &amp; Kopi Pagi Disediakan</strong>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="event-banner-actions-col">
-              <div class="event-banner-cta-group">
-                <button type="button" class="btn-event-detail" id="btn-event-view-detail" data-subview="kegiatan" title="Buka agenda lengkap kegiatan warga">
-                  <i class="fa-solid fa-calendar-days"></i>
-                  <span>Lihat Agenda Lengkap</span>
-                  <i class="fa-solid fa-arrow-right"></i>
+            <!-- Carousel Controller Bar (Indikator Halaman, Dots & Tombol Prev/Next) -->
+            <div class="event-flyer-carousel-bar">
+              <div class="event-counter-indicator">
+                <i class="fa-solid fa-layer-group text-emerald me-1"></i>
+                <span>Agenda <strong id="event-current-index" class="text-emerald">1</strong> dari <span id="event-total-count">3</span></span>
+              </div>
+              <div class="event-dots-wrap" id="event-banner-dots">
+                <button type="button" class="event-dot active" data-event-idx="0" aria-label="Event 1"></button>
+                <button type="button" class="event-dot" data-event-idx="1" aria-label="Event 2"></button>
+                <button type="button" class="event-dot" data-event-idx="2" aria-label="Event 3"></button>
+              </div>
+              <div class="event-nav-btns">
+                <button type="button" class="btn-event-nav" id="btn-event-prev" aria-label="Event Sebelumnya" title="Agenda Sebelumnya">
+                  <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <a href="#" target="_blank" rel="noopener" class="btn-event-wa" id="btn-event-share-wa" title="Bagikan pengingat agenda ini ke grup WhatsApp warga">
-                  <i class="fa-brands fa-whatsapp"></i>
-                  <span>Ingatkan di WA Warga</span>
-                </a>
+                <button type="button" class="btn-event-nav" id="btn-event-next" aria-label="Event Berikutnya" title="Agenda Berikutnya">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
               </div>
+            </div>
 
-              <div class="event-banner-controls">
-                <div class="event-counter-indicator">
-                  <span id="event-current-index">1</span><span class="text-muted">/</span><span id="event-total-count">3</span>
-                </div>
-                <div class="event-dots-wrap" id="event-banner-dots">
-                  <button type="button" class="event-dot active" data-event-idx="0" aria-label="Event 1"></button>
-                  <button type="button" class="event-dot" data-event-idx="1" aria-label="Event 2"></button>
-                  <button type="button" class="event-dot" data-event-idx="2" aria-label="Event 3"></button>
-                </div>
-                <div class="event-nav-btns">
-                  <button type="button" class="btn-event-nav" id="btn-event-prev" aria-label="Event Sebelumnya" title="Event Sebelumnya">
-                    <i class="fa-solid fa-chevron-left"></i>
-                  </button>
-                  <button type="button" class="btn-event-nav" id="btn-event-next" aria-label="Event Berikutnya" title="Event Berikutnya">
-                    <i class="fa-solid fa-chevron-right"></i>
-                  </button>
-                </div>
-              </div>
+            <!-- Footer Action Buttons (2 Tombol Penuh: Detail & WhatsApp Share) -->
+            <div class="event-flyer-footer-actions">
+              <button type="button" class="btn-event-detail" id="btn-event-view-detail" data-subview="kegiatan" title="Buka agenda lengkap kegiatan warga">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Lihat Agenda Lengkap Warga</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+              <a href="#" target="_blank" rel="noopener" class="btn-event-wa" id="btn-event-share-wa" title="Bagikan pengingat agenda ini ke grup WhatsApp warga">
+                <i class="fa-brands fa-whatsapp"></i>
+                <span>Ingatkan di WA Warga</span>
+              </a>
             </div>
           </div>
         </div>
@@ -6352,6 +6381,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.6"></script>
+  <script src="app.js?v=2.9.7"></script>
 </body>
 </html>

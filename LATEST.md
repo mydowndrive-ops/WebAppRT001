@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (02:40 WIB)  
-**Versi Rilis Aktif:** `v2.9.6`  
+**Terakhir Diperbarui:** 20 September 2026 (16:30 WIB)  
+**Versi Rilis Aktif:** `v2.9.7`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -34,7 +34,33 @@ Aplikasi dilengkapi dengan **Portal Login Eksekutif** (*Luxury Glassmorphism*) y
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🔒 Penghapusan Hint Kalimat PIN Rahasia & Penataan Berkas Font Bersih (Update v2.9.6 - 20 Sept 2026)
+### 1. 📢 Perombakan Pop-Up Event Terdekat Menjadi Model "Luxury Event Flyer Modal" (Update v2.9.7 - 20 Sept 2026)
+- **Latar Belakang & Masalah Sebelumnya**:
+  1. Pop-up pengumuman event sebelumnya masih menggunakan format banner horizontal memanjang (880px) yang ditempelkan ke modal overlay.
+  2. Muncul scrollbar vertikal di sisi kanan kartu yang memotong tombol navigasi slider (`<` `>`) dan mengganggu estetika visual.
+  3. Tombol aksi (CTA) dan navigasi slider berdesakan di kolom kanan sempit.
+- **Solusi & Rekayasa Desain UI/UX (Opsi 1)**:
+  1. **Desain Pop-Up Luxury Digital Flyer (Vertikal & Proporsional)**:
+     - Mengubah orientasi menjadi kartu flyer sentral modern (`max-width: 620px`) yang pas di layar desktop, tablet, maupun ponsel tanpa scrollbar yang memotong kartu.
+     - Penambahan garis aksen atas bercahaya (*ambient top accent beam*) dengan kombinasi emerald dan gold.
+  2. **Grid Detail Acara 2x2 Glass Cards**:
+     - Mengubah daftar chip memanjang menjadi grid 2x2 berbingkai transparan dengan ikon terspesialisasi:
+       * 📅 *Hari & Tanggal* (Emerald)
+       * ⏰ *Waktu Pelaksanaan* (Cyan)
+       * 📍 *Lokasi / Titik Kumpul* (Rose)
+       * ☕ *Konsumsi & Fasilitas* (Gold)
+  3. **Bar Navigasi & Carousel Rapi**:
+     - Indikator agenda (*"Agenda X dari 3"*), dots indikator dinamis dengan glow hijau emerald, dan tombol panah navigasi (`<` `>`) tersusun rapi di bagian bawah.
+  4. **Tombol Aksi Penuh (Full-Width CTAs)**:
+     - Tombol *"Lihat Agenda Lengkap Warga"* (Emerald gradient beranimasi) dan *"Ingatkan di WA Warga"* (WhatsApp green outline glow) berdampingan proporsional dan mudah ditekan.
+  5. **Fleksibilitas Menutup Modal**:
+     - Modal dapat ditutup melalui tombol silang (X) yang elegan, menekan tombol `Esc`, tombol detail agenda, maupun mengklik area latar luar (backdrop).
+  6. **Pembaruan Cache PWA**:
+     - Parameter cache diperbarui ke `v2.9.7` pada `index.html`, `styles.css`, `app.js`, dan `sw.js`.
+
+---
+
+### 2. 🔒 Penghapusan Hint Kalimat PIN Rahasia & Penataan Berkas Font Bersih (Update v2.9.6 - 20 Sept 2026)
 - **Latar Belakang & Kebutuhan**:
   1. Teks petunjuk *"PIN: 1111 / 2222 / 3333"* yang berada di bawah kolom PIN pada formulir login pengurus perlu dihilangkan demi menjaga keamanan dan kerahasiaan kredensial sistem.
   2. Merapikan penempatan berkas font `MaskingRenta.otf` agar tersimpan eksklusif di dalam folder `assets/MaskingRenta.otf` dan menghapus berkas redundan di root folder.
