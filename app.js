@@ -2658,14 +2658,26 @@ function renderDashboardStreetKpi() {
   const streetStats = computeStreetStats();
   grid.innerHTML = '';
 
-  streetStats.forEach(item => {
+  streetStats.forEach((item, idx) => {
+    // Unique accent palette per street card (cycles if more than 5 streets)
+    const STREET_ACCENTS = [
+      '#06b6d4', // cyan
+      '#a855f7', // purple
+      '#f59e0b', // amber
+      '#10b981', // emerald
+      '#f43f5e', // rose
+      '#3b82f6', // blue
+    ];
+    const accent = STREET_ACCENTS[idx % STREET_ACCENTS.length];
+
     const tier = item.percent >= 75 ? 'tier-high' : item.percent >= 40 ? 'tier-mid' : 'tier-low';
     const tierIcon = item.percent >= 75 ? 'fa-circle-check' : item.percent >= 40 ? 'fa-clock' : 'fa-triangle-exclamation';
 
     const card = document.createElement('div');
-    card.className = 'street-card glass-panel';
+    card.className = 'street-card';
+    card.style.setProperty('--street-accent', accent);
     card.innerHTML = `
-      <div>
+      <div class="street-card-body">
         <div class="street-card-top">
           <div class="street-icon-title">
             <div class="street-icon-box">
@@ -2682,8 +2694,12 @@ function renderDashboardStreetKpi() {
         </div>
 
         <div class="street-progress-wrap">
+          <div class="street-progress-label">
+            <span>Capaian Pembayaran</span>
+            <span style="color:var(--street-accent); font-weight:700;">${item.percent}%</span>
+          </div>
           <div class="street-progress-bar">
-            <div class="street-progress-fill ${tier}" style="width: ${item.percent}%"></div>
+            <div class="street-progress-fill" style="width: ${item.percent}%"></div>
           </div>
         </div>
 
@@ -2699,14 +2715,16 @@ function renderDashboardStreetKpi() {
         </div>
 
         <div class="street-nominal-row">
-          <span class="nom-label">Dana Terkumpul</span>
-          <span class="nom-val">${formatRupiah(item.totalCollected)} <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal;">/ ${formatRupiah(item.totalTarget)}</span></span>
+          <span class="nom-label"><i class="fa-solid fa-coins" style="color:var(--street-accent)"></i> Dana Terkumpul</span>
+          <span class="nom-val">${formatRupiah(item.totalCollected)} <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: normal;">/ ${formatRupiah(item.totalTarget)}</span></span>
         </div>
       </div>
 
-      <button class="btn-street-jump" data-jump-street="${item.name}">
-        <i class="fa-solid fa-list-check"></i> Buka Checklist Jalan Ini
-      </button>
+      <div class="street-card-footer">
+        <button class="btn-street-jump" data-jump-street="${item.name}">
+          <i class="fa-solid fa-list-check"></i> Buka Checklist Jalan Ini
+        </button>
+      </div>
     `;
     grid.appendChild(card);
   });

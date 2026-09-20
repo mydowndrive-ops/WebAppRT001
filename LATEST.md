@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (22:47 WIB)  
-**Versi Rilis Aktif:** `v2.9.29`  
+**Terakhir Diperbarui:** 20 September 2026 (22:53 WIB)  
+**Versi Rilis Aktif:** `v2.9.30`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
