@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (19:15 WIB)  
-**Versi Rilis Aktif:** `v2.9.18`  
+**Terakhir Diperbarui:** 20 September 2026 (19:50 WIB)  
+**Versi Rilis Aktif:** `v2.9.19`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,16 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 💫 Kalimat Mengikuti Kontur Lingkaran & Pembesaran Tipografi Sektor (Update v2.9.18 - 20 Sept 2026)
+### 1. 🔄 Perbaikan Arah Lengkungan Kontur Busur Teks Sektor 3 PROFIL DAN PETA (Update v2.9.19 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Memperbaiki kontur tulisan **"PROFIL DAN PETA"** pada Sektor 3 (arah Barat/180°) yang sebelumnya melengkung terbalik (cekung ke dalam/menuju pusat lingkaran).
+- **Perbaikan Teknis**:
+  - Menyesuaikan `sweep-flag` pada SVG `<path id="orb-txt-3">` dari `0` menjadi `1` (`d="M 164.85 360.2 A 148 148 0 0 1 164.85 239.8"`).
+  - Dengan perubahan flag ini, busur teks melewati koordinat puncak $(152, 300)$, melengkung cembung keluar secara konsentris sempurna mengikuti kelopak roda navigasi orbital dengan teks tegak lurus menghadap luar.
+- **Hasil Visual**:
+  - Kontur tulisan kini mengalir harmonis dan konsentris mengikuti lekukan lingkaran roda navigasi tanpa distorsi.
+
+### 2. 💫 Kalimat Mengikuti Kontur Lingkaran & Pembesaran Tipografi Sektor (Update v2.9.18 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Mengubah posisi kalimat **"PROFIL DAN PETA"** (Sektor 3) dan **"PENGURUS RT"** (Sektor 0) yang sebelumnya teks datar horizontal menjadi melengkung presisi mengikuti **kontur busur lingkaran** (`#orb-txt-3` dan `#orb-txt-0`) agar seluruh 6 sektor tampil serasi, dinamis, dan profesional layaknya kokpit eksekutif modern.
   - Membesarkan ukuran font seluruh label kalimat sektor (*STATISTIK WARGA*, *KEUANGAN RT*, *PENGURUS RT*, *PORTAL WARGA*, *AGENDA WARGA*, *PROFIL DAN PETA*) dari 11px menjadi **12.5px** (desktop) dan **11px** (mobile) dengan bobot 800 (*extra bold*) dan bayangan kontras tinggi (*drop shadow*).
