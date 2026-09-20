@@ -25,7 +25,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.17">
+  <link rel="stylesheet" href="styles.css?v=2.9.18">
 </head>
 <body>
 
@@ -479,14 +479,9 @@
                       <stop offset="100%" stop-color="#2563eb"/>
                     </linearGradient>
 
-                    <!-- 2-Line Text Paths per Sector (Inner R=136, Outer R=158) -->
-                    <!-- Sector 4: Top-Left (240 deg) -->
-                    <path id="orb-txt-4-1" d="M 180.76 196.34 A 158 158 0 0 1 269.85 144.9"/>
-                    <path id="orb-txt-4-2" d="M 197.36 210.78 A 136 136 0 0 1 274.05 166.5"/>
-
-                    <!-- Sector 5: Top-Right (300 deg) -->
-                    <path id="orb-txt-5-1" d="M 330.15 144.9 A 158 158 0 0 1 419.24 196.34"/>
-                    <path id="orb-txt-5-2" d="M 325.95 166.5 A 136 136 0 0 1 402.64 210.78"/>
+                    <!-- Text Paths per Sector (Inner R=136, Middle R=148, Outer R=158) -->
+                    <!-- Sector 0: East (0 deg) - Centered Contour Arc -->
+                    <path id="orb-txt-0" d="M 435.15 239.8 A 148 148 0 0 1 435.15 360.2"/>
 
                     <!-- Sector 1: Bottom-Right (60 deg) -->
                     <path id="orb-txt-1-1" d="M 325.95 433.5 A 136 136 0 0 0 402.64 389.22"/>
@@ -495,6 +490,17 @@
                     <!-- Sector 2: Bottom-Left (120 deg) -->
                     <path id="orb-txt-2-1" d="M 197.36 389.22 A 136 136 0 0 0 274.05 433.5"/>
                     <path id="orb-txt-2-2" d="M 180.76 403.66 A 158 158 0 0 0 269.85 455.1"/>
+
+                    <!-- Sector 3: West (180 deg) - Centered Contour Arc -->
+                    <path id="orb-txt-3" d="M 164.85 360.2 A 148 148 0 0 0 164.85 239.8"/>
+
+                    <!-- Sector 4: Top-Left (240 deg) -->
+                    <path id="orb-txt-4-1" d="M 180.76 196.34 A 158 158 0 0 1 269.85 144.9"/>
+                    <path id="orb-txt-4-2" d="M 197.36 210.78 A 136 136 0 0 1 274.05 166.5"/>
+
+                    <!-- Sector 5: Top-Right (300 deg) -->
+                    <path id="orb-txt-5-1" d="M 330.15 144.9 A 158 158 0 0 1 419.24 196.34"/>
+                    <path id="orb-txt-5-2" d="M 325.95 166.5 A 136 136 0 0 1 402.64 210.78"/>
                   </defs>
 
                   <!-- Background Track Guide Rings -->
@@ -502,12 +508,11 @@
                   <circle cx="300" cy="300" r="115" fill="none" stroke="rgba(56, 189, 248, 0.45)" stroke-width="2.2"/>
                   <circle cx="300" cy="300" r="107" fill="none" stroke="rgba(255, 255, 255, 0.7)" stroke-width="1.5"/>
 
-                  <!-- 6 Curved Arc Petals with Pointy Tips & 2-Line Labels -->
+                  <!-- 6 Curved Arc Petals with Pointy Tips & Contour Labels -->
                   <!-- Sector 0: East (Struktur Pengurus RT) -->
                   <g class="orbital-petal-group" data-sector="0" data-subview="pengurus" role="button" tabindex="0" aria-label="Struktur Organisasi Pengurus RT">
                     <path class="orbital-petal-shape" d="M 405.06 253.23 L 462.61 227.6 A 178 178 0 0 1 477.45 286.03 L 498 300 L 477.45 313.97 A 178 178 0 0 1 462.61 372.4 L 405.06 346.77 A 115 115 0 0 0 405.06 253.23 Z" fill="url(#orb-grad-0)"/>
-                    <text class="orbital-petal-label" x="442" y="295" text-anchor="middle">PENGURUS</text>
-                    <text class="orbital-petal-label" x="442" y="313" text-anchor="middle">RT</text>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-0" startOffset="50%" text-anchor="middle">PENGURUS RT</textPath></text>
                   </g>
 
                   <!-- Sector 1: South-East (Portal Mandiri Warga RT.001) -->
@@ -527,8 +532,7 @@
                   <!-- Sector 3: West (Profil dan Peta Cakupan Wilayah) -->
                   <g class="orbital-petal-group" data-sector="3" data-subview="tentang" role="button" tabindex="0" aria-label="Profil dan Peta Cakupan Wilayah">
                     <path class="orbital-petal-shape" d="M 194.94 346.77 L 137.39 372.4 A 178 178 0 0 1 122.55 313.97 L 102 300 L 122.55 286.03 A 178 178 0 0 1 137.39 227.6 L 194.94 253.23 A 115 115 0 0 0 194.94 346.77 Z" fill="url(#orb-grad-3)"/>
-                    <text class="orbital-petal-label" x="158" y="295" text-anchor="middle">PROFIL</text>
-                    <text class="orbital-petal-label" x="158" y="313" text-anchor="middle">DAN PETA</text>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-3" startOffset="50%" text-anchor="middle">PROFIL DAN PETA</textPath></text>
                   </g>
 
                   <!-- Sector 4: North-West (Data & Statistik Kependudukan) -->
@@ -6436,6 +6440,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.17"></script>
+  <script src="app.js?v=2.9.18"></script>
 </body>
 </html>

@@ -10230,13 +10230,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .orbital-petal-label {
   font-family: var(--font-heading, system-ui, sans-serif);
-  font-size: 11px;
+  font-size: 12.5px;
   font-weight: 800;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.45px;
   fill: #ffffff;
   text-transform: uppercase;
   pointer-events: none;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.85));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.95));
 }
 
 /* 6 Outer Satellite Node Buttons */
@@ -10407,8 +10407,8 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 100%;
   }
   .orbital-petal-label {
-    font-size: 10px;
-    letter-spacing: 0.4px;
+    font-size: 11px;
+    letter-spacing: 0.3px;
   }
   .orbital-sat-btn {
     width: 48px;

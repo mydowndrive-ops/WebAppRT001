@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (19:05 WIB)  
-**Versi Rilis Aktif:** `v2.9.17`  
+**Terakhir Diperbarui:** 20 September 2026 (19:15 WIB)  
+**Versi Rilis Aktif:** `v2.9.18`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,15 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🧹 Penyempurnaan Tampilan Bersih: Penghapusan Kotak Panel Detail di Bawah Roda Navigasi (Update v2.9.17 - 20 Sept 2026)
+### 1. 💫 Kalimat Mengikuti Kontur Lingkaran & Pembesaran Tipografi Sektor (Update v2.9.18 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Mengubah posisi kalimat **"PROFIL DAN PETA"** (Sektor 3) dan **"PENGURUS RT"** (Sektor 0) yang sebelumnya teks datar horizontal menjadi melengkung presisi mengikuti **kontur busur lingkaran** (`#orb-txt-3` dan `#orb-txt-0`) agar seluruh 6 sektor tampil serasi, dinamis, dan profesional layaknya kokpit eksekutif modern.
+  - Membesarkan ukuran font seluruh label kalimat sektor (*STATISTIK WARGA*, *KEUANGAN RT*, *PENGURUS RT*, *PORTAL WARGA*, *AGENDA WARGA*, *PROFIL DAN PETA*) dari 11px menjadi **12.5px** (desktop) dan **11px** (mobile) dengan bobot 800 (*extra bold*) dan bayangan kontras tinggi (*drop shadow*).
+- **Hasil Visual**:
+  - Keselarasan visual 360° tercapai sempurna dengan seluruh teks mengalir mulus mengikuti garis orbit lingkaran.
+  - Keterbacaan teks (*readability*) meningkat drastis di semua resolusi layar tanpa terjadi pemotongan teks (*text clipping*).
+
+### 2. 🧹 Penyempurnaan Tampilan Bersih: Penghapusan Kotak Panel Detail di Bawah Roda Navigasi (Update v2.9.17 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Menghilangkan kotak panel detail di bawah roda navigasi (`#hub-orbital-detail-card`) sesuai tangkapan layar pengguna (*"Hilangkan kotak ini"*).
   - Dengan dihapusnya kotak ini, komposisi roda navigasi orbital sirkular menjadi lebih bersih, minimalis, dan tidak menghabiskan ruang halaman.
