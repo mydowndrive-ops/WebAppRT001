@@ -11374,6 +11374,16 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 680px;
   margin: 0;
 }
+.org-hero-subtitle .org-hero-loc {
+  display: block;
+}
+.org-hero-subtitle .org-hero-serve {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  font-weight: 500;
+}
 .org-actions-bar {
   display: flex;
   align-items: center;

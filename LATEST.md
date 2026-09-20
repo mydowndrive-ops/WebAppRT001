@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 20 September 2026 (20:55 WIB)  
-**Versi Rilis Aktif:** `v2.9.22`  
+**Terakhir Diperbarui:** 20 September 2026 (21:20 WIB)  
+**Versi Rilis Aktif:** `v2.9.23`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,19 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📊 Optimalisasi Grafik Penerimaan Iuran Tahunan & Arsip 2021–2026 (Update v2.9.22 - 20 Sept 2026)
+### 1. 🏢 Pembersihan Banner Struktur Pengurus & Penataan Rapi Subtitle Alamat (Update v2.9.23 - 20 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  1. Menghilangkan tombol/menu *"Jadwal Regu Ronda"* dari kotak banner *"Struktur Organisasi & Tata Kelola Pengurus"*, karena jadwal ronda kini telah memiliki halaman dedicated sendiri.
+  2. Memindahkan kalimat *"• Melayani 71 Kepala Keluarga"* agar berada pas persis di bawah kalimat *"Rukun Tetangga 001 / Rukun Warga 013 Perumahan Graha Asri, Cikarang Utara"*, menghindari pemotongan teks yang canggung.
+- **Implementasi Teknis & Arsitektur DevOps**:
+  - **Pembersihan Tombol Redundan**: Menghapus tombol `#btn-pengurus-quick-ronda` dari `.org-actions-bar` di dalam `#view-pengurus-struktur` (`index.html`), sehingga bar aksi hanya menyisakan tombol esensial kepengurusan: *"Cetak Bagan Resmi"* (`#btn-print-org`) dan *"Salin Kontak Pengurus"* (`#btn-copy-org-contacts`).
+  - **Penataan Subtitle Hierarkis Bersih**:
+    - Memisahkan elemen `.org-hero-subtitle` menjadi dua blok span terstruktur: `.org-hero-loc` (untuk teks alamat RT/RW Graha Asri) dan `.org-hero-serve` (untuk teks `• Melayani 71 Kepala Keluarga`).
+    - Menambahkan aturan CSS di `styles.css`: `.org-hero-subtitle .org-hero-serve { display: block; margin-top: 0.25rem; font-size: 0.9rem; color: #cbd5e1; font-weight: 500; }`.
+    - Teks kini tersusun rapi dua baris proporsional tanpa terpotong di tengah kata *"Kepala / Keluarga"*.
+  - **Peningkatan Cache**: Meningkatkan versi cache Service Worker ke `rt-finsmart-cache-v2.9.23`.
+
+### 2. 📊 Optimalisasi Grafik Penerimaan Iuran Tahunan & Arsip 2021–2026 (Update v2.9.22 - 20 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   1. Pada bagian *"Grafik Penerimaan Iuran Bulanan 1 Tahun Berjalan"*, hilangkan kotak *"18% Partisipasi Aktif"* karena di atasnya (pada hub cockpit status) sudah ada informasi kepatuhan yang sama.
   2. Filter tahun dibuat mulai dari **2021 (Arsip)** sampai dengan **2026 (Berjalan)**.
