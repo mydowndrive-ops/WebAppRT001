@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (16:05 WIB)  
-**Versi Rilis Aktif:** `v2.9.50`  
+**Terakhir Diperbarui:** 21 September 2026 (17:35 WIB)  
+**Versi Rilis Aktif:** `v2.9.51`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,38 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🛡️ Sistem Persetujuan Otoritatif Ketua RT / Admin 1 Sebelum Penerbitan QRIS / QR Digital Sign (Update v2.9.50 - 21 Sept 2026)
+### 1. 🗄️ Menu Eksklusif Arsip e-Surat Warga di Dashboard Admin 1 & Penghapusan Arsip dari Portal Warga (Update v2.9.51 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Di dashboard Admin 1 saya tidak melihat tabel Buku Register e-Surat. Saya ingin di Admin 1 dibuatkan Menu di side bar mengenai arsip semua surat yang sudah diajukan oleh warga baik yang ditolak atau disetujui. Sehingga semua surat tercatat dan tersimpan di akun Admin 1. Jangan arsipkan surat di dashboard warga."*
+- **Hasil Implementasi Lengkap**:
+  1. **Menu Sidebar Baru Khusus Admin 1 & Pengurus (`#arsip-surat`)**:
+     - Ditambahkan item sidebar nav baru **"Arsip e-Surat Warga"** berikon ungu `fa-file-circle-check` dengan hak akses `data-role-req="B1"` (dan dapat diakses juga oleh Pengurus/Ketua RT).
+     - Dilengkapi badge notifikasi dinamis (`#sidebar-surat-badge`) yang otomatis menampilkan jumlah surat yang masih menunggu persetujuan (*pending approval*).
+  2. **Halaman Khusus Buku Register & Arsip e-Surat (`#view-arsip-surat`)**:
+     - **4 Kartu Statistik Interaktif**:
+       - *Total Pengajuan*: Menghitung akumulasi seluruh surat yang diajukan.
+       - *Perlu Persetujuan*: Jumlah surat yang menunggu otorisasi QR Digital Sign.
+       - *Sah & Tervalidasi*: Jumlah surat yang telah disahkan secara digital.
+       - *Ditolak*: Jumlah surat yang ditolak oleh pengurus RT.
+       - Setiap kartu dapat diklik langsung untuk memfilter tabel data secara instan (*click-to-filter*).
+     - **Filter Tabs Cepat & Kolom Pencarian**:
+       - Tab filter: *Semua*, *Menunggu*, *Disetujui*, dan *Ditolak* lengkap dengan counter jumlah dokumen.
+       - Input pencarian real-time untuk mencari berdasarkan nama pemohon, NIK, keperluan, nomor surat, maupun instansi tujuan.
+     - **Tabel Register Lengkap dengan Aksi Pengurus**:
+       - *Lihat*: Membuka modal pratinjau surat resmi admin (`#modal-preview-admin-surat`).
+       - *Setujui*: Mengesahkan surat dan menerbitkan QR Code Digital Sign (otomatis mencatat nama pengesah dan stempel waktu).
+       - *Tolak*: Membuka modal tolak surat (`#modal-reject-surat`) untuk memasukkan alasan penolakan formal (NIK tidak cocok, bukan warga, dokumen kurang, atau alasan kustom).
+       - *Cek Sah*: Memvalidasi keaslian tanda tangan digital kriptografi SHA-256 secara langsung.
+       - *Hapus*: Proteksi ketat hak akses penghapusan khusus Admin 1 dengan validasi PIN Bendahara 1 (`1111`).
+  3. **Modal Pratinjau Surat Resmi Admin (`#modal-preview-admin-surat`)**:
+     - Menampilkan lembar kertas surat pengantar resmi ber-KOP RT.001 lengkap dengan stempel digital `DITOLAK / INVALID` jika berstatus ditolak, atau QR Code Digital Sign aktif jika telah disetujui.
+     - Tombol cetak PDF instan (`printSuratFromAdminModal()`) yang mencetak lembar surat secara bersih dan presisi tanpa elemen modal.
+  4. **Pembersihan & Perlindungan Privasi di Portal Warga**:
+     - Tabel register surat riwayat seluruh warga (`#card-register-surat-rt`) telah **dihapus sepenuhnya** dari `#view-surat-pengantar` portal warga, sehingga kerahasiaan data kependudukan (NIK, alamat, keperluan) warga lain terlindungi 100% dan hanya dapat diakses oleh Admin 1 dan Pengurus RT.
+  5. **Pembaruan Service Worker & Versi PWA**:
+     - Cache dinaikkan ke `rt-finsmart-cache-v2.9.51` pada `sw.js`, `index.html`, dan `app.js`.
+
+### 2. 🛡️ Sistem Persetujuan Otoritatif Ketua RT / Admin 1 Sebelum Penerbitan QRIS / QR Digital Sign (Update v2.9.50 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Untuk menghindari penyalahgunaan surat, QRIS ada/muncul di surat jika sudah mendapatkan persetujuan dari Ketua RT atau Admin 1"*
   - Mencegah warga atau oknum mencetak surat mandiri dengan QR Code Digital Sign sah tanpa izin atau verifikasi resmi dari Ketua RT atau Bendahara 1.

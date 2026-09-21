@@ -2461,6 +2461,12 @@
           <span>Pengajuan Anggaran dari Warga</span>
           <span class="counter-badge" id="sidebar-pengajuan-badge" style="background: rgba(37, 99, 235, 0.35); color: #60a5fa;">0</span>
         </a>
+        <!-- 7b. Arsip e-Surat Warga (Khusus Admin 1 & Pengurus) -->
+        <a href="#arsip-surat" class="menu-item" data-target="arsip-surat" data-role-req="B1" data-tooltip="Arsip e-Surat Warga">
+          <i class="fa-solid fa-file-circle-check text-purple"></i>
+          <span>Arsip e-Surat Warga</span>
+          <span class="counter-badge" id="sidebar-surat-badge" style="background: rgba(168, 85, 247, 0.25); color: #c084fc;">0</span>
+        </a>
         <!-- 8. Pengeluaran Kas -->
         <a href="#pengeluaran" class="menu-item" data-target="pengeluaran" data-role-req="B1" data-tooltip="Pengeluaran Kas">
           <i class="fa-solid fa-money-bill-transfer"></i>
@@ -3200,6 +3206,134 @@
               </thead>
               <tbody id="tbody-dana-admin">
                 <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: BUKU REGISTER & ARSIP e-SURAT WARGA (KHUSUS ADMIN 1 & PENGURUS) ==================== -->
+      <section class="view-section" id="view-arsip-surat">
+        <div class="view-header-banner glass-panel mb-4">
+          <div class="banner-text">
+            <div class="banner-pre-badge mb-1">
+              <span class="badge-pill badge-purple"><i class="fa-solid fa-shield-check"></i> Administrasi Resmi RT.001</span>
+            </div>
+            <h2 style="display:flex; align-items:center; gap:10px;">
+              <i class="fa-solid fa-file-circle-check text-purple"></i> Buku Register &amp; Arsip e-Surat Warga
+            </h2>
+            <p>Pusat kendali, verifikasi, otorisasi tanda tangan digital, dan arsip riwayat seluruh surat pengantar yang diajukan oleh warga RT.001 / RW.013.</p>
+          </div>
+          <div class="banner-actions">
+            <button type="button" class="btn btn-outline-danger" id="btn-clear-register-surat-admin" onclick="clearAllSuratRegister()" title="Khusus Admin 1 (Bendahara 1) - Memerlukan Verifikasi PIN">
+              <i class="fa-solid fa-lock"></i> Bersihkan Arsip
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Kartu Statistik Arsip Surat -->
+        <div class="stats-grid mb-4" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+          <!-- Card Total -->
+          <div class="glass-panel p-3 stat-card-clickable" onclick="filterSuratRegister('all')" style="border-radius:12px; border:1px solid rgba(255,255,255,0.08); cursor:pointer; transition:all 0.2s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <div style="font-size:0.75rem; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Total Pengajuan</div>
+                <div style="font-size:1.6rem; font-weight:800; color:#f8fafc; margin-top:4px;" id="stat-surat-total">0</div>
+              </div>
+              <div style="width:36px; height:36px; border-radius:10px; background:rgba(148,163,184,0.15); display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-size:1.1rem;">
+                <i class="fa-solid fa-box-archive"></i>
+              </div>
+            </div>
+            <div style="font-size:0.72rem; color:#94a3b8; margin-top:6px;">Semua surat masuk</div>
+          </div>
+
+          <!-- Card Pending -->
+          <div class="glass-panel p-3 stat-card-clickable" onclick="filterSuratRegister('pending')" style="border-radius:12px; border:1px solid rgba(245,158,11,0.3); background:rgba(245,158,11,0.05); cursor:pointer; transition:all 0.2s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <div style="font-size:0.75rem; color:#fbbf24; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Perlu Persetujuan</div>
+                <div style="font-size:1.6rem; font-weight:800; color:#fef08a; margin-top:4px;" id="stat-surat-pending">0</div>
+              </div>
+              <div style="width:36px; height:36px; border-radius:10px; background:rgba(245,158,11,0.2); display:flex; align-items:center; justify-content:center; color:#fbbf24; font-size:1.1rem;">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </div>
+            </div>
+            <div style="font-size:0.72rem; color:#fbbf24; margin-top:6px;">Menunggu otorisasi QR</div>
+          </div>
+
+          <!-- Card Disetujui -->
+          <div class="glass-panel p-3 stat-card-clickable" onclick="filterSuratRegister('approved')" style="border-radius:12px; border:1px solid rgba(16,185,129,0.3); background:rgba(16,185,129,0.05); cursor:pointer; transition:all 0.2s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <div style="font-size:0.75rem; color:#34d399; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Sah &amp; Tervalidasi</div>
+                <div style="font-size:1.6rem; font-weight:800; color:#a7f3d0; margin-top:4px;" id="stat-surat-approved">0</div>
+              </div>
+              <div style="width:36px; height:36px; border-radius:10px; background:rgba(16,185,129,0.2); display:flex; align-items:center; justify-content:center; color:#34d399; font-size:1.1rem;">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+            </div>
+            <div style="font-size:0.72rem; color:#34d399; margin-top:6px;">QR Digital Sign aktif</div>
+          </div>
+
+          <!-- Card Ditolak -->
+          <div class="glass-panel p-3 stat-card-clickable" onclick="filterSuratRegister('rejected')" style="border-radius:12px; border:1px solid rgba(239,68,68,0.3); background:rgba(239,68,68,0.05); cursor:pointer; transition:all 0.2s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <div style="font-size:0.75rem; color:#f87171; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Ditolak</div>
+                <div style="font-size:1.6rem; font-weight:800; color:#fca5a5; margin-top:4px;" id="stat-surat-rejected">0</div>
+              </div>
+              <div style="width:36px; height:36px; border-radius:10px; background:rgba(239,68,68,0.2); display:flex; align-items:center; justify-content:center; color:#f87171; font-size:1.1rem;">
+                <i class="fa-solid fa-circle-xmark"></i>
+              </div>
+            </div>
+            <div style="font-size:0.72rem; color:#f87171; margin-top:6px;">Permohonan tidak sah</div>
+          </div>
+        </div>
+
+        <!-- Panel Tabel Arsip Surat Admin -->
+        <div class="glass-panel p-4 mb-4" id="card-register-surat-admin" style="border: 1px solid rgba(168,85,247,0.3); background: rgba(15, 23, 42, 0.6); border-radius: 14px;">
+          <!-- Filter Tabs & Search Bar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:1.25rem; padding-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08);">
+            <!-- Status Filter Tabs -->
+            <div class="surat-filter-tabs" style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-sm btn-filter-surat active" id="filter-surat-all" onclick="filterSuratRegister('all')">
+                Semua (<span id="count-filter-all">0</span>)
+              </button>
+              <button type="button" class="btn btn-sm btn-filter-surat" id="filter-surat-pending" onclick="filterSuratRegister('pending')">
+                <i class="fa-solid fa-clock-rotate-left text-gold"></i> Menunggu (<span id="count-filter-pending">0</span>)
+              </button>
+              <button type="button" class="btn btn-sm btn-filter-surat" id="filter-surat-approved" onclick="filterSuratRegister('approved')">
+                <i class="fa-solid fa-circle-check text-emerald"></i> Disetujui (<span id="count-filter-approved">0</span>)
+              </button>
+              <button type="button" class="btn btn-sm btn-filter-surat" id="filter-surat-rejected" onclick="filterSuratRegister('rejected')">
+                <i class="fa-solid fa-circle-xmark text-rose"></i> Ditolak (<span id="count-filter-rejected">0</span>)
+              </button>
+            </div>
+
+            <!-- Search Input -->
+            <div style="display:flex; align-items:center; gap:8px; min-width:260px;">
+              <div style="position:relative; width:100%;">
+                <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:0.85rem;"></i>
+                <input type="text" id="search-surat-admin" oninput="handleSearchSuratAdmin(this.value)" class="form-control" placeholder="Cari nama, NIK, no surat..." style="padding-left:32px; font-size:0.83rem; height:34px;">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabel Register e-Surat Admin -->
+          <div style="overflow-x:auto;">
+            <table class="table-fin" style="width:100%; min-width:760px; font-size:0.85rem;">
+              <thead>
+                <tr>
+                  <th style="width:170px;">No. Surat &amp; Tanggal</th>
+                  <th>Pemohon &amp; NIK</th>
+                  <th>Keperluan &amp; Instansi Tujuan</th>
+                  <th style="width:150px; text-align:center;">Status Dokumen</th>
+                  <th style="width:150px;">Keterangan / Otorisasi</th>
+                  <th style="width:180px; text-align:center;">Aksi Pengurus</th>
+                </tr>
+              </thead>
+              <tbody id="table-body-register-surat">
+                <!-- Diisi dinamis via JS -->
               </tbody>
             </table>
           </div>
@@ -5333,50 +5467,6 @@
                 <span style="font-size:0.78rem; color:var(--text-muted); line-height:1.4; display:block;">Instalasi PLN/PDAM, klaim BPJS/asuransi, perbankan, &amp; pengurusan umum lainnya.</span>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- BUKU REGISTER & ARSIP e-SURAT TERBIT RT.001 (ANTI-PEMANIPULASIAN) -->
-        <div class="glass-panel p-4 mb-4" id="card-register-surat-rt" style="border: 1px solid rgba(16,185,129,0.3); background: rgba(15, 23, 42, 0.5); border-radius: 14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid rgba(255,255,255,0.08);">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <div style="width:40px; height:40px; border-radius:10px; background:rgba(16,185,129,0.2); display:flex; align-items:center; justify-content:center; color:#34d399; font-size:1.2rem;">
-                <i class="fa-solid fa-book-bookmark"></i>
-              </div>
-              <div>
-                <h4 style="margin:0; font-size:1.05rem; color:#f8fafc; font-weight:700;">Buku Register &amp; Arsip e-Surat Pengantar RT.001</h4>
-                <p style="margin:0; font-size:0.8rem; color:#94a3b8;">Daftar resmi surat yang telah diterbitkan dengan sidik jari digital SHA-256</p>
-              </div>
-            </div>
-            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
-              <span class="badge-pill badge-emerald" id="badge-total-register-surat">0 Surat Tercatat</span>
-              <span class="badge-pill badge-cyan" title="Sistem Kriptografi Aktif"><i class="fa-solid fa-shield-halved"></i> Anti-Pemalsuan SHA-256</span>
-              <span class="badge-pill" style="font-size:0.72rem; padding:2px 8px; background:rgba(234,179,8,0.12); color:#fde047; border:1px solid rgba(234,179,8,0.3);" title="Wewenang Hapus Dibatasi Khusus Admin 1 (Bendahara 1)">
-                <i class="fa-solid fa-lock text-gold"></i> Hak Hapus: Admin 1 (B1)
-              </span>
-              <button type="button" class="btn btn-outline-danger btn-sm" id="btn-clear-register-surat" onclick="clearAllSuratRegister()" style="padding:3px 10px; font-size:0.75rem; border-color:rgba(239,68,68,0.4); color:#fca5a5; background:rgba(239,68,68,0.12); border-radius:6px; cursor:pointer;" title="Khusus Admin 1 (Bendahara 1) - Memerlukan Verifikasi PIN">
-                <i class="fa-solid fa-lock"></i> Bersihkan Arsip
-              </button>
-            </div>
-          </div>
-
-          <!-- Tabel Register e-Surat -->
-          <div style="overflow-x:auto;">
-            <table class="table-fin" style="width:100%; min-width:680px; font-size:0.85rem;">
-              <thead>
-                <tr>
-                  <th style="width:180px;">No. Surat Resmi</th>
-                  <th style="width:115px;">Tanggal</th>
-                  <th>Nama Pemohon / NIK</th>
-                  <th>Keperluan / Maksud</th>
-                  <th style="width:145px; text-align:center;">Validasi Kriptografi</th>
-                  <th style="width:130px; text-align:center;">Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="table-body-register-surat">
-                <!-- Diisi secara dinamis via JS -->
-              </tbody>
-            </table>
           </div>
         </div>
       </section>
@@ -7555,6 +7645,79 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL PRATINJAU SURAT RESMI DI DASHBOARD ADMIN 1 ==================== -->
+  <div class="modal-backdrop" id="modal-preview-admin-surat" style="display:none; align-items:center; justify-content:center; z-index:99998;">
+    <div class="glass-panel" style="width:95%; max-width:820px; max-height:92vh; display:flex; flex-direction:column; background:rgba(15,23,42,0.98); border:1px solid rgba(168,85,247,0.4); border-radius:16px; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.85);">
+      <div style="background:linear-gradient(135deg, rgba(88,28,135,0.4) 0%, rgba(126,34,206,0.2) 100%); padding:0.9rem 1.25rem; border-bottom:1px solid rgba(168,85,247,0.25); display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:rgba(168,85,247,0.25); color:#c084fc; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+            <i class="fa-solid fa-file-invoice"></i>
+          </div>
+          <div>
+            <h4 style="margin:0; font-size:0.98rem; color:#f8fafc; font-weight:700;" id="modal-admin-surat-header-title">Dokumen Resmi Surat Pengantar</h4>
+            <span style="font-size:0.75rem; color:#d8b4fe;" id="modal-admin-surat-header-sub">Arsip Resmi RT.001 / RW.013 Graha Asri</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-sm btn-purple" onclick="printSuratFromAdminModal()">
+            <i class="fa-solid fa-print"></i> Cetak / PDF
+          </button>
+          <button class="modal-close text-light" data-close="modal-preview-admin-surat" onclick="closeModal('modal-preview-admin-surat')" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
+        </div>
+      </div>
+      <div style="padding:1.25rem; overflow-y:auto; flex:1;" id="modal-admin-surat-body-wrap">
+        <!-- Surat paper dynamically rendered by JS -->
+      </div>
+      <div style="background:rgba(15,23,42,0.95); border-top:1px solid rgba(255,255,255,0.08); padding:0.75rem 1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;" id="modal-admin-surat-footer-actions">
+        <!-- Actions dynamically filled -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL TOLAK SURAT PENGANTAR ==================== -->
+  <div class="modal-backdrop" id="modal-reject-surat" style="display:none; align-items:center; justify-content:center; z-index:99999;">
+    <div class="glass-panel" style="width:92%; max-width:440px; background:linear-gradient(145deg, rgba(15,23,42,0.98) 0%, rgba(30,41,59,0.98) 100%); border:1px solid rgba(239,68,68,0.45); border-radius:16px; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.85);">
+      <div style="background:linear-gradient(135deg, rgba(153,27,27,0.4) 0%, rgba(185,28,28,0.2) 100%); padding:1.15rem 1.35rem; border-bottom:1px solid rgba(239,68,68,0.25); display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.4); display:flex; align-items:center; justify-content:center; color:#f87171; font-size:1.1rem;">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </div>
+          <div>
+            <h4 style="margin:0; font-size:0.98rem; color:#f8fafc; font-weight:700;">Tolak Pengajuan Surat</h4>
+            <span style="font-size:0.75rem; color:#fca5a5;">Pembatalan Penerbitan Surat Resmi</span>
+          </div>
+        </div>
+        <button class="modal-close text-light" data-close="modal-reject-surat" onclick="closeModal('modal-reject-surat')" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+      <div style="padding:1.35rem;">
+        <div id="reject-surat-target-info" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.75rem; margin-bottom:1rem; font-size:0.8rem; color:#cbd5e1;">
+          <!-- Detail surat yang akan ditolak -->
+        </div>
+        <form id="form-reject-surat" onsubmit="event.preventDefault(); submitRejectSurat();">
+          <div style="margin-bottom:1.15rem;">
+            <label class="form-label" style="font-size:0.8rem; color:#cbd5e1; margin-bottom:6px; display:block;">
+              <i class="fa-solid fa-circle-info text-rose"></i> Pilih / Tuliskan Alasan Penolakan:
+            </label>
+            <select id="reject-surat-reason-select" class="form-control" onchange="toggleRejectCustomReason(this.value)" style="margin-bottom:8px; font-size:0.83rem;">
+              <option value="Data kependudukan / NIK tidak cocok dengan database warga">Data kependudukan / NIK tidak cocok dengan database warga</option>
+              <option value="Pemohon belum berdomisili atau terdaftar resmi di lingkungan RT.001">Pemohon belum berdomisili atau terdaftar resmi di lingkungan RT.001</option>
+              <option value="Format atau keperluan surat tidak sesuai ketentuan RT">Format atau keperluan surat tidak sesuai ketentuan RT</option>
+              <option value="Dokumen lampiran pendukung belum lengkap diserahkan">Dokumen lampiran pendukung belum lengkap diserahkan</option>
+              <option value="Lainnya">Alasan Lainnya (Ketik Manual)...</option>
+            </select>
+            <textarea id="reject-surat-reason-custom" class="form-control" rows="2" placeholder="Tuliskan catatan alasan penolakan secara spesifik..." style="display:none; font-size:0.82rem; margin-top:6px;"></textarea>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="btn btn-outline" data-close="modal-reject-surat" onclick="closeModal('modal-reject-surat')" style="font-size:0.85rem; padding:0.45rem 1.1rem;">Batal</button>
+            <button type="submit" class="btn btn-outline-danger btn-sm" style="font-size:0.85rem; padding:0.45rem 1.25rem; font-weight:600; background:rgba(239,68,68,0.2);">
+              <i class="fa-solid fa-ban"></i> Konfirmasi Tolak Surat
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Luxury Scroll-to-Top Button -->
   <button id="btn-scroll-top" class="scroll-to-top-btn" title="Kembali ke Bagian Atas Halaman (1-Klik)" aria-label="Kembali ke Bagian Atas">
     <div class="scroll-top-icon-wrapper">
@@ -7567,6 +7730,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.50"></script>
+  <script src="app.js?v=2.9.51"></script>
 </body>
 </html>

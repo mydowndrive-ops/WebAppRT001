@@ -1844,10 +1844,10 @@ let currentWargaAnnualChartType = 'area';
 // RBAC Allowed Targets (Global & Unified across entire app)
 const B1_ALLOWED_TARGETS = [
   'dashboard', 'warga', 'checklist', 'non-iuran', 'jimpitan',
-  'pos-anggaran', 'pengajuan-dana-admin', 'pengeluaran', 'laporan', 'aset-rt', 'pengaturan'
+  'pos-anggaran', 'pengajuan-dana-admin', 'arsip-surat', 'pengeluaran', 'laporan', 'aset-rt', 'pengaturan'
 ];
 const B2_ALLOWED_TARGETS = ['pengurus-struktur', 'jimpitan', 'aset-rt'];
-const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'warga', 'ronda-pengurus', 'jimpitan', 'pengajuan-dana-admin', 'non-iuran', 'aset-rt'];
+const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'warga', 'ronda-pengurus', 'jimpitan', 'pengajuan-dana-admin', 'arsip-surat', 'non-iuran', 'aset-rt'];
 const WARGA_ALLOWED_TARGETS = [
   'portal-warga', 'non-iuran', 'ronda-pengurus', 'pengajuan-fasum', 'surat-pengantar', 'aspirasi-warga', 'pengurus-struktur', 'aset-rt'
 ];
@@ -4334,7 +4334,8 @@ function navigateToView(viewId) {
     'aspirasi-warga': { title: 'Kotak Aspirasi & Masukan Warga', sub: 'Penyampaian Saran, Ide Kreatif & Masukan Warga Demi Kemajuan RT.001' },
     'pengurus-struktur': { title: 'Bagan & Struktur Pengurus RT', sub: 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027' },
     'aset-rt': { title: 'Inventaris & Aset RT.001', sub: 'Pencatatan Sarana Prasarana & Nilai Perolehan Aset Lingkungan Graha Asri' },
-    'portal-warga': { title: 'Portal Mandiri Warga RT.001', sub: 'Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan' }
+    'portal-warga': { title: 'Portal Mandiri Warga RT.001', sub: 'Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan' },
+    'arsip-surat': { title: 'Buku Register & Arsip e-Surat Warga', sub: 'Pusat Otorisasi, Verifikasi Digital Sign & Arsip Permohonan Surat RT.001' }
   };
 
   if (titles[viewId]) {
@@ -4380,6 +4381,10 @@ function navigateToView(viewId) {
   }
   if (viewId === 'aspirasi-warga') {
     if (typeof renderAspirasiWargaView === 'function') renderAspirasiWargaView();
+  }
+  if (viewId === 'arsip-surat') {
+    if (typeof renderBukuRegisterSurat === 'function') renderBukuRegisterSurat();
+    if (typeof updateSuratArchiveBadges === 'function') updateSuratArchiveBadges();
   }
 
   // Update header buttons & RBAC saat berpindah tampilan
@@ -5181,6 +5186,8 @@ function renderAll() {
   try { updateFundRequestBadges(); } catch (e) { console.error('Error updateFundRequestBadges', e); }
   try { populateResidentSelects(); } catch (e) { console.error('Error populateResidentSelects', e); }
   try { if (typeof renderPortalWarga === 'function') renderPortalWarga(); } catch (e) { console.error('Error renderPortalWarga', e); }
+  try { if (typeof renderBukuRegisterSurat === 'function') renderBukuRegisterSurat(); } catch (e) { console.error('Error renderBukuRegisterSurat', e); }
+  try { if (typeof updateSuratArchiveBadges === 'function') updateSuratArchiveBadges(); } catch (e) { console.error('Error updateSuratArchiveBadges', e); }
   try { applyRBAC(); } catch (e) { console.error('Error applyRBAC', e); }
   try { updateUserProfileUI(); } catch (e) { console.error('Error updateUserProfileUI', e); }
 }
@@ -8033,10 +8040,11 @@ function applyRBAC() {
           'jimpitan': 5,
           'pos-anggaran': 6,
           'pengajuan-dana-admin': 7,
-          'pengeluaran': 8,
-          'laporan': 9,
-          'aset-rt': 10,
-          'pengaturan': 11
+          'arsip-surat': 8,
+          'pengeluaran': 9,
+          'laporan': 10,
+          'aset-rt': 11,
+          'pengaturan': 12
         };
         if (b1Order[target]) el.style.order = b1Order[target];
       } else {
@@ -8066,8 +8074,9 @@ function applyRBAC() {
           'ronda-pengurus': 3,
           'jimpitan': 4,
           'pengajuan-dana-admin': 5,
-          'non-iuran': 6,
-          'aset-rt': 7
+          'arsip-surat': 6,
+          'non-iuran': 7,
+          'aset-rt': 8
         };
         if (typeof pengurusOrder[target] !== 'undefined') el.style.order = pengurusOrder[target];
 
@@ -13047,6 +13056,18 @@ function verifySuratAuthenticity(noSurat, nama, nik, keperluan, tglStr, provided
     };
   }
 
+  // Cek apakah surat telah ditolak oleh Pengurus RT
+  if (registerEntry && registerEntry.status === 'Ditolak') {
+    return {
+      isValid: false,
+      reason: 'REJECTED',
+      message: `PERINGATAN: Pengajuan surat pengantar ini TELAH DITOLAK oleh ${registerEntry.rejectedBy || 'Pengurus RT'}. Alasan: "${registerEntry.rejectReason || 'Tidak memenuhi persyaratan'}". Dokumen TIDAK BERLAKU.`,
+      isRegistered: true,
+      registerData: registerEntry,
+      expectedSig
+    };
+  }
+
   // Cek apakah surat masih dalam status pending (belum disetujui Ketua RT atau Admin 1)
   if (registerEntry && (registerEntry.isApproved === false || registerEntry.status === 'Menunggu Persetujuan')) {
     return {
@@ -13160,10 +13181,46 @@ function recordSuratToRegister(entry) {
 
   saveState();
   renderBukuRegisterSurat();
+  updateSuratArchiveBadges();
+}
+
+let currentSuratFilter = 'all';
+let currentSuratSearch = '';
+let pendingRejectSuratIdx = null;
+let currentAdminPreviewSuratIdx = null;
+
+function updateSuratArchiveBadges() {
+  const badge = document.getElementById('sidebar-surat-badge');
+  if (!badge) return;
+  const pendingCount = (state.suratRegister || []).filter(s => s.isApproved !== true && s.status !== 'Ditolak' && s.status !== 'Sah & Tervalidasi').length;
+  badge.textContent = pendingCount;
+  if (pendingCount > 0) {
+    badge.style.display = 'inline-flex';
+    badge.style.background = 'rgba(245, 158, 11, 0.45)';
+    badge.style.color = '#fef08a';
+  } else {
+    badge.style.background = 'rgba(168, 85, 247, 0.25)';
+    badge.style.color = '#c084fc';
+  }
+}
+
+function filterSuratRegister(filterType) {
+  currentSuratFilter = filterType || 'all';
+  document.querySelectorAll('.btn-filter-surat').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  const activeBtn = document.getElementById(`filter-surat-${currentSuratFilter}`);
+  if (activeBtn) activeBtn.classList.add('active');
+  renderBukuRegisterSurat();
+}
+
+function handleSearchSuratAdmin(val) {
+  currentSuratSearch = (val || '').toLowerCase().trim();
+  renderBukuRegisterSurat();
 }
 
 /**
- * Merender daftar riwayat surat pada Buku Register e-Surat di halaman
+ * Merender daftar riwayat surat pada Buku Register e-Surat di halaman Admin 1 & Pengurus
  */
 function renderBukuRegisterSurat() {
   if (typeof document === 'undefined') return;
@@ -13175,87 +13232,197 @@ function renderBukuRegisterSurat() {
     saveState();
   }
 
-  const badgeTotal = document.getElementById('badge-total-register-surat');
-  if (badgeTotal) {
-    badgeTotal.textContent = `${state.suratRegister.length} Surat Tercatat`;
-  }
+  // Hitung statistik komprehensif
+  const totalCount = state.suratRegister.length;
+  const pendingCount = state.suratRegister.filter(s => s.isApproved !== true && s.status !== 'Ditolak' && s.status !== 'Sah & Tervalidasi').length;
+  const approvedCount = state.suratRegister.filter(s => s.isApproved === true || s.status === 'Sah & Tervalidasi').length;
+  const rejectedCount = state.suratRegister.filter(s => s.status === 'Ditolak').length;
+
+  // Perbarui Kartu Statistik
+  const elStatTotal = document.getElementById('stat-surat-total');
+  const elStatPending = document.getElementById('stat-surat-pending');
+  const elStatApproved = document.getElementById('stat-surat-approved');
+  const elStatRejected = document.getElementById('stat-surat-rejected');
+
+  if (elStatTotal) elStatTotal.textContent = totalCount;
+  if (elStatPending) elStatPending.textContent = pendingCount;
+  if (elStatApproved) elStatApproved.textContent = approvedCount;
+  if (elStatRejected) elStatRejected.textContent = rejectedCount;
+
+  // Perbarui Counter pada Tab Filter
+  const elFilterAll = document.getElementById('count-filter-all');
+  const elFilterPending = document.getElementById('count-filter-pending');
+  const elFilterApproved = document.getElementById('count-filter-approved');
+  const elFilterRejected = document.getElementById('count-filter-rejected');
+
+  if (elFilterAll) elFilterAll.textContent = totalCount;
+  if (elFilterPending) elFilterPending.textContent = pendingCount;
+  if (elFilterApproved) elFilterApproved.textContent = approvedCount;
+  if (elFilterRejected) elFilterRejected.textContent = rejectedCount;
+
+  // Update Badge di Sidebar Admin
+  updateSuratArchiveBadges();
 
   tbody.innerHTML = '';
 
-  // Kondisi saat arsip kosong (telah dihapus semua oleh admin)
-  if (state.suratRegister.length === 0) {
+  // Kondisi saat arsip kosong total
+  if (totalCount === 0) {
     const trEmpty = document.createElement('tr');
     trEmpty.innerHTML = `
       <td colspan="6" style="text-align:center; padding:36px 16px; color:#94a3b8;">
         <div style="font-size:2.2rem; color:#475569; margin-bottom:8px;"><i class="fa-solid fa-box-archive"></i></div>
         <div style="font-weight:600; color:#cbd5e1; font-size:0.95rem;">Belum Ada Riwayat Surat Terdaftar</div>
-        <div style="font-size:0.8rem; color:#64748b; margin-top:4px;">Buku register saat ini bersih. Surat pengantar yang baru dibuat akan otomatis tercatat di sini.</div>
+        <div style="font-size:0.8rem; color:#64748b; margin-top:4px;">Buku register saat ini bersih. Surat pengantar yang diajukan warga akan otomatis tercatat di sini.</div>
       </td>
     `;
     tbody.appendChild(trEmpty);
     return;
   }
 
-  state.suratRegister.forEach((item, idx) => {
-    // Normalisasi & perbaikan otomatis jika ada data lama yang tanggalnya undefined
+  // Filter dan Pencarian
+  const filteredList = state.suratRegister.map((item, originalIdx) => ({ item, originalIdx })).filter(({ item }) => {
+    // 1. Filter Status
+    const isApproved = (item.isApproved === true || item.status === 'Sah & Tervalidasi');
+    const isRejected = (item.status === 'Ditolak');
+    const isPending = (!isApproved && !isRejected);
+
+    if (currentSuratFilter === 'pending' && !isPending) return false;
+    if (currentSuratFilter === 'approved' && !isApproved) return false;
+    if (currentSuratFilter === 'rejected' && !isRejected) return false;
+
+    // 2. Search Query
+    if (currentSuratSearch) {
+      const q = currentSuratSearch;
+      const matchNo = (item.noSurat || '').toLowerCase().includes(q);
+      const matchNama = (item.nama || '').toLowerCase().includes(q);
+      const matchNik = (item.nik || '').toLowerCase().includes(q);
+      const matchKep = (item.keperluan || '').toLowerCase().includes(q);
+      const matchTujuan = (item.tujuan || '').toLowerCase().includes(q);
+      if (!matchNo && !matchNama && !matchNik && !matchKep && !matchTujuan) return false;
+    }
+
+    return true;
+  });
+
+  // Jika hasil filter kosong
+  if (filteredList.length === 0) {
+    const trEmpty = document.createElement('tr');
+    trEmpty.innerHTML = `
+      <td colspan="6" style="text-align:center; padding:28px 16px; color:#94a3b8;">
+        <div style="font-size:1.8rem; color:#64748b; margin-bottom:6px;"><i class="fa-solid fa-magnifying-glass"></i></div>
+        <div style="font-weight:600; color:#cbd5e1; font-size:0.9rem;">Tidak Ditemukan Surat Sesuai Kriteria</div>
+        <div style="font-size:0.78rem; color:#64748b; margin-top:2px;">Silakan pilih filter status lain atau ubah kata kunci pencarian.</div>
+      </td>
+    `;
+    tbody.appendChild(trEmpty);
+    return;
+  }
+
+  filteredList.forEach(({ item, originalIdx }) => {
     const tglDisplay = (item.tgl && item.tgl !== 'undefined')
       ? item.tgl
       : (item.tglStr || (item.createdAt ? formatDateIndo(new Date(item.createdAt)) : '21 September 2026'));
     item.tgl = tglDisplay;
 
     const isApproved = (item.isApproved === true || item.status === 'Sah & Tervalidasi');
+    const isRejected = (item.status === 'Ditolak');
 
-    const statusBadge = isApproved
-      ? `<span class="badge-pill badge-emerald" style="font-size:0.7rem; padding:2px 8px; font-family:monospace;" title="Disetujui oleh: ${item.approvedBy || 'Ketua RT / Admin 1'} | Token: ${item.sig}">
-           <i class="fa-solid fa-circle-check"></i> SAH &bull; SIG-${(item.sig || '').substring(0, 8)}
-         </span>`
-      : `<span class="badge-pill" style="font-size:0.7rem; padding:2px 8px; background:rgba(245,158,11,0.18); color:#fbbf24; border:1px dashed rgba(245,158,11,0.5);" title="Draft surat belum disetujui, QR Code disembunyikan">
-           <i class="fa-solid fa-clock-rotate-left"></i> Menunggu Persetujuan
-         </span>`;
+    let statusBadge = '';
+    let keteranganHtml = '';
 
-    const approveButton = !isApproved
-      ? `<button type="button" class="btn btn-emerald btn-sm btn-action-approve-surat" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem;" title="Setujui & Terbitkan QR Code (Ketua RT / Admin 1)">
-           <i class="fa-solid fa-signature"></i> Setujui
-         </button>`
-      : '';
+    if (isApproved) {
+      statusBadge = `
+        <span class="badge-pill badge-emerald" style="font-size:0.7rem; padding:2px 8px; font-family:monospace;" title="Disetujui oleh: ${item.approvedBy || 'Ketua RT / Admin 1'} | Token: ${item.sig}">
+          <i class="fa-solid fa-circle-check"></i> SAH &bull; SIG-${(item.sig || '').substring(0, 8)}
+        </span>
+      `;
+      keteranganHtml = `<div style="font-size:0.72rem; color:#34d399;"><i class="fa-solid fa-user-check"></i> ${item.approvedBy || 'Disahkan Admin'}</div>`;
+    } else if (isRejected) {
+      statusBadge = `
+        <span class="badge-pill" style="font-size:0.7rem; padding:2px 8px; background:rgba(239,68,68,0.18); color:#f87171; border:1px solid rgba(239,68,68,0.4);" title="Alasan: ${item.rejectReason || '-'}">
+          <i class="fa-solid fa-circle-xmark"></i> Ditolak
+        </span>
+      `;
+      keteranganHtml = `
+        <div style="font-size:0.72rem; color:#f87171;" title="${item.rejectReason || '-'}">
+          <i class="fa-solid fa-ban"></i> ${item.rejectReason ? (item.rejectReason.length > 22 ? item.rejectReason.substring(0, 22) + '...' : item.rejectReason) : 'Ditolak'}
+        </div>
+      `;
+    } else {
+      statusBadge = `
+        <span class="badge-pill" style="font-size:0.7rem; padding:2px 8px; background:rgba(245,158,11,0.18); color:#fbbf24; border:1px dashed rgba(245,158,11,0.5);" title="Draft surat belum disetujui, QR Code disembunyikan">
+          <i class="fa-solid fa-clock-rotate-left"></i> Menunggu
+        </span>
+      `;
+      keteranganHtml = `<div style="font-size:0.72rem; color:#fbbf24;"><i class="fa-solid fa-hourglass-half"></i> Perlu Otorisasi</div>`;
+    }
+
+    // Tombol Aksi
+    let actionButtons = `
+      <button type="button" class="btn btn-outline btn-sm btn-action-view-surat" data-idx="${originalIdx}" style="padding:3px 8px; font-size:0.75rem;" title="Buka Pratinjau Surat Ini">
+        <i class="fa-solid fa-eye"></i> Lihat
+      </button>
+    `;
+
+    if (!isApproved && !isRejected) {
+      actionButtons += `
+        <button type="button" class="btn btn-emerald btn-sm btn-action-approve-surat" data-idx="${originalIdx}" style="padding:3px 8px; font-size:0.75rem;" title="Setujui & Terbitkan QR Code (Ketua RT / Admin 1)">
+          <i class="fa-solid fa-signature"></i> Setujui
+        </button>
+        <button type="button" class="btn btn-outline-danger btn-sm btn-action-reject-surat" data-idx="${originalIdx}" style="padding:3px 8px; font-size:0.75rem; background:rgba(239,68,68,0.12); color:#fca5a5; border-color:rgba(239,68,68,0.35);" title="Tolak Pengajuan Surat Ini">
+          <i class="fa-solid fa-xmark"></i> Tolak
+        </button>
+      `;
+    } else if (isApproved) {
+      actionButtons += `
+        <button type="button" class="btn btn-outline-cyan btn-sm btn-action-verify-row" data-idx="${originalIdx}" style="padding:3px 8px; font-size:0.75rem;" title="Cek Sertifikat Validasi Digital">
+          <i class="fa-solid fa-shield-check"></i> Cek Sah
+        </button>
+      `;
+    } else if (isRejected) {
+      actionButtons += `
+        <button type="button" class="btn btn-outline-emerald btn-sm btn-action-approve-surat" data-idx="${originalIdx}" style="padding:3px 8px; font-size:0.75rem;" title="Setujui Ulang">
+          <i class="fa-solid fa-rotate-left"></i> Setujui
+        </button>
+      `;
+    }
+
+    actionButtons += `
+      <button type="button" class="btn btn-outline-danger btn-sm btn-action-delete-surat" data-idx="${originalIdx}" style="padding:3px 8px; font-size:0.75rem; color:#f87171; border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.08);" title="Hapus Surat (Khusus Admin 1 / Bendahara 1)">
+        <i class="fa-solid fa-lock" style="font-size:0.65rem; margin-right:2px; color:#fbbf24;"></i><i class="fa-solid fa-trash-can"></i>
+      </button>
+    `;
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>
         <strong style="color:#38bdf8; font-size:0.83rem;">${item.noSurat || '-'}</strong>
-        <div style="font-size:0.72rem; color:#64748b;">Tujuan: ${item.tujuan || 'Instansi Terkait'}</div>
+        <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;">${tglDisplay}</div>
       </td>
-      <td style="color:#cbd5e1; font-size:0.82rem; white-space:nowrap;">${tglDisplay}</td>
       <td>
         <strong style="color:#f8fafc;">${item.nama || '-'}</strong>
         <div style="font-family:monospace; font-size:0.75rem; color:#94a3b8;">${item.nik || '-'}</div>
       </td>
       <td>
         <span style="color:#fbbf24; font-size:0.83rem; font-weight:600;">${item.keperluan || '-'}</span>
+        <div style="font-size:0.72rem; color:#64748b; margin-top:1px;">Tujuan: ${item.tujuan || 'Instansi Terkait'}</div>
       </td>
       <td style="text-align:center;">
         ${statusBadge}
-        ${isApproved && item.approvedBy ? `<div style="font-size:0.65rem; color:#6ee7b7; margin-top:2px;"><i class="fa-solid fa-user-check"></i> ${item.approvedBy}</div>` : ''}
+      </td>
+      <td>
+        ${keteranganHtml}
       </td>
       <td style="text-align:center;">
-        <div style="display:inline-flex; align-items:center; justify-content:center; gap:5px; flex-wrap:nowrap;">
-          ${approveButton}
-          <button type="button" class="btn btn-outline btn-sm btn-action-view-surat" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem;" title="Buka Pratinjau Surat Ini">
-            <i class="fa-solid fa-eye"></i> Lihat
-          </button>
-          <button type="button" class="btn btn-outline-cyan btn-sm btn-action-verify-row" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem;" title="Cek Sertifikat Validasi Digital">
-            <i class="fa-solid fa-shield-check"></i> Cek Sah
-          </button>
-          <button type="button" class="btn btn-outline-danger btn-sm btn-action-delete-surat" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem; color:#f87171; border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.08);" title="Hapus Surat (Khusus Admin 1 / Bendahara 1)">
-            <i class="fa-solid fa-lock" style="font-size:0.65rem; margin-right:2px; color:#fbbf24;"></i><i class="fa-solid fa-trash-can"></i>
-          </button>
+        <div style="display:inline-flex; align-items:center; justify-content:center; gap:4px; flex-wrap:wrap;">
+          ${actionButtons}
         </div>
       </td>
     `;
     tbody.appendChild(tr);
   });
 
-  // Event listener tombol Setujui per baris register
+  // Event listener tombol Setujui
   tbody.querySelectorAll('.btn-action-approve-surat').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = parseInt(btn.getAttribute('data-idx'), 10);
@@ -13263,15 +13430,23 @@ function renderBukuRegisterSurat() {
     });
   });
 
-  // Event listener tombol Lihat Surat per baris register
-  tbody.querySelectorAll('.btn-action-view-surat').forEach(btn => {
+  // Event listener tombol Tolak
+  tbody.querySelectorAll('.btn-action-reject-surat').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = parseInt(btn.getAttribute('data-idx'), 10);
-      viewSuratInPageFromRegister(idx);
+      openRejectSuratModal(idx);
     });
   });
 
-  // Event listener tombol Cek Sah per baris register
+  // Event listener tombol Lihat Surat
+  tbody.querySelectorAll('.btn-action-view-surat').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      openAdminSuratPreview(idx);
+    });
+  });
+
+  // Event listener tombol Cek Sah
   tbody.querySelectorAll('.btn-action-verify-row').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = parseInt(btn.getAttribute('data-idx'), 10);
@@ -13289,13 +13464,80 @@ function renderBukuRegisterSurat() {
     });
   });
 
-  // Event listener tombol Hapus per baris register
+  // Event listener tombol Hapus
   tbody.querySelectorAll('.btn-action-delete-surat').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = parseInt(btn.getAttribute('data-idx'), 10);
       deleteSuratFromRegister(idx);
     });
   });
+}
+
+function openRejectSuratModal(idx) {
+  if (!state.suratRegister || !state.suratRegister[idx]) return;
+  const target = state.suratRegister[idx];
+  pendingRejectSuratIdx = idx;
+
+  const infoEl = document.getElementById('reject-surat-target-info');
+  if (infoEl) {
+    infoEl.innerHTML = `
+      <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:3px;">Surat yang akan ditolak:</div>
+      <div style="font-weight:700; color:#38bdf8; font-size:0.85rem;">${target.noSurat || '-'}</div>
+      <div style="color:#f8fafc; font-size:0.83rem; margin-top:2px;">${target.nama || '-'} (${target.nik || '-'})</div>
+      <div style="color:#fbbf24; font-size:0.78rem; margin-top:2px;">Keperluan: ${target.keperluan || '-'}</div>
+    `;
+  }
+
+  const sel = document.getElementById('reject-surat-reason-select');
+  const custom = document.getElementById('reject-surat-reason-custom');
+  if (sel) sel.selectedIndex = 0;
+  if (custom) {
+    custom.value = '';
+    custom.style.display = 'none';
+  }
+
+  openModal('modal-reject-surat');
+}
+
+function toggleRejectCustomReason(val) {
+  const custom = document.getElementById('reject-surat-reason-custom');
+  if (!custom) return;
+  if (val === 'Lainnya') {
+    custom.style.display = 'block';
+    custom.focus();
+  } else {
+    custom.style.display = 'none';
+  }
+}
+
+function submitRejectSurat() {
+  if (pendingRejectSuratIdx === null || !state.suratRegister || !state.suratRegister[pendingRejectSuratIdx]) return;
+  const target = state.suratRegister[pendingRejectSuratIdx];
+
+  const sel = document.getElementById('reject-surat-reason-select');
+  const custom = document.getElementById('reject-surat-reason-custom');
+  let reason = sel ? sel.value : 'Tidak memenuhi ketentuan';
+  if (reason === 'Lainnya') {
+    reason = (custom?.value || '').trim() || 'Tidak memenuhi ketentuan RT';
+  }
+
+  const rejecter = (state.currentUser === 'b1' ? 'Admin 1 (Bendahara 1)' : 'Ketua RT.001 (Maryanto)');
+
+  target.isApproved = false;
+  target.status = 'Ditolak';
+  target.rejectedBy = rejecter;
+  target.rejectReason = reason;
+  target.rejectedAt = new Date().toISOString();
+
+  saveState();
+  closeModal('modal-reject-surat');
+  renderBukuRegisterSurat();
+  updateSuratArchiveBadges();
+
+  if (typeof showToast === 'function') {
+    showToast(`❌ Surat ${target.noSurat} berhasil ditolak dengan alasan: "${reason}"`, 'warning');
+  }
+  pendingRejectSuratIdx = null;
 }
 
 let pendingSuratDeleteAction = null;
@@ -13603,6 +13845,284 @@ function viewSuratInPageFromRegister(idx) {
   }
 }
 
+let currentAdminSuratPreviewIdx = null;
+
+/**
+ * Membuka modal pratinjau surat resmi di dashboard Admin 1 & Pengurus
+ */
+function openAdminSuratPreview(idx) {
+  if (!state.suratRegister || !state.suratRegister[idx]) return;
+  const target = state.suratRegister[idx];
+  currentAdminSuratPreviewIdx = idx;
+
+  const titleEl = document.getElementById('modal-admin-surat-header-title');
+  const subEl = document.getElementById('modal-admin-surat-header-sub');
+  const bodyWrap = document.getElementById('modal-admin-surat-body-wrap');
+  const footerEl = document.getElementById('modal-admin-surat-footer-actions');
+
+  const isApproved = (target.isApproved === true || target.status === 'Sah & Tervalidasi');
+  const isRejected = (target.status === 'Ditolak' || target.status === 'DITOLAK');
+
+  if (titleEl) {
+    titleEl.textContent = `Dokumen e-Surat: ${target.noSurat || 'Tanpa Nomor'}`;
+  }
+  if (subEl) {
+    let statusText = isApproved ? 'Status: Sah & Tervalidasi' : (isRejected ? `Status: Ditolak (${target.rejectReason || 'Ketentuan RT'})` : 'Status: Menunggu Persetujuan');
+    subEl.textContent = `Pemohon: ${target.nama} (${target.nik}) • ${statusText}`;
+  }
+
+  // Base URL untuk verifikasi
+  let baseUrl = window.location.href.split('?')[0].split('#')[0];
+  if (!baseUrl.startsWith('http')) {
+    baseUrl = 'https://mydowndrive-ops.github.io/WebAppRT001/';
+  }
+  const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(target.noSurat)}&nama=${encodeURIComponent(target.nama)}&nik=${encodeURIComponent(target.nik)}&kep=${encodeURIComponent(target.keperluan)}&tgl=${encodeURIComponent(target.tgl)}&sig=${encodeURIComponent(target.sig)}`;
+
+  let bannerHtml = '';
+  if (isApproved) {
+    bannerHtml = `
+      <div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); border-radius:10px; padding:10px 14px; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-circle-check text-emerald" style="font-size:1.15rem;"></i>
+          <div>
+            <div style="font-weight:700; color:#34d399; font-size:0.83rem;">SURAT RESMI TELAH DISETUJUI &amp; SAH</div>
+            <div style="font-size:0.75rem; color:#cbd5e1;">Disetujui oleh: <strong>${target.approvedBy || 'Pengurus RT'}</strong> • QR Digital Sign Aktif</div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-emerald btn-sm" onclick="openSuratVerificationModal({no:'${target.noSurat}',nama:'${target.nama}',nik:'${target.nik}',kep:'${target.keperluan}',tgl:'${target.tgl}',sig:'${target.sig}'})">
+          <i class="fa-solid fa-shield-check"></i> Cek Keabsahan Dokumen
+        </button>
+      </div>
+    `;
+  } else if (isRejected) {
+    bannerHtml = `
+      <div style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.35); border-radius:10px; padding:10px 14px; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-circle-xmark text-rose" style="font-size:1.15rem;"></i>
+          <div>
+            <div style="font-weight:700; color:#f87171; font-size:0.83rem;">PENGAJUAN SURAT TELAH DITOLAK</div>
+            <div style="font-size:0.75rem; color:#cbd5e1;">Alasan: <em>"${target.rejectReason || 'Tidak memenuhi ketentuan'}"</em> (Ditolak oleh: ${target.rejectedBy || 'Pengurus RT'})</div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline-emerald btn-sm" onclick="requestApproveSurat(${idx}); closeModal('modal-preview-admin-surat');">
+          <i class="fa-solid fa-rotate-left"></i> Setujui Ulang
+        </button>
+      </div>
+    `;
+  } else {
+    bannerHtml = `
+      <div style="background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); border-radius:10px; padding:10px 14px; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <i class="fa-solid fa-clock-rotate-left text-gold" style="font-size:1.15rem;"></i>
+          <div>
+            <div style="font-weight:700; color:#fbbf24; font-size:0.83rem;">MENUNGGU PERSETUJUAN RESMI PENGURUS</div>
+            <div style="font-size:0.75rem; color:#cbd5e1;">Surat belum disahkan. Klik 'Setujui & Terbitkan QR' di bawah untuk menerbitkan tanda tangan digital resmi.</div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-emerald btn-sm" onclick="requestApproveSurat(${idx}); closeModal('modal-preview-admin-surat');">
+          <i class="fa-solid fa-signature"></i> Setujui Sekarang
+        </button>
+      </div>
+    `;
+  }
+
+  if (bodyWrap) {
+    bodyWrap.innerHTML = `
+      ${bannerHtml}
+      <div id="modal-admin-surat-paper" class="surat-kertas-formal" style="background:#ffffff; color:#0f172a; padding:1.8rem 2.2rem; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.25); position:relative; font-family:'Inter', Arial, sans-serif;">
+        ${isRejected ? `
+          <div style="position:absolute; top:40%; left:50%; transform:translate(-50%, -50%) rotate(-25deg); border:5px solid #ef4444; color:#ef4444; font-size:2.4rem; font-weight:900; letter-spacing:4px; padding:8px 24px; border-radius:12px; opacity:0.35; pointer-events:none; text-transform:uppercase;">
+            DITOLAK / INVALID
+          </div>
+        ` : ''}
+
+        <!-- KOP SURAT RT -->
+        <div class="surat-kop" style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
+          <div class="kop-logo-wrap">
+            <img src="assets/logo.png" alt="Logo RT.001" style="width:65px; height:65px; object-fit:contain;" onerror="this.style.display='none'">
+          </div>
+          <div class="kop-teks" style="text-align:center; flex:1;">
+            <h3 style="margin:0; font-size:1.15rem; font-weight:800; letter-spacing:0.5px; color:#0f172a;">RUKUN TETANGGA 001 / RUKUN WARGA 013</h3>
+            <h4 style="margin:2px 0; font-size:0.95rem; font-weight:700; color:#334155;">PERUMAHAN GRAHA ASRI &bull; SEKTOR GRAHA JABABEKA DESA SIMPANGAN</h4>
+            <p style="margin:0; font-size:0.8rem; color:#64748b;">Kecamatan Cikarang Utara, Kabupaten Bekasi, Jawa Barat 17530</p>
+          </div>
+        </div>
+        <div style="height:3px; background:#0f172a; margin-bottom:2px;"></div>
+        <div style="height:1px; background:#0f172a; margin-bottom:14px;"></div>
+
+        <!-- NOMOR SURAT -->
+        <div style="text-align:center; margin-bottom:1.2rem;">
+          <h4 style="margin:0; font-size:1.15rem; text-decoration:underline; font-weight:800; color:#0f172a;">SURAT PENGANTAR / KETERANGAN</h4>
+          <span style="font-size:0.88rem; color:#475569; font-weight:600;">Nomor: ${target.noSurat || '-'}</span>
+        </div>
+
+        <!-- ISI SURAT -->
+        <div style="font-size:0.88rem; line-height:1.7; color:#1e293b;">
+          <p style="margin-bottom:12px;">Yang bertanda tangan di bawah ini Pengurus Rukun Tetangga 001 / Rukun Warga 013 Perumahan Graha Asri Sektor Graha Jababeka, Desa Simpangan, Kecamatan Cikarang Utara, Kabupaten Bekasi, dengan ini menerangkan bahwa:</p>
+          
+          <table style="width:100%; border-collapse:collapse; margin-bottom:14px; font-size:0.88rem;">
+            <tr><td style="width:180px; padding:3px 0;">Nama Lengkap</td><td style="width:15px;">:</td><td><strong>${target.nama || '-'}</strong></td></tr>
+            <tr><td style="padding:3px 0;">NIK</td><td>:</td><td>${target.nik || '-'}</td></tr>
+            <tr><td style="padding:3px 0;">Tempat, Tgl Lahir</td><td>:</td><td>${target.ttl || 'Bekasi, 12 Mei 1985'}</td></tr>
+            <tr><td style="padding:3px 0;">Jenis Kelamin</td><td>:</td><td>${target.gender || 'Laki-laki'}</td></tr>
+            <tr><td style="padding:3px 0;">Agama / Pekerjaan</td><td>:</td><td>${target.agama || 'Islam'} / ${target.pekerjaan || 'Karyawan Swasta'}</td></tr>
+            <tr><td style="padding:3px 0;">Alamat Tempat Tinggal</td><td>:</td><td>${target.alamat || 'RT.001 / RW.013 Perumahan Graha Asri'}</td></tr>
+            <tr><td style="padding:3px 0;">Status Domisili</td><td>:</td><td>${target.domisili || 'Warga Tetap Terdaftar'}</td></tr>
+            <tr><td style="padding:3px 0;">Maksud / Keperluan</td><td>:</td><td><strong style="color:#0f172a;">${target.keperluan || '-'}</strong></td></tr>
+            <tr><td style="padding:3px 0;">Tujuan Pengantar</td><td>:</td><td>${target.tujuan || 'Instansi Terkait'}</td></tr>
+          </table>
+
+          <p style="margin-bottom:12px;">Orang tersebut di atas adalah benar-benar warga yang berdomisili dan bertempat tinggal sah di lingkungan RT.001 / RW.013 Perumahan Graha Asri sampai dengan surat keterangan ini dikeluarkan.</p>
+          <p>Demikian surat pengantar ini dibuat dengan sebenarnya agar dapat dipergunakan sebagaimana mestinya oleh pihak yang berkepentingan.</p>
+        </div>
+
+        <!-- TANDA TANGAN -->
+        <div style="display:flex; justify-content:space-between; margin-top:2.2rem; padding:0 1.5rem; text-align:center;">
+          <div>
+            <span style="font-size:0.82rem; color:#475569;">Bekasi, ${target.tgl || '-'}</span><br>
+            <span style="font-size:0.85rem; font-weight:600;">Tanda Tangan Pemohon,</span>
+            <div style="height:60px;"></div>
+            <strong style="text-decoration:underline;">${target.nama || '-'}</strong>
+          </div>
+          <div>
+            <span style="font-size:0.82rem; color:#475569;">Mengetahui,</span><br>
+            <span style="font-size:0.85rem; font-weight:600;">Ketua RT.001 / RW.013,</span>
+            <div style="margin:6px auto; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <div id="modal-admin-surat-qrcode" style="width:100px; height:100px; min-height:100px; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; display:${isApproved ? 'flex' : 'none'}; align-items:center; justify-content:center; cursor:pointer; padding:4px; margin:4px auto;" title="Scan QR atau klik untuk verifikasi digital sign"></div>
+              
+              <div id="modal-admin-surat-pending-box" style="display:${isApproved ? 'none' : 'block'}; width:135px; min-height:85px; border:2px dashed ${isRejected ? '#ef4444' : '#f59e0b'}; border-radius:8px; background:${isRejected ? '#fef2f2' : '#fffbeb'}; padding:8px 6px; text-align:center; margin:4px auto;">
+                <i class="fa-solid ${isRejected ? 'fa-ban text-rose' : 'fa-clock-rotate-left text-gold'}" style="font-size:1.3rem; margin-bottom:4px;"></i>
+                <div style="font-size:0.7rem; font-weight:800; color:${isRejected ? '#991b1b' : '#b45309'}; line-height:1.2;">
+                  ${isRejected ? 'PENGAJUAN DITOLAK' : 'MENUNGGU PERSETUJUAN'}
+                </div>
+                <div style="font-size:0.62rem; color:#64748b; margin-top:2px;">
+                  ${isRejected ? (target.rejectReason || 'Alasan ditolak') : 'Ketua RT / Admin 1'}
+                </div>
+              </div>
+
+              ${isApproved ? `
+                <span onclick="openSuratVerificationModal({no:'${target.noSurat}',nama:'${target.nama}',nik:'${target.nik}',kep:'${target.keperluan}',tgl:'${target.tgl}',sig:'${target.sig}'})" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:0.68rem; font-weight:700; color:#059669; letter-spacing:0.3px; border:1px solid #10b981; padding:1px 6px; border-radius:4px; background:rgba(16,185,129,0.06);" title="Klik untuk verifikasi keabsahan dokumen">
+                  <i class="fa-solid fa-circle-check"></i> DIGITAL SIGNED &bull; RT.001
+                </span>
+              ` : ''}
+            </div>
+            <strong style="text-decoration:underline;">Maryanto</strong>
+          </div>
+        </div>
+      </div>
+    `;
+
+    if (isApproved) {
+      renderSuratQRCode('modal-admin-surat-qrcode', verifyUrl, {
+        no: target.noSurat,
+        nama: target.nama,
+        nik: target.nik,
+        kep: target.keperluan,
+        tgl: target.tgl,
+        sig: target.sig
+      });
+    }
+  }
+
+  if (footerEl) {
+    let actionButtons = '';
+    if (!isApproved && !isRejected) {
+      actionButtons += `
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-emerald btn-sm" onclick="requestApproveSurat(${idx}); closeModal('modal-preview-admin-surat');">
+            <i class="fa-solid fa-signature"></i> Setujui &amp; Terbitkan QR Code
+          </button>
+          <button type="button" class="btn btn-outline-danger btn-sm" onclick="openRejectSuratModal(${idx}); closeModal('modal-preview-admin-surat');">
+            <i class="fa-solid fa-xmark"></i> Tolak Surat
+          </button>
+        </div>
+      `;
+    } else if (isApproved) {
+      actionButtons += `
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-cyan btn-sm" onclick="openSuratVerificationModal({no:'${target.noSurat}',nama:'${target.nama}',nik:'${target.nik}',kep:'${target.keperluan}',tgl:'${target.tgl}',sig:'${target.sig}'})">
+            <i class="fa-solid fa-shield-check"></i> Cek Keabsahan Kriptografi
+          </button>
+          <button type="button" class="btn btn-outline-danger btn-sm" onclick="openRejectSuratModal(${idx}); closeModal('modal-preview-admin-surat');">
+            <i class="fa-solid fa-ban"></i> Batalkan / Tolak
+          </button>
+        </div>
+      `;
+    } else if (isRejected) {
+      actionButtons += `
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn btn-outline-emerald btn-sm" onclick="requestApproveSurat(${idx}); closeModal('modal-preview-admin-surat');">
+            <i class="fa-solid fa-rotate-left"></i> Setujui Ulang
+          </button>
+        </div>
+      `;
+    }
+
+    footerEl.innerHTML = `
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteSuratFromRegister(${idx}); closeModal('modal-preview-admin-surat');" title="Hapus dari register e-Surat (PIN Admin 1)">
+          <i class="fa-solid fa-trash-can"></i> Hapus
+        </button>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        ${actionButtons}
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeModal('modal-preview-admin-surat')">
+          Tutup
+        </button>
+      </div>
+    `;
+  }
+
+  // Sinkronkan data ke inpage preview untuk persiapan cetak
+  syncDataToInpageSurat(target, isApproved, verifyUrl);
+
+  if (typeof openModal === 'function') {
+    openModal('modal-preview-admin-surat');
+  } else {
+    const m = document.getElementById('modal-preview-admin-surat');
+    if (m) m.style.display = 'flex';
+  }
+}
+
+function syncDataToInpageSurat(target, isApproved, verifyUrl) {
+  const elNomor = document.getElementById('inpage-surat-nomor');
+  const elNama = document.getElementById('inpage-preview-nama');
+  const elNik = document.getElementById('inpage-preview-nik');
+  const elKeperluan = document.getElementById('inpage-preview-keperluan');
+  const elTgl = document.getElementById('inpage-preview-tanggal');
+  const elTujuan = document.getElementById('inpage-preview-tujuan');
+  const elTtdNama = document.getElementById('inpage-preview-ttd-nama');
+
+  if (elNomor) elNomor.textContent = `Nomor: ${target.noSurat}`;
+  if (elNama) elNama.textContent = target.nama;
+  if (elNik) elNik.textContent = target.nik;
+  if (elKeperluan) elKeperluan.textContent = target.keperluan;
+  if (elTgl) elTgl.textContent = target.tgl;
+  if (elTujuan) elTujuan.textContent = target.tujuan || 'Instansi Terkait';
+  if (elTtdNama) elTtdNama.textContent = target.nama;
+
+  renderSuratQRCode('inpage-surat-qrcode', verifyUrl, { no: target.noSurat, nama: target.nama, nik: target.nik, kep: target.keperluan, tgl: target.tgl, sig: target.sig });
+  renderSuratQRCode('print-surat-qrcode', verifyUrl, { no: target.noSurat, nama: target.nama, nik: target.nik, kep: target.keperluan, tgl: target.tgl, sig: target.sig });
+  applySuratApprovalVisuals(target, isApproved);
+}
+
+function printSuratFromAdminModal() {
+  if (currentAdminSuratPreviewIdx === null || !state.suratRegister || !state.suratRegister[currentAdminSuratPreviewIdx]) {
+    window.print();
+    return;
+  }
+  const target = state.suratRegister[currentAdminSuratPreviewIdx];
+  const isApproved = (target.isApproved === true || target.status === 'Sah & Tervalidasi');
+  let baseUrl = window.location.href.split('?')[0].split('#')[0];
+  if (!baseUrl.startsWith('http')) {
+    baseUrl = 'https://mydowndrive-ops.github.io/WebAppRT001/';
+  }
+  const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(target.noSurat)}&nama=${encodeURIComponent(target.nama)}&nik=${encodeURIComponent(target.nik)}&kep=${encodeURIComponent(target.keperluan)}&tgl=${encodeURIComponent(target.tgl)}&sig=${encodeURIComponent(target.sig)}`;
+  syncDataToInpageSurat(target, isApproved, verifyUrl);
+
+  printSuratInPage();
+}
+
 function renderSuratQRCode(containerId, verifyUrl, metadata) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -13761,6 +14281,43 @@ function openSuratVerificationModal(data) {
     }
     if (modalBtnClose) {
       modalBtnClose.className = 'btn btn-amber btn-sm';
+    }
+  } else if (authResult.reason === 'REJECTED') {
+    // DOKUMEN DITOLAK OLEH PENGURUS
+    if (modalHeader) modalHeader.style.background = 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%)';
+    if (modalTitle) {
+      modalTitle.textContent = 'PENGAJUAN SURAT DITOLAK';
+      modalTitle.style.color = '#fee2e2';
+    }
+    if (modalSubtitle) modalSubtitle.textContent = `Ditolak oleh: ${authResult.registerData?.rejectedBy || 'Pengurus RT'}`;
+    if (modalIcon) {
+      modalIcon.className = 'fa-solid fa-ban';
+      modalIcon.style.color = '#f87171';
+    }
+    if (modalIconWrap) {
+      modalIconWrap.style.boxShadow = '0 0 25px rgba(239,68,68,0.5)';
+    }
+    if (alertBox) {
+      alertBox.style.background = 'rgba(239,68,68,0.18)';
+      alertBox.style.border = '1px solid rgba(239,68,68,0.45)';
+    }
+    if (alertIcon) {
+      alertIcon.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color:#f87171;"></i>';
+    }
+    if (alertText) {
+      alertText.textContent = authResult.message;
+      alertText.style.color = '#fca5a5';
+    }
+    if (elToken) {
+      elToken.textContent = `SIG-${data.sig || authResult.expectedSig} (STATUS: DITOLAK)`;
+      elToken.style.color = '#f87171';
+      elToken.style.border = '1px solid rgba(239,68,68,0.4)';
+    }
+    if (elDbStatus) {
+      elDbStatus.innerHTML = '<span style="color:#f87171; font-weight:700;"><i class="fa-solid fa-ban"></i> Permohonan Surat Ditolak</span>';
+    }
+    if (modalBtnClose) {
+      modalBtnClose.className = 'btn btn-rose btn-sm';
     }
   } else {
     // DOKUMEN PALSU / TELAH DIMANIPULASI
@@ -14001,6 +14558,21 @@ window.shareSuratInPageWA = shareSuratInPageWA;
 window.renderAspirasiWargaView = renderAspirasiWargaView;
 window.toggleAnonimInPage = toggleAnonimInPage;
 window.handleAspirasiInPageSubmit = handleAspirasiInPageSubmit;
+window.filterSuratRegister = filterSuratRegister;
+window.handleSearchSuratAdmin = handleSearchSuratAdmin;
+window.openRejectSuratModal = openRejectSuratModal;
+window.toggleRejectCustomReason = toggleRejectCustomReason;
+window.submitRejectSurat = submitRejectSurat;
+window.deleteSuratFromRegister = deleteSuratFromRegister;
+window.clearAllSuratRegister = clearAllSuratRegister;
+window.submitAdmin1SuratAuth = submitAdmin1SuratAuth;
+window.requestApproveSurat = requestApproveSurat;
+window.submitAdminSuratApprovalAuth = submitAdminSuratApprovalAuth;
+window.openAdminSuratPreview = openAdminSuratPreview;
+window.printSuratFromAdminModal = printSuratFromAdminModal;
+window.openSuratVerificationModal = openSuratVerificationModal;
+window.renderBukuRegisterSurat = renderBukuRegisterSurat;
+window.updateSuratArchiveBadges = updateSuratArchiveBadges;
 
 // ==================== PORTAL PENGURUS OPERATIONAL HUB ====================
 
