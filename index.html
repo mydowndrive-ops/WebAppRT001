@@ -29,7 +29,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.42">
+  <link rel="stylesheet" href="styles.css?v=2.9.43">
 </head>
 <body>
 
@@ -5074,23 +5074,8 @@
           </div>
 
           <form id="form-surat-inpage" onsubmit="event.preventDefault(); handleGenerateSuratInPage();">
+            <input type="hidden" id="surat-inpage-jenis" value="KTP">
             <div class="form-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; margin-bottom:1rem;">
-              <!-- Jenis Layanan Surat -->
-              <div class="form-group">
-                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-list-check text-purple"></i> Jenis Surat Pengantar / Keterangan</label>
-                <select id="surat-inpage-jenis" class="form-control" required onchange="handleSuratJenisChange()">
-                  <option value="KTP">Permohonan Penerbitan / Perpanjangan KTP-el</option>
-                  <option value="KK">Permohonan Pembuatan / Perubahan Kartu Keluarga (KK)</option>
-                  <option value="Domisili">Surat Keterangan Domisili Tempat Tinggal Warga</option>
-                  <option value="SKCK">Pengantar Pembuatan SKCK (Polsek / Polres)</option>
-                  <option value="Usaha">Surat Keterangan Usaha (SKU) Mikro / UMKM</option>
-                  <option value="Nikah">Surat Pengantar Nikah / Keterangan Status Pernikahan</option>
-                  <option value="PLN">Pengantar Pemasangan Listrik PLN / Sambungan PDAM</option>
-                  <option value="Kematian">Surat Keterangan Kematian / Berita Duka</option>
-                  <option value="Lainnya">Surat Pengantar Keperluan Umum Lainnya</option>
-                </select>
-              </div>
-
               <!-- Nama Lengkap Pemohon -->
               <div class="form-group">
                 <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-user text-purple"></i> Nama Lengkap Pemohon</label>
@@ -5150,10 +5135,20 @@
             </div>
 
             <div class="form-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; margin-bottom:1rem;">
-              <!-- Keperluan Surat -->
+              <!-- Keperluan Surat (Downmenu 9 Pilihan) -->
               <div class="form-group">
-                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-pen-nib text-purple"></i> Keperluan Surat Pengantar</label>
-                <input type="text" id="surat-inpage-keperluan" class="form-control" placeholder="Contoh: Persyaratan perpanjangan e-KTP di Kelurahan" required>
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-list-check text-purple"></i> Keperluan Surat Pengantar</label>
+                <select id="surat-inpage-keperluan" class="form-control" required onchange="handleSuratKeperluanChange()">
+                  <option value="Permohonan Penerbitan / Perpanjangan KTP-el Baru">1. Permohonan Penerbitan / Perpanjangan KTP-el Baru</option>
+                  <option value="Pindah Domisili">2. Pindah Domisili</option>
+                  <option value="Keterangan Domisili">3. Keterangan Domisili</option>
+                  <option value="Ijin tinggal sementara di RT.001 RW.013">4. Ijin tinggal sementara di RT.001 RW.013</option>
+                  <option value="Pengantar SKCK Polsek">5. Pengantar SKCK Polsek</option>
+                  <option value="Pengantar KTP & KK">6. Pengantar KTP &amp; KK</option>
+                  <option value="Pengantar Nikah / Status">7. Pengantar Nikah / Status</option>
+                  <option value="Keterangan Izin Usaha">8. Keterangan Izin Usaha</option>
+                  <option value="Keterangan Lainnya">9. Keterangan Lainnya</option>
+                </select>
               </div>
 
               <!-- Instansi Tujuan -->
@@ -5161,6 +5156,12 @@
                 <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-building text-cyan"></i> Instansi / Pihak Tujuan</label>
                 <input type="text" id="surat-inpage-tujuan" class="form-control" placeholder="Contoh: Kantor Kelurahan Sertajaya / Kecamatan Cikarang Utara" required>
               </div>
+            </div>
+
+            <!-- Kolom Tambahan Khusus untuk Keterangan Lainnya -->
+            <div class="form-group mb-3" id="group-surat-keperluan-lainnya" style="display:none; animation:fadeIn 0.25s ease;">
+              <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-pen-to-square text-gold"></i> Tuliskan Keperluan Lainnya Sesuai Kebutuhan Anda</label>
+              <input type="text" id="surat-inpage-keperluan-lainnya" class="form-control" placeholder="Tuliskan secara spesifik keperluan surat pengantar yang dibutuhkan...">
             </div>
 
             <div style="display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:10px; padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.08);">
@@ -7317,6 +7318,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.42"></script>
+  <script src="app.js?v=2.9.43"></script>
 </body>
 </html>

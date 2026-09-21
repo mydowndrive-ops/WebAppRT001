@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (14:15 WIB)  
-**Versi Rilis Aktif:** `v2.9.42`  
+**Terakhir Diperbarui:** 21 September 2026 (14:20 WIB)  
+**Versi Rilis Aktif:** `v2.9.43`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,33 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📄 Penyederhanaan Tampilan Layanan Surat Pengantar RT (Update v2.9.42 - 21 Sept 2026)
+### 1. 📋 Dropdown Menu Keperluan Surat Pengantar (9 Pilihan & Kolom Kebutuhan Khusus) (Update v2.9.43 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Pada formulir surat pengantar, bagian input **"Keperluan Surat Pengantar"** diubah menjadi menu dropdown (*downmenu*) dengan 9 opsi baku:
+    1. Permohonan Penerbitan / Perpanjangan KTP-el Baru
+    2. Pindah Domisili
+    3. Keterangan Domisili
+    4. Ijin tinggal sementara di RT.001 RW.013
+    5. Pengantar SKCK Polsek
+    6. Pengantar KTP & KK
+    7. Pengantar Nikah / Status
+    8. Keterangan Izin Usaha
+    9. Keterangan Lainnya
+  - Jika warga memilih nomor 9 ("Keterangan Lainnya"), sediakan 1 kolom isian tambahan agar warga dapat mengetik keperluannya sendiri secara bebas dan spesifik.
+- **Hasil Implementasi**:
+  1. **Dropdown Menu Baku Keperluan Surat (`#surat-inpage-keperluan`)**:
+     - Mengubah input teks menjadi elemen `<select>` yang memuat 9 opsi pilihan standar resmi ke-RT-an.
+     - Setiap pilihan otomatis mengisikan instansi/pihak tujuan yang relevan serta menentukan judul resmi surat di lembar fisik KOP RT.
+  2. **Kolom Isian Dinamis untuk Keterangan Lainnya**:
+     - Menambahkan kontainer `#group-surat-keperluan-lainnya` dan input `#surat-inpage-keperluan-lainnya`.
+     - Ketika opsi ke-9 dipilih, kolom ini langsung muncul dengan animasi halus dan menerima fokus ketikan warga.
+     - Saat surat digenerate, teks keperluan yang diketik warga akan otomatis masuk ke dalam isi surat resmi dan pratinjau KOP.
+  3. **Pembersihan Redundansi Formulir**:
+     - Menghapus kolom duplikat jenis surat di baris pertama sehingga urutan formulir menjadi sangat intuitif: Identitas Pemohon &bull; Alamat &bull; Keperluan Surat (Dropdown) &bull; Instansi Tujuan.
+  4. **Pembaruan Service Worker & Versi PWA**:
+     - Versi dinaikkan ke `rt-finsmart-cache-v2.9.43` pada `sw.js`, `index.html`, dan `app.js`.
+
+### 2. 📄 Penyederhanaan Tampilan Layanan Surat Pengantar RT (Update v2.9.42 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Menghapus tombol **"Buka Mode Dialog"** pada formulir mandiri pembuatan surat pengantar agar warga tidak bingung.
   - Menyatukan 6 kotak informasi jenis surat (*Pengantar KTP & KK*, *Keterangan Domisili*, *Pengantar SKCK Polsek*, *Keterangan Izin Usaha*, *Keterangan Belum Menikah/Nikah*, *Keterangan Lainnya*) yang sebelumnya terpisah-pisah menjadi **1 kotak informasi terpadu** agar tampilan tidak penuh sesak.

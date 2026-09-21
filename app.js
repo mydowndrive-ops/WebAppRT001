@@ -5129,10 +5129,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.42';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.43';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.42')
+      navigator.serviceWorker.register('sw.js?v=2.9.43')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -12608,36 +12608,63 @@ function renderSuratPengantarView() {
   if (inpPhone && !inpPhone.value) inpPhone.value = resident.phone || '081289060002';
   if (inpAlamat && !inpAlamat.value) inpAlamat.value = `${resident.street || 'Jl. Citarum II'} ${resident.block} ${resident.houseNo}, RT.001 / RW.013 Perumahan Graha Asri`;
 
-  if (typeof handleSuratJenisChange === 'function') handleSuratJenisChange();
+  if (typeof handleSuratKeperluanChange === 'function') handleSuratKeperluanChange();
+}
+
+function handleSuratKeperluanChange() {
+  const selKeperluan = document.getElementById('surat-inpage-keperluan');
+  const val = selKeperluan ? selKeperluan.value : '';
+  const groupLainnya = document.getElementById('group-surat-keperluan-lainnya');
+  const inpLainnya = document.getElementById('surat-inpage-keperluan-lainnya');
+  const inpTujuan = document.getElementById('surat-inpage-tujuan');
+
+  // 1. Tampilkan / sembunyikan kolom tambahan jika memilih "Keterangan Lainnya"
+  if (val === 'Keterangan Lainnya') {
+    if (groupLainnya) {
+      groupLainnya.style.display = 'block';
+    }
+    if (inpLainnya) {
+      inpLainnya.focus();
+    }
+  } else {
+    if (groupLainnya) {
+      groupLainnya.style.display = 'none';
+    }
+  }
+
+  // 2. Rekomendasi Instansi / Pihak Tujuan otomatis
+  const defaultTujuanMap = {
+    'Permohonan Penerbitan / Perpanjangan KTP-el Baru': 'Kantor Kelurahan Sertajaya / Disdukcapil Kabupaten Bekasi',
+    'Pindah Domisili': 'Kantor Kelurahan Sertajaya / Disdukcapil Kabupaten Bekasi',
+    'Keterangan Domisili': 'Instansi Kantor / Perusahaan / Keperluan Umum',
+    'Ijin tinggal sementara di RT.001 RW.013': 'Pengurus Lingkungan RT.001 RW.013 & Kelurahan Sertajaya',
+    'Pengantar SKCK Polsek': 'Polsek Cikarang Utara / Polres Metro Bekasi',
+    'Pengantar KTP & KK': 'Kantor Kelurahan Sertajaya / Disdukcapil Kabupaten Bekasi',
+    'Pengantar Nikah / Status': 'Kantor Urusan Agama (KUA) Cikarang Utara',
+    'Keterangan Izin Usaha': 'Bank / Lembaga Pembiayaan / Izin Berusaha OSS',
+    'Keterangan Lainnya': 'Instansi Terkait'
+  };
+
+  if (inpTujuan && defaultTujuanMap[val]) {
+    inpTujuan.value = defaultTujuanMap[val];
+  }
 }
 
 function handleSuratJenisChange() {
-  const jenis = document.getElementById('surat-inpage-jenis')?.value;
-  const inpKeperluan = document.getElementById('surat-inpage-keperluan');
-  const inpTujuan = document.getElementById('surat-inpage-tujuan');
-
-  const defaultKeperluan = {
-    'KTP': { kep: 'Permohonan Penerbitan / Perpanjangan KTP-el Baru', tuj: 'Kantor Kelurahan Sertajaya / Kantor Kecamatan' },
-    'KK': { kep: 'Permohonan Pembuatan / Perubahan Kartu Keluarga (KK)', tuj: 'Kantor Kelurahan Sertajaya / Disdukcapil Kabupaten Bekasi' },
-    'Domisili': { kep: 'Surat Keterangan Domisili Tempat Tinggal Warga', tuj: 'Instansi Kantor / Perusahaan / Keperluan Umum' },
-    'SKCK': { kep: 'Pengantar Pembuatan Surat Catatan Kepolisian (SKCK)', tuj: 'Polsek Cikarang Utara / Polres Metro Bekasi' },
-    'Usaha': { kep: 'Keterangan Domisili Usaha Mikro / UMKM Rumahan', tuj: 'Bank / Lembaga Pembiayaan / Izin Berusaha OSS' },
-    'Nikah': { kep: 'Pengantar Pernikahan & Kelengkapan Berkas KUA (N1-N4)', tuj: 'Kantor Urusan Agama (KUA) Cikarang Utara' },
-    'PLN': { kep: 'Pengantar Pasang Baru / Tambah Daya Listrik PLN & PDAM', tuj: 'Kantor Pelayanan PLN / PDAM Tirta Bhagasasi' },
-    'Kematian': { kep: 'Surat Keterangan Kematian / Berita Duka Cita', tuj: 'Kantor Kelurahan Sertajaya / Pengurusan Asuransi & BPJS' },
-    'Lainnya': { kep: 'Surat Pengantar Keterangan Warga RT.001', tuj: 'Instansi Terkait' }
-  };
-
-  if (defaultKeperluan[jenis]) {
-    if (inpKeperluan) inpKeperluan.value = defaultKeperluan[jenis].kep;
-    if (inpTujuan) inpTujuan.value = defaultKeperluan[jenis].tuj;
-  }
+  handleSuratKeperluanChange();
 }
 
 function handleGenerateSuratInPage() {
   const resident = state.currentVerifiedResident || (state.residents && state.residents[0]) || { name: 'Bapak Wageyanto' };
-  const jenisSel = document.getElementById('surat-inpage-jenis');
-  const jenisTeks = jenisSel ? jenisSel.options[jenisSel.selectedIndex].text : 'Surat Pengantar RT';
+  const selKeperluan = document.getElementById('surat-inpage-keperluan');
+  let keperluan = selKeperluan ? selKeperluan.value : 'Permohonan Penerbitan / Perpanjangan KTP-el Baru';
+
+  // Jika opsi Keterangan Lainnya dipilih, ambil teks dari kolom isian warga
+  if (keperluan === 'Keterangan Lainnya') {
+    const customText = document.getElementById('surat-inpage-keperluan-lainnya')?.value?.trim();
+    keperluan = customText || 'Surat Pengantar Keperluan Umum Lainnya';
+  }
+
   const nama = document.getElementById('surat-inpage-nama')?.value || resident.name;
   const nik = document.getElementById('surat-inpage-nik')?.value || '3216021205800002';
   const ttl = document.getElementById('surat-inpage-ttl')?.value || 'Bekasi, 12 Mei 1985';
@@ -12645,8 +12672,30 @@ function handleGenerateSuratInPage() {
   const agama = document.getElementById('surat-inpage-agama')?.value || 'Islam';
   const kerja = document.getElementById('surat-inpage-pekerjaan')?.value || 'Karyawan Swasta';
   const alamat = document.getElementById('surat-inpage-alamat')?.value || 'Jl. Citarum II Blok B6 No. 02';
-  const keperluan = document.getElementById('surat-inpage-keperluan')?.value || jenisTeks;
   const tujuan = document.getElementById('surat-inpage-tujuan')?.value || 'Kantor Kelurahan';
+
+  // Tentukan judul surat resmi di lembar fisik
+  let judulSurat = 'SURAT PENGANTAR / KETERANGAN';
+  if (keperluan.includes('KTP & KK')) {
+    judulSurat = 'SURAT PENGANTAR KTP & KARTU KELUARGA';
+  } else if (keperluan.includes('KTP')) {
+    judulSurat = 'SURAT PENGANTAR KTP';
+  } else if (keperluan.includes('Pindah Domisili')) {
+    judulSurat = 'SURAT PENGANTAR PINDAH DOMISILI';
+  } else if (keperluan.includes('Keterangan Domisili')) {
+    judulSurat = 'SURAT KETERANGAN DOMISILI';
+  } else if (keperluan.includes('tinggal sementara')) {
+    judulSurat = 'SURAT KETERANGAN TINGGAL SEMENTARA';
+  } else if (keperluan.includes('SKCK')) {
+    judulSurat = 'SURAT PENGANTAR SKCK';
+  } else if (keperluan.includes('Nikah')) {
+    judulSurat = 'SURAT PENGANTAR NIKAH / STATUS';
+  } else if (keperluan.includes('Usaha')) {
+    judulSurat = 'SURAT KETERANGAN USAHA (SKU)';
+  }
+
+  const elJudulTeks = document.getElementById('inpage-surat-judul-teks');
+  if (elJudulTeks) elJudulTeks.textContent = judulSurat;
 
   const now = new Date();
   const bulanRomawi = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
@@ -12839,6 +12888,7 @@ function handleAspirasiInPageSubmit() {
 window.renderPengajuanFasumView = renderPengajuanFasumView;
 window.handlePengajuanFasumInPageSubmit = handlePengajuanFasumInPageSubmit;
 window.renderSuratPengantarView = renderSuratPengantarView;
+window.handleSuratKeperluanChange = handleSuratKeperluanChange;
 window.handleSuratJenisChange = handleSuratJenisChange;
 window.handleGenerateSuratInPage = handleGenerateSuratInPage;
 window.printSuratInPage = printSuratInPage;
