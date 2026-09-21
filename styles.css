@@ -13883,12 +13883,20 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 4px;
 }
 
-#inpage-surat-qrcode img,
+/* Pastikan hanya 1 QR code tunggal (img) yang tampil, canvas qrcodejs disembunyikan agar tidak dobel/berdempetan */
 #inpage-surat-qrcode canvas,
-#print-surat-qrcode img,
 #print-surat-qrcode canvas {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+#inpage-surat-qrcode img,
+#print-surat-qrcode img {
   display: block !important;
-  margin: auto !important;
+  width: 96px !important;
+  height: 96px !important;
+  margin: 0 auto !important;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   image-rendering: pixelated;

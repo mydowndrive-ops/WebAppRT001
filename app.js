@@ -12352,7 +12352,10 @@ function setupPortalWargaESurat() {
     // Generate QR Code Digital Signature & Token SHA-256 Anti-Manipulasi untuk Lembar Cetak Modal
     const kepFull = `${jenisTeks} - ${keperluan}`;
     const sig = generateSuratSignature(noSurat, nama, nik, kepFull, tglStr);
-    const baseUrl = window.location.href.split('?')[0].split('#')[0];
+    let baseUrl = window.location.href.split('?')[0].split('#')[0];
+    if (!baseUrl.startsWith('http')) {
+      baseUrl = 'https://mydowndrive-ops.github.io/WebAppRT001/';
+    }
     const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(noSurat)}&nama=${encodeURIComponent(nama)}&nik=${encodeURIComponent(nik)}&kep=${encodeURIComponent(kepFull)}&tgl=${encodeURIComponent(tglStr)}&sig=${encodeURIComponent(sig)}`;
     renderSuratQRCode('print-surat-qrcode', verifyUrl, { no: noSurat, nama, nik, kep: kepFull, tgl: tglStr, sig });
     recordSuratToRegister({ noSurat, nama, nik, keperluan: kepFull, tglStr, sig, tujuan: 'Instansi Terkait' });
@@ -12754,7 +12757,10 @@ function handleGenerateSuratInPage() {
 
   // Generate QR Code Digital Signature Resmi RT.001 (Kriptografi SHA-256 Anti-Manipulasi)
   const sig = generateSuratSignature(noSurat, nama, nik, keperluan, tglStr);
-  const baseUrl = window.location.href.split('?')[0].split('#')[0];
+  let baseUrl = window.location.href.split('?')[0].split('#')[0];
+  if (!baseUrl.startsWith('http')) {
+    baseUrl = 'https://mydowndrive-ops.github.io/WebAppRT001/';
+  }
   const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(noSurat)}&nama=${encodeURIComponent(nama)}&nik=${encodeURIComponent(nik)}&kep=${encodeURIComponent(keperluan)}&tgl=${encodeURIComponent(tglStr)}&sig=${encodeURIComponent(sig)}`;
   renderSuratQRCode('inpage-surat-qrcode', verifyUrl, { no: noSurat, nama, nik, kep: keperluan, tgl: tglStr, sig });
   recordSuratToRegister({ noSurat, nama, nik, keperluan, tglStr, sig, tujuan });
@@ -13055,12 +13061,29 @@ function renderSuratQRCode(containerId, verifyUrl, metadata) {
     try {
       new QRCode(container, {
         text: verifyUrl,
-        width: 68,
-        height: 68,
-        colorDark: '#0f172a',
+        width: 96,
+        height: 96,
+        colorDark: '#000000',
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
       });
+
+      // Bersihkan canvas bawaan qrcodejs agar HANYA 1 gambar <img> murni yang ditampilkan
+      // Ini mencegah tampilan QR dobel/berdempetan dan memastikan kamera HP langsung merespons
+      setTimeout(() => {
+        const canvases = container.querySelectorAll('canvas');
+        canvases.forEach(c => c.remove());
+        const imgs = container.querySelectorAll('img');
+        if (imgs.length > 1) {
+          for (let i = 1; i < imgs.length; i++) imgs[i].remove();
+        }
+        if (imgs[0]) {
+          imgs[0].style.width = '96px';
+          imgs[0].style.height = '96px';
+          imgs[0].style.display = 'block';
+          imgs[0].style.margin = '0 auto';
+        }
+      }, 50);
     } catch (err) {
       console.warn('Gagal membuat QRCode:', err);
       container.innerHTML = `<div style="font-size:0.65rem; color:#059669; font-weight:700; text-align:center; padding:4px;">QR DIGITAL SIGN<br>RT.001</div>`;
