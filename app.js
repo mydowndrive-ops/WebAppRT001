@@ -11563,7 +11563,7 @@ function renderPortalWarga() {
       if (isCur) cell.style.borderColor = isPaid ? '#10b981' : '#f59e0b';
       if (!isPaid) {
         cell.style.cursor = 'pointer';
-        cell.title = `Klik untuk bayar iuran bulan ${MONTH_NAMES[m]} via QRIS (Pakasir)`;
+        cell.title = `Klik untuk bayar iuran bulan ${MONTH_NAMES[m]} via QRIS`;
         cell.onclick = () => openPakasirPaymentModal(resident, m);
       }
 

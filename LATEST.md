@@ -1,6 +1,6 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (18:30 WIB)  
+**Terakhir Diperbarui:** 21 September 2026 (18:40 WIB)  
 **Versi Rilis Aktif:** `v2.9.52`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
@@ -32,7 +32,7 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
      - `vercel.json`: Konfigurasi serverless function rewrites (`/api/pakasir/:path*`) dan HTTP Security Headers.
      - `.gitignore`: Melindungi `.env` agar kredensial rahasia tidak bocor ke Git publik.
   3. **Antarmuka Pengguna (Frontend Portal Warga)**:
-     - Tombol interaktif **"Bayar Iuran via QRIS (Pakasir)"** di bilah aksi iuran portal warga (`#btn-pw-pay-qris-pakasir`).
+     - Tombol interaktif **"Bayar Iuran via QRIS"** di bilah aksi iuran portal warga (`#btn-pw-pay-qris-pakasir`).
      - Seluruh cell bulan berstatus belum lunas pada matriks iuran 12 bulan kini dapat diklik langsung untuk memicu modal pembayaran.
      - Modal Pembayaran 3-Langkah (`#modal-pakasir-payment`):
        - *Langkah 1*: Pemilihan bulan iuran belum lunas (multi-select dengan hitungan nominal otomatis Rp25.000/bulan) & pemilihan metode (QRIS Real-Time atau Virtual Account).
