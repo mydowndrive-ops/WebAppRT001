@@ -46,10 +46,10 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const apiKey = process.env.PAKASIR_API_KEY;
-    const projectSlug = process.env.PAKASIR_PROJECT_SLUG;
+    const apiKey = process.env.PAKASIR_API_KEY || 'wcau8rOd9urMIHXgX6JDDuaNjhfogjUd';
+    const projectSlug = process.env.PAKASIR_PROJECT_SLUG || 'smartpay01';
 
-    // A. Fallback Mode: Jika API Key belum disetel di Vercel Environment Variables
+    // A. Fallback Mode: Hanya jika API Key dan slug belum disetel
     if (!apiKey || !projectSlug || apiKey === 'your_api_key_here') {
       const mockTxnId = 'sandbox_' + Date.now().toString(36);
       const mockQrString = `00020101021226680016ID.CO.PAKASIR.WWW01189360091800000000000215${order_id}520458125303360540${amount}5802ID5919RT001 GRAHA ASRI6013CIKARANG UTAR63040A1B`;

@@ -38,6 +38,31 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    // Jika status masih pending dan ada txn_id dari Pakasir, lakukan live double-check ke server Pakasir
+    if (tx.status !== 'completed' && tx.txn_id && !tx.isSandbox) {
+      const apiKey = process.env.PAKASIR_API_KEY || 'wcau8rOd9urMIHXgX6JDDuaNjhfogjUd';
+      const projectSlug = process.env.PAKASIR_PROJECT_SLUG || 'smartpay01';
+      try {
+        const liveRes = await fetch(
+          `https://app.pakasir.com/api/v2/transaction-status/${encodeURIComponent(projectSlug)}/${encodeURIComponent(tx.txn_id)}`,
+          {
+            headers: { 'X-Api-Key': apiKey }
+          }
+        );
+        if (liveRes.ok) {
+          const liveData = await liveRes.json();
+          if (liveData && (liveData.status === 'completed' || liveData.status === 'success' || liveData.status === 'paid')) {
+            tx = updateTransactionStatus(orderId, 'completed', {
+              ...liveData,
+              completedAt: liveData.completed_at || new Date().toISOString()
+            });
+          }
+        }
+      } catch (liveErr) {
+        console.warn('Gagal menghubungi live status Pakasir:', liveErr.message);
+      }
+    }
+
     return res.status(200).json({
       success: true,
       order_id: orderId,

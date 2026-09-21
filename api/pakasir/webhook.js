@@ -49,6 +49,17 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'Payload tidak valid. order_id tidak ditemukan.' });
     }
 
+    // Verifikasi Webhook Secret jika dikirimkan oleh Pakasir
+    const configuredSecret = process.env.PAKASIR_WEBHOOK_SECRET || '101b1ab91ded0471ca66fef0aa1916aa';
+    const incomingSecret = (req.headers && (req.headers['x-webhook-secret'] || req.headers['x-signature'] || req.headers['x-pakasir-secret'])) ||
+                           (req.query && (req.query.secret || req.query.token)) ||
+                           payload.webhook_secret || payload.secret;
+
+    if (incomingSecret && incomingSecret !== configuredSecret) {
+      console.warn(`[Pakasir Webhook] Peringatan: Webhook secret tidak cocok.`);
+      return res.status(401).json({ error: 'Unauthorized. Webhook secret tidak valid.' });
+    }
+
     console.log(`[Pakasir Webhook] Notifikasi diterima untuk Order ID: ${order_id}, Status: ${status}, Nominal: Rp ${amount}`);
 
     // Status pembayaran berhasil di Pakasir adalah "completed" atau "success"

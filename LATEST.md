@@ -24,12 +24,13 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
   1. **Serverless Backend API (Vercel & Local Server Compatible)**:
      - `api/pakasir/create-transaction.js`: Mengirim request transaksi ke API Pakasir v2 (`POST https://app.pakasir.com/api/v2/create-transaction/{slug}/{order_id}`) dengan header `X-Api-Key` dan payload JSON `{ method, amount }`. Dilengkapi mode Sandbox Simulator otomatis jika environment variable API Key belum dipasang.
      - `api/pakasir/webhook.js`: Endpoint Webhook / Callback (`/api/pakasir/webhook`) untuk menerima HTTP POST notifikasi pelunasan dari server Pakasir. Memvalidasi payload (`order_id`, `amount`, `status == 'completed' || status == 'success'`) dan mencatat status pembayaran ke server state.
-     - `api/pakasir/check-status.js`: Endpoint verifikasi status transaksi real-time untuk polling frontend (`/api/pakasir/check-status?order_id=...`), dilengkapi fitur query testing `simulate=1`.
+     - `api/pakasir/check-status.js`: Endpoint verifikasi status transaksi real-time untuk polling frontend (`/api/pakasir/check-status?order_id=...`). Dilengkapi fitur live double-check ke server Pakasir (`GET /api/v2/transaction-status/{slug}/{txn_id}`) serta simulator testing.
      - `api/pakasir/store.js`: Storage state transaksi fleksibel (in-memory + disk cache `/tmp/pakasir_transactions.json`).
   2. **Konfigurasi Lingkungan & Keamanan**:
-     - `.env.example`: Template rahasia server untuk `PAKASIR_API_KEY` dan `PAKASIR_PROJECT_SLUG`.
+     - Kredensial aktif Proyek Pakasir: `smartpay01` (Slug), `wcau8rOd9urMIHXgX6JDDuaNjhfogjUd` (API Key), dan `101b1ab91ded0471ca66fef0aa1916aa` (Webhook Secret).
+     - `.env` & `.env.example`: Terkonfigurasi dengan variabel `PAKASIR_PROJECT_SLUG`, `PAKASIR_API_KEY`, dan `PAKASIR_WEBHOOK_SECRET`.
      - `vercel.json`: Konfigurasi serverless function rewrites (`/api/pakasir/:path*`) dan HTTP Security Headers.
-     - `.gitignore`: Melindungi `.env` agar kredensial API key rahasia tidak pernah bocor ke Git.
+     - `.gitignore`: Melindungi `.env` agar kredensial rahasia tidak bocor ke Git publik.
   3. **Antarmuka Pengguna (Frontend Portal Warga)**:
      - Tombol interaktif **"Bayar Iuran via QRIS (Pakasir)"** di bilah aksi iuran portal warga (`#btn-pw-pay-qris-pakasir`).
      - Seluruh cell bulan berstatus belum lunas pada matriks iuran 12 bulan kini dapat diklik langsung untuk memicu modal pembayaran.
