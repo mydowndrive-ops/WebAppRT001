@@ -4318,11 +4318,11 @@ function navigateToView(viewId) {
     'jimpitan': { title: 'Uang Jimpitan', sub: 'Perolehan & Pengeluaran Kas Ronda Malam Minggu' },
     'non-iuran': { title: 'Pemasukan NON iuran', sub: 'Pemasukan, Pengeluaran & Saldo Kas Non-Iuran (Donasi, Hibah, Sewa Fasum & Usaha RT)' },
     'ronda-pengurus': {
-      title: isCurrentWarga() ? 'Ronda Malam Minggu & Jimpitan' : 'Jadwal Ronda',
+      title: isCurrentWarga() ? 'Ronda & Jimpitan' : 'Jadwal Ronda',
       sub: isCurrentWarga() ? 'Jadwal Regu Ronda Pribadi, Roster 8 Regu & Penarikan Jimpitan Warga' : 'Tata Kelola 8 Regu Ronda & Penarikan Jimpitan Warga RT.001'
     },
     'pengajuan-dana-admin': { title: 'Pengajuan Anggaran dari Warga', sub: 'Verifikasi, Persetujuan & Realisasi Pencairan Kas Fasilitas' },
-    'pengajuan-fasum': { title: 'Layanan Pengajuan Fasum RT', sub: 'Pengajuan Perbaikan Sarana Prasarana & Fasum Lingkungan RT.001' },
+    'pengajuan-fasum': { title: 'Pengajuan DANA Fasum', sub: 'Pengajuan Perbaikan Sarana Prasarana & Fasum Lingkungan RT.001' },
     'surat-pengantar': { title: 'e-Surat Pengantar RT Mandiri', sub: 'Layanan Mandiri Cetak Surat Pengantar Ber-KOP RT.001 24/7' },
     'aspirasi-warga': { title: 'Kotak Aspirasi & Masukan Warga', sub: 'Penyampaian Saran, Ide Kreatif & Masukan Warga Demi Kemajuan RT.001' },
     'pengurus-struktur': { title: 'Bagan & Struktur Pengurus RT', sub: 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027' },
@@ -5129,10 +5129,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.43';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.44';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.43')
+      navigator.serviceWorker.register('sw.js?v=2.9.44')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -8091,8 +8091,12 @@ function applyRBAC() {
 
         if (target === 'ronda-pengurus') {
           const textSpan = el.querySelector('span:not(.counter-badge)');
-          if (textSpan) textSpan.textContent = 'Ronda Malam Minggu & Jimpitan';
-          el.setAttribute('data-tooltip', 'Ronda Malam Minggu & Jimpitan');
+          if (textSpan) textSpan.textContent = 'Ronda & Jimpitan';
+          el.setAttribute('data-tooltip', 'Ronda & Jimpitan');
+        } else if (target === 'pengajuan-fasum') {
+          const textSpan = el.querySelector('span:not(.counter-badge)');
+          if (textSpan) textSpan.textContent = 'Pengajuan DANA Fasum';
+          el.setAttribute('data-tooltip', 'Pengajuan DANA Fasum');
         }
       } else {
         el.style.display = 'none';
