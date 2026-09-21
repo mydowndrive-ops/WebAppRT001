@@ -23,7 +23,7 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 - **Arsitektur & Komponen yang Dibuat**:
   1. **Serverless Backend API (Vercel & Local Server Compatible)**:
      - `api/pakasir/create-transaction.js`: Mengirim request transaksi ke API Pakasir v2 (`POST https://app.pakasir.com/api/v2/create-transaction/{slug}/{order_id}`) dengan header `X-Api-Key` dan payload JSON `{ method, amount }`. Dilengkapi mode Sandbox Simulator otomatis jika environment variable API Key belum dipasang.
-     - `api/pakasir/webhook.js`: Endpoint Webhook / Callback (`/api/pakasir/webhook`) untuk menerima HTTP POST notifikasi pelunasan dari server Pakasir. Memvalidasi payload (`order_id`, `amount`, `status == 'completed' || status == 'success'`) dan mencatat status pembayaran ke server state.
+     - `api/webhook/pakasir.js` & `api/pakasir/webhook.js`: Endpoint Webhook / Callback (`/api/webhook/pakasir` & `/api/pakasir/webhook`) untuk menerima HTTP POST notifikasi pelunasan dari server Pakasir. Memvalidasi payload (`order_id`, `amount`, `status == 'completed' || status == 'success'`), memvalidasi Webhook Secret, dan mencatat status pembayaran ke server state.
      - `api/pakasir/check-status.js`: Endpoint verifikasi status transaksi real-time untuk polling frontend (`/api/pakasir/check-status?order_id=...`). Dilengkapi fitur live double-check ke server Pakasir (`GET /api/v2/transaction-status/{slug}/{txn_id}`) serta simulator testing.
      - `api/pakasir/store.js`: Storage state transaksi fleksibel (in-memory + disk cache `/tmp/pakasir_transactions.json`).
   2. **Konfigurasi Lingkungan & Keamanan**:

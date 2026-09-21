@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'GET') {
     return res.status(200).json({
       message: 'RT-FinSmart PRO Pakasir Webhook Endpoint siap menerima notifikasi pembayaran.',
-      endpoint: '/api/pakasir/webhook',
+      endpoints: ['/api/webhook/pakasir', '/api/pakasir/webhook'],
       status: 'active'
     });
   }

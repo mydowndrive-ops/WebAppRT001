@@ -2,6 +2,10 @@
   "version": 2,
   "rewrites": [
     {
+      "source": "/api/webhook/pakasir",
+      "destination": "/api/webhook/pakasir"
+    },
+    {
       "source": "/api/pakasir/:path*",
       "destination": "/api/pakasir/:path*"
     },
