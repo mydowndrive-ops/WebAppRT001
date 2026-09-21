@@ -1840,6 +1840,17 @@ let currentAnnualChartType = 'area'; // 'area' (smooth spline) | 'bar' (rounded 
 let wargaAnnualDuesChart = null;
 let currentWargaAnnualChartType = 'area';
 
+// RBAC Allowed Targets (Global & Unified across entire app)
+const B1_ALLOWED_TARGETS = [
+  'dashboard', 'warga', 'checklist', 'non-iuran', 'jimpitan',
+  'pos-anggaran', 'pengajuan-dana-admin', 'pengeluaran', 'laporan', 'aset-rt', 'pengaturan'
+];
+const B2_ALLOWED_TARGETS = ['pengurus-struktur', 'jimpitan', 'aset-rt'];
+const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'warga', 'ronda-pengurus', 'jimpitan', 'pengajuan-dana-admin', 'non-iuran', 'aset-rt'];
+const WARGA_ALLOWED_TARGETS = [
+  'portal-warga', 'non-iuran', 'ronda-pengurus', 'pengajuan-fasum', 'surat-pengantar', 'aspirasi-warga', 'pengurus-struktur', 'aset-rt'
+];
+
 // ==================== STORAGE & SEEDING ====================
 
 function loadState() {
@@ -4263,11 +4274,6 @@ function navigateToView(viewId) {
   const isPengurus = currentAcc && currentAcc.accessLevel === 'PENGURUS';
   const isWarga = isCurrentWarga();
 
-  const B1_ALLOWED_TARGETS = ['dashboard', 'warga', 'checklist', 'non-iuran', 'jimpitan', 'pos-anggaran', 'pengajuan-dana-admin', 'pengeluaran', 'laporan', 'aset-rt', 'pengaturan'];
-  const B2_ALLOWED_TARGETS = ['pengurus-struktur', 'jimpitan', 'aset-rt'];
-  const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'warga', 'ronda-pengurus', 'jimpitan', 'pengajuan-dana-admin', 'non-iuran', 'aset-rt'];
-  const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'non-iuran'];
-
   // If B1 attempts to navigate outside allowed pages, redirect to dashboard
   if (isB1 && !B1_ALLOWED_TARGETS.includes(viewId)) {
     viewId = 'dashboard';
@@ -4348,9 +4354,25 @@ function navigateToView(viewId) {
   if (viewId === 'pengajuan-dana-admin') renderAdminFundRequests();
   if (viewId === 'pengurus-struktur') renderPengurusStruktur();
   if (viewId === 'aset-rt') renderAsetRt();
-  if (viewId === 'portal-warga') renderPortalWarga();
-  if (viewId === 'pengajuan-fasum' || viewId === 'surat-pengantar' || viewId === 'aspirasi-warga') {
-    if (typeof renderPortalWarga === 'function') renderPortalWarga();
+  if (viewId === 'portal-warga') {
+    renderPortalWarga();
+    setTimeout(() => {
+      try {
+        renderWargaAnnualDuesChart();
+        if (wargaAnnualDuesChart) wargaAnnualDuesChart.resize();
+      } catch (e) {
+        console.warn('Resize chart portal warga error:', e);
+      }
+    }, 100);
+  }
+  if (viewId === 'pengajuan-fasum') {
+    if (typeof renderPengajuanFasumView === 'function') renderPengajuanFasumView();
+  }
+  if (viewId === 'surat-pengantar') {
+    if (typeof renderSuratPengantarView === 'function') renderSuratPengantarView();
+  }
+  if (viewId === 'aspirasi-warga') {
+    if (typeof renderAspirasiWargaView === 'function') renderAspirasiWargaView();
   }
 
   // Update header buttons & RBAC saat berpindah tampilan
@@ -5107,10 +5129,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.15';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.41';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.15')
+      navigator.serviceWorker.register('sw.js?v=2.9.41')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -5840,6 +5862,7 @@ function renderPublicAnnualDuesChart(selectedYear, chartType = currentAnnualChar
     }
 
     const chartInst = new Chart(ctx, {
+      type: chartType === 'area' ? 'line' : 'bar',
       data: {
         labels: shortMonthLabels,
         datasets: datasets
@@ -6193,6 +6216,7 @@ function renderWargaAnnualDuesChart(selectedYear, chartType = currentWargaAnnual
   }
 
   wargaAnnualDuesChart = new Chart(ctx, {
+    type: chartType === 'area' ? 'line' : 'bar',
     data: {
       labels: shortMonthLabels,
       datasets: datasets
@@ -7975,24 +7999,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // ==================== ADMIN 1 / ADMIN 2 / PENGURUS RBAC ACCESS CONTROL ====================
-
-// Definisi izin halaman per peran (Role-Based Access Control)
-const B1_ALLOWED_TARGETS = [
-  'dashboard',
-  'warga',
-  'checklist',
-  'non-iuran',
-  'jimpitan',
-  'pos-anggaran',
-  'pengajuan-dana-admin',
-  'pengeluaran',
-  'laporan',
-  'aset-rt',
-  'pengaturan'
-];
-const B2_ALLOWED_TARGETS = ['pengurus-struktur', 'jimpitan', 'aset-rt'];
-const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'warga', 'ronda-pengurus', 'jimpitan', 'pengajuan-dana-admin', 'non-iuran', 'aset-rt'];
-const WARGA_ALLOWED_TARGETS = ['portal-warga', 'non-iuran', 'ronda-pengurus', 'pengajuan-fasum', 'surat-pengantar', 'aspirasi-warga', 'pengurus-struktur', 'aset-rt'];
 
 function applyRBAC() {
   const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser) || { accessLevel: state.currentUser === 'b2' ? 'B2' : (state.currentUser === 'pengurus' ? 'PENGURUS' : (state.currentUser === 'warga' ? 'WARGA' : 'B1')) };
@@ -12431,6 +12437,415 @@ function setupPortalWargaAspirasi() {
     });
   }
 }
+
+// ==================== DEDICATED VIEW: LAYANAN PENGAJUAN FASUM RT ====================
+
+function renderPengajuanFasumView() {
+  const resident = state.currentVerifiedResident || (state.residents && state.residents[0]) || {
+    id: 'w-1',
+    name: 'Bapak Wageyanto',
+    block: 'B6',
+    houseNo: '02',
+    street: 'Jl. Citarum II',
+    phone: '081289060002'
+  };
+
+  const inpNama = document.getElementById('fasum-inpage-nama');
+  const inpPhone = document.getElementById('fasum-inpage-phone');
+  if (inpNama) inpNama.value = `${resident.name} (${resident.block} ${resident.houseNo})`;
+  if (inpPhone && (!inpPhone.value || inpPhone.value === '08xxxxxxxxxx')) {
+    inpPhone.value = resident.phone || '081289060002';
+  }
+
+  // Render Riwayat Pengajuan Fasum Warga
+  const requestsList = document.getElementById('pw-my-requests-list');
+  if (requestsList) {
+    const myRequests = (state.fundRequests || []).filter(
+      fr => fr.residentId === resident.id || (fr.residentName && fr.residentName.toLowerCase() === resident.name.toLowerCase())
+    );
+
+    if (myRequests.length === 0) {
+      requestsList.innerHTML = `
+        <div style="text-align:center; padding: 1.5rem; background:rgba(15,23,42,0.45); border-radius:12px; color:#94a3b8; font-size:0.85rem;">
+          <i class="fa-solid fa-inbox" style="font-size:1.8rem; margin-bottom:0.5rem; display:block; color:#64748b;"></i>
+          Belum ada riwayat pengajuan fasilitas umum dari rumah ini.<br>
+          <small class="text-muted">Gunakan formulir di atas untuk mengajukan perbaikan lampu, got, paving, atau sarpras RT.</small>
+        </div>
+      `;
+    } else {
+      requestsList.innerHTML = myRequests.map(req => {
+        let statusBadge = '<span class="status-badge status-pending"><i class="fa-solid fa-clock"></i> Menunggu Review</span>';
+        if (req.status === 'approved') statusBadge = '<span class="status-badge status-approved"><i class="fa-solid fa-circle-check"></i> Disetujui Pengurus</span>';
+        else if (req.status === 'disbursed') statusBadge = '<span class="status-badge status-disbursed"><i class="fa-solid fa-hand-holding-dollar"></i> Anggaran Dicairkan</span>';
+        else if (req.status === 'rejected') statusBadge = '<span class="status-badge status-rejected"><i class="fa-solid fa-circle-xmark"></i> Ditolak</span>';
+
+        const waMsg = `Halo Pengurus RT.001, saya ingin konfirmasi status pengajuan fasum kami:\n*${req.title}* (${req.id})\nLokasi: ${req.location || '-'}\nStatus saat ini: ${req.status.toUpperCase()}\nMohon informasi tindak lanjutnya. Terima kasih!`;
+        const waUrl = `https://wa.me/?text=${encodeURIComponent(waMsg)}`;
+
+        return `
+          <div class="pw-req-item" style="padding:1rem; border-radius:10px; margin-bottom:0.75rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+            <div style="flex:1; min-width:240px;">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                <strong style="color:#fff; font-size:0.92rem;">${escapeHtml(req.title)}</strong>
+                <span class="badge-pill badge-emerald" style="font-size:0.7rem; padding:2px 6px;">${escapeHtml(req.category || 'Fasum')}</span>
+              </div>
+              <p style="margin:0 0 6px; font-size:0.8rem; color:var(--text-muted);">${escapeHtml(req.description || '')}</p>
+              <div style="font-size:0.75rem; color:#94a3b8; display:flex; gap:12px; flex-wrap:wrap;">
+                <span><i class="fa-solid fa-location-dot text-rose"></i> ${escapeHtml(req.location || '-')}</span>
+                <span><i class="fa-regular fa-calendar text-cyan"></i> ${req.date || '-'}</span>
+                <span><i class="fa-solid fa-coins text-gold"></i> ${formatCurrency(req.amount || 0)}</span>
+                <span><i class="fa-solid fa-triangle-exclamation text-gold"></i> Urgensi: ${escapeHtml(req.urgency || 'Sedang')}</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+              ${statusBadge}
+              <a href="${waUrl}" target="_blank" rel="noopener" class="btn btn-xs btn-outline-emerald" title="Tanyakan langsung ke pengurus via WA">
+                <i class="fa-brands fa-whatsapp"></i> Chat WA
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+}
+
+function handlePengajuanFasumInPageSubmit() {
+  const resident = state.currentVerifiedResident || (state.residents && state.residents[0]) || {
+    id: 'w-1',
+    name: 'Bapak Wageyanto',
+    block: 'B6',
+    houseNo: '02',
+    street: 'Jl. Citarum II',
+    phone: '081289060002'
+  };
+
+  const phone = document.getElementById('fasum-inpage-phone')?.value || resident.phone || '';
+  const kategori = document.getElementById('fasum-inpage-kategori')?.value || 'Lampu & Kelistrikan PJU';
+  const urgensi = document.getElementById('fasum-inpage-urgensi')?.value || 'Sedang';
+  const lokasi = document.getElementById('fasum-inpage-lokasi')?.value || '';
+  const judul = document.getElementById('fasum-inpage-judul')?.value || '';
+  const nominal = Number(document.getElementById('fasum-inpage-nominal')?.value) || 0;
+  const deskripsi = document.getElementById('fasum-inpage-deskripsi')?.value || '';
+
+  if (!lokasi.trim() || !judul.trim() || !deskripsi.trim()) {
+    showToast('Harap lengkapi lokasi, judul, dan detail kerusakan fasum.', 'warning');
+    return;
+  }
+
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const newReq = {
+    id: `DANA-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 800) + 100)}`,
+    residentId: resident.id,
+    residentName: resident.name,
+    address: `${resident.street || 'Jl. Citarum II'} ${resident.block} ${resident.houseNo}`,
+    phone: phone,
+    category: kategori,
+    targetPos: 'pembangunan',
+    targetPosName: 'Pos Pembangunan & Fasum',
+    title: judul,
+    amount: nominal,
+    urgency: urgensi,
+    location: lokasi,
+    description: deskripsi,
+    date: dateStr,
+    status: 'pending',
+    adminNote: '',
+    photoUrl: ''
+  };
+
+  if (!state.fundRequests) state.fundRequests = [];
+  state.fundRequests.unshift(newReq);
+  saveState();
+
+  // Reset input tertentu
+  const elLokasi = document.getElementById('fasum-inpage-lokasi');
+  const elJudul = document.getElementById('fasum-inpage-judul');
+  const elNominal = document.getElementById('fasum-inpage-nominal');
+  const elDeskripsi = document.getElementById('fasum-inpage-deskripsi');
+
+  if (elLokasi) elLokasi.value = '';
+  if (elJudul) elJudul.value = '';
+  if (elNominal) elNominal.value = '';
+  if (elDeskripsi) elDeskripsi.value = '';
+
+  renderPengajuanFasumView();
+  showToast('✅ Pengajuan Fasum RT berhasil dikirim! Pengurus akan segera meninjau.', 'success');
+
+  const waMsg = `*PENGAJUAN PERBAIKAN FASUM RT.001*\n-----------------------------------------\nPelapor : *${newReq.residentName}* (${newReq.address})\nNo. WA  : ${newReq.phone}\nKategori: ${newReq.category}\nUrgensi : ${newReq.urgency}\nLokasi  : ${newReq.location}\nJudul   : *${newReq.title}*\nEstimasi: ${formatCurrency(newReq.amount)}\n\n*Uraian Kerusakan:*\n"${newReq.description}"\n\n_Mohon ditinjau dan ditindaklanjuti oleh Seksi Pembangunan & Sarpras RT.001. Terima kasih!_`;
+  setTimeout(() => {
+    if (confirm('Pengajuan berhasil dicatat! Ingin mengirimkan notifikasi langsung ke WhatsApp Pengurus RT?')) {
+      window.open(`https://wa.me/?text=${encodeURIComponent(waMsg)}`, '_blank');
+    }
+  }, 400);
+}
+
+// ==================== DEDICATED VIEW: e-SURAT PENGANTAR RT MANDIRI ====================
+
+function renderSuratPengantarView() {
+  const resident = state.currentVerifiedResident || (state.residents && state.residents[0]) || {
+    name: 'Bapak Wageyanto',
+    block: 'B6',
+    houseNo: '02',
+    street: 'Jl. Citarum II',
+    phone: '081289060002',
+    domicile: 'Tetap',
+    noUrut: 2
+  };
+
+  const inpNama = document.getElementById('surat-inpage-nama');
+  const inpNik = document.getElementById('surat-inpage-nik');
+  const inpTtl = document.getElementById('surat-inpage-ttl');
+  const inpPekerjaan = document.getElementById('surat-inpage-pekerjaan');
+  const inpPhone = document.getElementById('surat-inpage-phone');
+  const inpAlamat = document.getElementById('surat-inpage-alamat');
+
+  if (inpNama && !inpNama.value) inpNama.value = resident.name;
+  if (inpNik && !inpNik.value) inpNik.value = resident.nik || `32160212058${String(resident.noUrut || 2).padStart(5, '0')}`;
+  if (inpTtl && !inpTtl.value) inpTtl.value = 'Bekasi, 12 Mei 1985';
+  if (inpPekerjaan && !inpPekerjaan.value) inpPekerjaan.value = 'Karyawan Swasta';
+  if (inpPhone && !inpPhone.value) inpPhone.value = resident.phone || '081289060002';
+  if (inpAlamat && !inpAlamat.value) inpAlamat.value = `${resident.street || 'Jl. Citarum II'} ${resident.block} ${resident.houseNo}, RT.001 / RW.013 Perumahan Graha Asri`;
+
+  if (typeof handleSuratJenisChange === 'function') handleSuratJenisChange();
+}
+
+function handleSuratJenisChange() {
+  const jenis = document.getElementById('surat-inpage-jenis')?.value;
+  const inpKeperluan = document.getElementById('surat-inpage-keperluan');
+  const inpTujuan = document.getElementById('surat-inpage-tujuan');
+
+  const defaultKeperluan = {
+    'KTP': { kep: 'Permohonan Penerbitan / Perpanjangan KTP-el Baru', tuj: 'Kantor Kelurahan Sertajaya / Kantor Kecamatan' },
+    'KK': { kep: 'Permohonan Pembuatan / Perubahan Kartu Keluarga (KK)', tuj: 'Kantor Kelurahan Sertajaya / Disdukcapil Kabupaten Bekasi' },
+    'Domisili': { kep: 'Surat Keterangan Domisili Tempat Tinggal Warga', tuj: 'Instansi Kantor / Perusahaan / Keperluan Umum' },
+    'SKCK': { kep: 'Pengantar Pembuatan Surat Catatan Kepolisian (SKCK)', tuj: 'Polsek Cikarang Utara / Polres Metro Bekasi' },
+    'Usaha': { kep: 'Keterangan Domisili Usaha Mikro / UMKM Rumahan', tuj: 'Bank / Lembaga Pembiayaan / Izin Berusaha OSS' },
+    'Nikah': { kep: 'Pengantar Pernikahan & Kelengkapan Berkas KUA (N1-N4)', tuj: 'Kantor Urusan Agama (KUA) Cikarang Utara' },
+    'PLN': { kep: 'Pengantar Pasang Baru / Tambah Daya Listrik PLN & PDAM', tuj: 'Kantor Pelayanan PLN / PDAM Tirta Bhagasasi' },
+    'Kematian': { kep: 'Surat Keterangan Kematian / Berita Duka Cita', tuj: 'Kantor Kelurahan Sertajaya / Pengurusan Asuransi & BPJS' },
+    'Lainnya': { kep: 'Surat Pengantar Keterangan Warga RT.001', tuj: 'Instansi Terkait' }
+  };
+
+  if (defaultKeperluan[jenis]) {
+    if (inpKeperluan) inpKeperluan.value = defaultKeperluan[jenis].kep;
+    if (inpTujuan) inpTujuan.value = defaultKeperluan[jenis].tuj;
+  }
+}
+
+function handleGenerateSuratInPage() {
+  const resident = state.currentVerifiedResident || (state.residents && state.residents[0]) || { name: 'Bapak Wageyanto' };
+  const jenisSel = document.getElementById('surat-inpage-jenis');
+  const jenisTeks = jenisSel ? jenisSel.options[jenisSel.selectedIndex].text : 'Surat Pengantar RT';
+  const nama = document.getElementById('surat-inpage-nama')?.value || resident.name;
+  const nik = document.getElementById('surat-inpage-nik')?.value || '3216021205800002';
+  const ttl = document.getElementById('surat-inpage-ttl')?.value || 'Bekasi, 12 Mei 1985';
+  const gender = document.getElementById('surat-inpage-gender')?.value || 'Laki-laki';
+  const agama = document.getElementById('surat-inpage-agama')?.value || 'Islam';
+  const kerja = document.getElementById('surat-inpage-pekerjaan')?.value || 'Karyawan Swasta';
+  const alamat = document.getElementById('surat-inpage-alamat')?.value || 'Jl. Citarum II Blok B6 No. 02';
+  const keperluan = document.getElementById('surat-inpage-keperluan')?.value || jenisTeks;
+  const tujuan = document.getElementById('surat-inpage-tujuan')?.value || 'Kantor Kelurahan';
+
+  const now = new Date();
+  const bulanRomawi = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+  const tglStr = `${now.getDate()} ${MONTH_NAMES[now.getMonth() + 1]} ${now.getFullYear()}`;
+  const noSurat = `470 / ${String(Math.floor(Math.random() * 40) + 20).padStart(3, '0')} / RT.001-RW.013 / ${bulanRomawi[now.getMonth()]} / ${now.getFullYear()}`;
+
+  // Update preview sheet
+  const elNomor = document.getElementById('inpage-surat-nomor');
+  const elNama = document.getElementById('inpage-preview-nama');
+  const elNik = document.getElementById('inpage-preview-nik');
+  const elTtl = document.getElementById('inpage-preview-ttl');
+  const elGender = document.getElementById('inpage-preview-gender');
+  const elAgamaKerja = document.getElementById('inpage-preview-agama-kerja');
+  const elAlamat = document.getElementById('inpage-preview-alamat');
+  const elDomisili = document.getElementById('inpage-preview-domisili');
+  const elKeperluan = document.getElementById('inpage-preview-keperluan');
+  const elTujuan = document.getElementById('inpage-preview-tujuan');
+  const elTgl = document.getElementById('inpage-preview-tanggal');
+  const elTtdNama = document.getElementById('inpage-preview-ttd-nama');
+
+  if (elNomor) elNomor.textContent = `Nomor: ${noSurat}`;
+  if (elNama) elNama.textContent = nama;
+  if (elNik) elNik.textContent = nik;
+  if (elTtl) elTtl.textContent = ttl;
+  if (elGender) elGender.textContent = gender;
+  if (elAgamaKerja) elAgamaKerja.textContent = `${agama} / ${kerja}`;
+  if (elAlamat) elAlamat.textContent = alamat;
+  if (elDomisili) elDomisili.textContent = resident.domicile ? `Warga ${resident.domicile} Terdaftar` : 'Warga Tetap Terdaftar';
+  if (elKeperluan) elKeperluan.textContent = keperluan;
+  if (elTujuan) elTujuan.textContent = tujuan;
+  if (elTgl) elTgl.textContent = tglStr;
+  if (elTtdNama) elTtdNama.textContent = nama;
+
+  // Show live preview box
+  const previewBox = document.getElementById('surat-live-preview-box');
+  if (previewBox) {
+    previewBox.style.display = 'block';
+    previewBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  showToast('📄 Surat pengantar berhasil dibuat dengan KOP resmi! Anda dapat langsung mencetaknya.', 'success');
+}
+
+function printSuratInPage() {
+  const previewBox = document.getElementById('surat-live-preview-box');
+  if (!previewBox || previewBox.style.display === 'none') {
+    handleGenerateSuratInPage();
+  }
+  setTimeout(() => {
+    window.print();
+  }, 250);
+}
+
+function shareSuratInPageWA() {
+  const resident = state.currentVerifiedResident || (state.residents && state.residents[0]) || { name: 'Bapak Wageyanto' };
+  const nama = document.getElementById('inpage-preview-nama')?.textContent || resident.name;
+  const nik = document.getElementById('inpage-preview-nik')?.textContent || '-';
+  const keperluan = document.getElementById('inpage-preview-keperluan')?.textContent || '-';
+  const noSurat = document.getElementById('inpage-surat-nomor')?.textContent || '-';
+
+  const ketuaPhone = '081289060001';
+  const waMsg = `*PERMOHONAN PENGESAHAN e-SURAT PENGANTAR RT.001*\n-----------------------------------------\nKepada Yth. Ketua RT.001 / RW.013 Graha Asri,\n\nSaya telah membuat e-Surat Pengantar Mandiri melalui Portal Warga dengan rincian sbb:\n\nNama Pemohon : *${nama}*\nNIK          : ${nik}\nKeperluan    : *${keperluan}*\n${noSurat}\n\nMohon bantuannya untuk pengesahan / tanda tangan basah dan stempel RT jika diperlukan. Terima kasih! 🙏`;
+  window.open(`https://wa.me/${ketuaPhone}?text=${encodeURIComponent(waMsg)}`, '_blank');
+}
+
+// ==================== DEDICATED VIEW: KOTAK ASPIRASI & MASUKAN WARGA ====================
+
+function renderAspirasiWargaView() {
+  const resident = state.currentVerifiedResident || (state.residents && state.residents[0]) || {
+    name: 'Bapak Wageyanto',
+    block: 'B6',
+    houseNo: '02'
+  };
+
+  const inpNama = document.getElementById('aspirasi-inpage-nama');
+  const chkAnonim = document.getElementById('aspirasi-inpage-anonim');
+  if (inpNama) {
+    inpNama.value = (chkAnonim && chkAnonim.checked) ? 'Warga RT.001 (Anonim Terjaga)' : `${resident.name} (${resident.block} ${resident.houseNo})`;
+  }
+
+  // Render Daftar Aspirasi Terkirim
+  const listEl = document.getElementById('aspirasi-inpage-list');
+  if (listEl) {
+    const aspirations = state.aspirations || [
+      {
+        id: 'ASP-1726001',
+        residentName: 'Wageyanto',
+        address: 'B6 02',
+        category: 'Fasilitas & Inovasi RT',
+        topik: 'Pengecatan Marka & Penambahan Tong Sampah Pilah',
+        message: 'Mohon dipertimbangkan untuk pengadaan tempat sampah pilah (organik & anorganik) di depan balai warga agar lingkungan semakin rapi.',
+        date: '18 Sep 2026, 14:20',
+        status: 'Diterima Pengurus'
+      },
+      {
+        id: 'ASP-1725002',
+        residentName: 'Warga Anonim',
+        address: 'Lingkungan RT.001',
+        category: 'Keamanan & Ketertiban',
+        topik: 'Pemeriksaan Portal Malam Hari',
+        message: 'Usul agar gembok portal siskamling rutin dilumasi oli agar tidak seret saat dibuka tutup petugas ronda tengah malam.',
+        date: '15 Sep 2026, 22:15',
+        status: 'Selesai Ditindaklanjuti'
+      }
+    ];
+
+    listEl.innerHTML = aspirations.map(asp => {
+      const isDone = (asp.status || '').includes('Selesai');
+      const statusBadge = isDone 
+        ? '<span class="status-badge status-approved"><i class="fa-solid fa-circle-check"></i> Selesai Ditindaklanjuti</span>'
+        : '<span class="status-badge status-pending"><i class="fa-solid fa-clock"></i> Diterima Pengurus</span>';
+
+      return `
+        <div class="pw-req-item" style="padding:1rem; border-radius:10px; margin-bottom:0.75rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+          <div style="flex:1; min-width:240px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <strong style="color:#fff; font-size:0.92rem;">${escapeHtml(asp.topik || asp.category || 'Aspirasi Warga')}</strong>
+              <span class="badge-pill badge-cyan" style="font-size:0.7rem; padding:2px 6px;">${escapeHtml(asp.category || 'Umum')}</span>
+            </div>
+            <p style="margin:0 0 6px; font-size:0.82rem; color:var(--text-muted); line-height:1.5;">"${escapeHtml(asp.message || '')}"</p>
+            <div style="font-size:0.75rem; color:#94a3b8; display:flex; gap:12px; flex-wrap:wrap;">
+              <span><i class="fa-solid fa-user text-cyan"></i> ${escapeHtml(asp.residentName || 'Warga')} (${escapeHtml(asp.address || '-')})</span>
+              <span><i class="fa-regular fa-clock text-gold"></i> ${asp.date || '-'}</span>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+            ${statusBadge}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function toggleAnonimInPage(checkbox) {
+  const resident = state.currentVerifiedResident || (state.residents && state.residents[0]) || { name: 'Bapak Wageyanto', block: 'B6', houseNo: '02' };
+  const inpNama = document.getElementById('aspirasi-inpage-nama');
+  if (inpNama) {
+    inpNama.value = checkbox.checked ? 'Warga RT.001 (Anonim Terjaga)' : `${resident.name} (${resident.block} ${resident.houseNo})`;
+  }
+}
+
+function handleAspirasiInPageSubmit() {
+  const resident = state.currentVerifiedResident || (state.residents && state.residents[0]) || { name: 'Bapak Wageyanto', block: 'B6', houseNo: '02' };
+  const chkAnonim = document.getElementById('aspirasi-inpage-anonim')?.checked;
+  const kategori = document.getElementById('aspirasi-inpage-kategori')?.value || 'Umum';
+  const topik = document.getElementById('aspirasi-inpage-topik')?.value || '';
+  const pesan = document.getElementById('aspirasi-inpage-pesan')?.value || '';
+
+  if (!topik.trim() || !pesan.trim()) {
+    showToast('Harap isi judul topik dan uraian aspirasi.', 'warning');
+    return;
+  }
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  const newAsp = {
+    id: `ASP-${Date.now()}`,
+    residentName: chkAnonim ? 'Warga RT.001 (Anonim)' : resident.name,
+    address: chkAnonim ? 'Kerahasiaan Terjaga' : `${resident.block || 'B6'} ${resident.houseNo || '02'}`,
+    category: kategori,
+    topik: topik,
+    message: pesan,
+    date: dateStr,
+    status: 'Diterima Pengurus'
+  };
+
+  if (!state.aspirations) state.aspirations = [];
+  state.aspirations.unshift(newAsp);
+  saveState();
+
+  // Reset inputs
+  const elTopik = document.getElementById('aspirasi-inpage-topik');
+  const elPesan = document.getElementById('aspirasi-inpage-pesan');
+  if (elTopik) elTopik.value = '';
+  if (elPesan) elPesan.value = '';
+
+  renderAspirasiWargaView();
+  showToast('💌 Terima kasih! Aspirasi Anda telah dicatat dan diteruskan ke Pengurus RT.001.', 'success');
+
+  const waMsg = `*ASPIRASI WARGA RT.001 / RW.013*\n-----------------------------------------\nPengirim : *${newAsp.residentName}* (${newAsp.address})\nKategori : ${newAsp.category}\nTopik    : *${newAsp.topik}*\n\n*Pesan / Saran Masukan:*\n"${newAsp.message}"\n\n_Terkirim via Portal Mandiri Warga RT.001 Graha Asri._`;
+  setTimeout(() => {
+    if (confirm('Aspirasi berhasil disimpan! Ingin meneruskannya juga ke WhatsApp Seksi Humas RT?')) {
+      window.open(`https://wa.me/?text=${encodeURIComponent(waMsg)}`, '_blank');
+    }
+  }, 400);
+}
+
+window.renderPengajuanFasumView = renderPengajuanFasumView;
+window.handlePengajuanFasumInPageSubmit = handlePengajuanFasumInPageSubmit;
+window.renderSuratPengantarView = renderSuratPengantarView;
+window.handleSuratJenisChange = handleSuratJenisChange;
+window.handleGenerateSuratInPage = handleGenerateSuratInPage;
+window.printSuratInPage = printSuratInPage;
+window.shareSuratInPageWA = shareSuratInPageWA;
+window.renderAspirasiWargaView = renderAspirasiWargaView;
+window.toggleAnonimInPage = toggleAnonimInPage;
+window.handleAspirasiInPageSubmit = handleAspirasiInPageSubmit;
 
 // ==================== PORTAL PENGURUS OPERATIONAL HUB ====================
 

@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (13:30 WIB)  
-**Versi Rilis Aktif:** `v2.9.40`  
+**Terakhir Diperbarui:** 21 September 2026 (14:00 WIB)  
+**Versi Rilis Aktif:** `v2.9.41`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,43 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🧹 Pembersihan Tampilan Portal Warga & Pemindahan Layanan ke Sidebar (Update v2.9.40 - 21 Sept 2026)
+### 1. 📊 Perbaikan Grafik Penerimaan Iuran & Pembuatan Formulir Mandiri 3 Layanan Warga (Update v2.9.41 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Di Dashboard Warga, **"Grafik Penerimaan Iuran Bulanan 1 Tahun Berjalan"** tidak muncul.
+  - Menu sidebar warga **"Layanan Pengajuan Fasum RT"**, **"e-Surat Pengantar RT Mandiri"**, dan **"Kotak Aspirasi & Masukan Warga"** saat diklik tidak memberikan respon apapun.
+  - Pengguna meminta jika belum ada formulirnya, tolong dibuatkan formulir yang sesuai dan berfungsi penuh.
+- **Hasil Investigasi & Akar Permasalahan (Root Cause)**:
+  1. *Grafik Penerimaan Iuran*: Pada Chart.js v4, konfigurasi chart mewajibkan properti `type` di root config object. Ketiadaan properti ini memicu error silent *"undefined is not a registered controller"*, sehingga kanvas chart tetap kosong.
+  2. *Sidebar Tidak Merespon*: Di dalam fungsi `navigateToView(viewId)` terdapat whitelist per-role `WARGA_ALLOWED_TARGETS` yang belum menyertakan `'pengajuan-fasum'`, `'surat-pengantar'`, dan `'aspirasi-warga'`. Akibatnya, setiap klik menu tersebut langsung dialihkan kembali ke `'portal-warga'` secara diam-diam.
+- **Solusi & Fitur Baru yang Diimplementasikan**:
+  1. **Grafik Penerimaan Iuran 1 Tahun Berjalan Normal & Responsif**:
+     - Memperbaiki deklarasi Chart.js di `renderWargaAnnualDuesChart` & `renderPublicAnnualDuesChart` dengan parameter eksplisit `type: chartType === 'area' ? 'line' : 'bar'`.
+     - Menambahkan trigger resize otomatis saat navigasi ke portal warga sehingga grafik ter-render proporsional sesuai dimensi layar.
+     - 4 kartu ringkasan KPI (Total Penerimaan, Rata-rata Bulanan, Bulan Puncak Terbanyak, dan Persentase Kepatuhan KK) tersinkronisasi realtime.
+  2. **Navigasi Sidebar Warga Responsif**:
+     - Menambahkan `'pengajuan-fasum'`, `'surat-pengantar'`, dan `'aspirasi-warga'` ke dalam whitelist global `WARGA_ALLOWED_TARGETS`.
+     - Mengaitkan routing otomatis ke masing-masing controller saat view diakses.
+  3. **Formulir Dedicated In-Page Lengkap**:
+     - **Formulir Pengajuan Fasum RT (`#view-pengajuan-fasum`)**:
+       - Form terintegrasi dengan data warga terverifikasi (Nama, Alamat/Blok Rumah, No. WhatsApp).
+       - Kategori fasilitas (Lampu PJU, Got/Drainase, Paving/Portal, Balai Pertemuan, dsb.) & Tingkat Urgensi (Normal, Mendesak, Darurat).
+       - Lokasi fisik kerusakan, Judul, Estimasi biaya, dan Rincian kerusakan.
+       - Validasi form, penyimpanan ke state (`state.fundRequests`), auto-render daftar permohonan, dan opsi pengiriman notifikasi WhatsApp ke Pengurus RT.
+     - **Formulir e-Surat Pengantar RT Mandiri (`#view-surat-pengantar`)**:
+       - Form pembuatan surat lengkap dengan pilihan 9 kategori surat pengantar (KTP, KK, Domisili, SKCK, UMKM, Nikah, PLN, Kematian, Lainnya).
+       - Auto-fill data kependudukan (Nama, NIK, TTL, Jenis Kelamin, Agama, Pekerjaan, Alamat Graha Asri).
+       - Otomatisasi Nomor Surat resmi format baku RT (`470/.../RT.001-RW.013/...`).
+       - Lembar KOP Resmi Interaktif (`#inpage-surat-paper`) siap cetak/unduh PDF (`window.print()`).
+       - Tombol WhatsApp untuk konfirmasi pengesahan/stempel langsung ke Ketua RT.
+     - **Formulir Kotak Aspirasi & Masukan Warga (`#view-aspirasi-warga`)**:
+       - Pilihan kategori aspirasi (Keamanan, Kebersihan, Fasilitas, Kegiatan/Kerukunan, Transparansi).
+       - Fitur **Mode Anonim Terjaga** (checkbox) untuk melindungi privasi warga.
+       - Penyimpanan ke `state.aspirations` dan render daftar riwayat aspirasi warga berserta status tindak lanjut.
+  4. **Pembaruan Service Worker & Versi PWA**:
+     - Cache Service Worker dinaikkan ke `rt-finsmart-cache-v2.9.41` di `sw.js` dan `app.js`.
+     - Script dan stylesheet di `index.html` menggunakan `v=2.9.41`.
+
+### 2. 🧹 Pembersihan Tampilan Portal Warga & Pemindahan Layanan ke Sidebar (Update v2.9.40 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Tampilan Portal Warga dibuat bersih, elegan, dan tidak membingungkan warga.
   - Mengubah kalimat **"Dashboard Eksekutif Keuangan RT"** menjadi **"Keuangan dan KAS RT"**.

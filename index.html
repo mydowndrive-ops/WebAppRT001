@@ -29,7 +29,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.40">
+  <link rel="stylesheet" href="styles.css?v=2.9.41">
 </head>
 <body>
 
@@ -4906,18 +4906,109 @@
             <p>Lampu jalan padam, got mampet, atau kerusakan fasilitas umum? Ajukan perbaikan di sini untuk segera ditindaklanjuti pengurus RT.</p>
           </div>
           <div class="banner-actions">
-            <button type="button" class="btn btn-emerald" id="btn-pw-open-pengajuan">
-              <i class="fa-solid fa-plus"></i> Ajukan Fasum Baru
-            </button>
+            <a href="#form-pengajuan-fasum-card" class="btn btn-emerald" onclick="document.getElementById('fasum-inpage-lokasi')?.focus();">
+              <i class="fa-solid fa-pen-to-square"></i> Isi Formulir Langsung
+            </a>
           </div>
         </div>
 
-        <!-- 4 Cards Alur Pelayanan Fasum -->
+        <!-- FORMULIR DEDICATED LANGSUNG DI HALAMAN -->
+        <div class="glass-panel p-4 mb-4" id="form-pengajuan-fasum-card" style="border: 1px solid rgba(16,185,129,0.3); background: linear-gradient(145deg, rgba(8, 28, 20, 0.7) 0%, rgba(4, 18, 13, 0.85) 100%);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:40px; height:40px; border-radius:10px; background:rgba(16,185,129,0.2); display:flex; align-items:center; justify-content:center; color:#34d399; font-size:1.2rem;">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+              </div>
+              <div>
+                <h3 style="margin:0; font-size:1.15rem; color:#fff;">Formulir Pengajuan Perbaikan Fasum RT.001</h3>
+                <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Isi data di bawah ini, permohonan akan langsung tercatat di sistem &amp; pembukuan RT</p>
+              </div>
+            </div>
+            <span class="badge-pill badge-emerald"><i class="fa-solid fa-bolt"></i> Respon Cepat Pengurus</span>
+          </div>
+
+          <form id="form-fasum-inpage" onsubmit="event.preventDefault(); handlePengajuanFasumInPageSubmit();">
+            <div class="form-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; margin-bottom:1rem;">
+              <!-- Nama & Rumah Pelapor (Otomatis dari Akun) -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-user text-emerald"></i> Identitas Pemohon (Kepala Keluarga)</label>
+                <input type="text" id="fasum-inpage-nama" class="form-control" readonly style="background:rgba(255,255,255,0.05); color:#94a3b8; cursor:not-allowed;">
+              </div>
+
+              <!-- Kontak WhatsApp -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-brands fa-whatsapp text-emerald"></i> Nomor WhatsApp Pelapor</label>
+                <input type="text" id="fasum-inpage-phone" class="form-control" placeholder="08xxxxxxxxxx" required>
+              </div>
+
+              <!-- Kategori Fasum -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-layer-group text-emerald"></i> Kategori Fasilitas / Sarpras</label>
+                <select id="fasum-inpage-kategori" class="form-control" required>
+                  <option value="Lampu & Kelistrikan PJU">Lampu PJU / Penerangan Jalan Umum</option>
+                  <option value="Saluran Drainase & Got">Saluran Air / Drainase / Got Mampet</option>
+                  <option value="Jalan Lingkungan & Portal">Jalan Paving / Portal Lingkungan</option>
+                  <option value="Kebersihan & Sampah">Kebersihan Lingkungan & Tempat Sampah</option>
+                  <option value="Balai Warga & Olahraga">Balai Pertemuan / Lapangan Olahraga RT</option>
+                  <option value="Keamanan & Pos Ronda">Pos Ronda Kamling & Peralatan Keamanan</option>
+                  <option value="Fasum Lainnya">Fasilitas Lainnya</option>
+                </select>
+              </div>
+
+              <!-- Tingkat Urgensi -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-triangle-exclamation text-gold"></i> Tingkat Urgensi / Prioritas</label>
+                <select id="fasum-inpage-urgensi" class="form-control" required>
+                  <option value="Sedang">Normal / Terjadwal (3–7 hari kerja)</option>
+                  <option value="Tinggi">Mendesak / Penting (1–2 hari kerja)</option>
+                  <option value="Darurat">Darurat / Sangat Mendesak (Hari ini juga)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Lokasi Fisik Spesifik -->
+            <div class="form-group mb-3">
+              <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-location-dot text-rose"></i> Lokasi Fisik Spesifik / Titik Fasilitas Rusak</label>
+              <input type="text" id="fasum-inpage-lokasi" class="form-control" placeholder="Contoh: Jl. Citarum II depan rumah Blok B6 No. 04, tiang lampu kiri jalan" required>
+            </div>
+
+            <div class="form-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; margin-bottom:1rem;">
+              <!-- Judul / Nama Singkat Pengajuan -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-tag text-cyan"></i> Judul Ringkas Kerusakan</label>
+                <input type="text" id="fasum-inpage-judul" class="form-control" placeholder="Contoh: Bohlam Lampu PJU Mati Total" required>
+              </div>
+
+              <!-- Estimasi Biaya (Opsional) -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-coins text-gold"></i> Estimasi Anggaran Kas RT (Jika Mengetahui - Opsional)</label>
+                <input type="number" id="fasum-inpage-nominal" class="form-control" placeholder="Contoh: 150000" min="0" step="10000">
+              </div>
+            </div>
+
+            <!-- Deskripsi Kerusakan & Kebutuhan -->
+            <div class="form-group mb-3">
+              <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-align-left text-purple"></i> Uraian Kerusakan &amp; Kebutuhan Solusi</label>
+              <textarea id="fasum-inpage-deskripsi" class="form-control" rows="3" placeholder="Jelaskan kondisi kerusakan secara detail, penyebabnya, dan dampak bagi warga di sekitarnya..." required></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.08);">
+              <small style="color:var(--text-muted); font-size:0.8rem;">
+                <i class="fa-solid fa-shield-halved text-emerald"></i> Data pengajuan akan diverifikasi oleh Seksi Pembangunan &amp; Bendahara RT.
+              </small>
+              <button type="submit" class="btn btn-emerald" style="padding:0.65rem 1.5rem; font-weight:700;">
+                <i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan Fasum RT
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 4 Langkah Alur Pelayanan Fasum -->
         <div class="pos-cards-grid mb-4" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
           <div class="glass-panel p-3">
             <div style="font-size:0.75rem; font-weight:700; color:var(--emerald-400); margin-bottom:4px;">LANGKAH 1</div>
             <h4 style="margin:0 0 4px; font-size:0.95rem; color:#fff;"><i class="fa-solid fa-pen-to-square text-emerald"></i> Kirim Formulir</h4>
-            <p style="margin:0; font-size:0.78rem; color:var(--text-muted);">Sampaikan detail lokasi &amp; kebutuhan perbaikan fasum melalui tombol ajukan baru.</p>
+            <p style="margin:0; font-size:0.78rem; color:var(--text-muted);">Sampaikan detail lokasi &amp; kebutuhan perbaikan fasum melalui formulir di atas.</p>
           </div>
           <div class="glass-panel p-3">
             <div style="font-size:0.75rem; font-weight:700; color:var(--cyan-400); margin-bottom:4px;">LANGKAH 2</div>
@@ -4961,9 +5052,209 @@
             <p>Butuh surat pengantar RT untuk KTP baru/perpanjangan, KK, Keterangan Domisili, SKCK, atau Usaha? Buat surat pengantar resmi ber-KOP RT.001 secara mandiri &amp; instan.</p>
           </div>
           <div class="banner-actions">
-            <button type="button" class="btn btn-purple" id="btn-pw-open-surat">
-              <i class="fa-solid fa-pen-nib"></i> Ajukan e-Surat Pengantar
+            <button type="button" class="btn btn-purple" onclick="document.getElementById('surat-inpage-keperluan')?.focus();">
+              <i class="fa-solid fa-pen-nib"></i> Buat Surat Sekarang
             </button>
+          </div>
+        </div>
+
+        <!-- FORMULIR MANDIRI DEDICATED DI HALAMAN -->
+        <div class="glass-panel p-4 mb-4" id="form-surat-inpage-card" style="border: 1px solid rgba(168,85,247,0.3); background: linear-gradient(145deg, rgba(20, 10, 32, 0.7) 0%, rgba(12, 6, 20, 0.85) 100%);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:40px; height:40px; border-radius:10px; background:rgba(168,85,247,0.2); display:flex; align-items:center; justify-content:center; color:#c084fc; font-size:1.2rem;">
+                <i class="fa-solid fa-file-contract"></i>
+              </div>
+              <div>
+                <h3 style="margin:0; font-size:1.15rem; color:#fff;">Formulir Mandiri Pembuatan Surat Pengantar RT.001 / RW.013</h3>
+                <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Dilengkapi KOP resmi RT, penomoran otomatis, dan validasi kependudukan</p>
+              </div>
+            </div>
+            <span class="badge-pill badge-purple"><i class="fa-solid fa-stamp"></i> KOP Resmi RT.001</span>
+          </div>
+
+          <form id="form-surat-inpage" onsubmit="event.preventDefault(); handleGenerateSuratInPage();">
+            <div class="form-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; margin-bottom:1rem;">
+              <!-- Jenis Layanan Surat -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-list-check text-purple"></i> Jenis Surat Pengantar / Keterangan</label>
+                <select id="surat-inpage-jenis" class="form-control" required onchange="handleSuratJenisChange()">
+                  <option value="KTP">Permohonan Penerbitan / Perpanjangan KTP-el</option>
+                  <option value="KK">Permohonan Pembuatan / Perubahan Kartu Keluarga (KK)</option>
+                  <option value="Domisili">Surat Keterangan Domisili Tempat Tinggal Warga</option>
+                  <option value="SKCK">Pengantar Pembuatan SKCK (Polsek / Polres)</option>
+                  <option value="Usaha">Surat Keterangan Usaha (SKU) Mikro / UMKM</option>
+                  <option value="Nikah">Surat Pengantar Nikah / Keterangan Status Pernikahan</option>
+                  <option value="PLN">Pengantar Pemasangan Listrik PLN / Sambungan PDAM</option>
+                  <option value="Kematian">Surat Keterangan Kematian / Berita Duka</option>
+                  <option value="Lainnya">Surat Pengantar Keperluan Umum Lainnya</option>
+                </select>
+              </div>
+
+              <!-- Nama Lengkap Pemohon -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-user text-purple"></i> Nama Lengkap Pemohon</label>
+                <input type="text" id="surat-inpage-nama" class="form-control" required>
+              </div>
+
+              <!-- NIK Pemohon -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-id-card text-purple"></i> NIK (Nomor Induk Kependudukan - 16 Digit)</label>
+                <input type="text" id="surat-inpage-nik" class="form-control font-mono" placeholder="3216xxxxxxxxxxxx" maxlength="16" required>
+              </div>
+
+              <!-- Tempat / Tanggal Lahir -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-regular fa-calendar text-cyan"></i> Tempat, Tanggal Lahir</label>
+                <input type="text" id="surat-inpage-ttl" class="form-control" placeholder="Bekasi, 12 Mei 1985" required>
+              </div>
+
+              <!-- Jenis Kelamin & Agama -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-venus-mars text-cyan"></i> Jenis Kelamin</label>
+                <select id="surat-inpage-gender" class="form-control">
+                  <option value="Laki-laki">Laki-laki</option>
+                  <option value="Perempuan">Perempuan</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-hands-praying text-gold"></i> Agama</label>
+                <select id="surat-inpage-agama" class="form-control">
+                  <option value="Islam">Islam</option>
+                  <option value="Kristen">Kristen Protestan</option>
+                  <option value="Katolik">Katolik</option>
+                  <option value="Hindu">Hindu</option>
+                  <option value="Buddha">Buddha</option>
+                  <option value="Konghucu">Konghucu</option>
+                </select>
+              </div>
+
+              <!-- Pekerjaan -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-briefcase text-emerald"></i> Pekerjaan</label>
+                <input type="text" id="surat-inpage-pekerjaan" class="form-control" placeholder="Karyawan Swasta / Wiraswasta" required>
+              </div>
+
+              <!-- Kontak WhatsApp -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-brands fa-whatsapp text-emerald"></i> No. WhatsApp Pemohon</label>
+                <input type="text" id="surat-inpage-phone" class="form-control" placeholder="08xxxxxxxxxx" required>
+              </div>
+            </div>
+
+            <!-- Alamat Lengkap -->
+            <div class="form-group mb-3">
+              <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-house-chimney text-gold"></i> Alamat Rumah Lengkap di RT.001</label>
+              <input type="text" id="surat-inpage-alamat" class="form-control" placeholder="Jl. Citarum II Blok B6 No. 02, RT.001 / RW.013 Perumahan Graha Asri" required>
+            </div>
+
+            <div class="form-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; margin-bottom:1rem;">
+              <!-- Keperluan Surat -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-pen-nib text-purple"></i> Keperluan Surat Pengantar</label>
+                <input type="text" id="surat-inpage-keperluan" class="form-control" placeholder="Contoh: Persyaratan perpanjangan e-KTP di Kelurahan" required>
+              </div>
+
+              <!-- Instansi Tujuan -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-building text-cyan"></i> Instansi / Pihak Tujuan</label>
+                <input type="text" id="surat-inpage-tujuan" class="form-control" placeholder="Contoh: Kantor Kelurahan Sertajaya / Kecamatan Cikarang Utara" required>
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.08);">
+              <button type="button" class="btn btn-outline-purple" onclick="document.getElementById('btn-pw-open-surat')?.click();">
+                <i class="fa-solid fa-up-right-from-square"></i> Buka Mode Dialog
+              </button>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-outline" id="btn-print-surat-inpage" onclick="printSuratInPage()" style="border-color:#c084fc; color:#e9d5ff;">
+                  <i class="fa-solid fa-print"></i> Cetak / Unduh PDF
+                </button>
+                <button type="submit" class="btn btn-purple" style="font-weight:700;">
+                  <i class="fa-solid fa-file-circle-check"></i> Buat &amp; Tampilkan Pratinjau KOP Resmi
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- PRATINJAU KERTAS SURAT BER-KOP RESMI RT.001 (IN-PAGE LIVE PREVIEW) -->
+        <div class="glass-panel p-4 mb-4" id="surat-live-preview-box" style="display:none; background:#ffffff; color:#0f172a; border-radius:16px; border:2px solid #a855f7;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid #e2e8f0; padding-bottom:0.75rem;">
+            <h4 style="margin:0; color:#0f172a; display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-circle-check text-purple"></i> Dokumen Resmi Siap Cetak
+            </h4>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn btn-sm btn-purple" onclick="printSuratInPage()">
+                <i class="fa-solid fa-print"></i> Cetak Dokumen
+              </button>
+              <button type="button" class="btn btn-sm btn-emerald" id="btn-wa-surat-inpage" onclick="shareSuratInPageWA()">
+                <i class="fa-brands fa-whatsapp"></i> Konfirmasi ke Ketua RT
+              </button>
+            </div>
+          </div>
+
+          <div id="inpage-surat-paper" class="surat-kertas-formal" style="background:#ffffff; color:#0f172a; padding:1.5rem; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+            <!-- KOP SURAT RT -->
+            <div class="surat-kop" style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
+              <div class="kop-logo-wrap">
+                <img src="assets/logo.png" alt="Logo RT.001" style="width:65px; height:65px; object-fit:contain;">
+              </div>
+              <div class="kop-teks" style="text-align:center; flex:1;">
+                <h3 style="margin:0; font-size:1.15rem; font-weight:800; letter-spacing:0.5px; color:#0f172a;">RUKUN TETANGGA 001 / RUKUN WARGA 013</h3>
+                <h4 style="margin:2px 0; font-size:0.95rem; font-weight:700; color:#334155;">PERUMAHAN GRAHA ASRI &bull; KELURAHAN SERTAYASA</h4>
+                <p style="margin:0; font-size:0.8rem; color:#64748b;">Kecamatan Cikarang Utara, Kabupaten Bekasi, Jawa Barat 17530</p>
+              </div>
+            </div>
+            <div style="height:3px; background:#0f172a; margin-bottom:2px;"></div>
+            <div style="height:1px; background:#0f172a; margin-bottom:14px;"></div>
+
+            <!-- NOMOR SURAT -->
+            <div style="text-align:center; margin-bottom:1rem;">
+              <h4 style="margin:0; font-size:1.1rem; text-decoration:underline; font-weight:800; color:#0f172a;" id="inpage-surat-judul-teks">SURAT PENGANTAR / KETERANGAN</h4>
+              <span style="font-size:0.85rem; color:#475569; font-weight:600;" id="inpage-surat-nomor">Nomor: 470 / 025 / RT.001-RW.013 / IX / 2026</span>
+            </div>
+
+            <!-- ISI SURAT -->
+            <div style="font-size:0.88rem; line-height:1.65; color:#1e293b;">
+              <p style="margin-bottom:10px;">Yang bertanda tangan di bawah ini Pengurus Rukun Tetangga 001 / Rukun Warga 013 Perumahan Graha Asri, Kelurahan Sertayasa, Kecamatan Cikarang Utara, Kabupaten Bekasi, dengan ini menerangkan bahwa:</p>
+              
+              <table style="width:100%; border-collapse:collapse; margin-bottom:12px; font-size:0.88rem;">
+                <tr><td style="width:180px; padding:3px 0;">Nama Lengkap</td><td style="width:15px;">:</td><td><strong id="inpage-preview-nama">Bapak Wageyanto</strong></td></tr>
+                <tr><td style="padding:3px 0;">NIK</td><td>:</td><td id="inpage-preview-nik">3216021205800002</td></tr>
+                <tr><td style="padding:3px 0;">Tempat, Tgl Lahir</td><td>:</td><td id="inpage-preview-ttl">Bekasi, 12 Mei 1985</td></tr>
+                <tr><td style="padding:3px 0;">Jenis Kelamin</td><td>:</td><td id="inpage-preview-gender">Laki-laki</td></tr>
+                <tr><td style="padding:3px 0;">Agama / Pekerjaan</td><td>:</td><td id="inpage-preview-agama-kerja">Islam / Karyawan Swasta</td></tr>
+                <tr><td style="padding:3px 0;">Alamat Tempat Tinggal</td><td>:</td><td id="inpage-preview-alamat">Jl. Citarum II Blok B6 No. 02, RT.001 / RW.013</td></tr>
+                <tr><td style="padding:3px 0;">Status Domisili</td><td>:</td><td><span id="inpage-preview-domisili">Warga Tetap Terdaftar</span></td></tr>
+                <tr><td style="padding:3px 0;">Maksud / Keperluan</td><td>:</td><td><strong id="inpage-preview-keperluan">Permohonan Penerbitan / Perpanjangan KTP-el</strong></td></tr>
+                <tr><td style="padding:3px 0;">Tujuan Pengantar</td><td>:</td><td id="inpage-preview-tujuan">Kantor Kelurahan Sertajaya</td></tr>
+              </table>
+
+              <p style="margin-bottom:10px;">Orang tersebut di atas adalah benar-benar warga yang berdomisili dan bertempat tinggal sah di lingkungan RT.001 / RW.013 Perumahan Graha Asri sampai dengan surat keterangan ini dikeluarkan.</p>
+              <p>Demikian surat pengantar ini dibuat dengan sebenarnya agar dapat dipergunakan sebagaimana mestinya oleh instansi terkait.</p>
+            </div>
+
+            <!-- TANDA TANGAN -->
+            <div style="display:flex; justify-content:space-between; margin-top:2rem; padding:0 1.5rem; text-align:center;">
+              <div>
+                <span style="font-size:0.82rem; color:#475569;">Bekasi, <span id="inpage-preview-tanggal">21 September 2026</span></span><br>
+                <span style="font-size:0.85rem; font-weight:600;">Tanda Tangan Pemohon,</span>
+                <div style="height:55px;"></div>
+                <strong id="inpage-preview-ttd-nama" style="text-decoration:underline;">Bapak Wageyanto</strong>
+              </div>
+              <div>
+                <span style="font-size:0.82rem; color:#475569;">Mengetahui,</span><br>
+                <span style="font-size:0.85rem; font-weight:600;">Ketua RT.001 / RW.013,</span>
+                <div style="height:55px; display:flex; align-items:center; justify-content:center;">
+                  <span style="border:1px solid #10b981; color:#059669; padding:2px 8px; border-radius:4px; font-size:0.7rem; font-weight:700;">
+                    <i class="fa-solid fa-stamp"></i> DIGITAL SIGN RT.001
+                  </span>
+                </div>
+                <strong style="text-decoration:underline;">Maryanto</strong>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -5029,22 +5320,6 @@
             <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Surat pengantar keperluan umum seperti instalasi listrik PLN/PDAM, klaim asuransi/BPJS, bank, atau yayasan.</p>
           </div>
         </div>
-
-        <!-- Panduan & Legalitas Surat -->
-        <div class="glass-panel p-4">
-          <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.75rem;">
-            <i class="fa-solid fa-circle-info text-cyan" style="font-size:1.2rem;"></i>
-            <h3 style="margin:0; font-size:1.05rem; color:#fff;">Petunjuk Penggunaan &amp; Validasi Surat</h3>
-          </div>
-          <p style="font-size:0.83rem; color:var(--text-muted); line-height:1.6; margin-bottom:1rem;">
-            Seluruh surat yang dibuat melalui e-Surat Pengantar RT Mandiri dilengkapi dengan KOP resmi RT.001 / RW.013 Perumahan Graha Asri, penomoran surat otomatis, dan tanda tangan resmi. Anda dapat langsung mengunduh/mencetak formulir atau meneruskannya ke kontak WhatsApp Ketua/Sekretaris RT untuk pengesahan tanda tangan fisik jika diperlukan oleh instansi tujuan.
-          </p>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button type="button" class="btn btn-outline-purple" onclick="document.getElementById('btn-pw-open-surat')?.click();">
-              <i class="fa-solid fa-print"></i> Buka Formulir Pembuatan Surat
-            </button>
-          </div>
-        </div>
       </section>
 
       <!-- ==================== VIEW: KOTAK ASPIRASI & MASUKAN WARGA (KHUSUS WARGA) ==================== -->
@@ -5058,9 +5333,87 @@
             <p>Sampaikan saran, masukan perbaikan lingkungan, pertanyaan, atau apresiasi Anda langsung kepada jajaran pengurus RT.001 secara tertib dan transparan.</p>
           </div>
           <div class="banner-actions">
-            <button type="button" class="btn btn-cyan" id="btn-pw-open-aspirasi">
-              <i class="fa-solid fa-paper-plane"></i> Tulis Aspirasi &amp; Masukan
-            </button>
+            <a href="#form-aspirasi-inpage-card" class="btn btn-cyan" onclick="document.getElementById('aspirasi-inpage-pesan')?.focus();">
+              <i class="fa-solid fa-pen"></i> Tulis Aspirasi Sekarang
+            </a>
+          </div>
+        </div>
+
+        <!-- FORMULIR ASPIRASI DEDICATED LANGSUNG DI HALAMAN -->
+        <div class="glass-panel p-4 mb-4" id="form-aspirasi-inpage-card" style="border: 1px solid rgba(6,182,212,0.3); background: linear-gradient(145deg, rgba(6, 20, 30, 0.7) 0%, rgba(3, 12, 20, 0.85) 100%);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:40px; height:40px; border-radius:10px; background:rgba(6,182,212,0.2); display:flex; align-items:center; justify-content:center; color:#22d3ee; font-size:1.2rem;">
+                <i class="fa-solid fa-comment-dots"></i>
+              </div>
+              <div>
+                <h3 style="margin:0; font-size:1.15rem; color:#fff;">Formulir Penyampaian Aspirasi &amp; Saran Warga</h3>
+                <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Setiap suara warga sangat berharga demi kenyamanan dan kemajuan RT.001 / RW.013</p>
+              </div>
+            </div>
+            <span class="badge-pill badge-cyan"><i class="fa-solid fa-comments"></i> Transparan &amp; Konstruktif</span>
+          </div>
+
+          <form id="form-aspirasi-inpage" onsubmit="event.preventDefault(); handleAspirasiInPageSubmit();">
+            <div class="form-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; margin-bottom:1rem;">
+              <!-- Identitas Pengirim -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-user text-cyan"></i> Identitas Pengirim</label>
+                <input type="text" id="aspirasi-inpage-nama" class="form-control" readonly style="background:rgba(255,255,255,0.05); color:#94a3b8;">
+                <label style="font-size:0.75rem; color:#cbd5e1; display:flex; align-items:center; gap:6px; margin-top:6px; cursor:pointer;">
+                  <input type="checkbox" id="aspirasi-inpage-anonim" onchange="toggleAnonimInPage(this)">
+                  <span>Sampaikan sebagai Anonim (Nama &amp; Blok Rumah tidak ditampilkan ke publik)</span>
+                </label>
+              </div>
+
+              <!-- Kategori Aspirasi -->
+              <div class="form-group">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-layer-group text-cyan"></i> Kategori Aspirasi</label>
+                <select id="aspirasi-inpage-kategori" class="form-control" required>
+                  <option value="Keamanan & Ketertiban">Keamanan Lingkungan &amp; Ronda Malam</option>
+                  <option value="Kebersihan & Lingkungan">Kebersihan, Sampah &amp; Gotong Royong</option>
+                  <option value="Fasilitas & Inovasi RT">Fasilitas Umum, PJU &amp; Inovasi RT</option>
+                  <option value="Transparansi Kas & Keuangan">Transparansi Keuangan &amp; Kas RT</option>
+                  <option value="Kegiatan Warga & Sosial">Kegiatan Warga, Remaja &amp; PHBI</option>
+                  <option value="Usulan Tata Tertib RT">Usulan Tata Tertib &amp; Kebijakan Baru</option>
+                  <option value="Aspirasi Lainnya">Aspirasi / Masukan Lainnya</option>
+                </select>
+              </div>
+
+              <!-- Judul / Topik Masukan -->
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-heading text-gold"></i> Judul / Topik Aspirasi</label>
+                <input type="text" id="aspirasi-inpage-topik" class="form-control" placeholder="Contoh: Usulan Peremajaan Tanaman di Taman Fasum Blok B" required>
+              </div>
+            </div>
+
+            <!-- Isi Pesan Masukan / Saran -->
+            <div class="form-group mb-3">
+              <label class="form-label text-muted" style="font-size:0.82rem;"><i class="fa-solid fa-message text-emerald"></i> Uraian Saran, Masukan, atau Harapan Solusi</label>
+              <textarea id="aspirasi-inpage-pesan" class="form-control" rows="4" placeholder="Tuliskan masukan Anda secara santun, jelas, dan membangun. Sertakan rekomendasi atau saran solusi yang diharapkan..." required></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-top:0.75rem; border-top:1px solid rgba(255,255,255,0.08);">
+              <small style="color:var(--text-muted); font-size:0.8rem;">
+                <i class="fa-solid fa-check-double text-cyan"></i> Aspirasi akan dicatat dan diagendakan dalam evaluasi pengurus RT bulanan.
+              </small>
+              <button type="submit" class="btn btn-cyan" style="padding:0.65rem 1.5rem; font-weight:700;">
+                <i class="fa-solid fa-paper-plane"></i> Kirim Aspirasi ke Pengurus RT
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- DAFTAR ASPIRASI WARGA TERKIRIM -->
+        <div class="glass-panel p-4 mb-4">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:8px;">
+            <h3 style="margin:0; font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-inbox text-cyan"></i> Aspirasi &amp; Catatan Warga Terkirim
+            </h3>
+            <span class="badge-pill badge-cyan"><i class="fa-solid fa-comments"></i> Partisipasi Aktif</span>
+          </div>
+          <div id="aspirasi-inpage-list" class="pw-my-requests-list">
+            <!-- Populated dynamically -->
           </div>
         </div>
 
@@ -6969,6 +7322,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.40"></script>
+  <script src="app.js?v=2.9.41"></script>
 </body>
 </html>
