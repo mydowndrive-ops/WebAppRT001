@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (12:02 WIB)  
-**Versi Rilis Aktif:** `v2.9.37`  
+**Terakhir Diperbarui:** 21 September 2026 (12:38 WIB)  
+**Versi Rilis Aktif:** `v2.9.38`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,21 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📊 Integrasi Dashboard Eksekutif Keuangan RT di Portal Warga (Read-Only Mode) (Update v2.9.37 - 21 Sept 2026)
+### 1. 🧭 Penataan Ulang Urutan & Penamaan Menu Sidebar Dashboard Warga (Update v2.9.38 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Mengatur ulang susunan posisi menu sidebar warga serta menyesuaikan label menu agar lebih ringkas, natural, dan mudah diakses.
+- **Hasil Penataan Menu Sidebar Warga**:
+  1. **Portal Warga** (sebelumnya *"Dashboard Portal Warga"*) &bull; `order: 1`
+  2. **Pemasukan NON iuran** &bull; `order: 2`
+  3. **Jadwal Ronda** &bull; `order: 3`
+  4. **Pengurus RT** (sebelumnya *"Struktur Pengurus RT"*) &bull; `order: 4`
+  5. **Inventaris dan Aset RT** &bull; `order: 5`
+- **Pembaruan Sistem**:
+  - Update `wargaOrder` di fungsi `applyRBAC()` pada `app.js`.
+  - Update label teks pada elemen `<nav class="sidebar-menu">` di `index.html`.
+  - Cache Service Worker di-refresh ke `v2.9.38`.
+
+### 2. 📊 Integrasi Dashboard Eksekutif Keuangan RT di Portal Warga (Read-Only Mode) (Update v2.9.37 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Menampilkan modul Dashboard Eksekutif (Total Kas Terkonsolidasi, Capaian Iuran Bulan Ini, dan Alokasi 6 Pos Anggaran) di dalam Dashboard Portal Warga (`#view-portal-warga`) dalam mode **Read Only** (hanya pantau/baca secara transparan tanpa hak akses pengubahan/edit bagi warga).
 - **Hasil Implementasi Fitur**:

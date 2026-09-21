@@ -8051,9 +8051,9 @@ function applyRBAC() {
         const wargaOrder = {
           'portal-warga': 1,
           'non-iuran': 2,
-          'aset-rt': 3,
+          'ronda-pengurus': 3,
           'pengurus-struktur': 4,
-          'ronda-pengurus': 5
+          'aset-rt': 5
         };
         if (typeof wargaOrder[target] !== 'undefined') el.style.order = wargaOrder[target];
       } else {
