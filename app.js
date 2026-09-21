@@ -5136,10 +5136,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.48';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.49';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.48')
+      navigator.serviceWorker.register('sw.js?v=2.9.49')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -13054,8 +13054,8 @@ function renderBukuRegisterSurat() {
           <button type="button" class="btn btn-outline-cyan btn-sm btn-action-verify-row" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem;" title="Cek Sertifikat Validasi">
             <i class="fa-solid fa-shield-check"></i> Cek Sah
           </button>
-          <button type="button" class="btn btn-outline-danger btn-sm btn-action-delete-surat" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem; color:#f87171; border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.08);" title="Hapus Surat dari Buku Register">
-            <i class="fa-solid fa-trash-can"></i>
+          <button type="button" class="btn btn-outline-danger btn-sm btn-action-delete-surat" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem; color:#f87171; border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.08);" title="Hapus Surat (Khusus Admin 1 / Bendahara 1)">
+            <i class="fa-solid fa-lock" style="font-size:0.65rem; margin-right:2px; color:#fbbf24;"></i><i class="fa-solid fa-trash-can"></i>
           </button>
         </div>
       </td>
@@ -13090,27 +13090,43 @@ function renderBukuRegisterSurat() {
   });
 }
 
+let pendingSuratDeleteAction = null;
+
 /**
  * Menghapus satu surat tertentu dari Buku Register e-Surat RT.001
+ * Proteksi Ketat: Hanya Admin 1 (Bendahara 1) yang berwenang menghapus untuk menghindari pemalsuan & manipulasi.
  */
 function deleteSuratFromRegister(idx) {
   if (!state.suratRegister || !state.suratRegister[idx]) return;
   const target = state.suratRegister[idx];
-  const confirmMsg = `Hapus surat ini dari Buku Register RT.001?\n\n• No Surat: ${target.noSurat}\n• Pemohon: ${target.nama} (${target.nik})\n• Keperluan: ${target.keperluan}\n\nData yang dihapus tidak dapat dikembalikan. Lanjutkan?`;
-  
-  if (confirm(confirmMsg)) {
-    const deletedNo = target.noSurat;
-    state.suratRegister.splice(idx, 1);
-    saveState();
-    renderBukuRegisterSurat();
-    if (typeof showToast === 'function') {
-      showToast(`🗑️ Surat ${deletedNo} berhasil dihapus dari Buku Register.`, 'info');
+
+  // 1. Jika pengguna saat ini SUDAH login aktif sebagai Admin 1 (Bendahara 1)
+  if (state.currentUser === 'b1') {
+    const confirmMsg = `Konfirmasi Hak Akses Admin 1 (Bendahara 1):\n\nApakah Anda yakin ingin menghapus surat berikut dari Buku Register RT.001?\n\n• No Surat: ${target.noSurat}\n• Pemohon: ${target.nama} (${target.nik})\n• Keperluan: ${target.keperluan}\n\nData yang dihapus tidak dapat dikembalikan. Lanjutkan?`;
+    if (confirm(confirmMsg)) {
+      executeDeleteSurat(idx);
     }
+    return;
   }
+
+  // 2. Jika belum login sebagai Admin 1 (warga / publik / role lain):
+  // Buka modal otorisasi PIN Bendahara 1 untuk mencegah pemalsuan & penghapusan sepihak
+  pendingSuratDeleteAction = { type: 'single', idx };
+  const detailEl = document.getElementById('auth-b1-action-detail');
+  if (detailEl) {
+    detailEl.innerHTML = `
+      <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">Surat yang akan dihapus:</div>
+      <div style="font-weight:700; color:#38bdf8; font-size:0.85rem;">${target.noSurat || '-'}</div>
+      <div style="color:#f8fafc; font-size:0.83rem; margin-top:2px;">${target.nama || '-'} (${target.nik || '-'})</div>
+      <div style="color:#fbbf24; font-size:0.78rem; margin-top:2px;">Keperluan: ${target.keperluan || '-'}</div>
+    `;
+  }
+  resetAndOpenAuthB1Modal();
 }
 
 /**
  * Mengosongkan / membersihkan seluruh riwayat Buku Register e-Surat RT.001
+ * Proteksi Ketat: Hanya Admin 1 (Bendahara 1) yang berwenang.
  */
 function clearAllSuratRegister() {
   if (!state.suratRegister || state.suratRegister.length === 0) {
@@ -13120,15 +13136,97 @@ function clearAllSuratRegister() {
     return;
   }
   const count = state.suratRegister.length;
-  const confirmMsg = `PERINGATAN: Apakah Anda yakin ingin mengosongkan seluruh Buku Register (${count} surat)?\n\nSeluruh riwayat arsip penerbitan surat pengantar akan dihapus secara permanen.`;
-  
-  if (confirm(confirmMsg)) {
-    state.suratRegister = [];
-    saveState();
-    renderBukuRegisterSurat();
-    if (typeof showToast === 'function') {
-      showToast('🧹 Seluruh riwayat Buku Register e-Surat berhasil dibersihkan.', 'success');
+
+  // 1. Jika pengguna saat ini SUDAH login aktif sebagai Admin 1 (Bendahara 1)
+  if (state.currentUser === 'b1') {
+    const confirmMsg = `PERINGATAN KERAS ADMIN 1:\n\nApakah Anda selaku Bendahara 1 yakin ingin mengosongkan seluruh Buku Register (${count} surat)?\n\nSeluruh riwayat arsip penerbitan surat pengantar akan dihapus secara permanen.`;
+    if (confirm(confirmMsg)) {
+      executeClearAllSurat();
     }
+    return;
+  }
+
+  // 2. Jika belum login sebagai Admin 1:
+  pendingSuratDeleteAction = { type: 'all' };
+  const detailEl = document.getElementById('auth-b1-action-detail');
+  if (detailEl) {
+    detailEl.innerHTML = `
+      <div style="font-size:0.75rem; color:#f87171; margin-bottom:4px; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> TINDAKAN SANGAT KRITIS:</div>
+      <div style="font-weight:700; color:#f8fafc; font-size:0.9rem;">Bersihkan Seluruh Arsip e-Surat RT.001</div>
+      <div style="color:#fbbf24; font-size:0.78rem; margin-top:3px;">Total: ${count} arsip surat resmi terdaftar akan dihapus permanen.</div>
+    `;
+  }
+  resetAndOpenAuthB1Modal();
+}
+
+function resetAndOpenAuthB1Modal() {
+  const pinInput = document.getElementById('auth-b1-pin-input');
+  const errorMsg = document.getElementById('auth-b1-error-msg');
+  if (pinInput) pinInput.value = '';
+  if (errorMsg) errorMsg.style.display = 'none';
+  if (typeof openModal === 'function') {
+    openModal('modal-auth-b1-surat');
+  } else {
+    const m = document.getElementById('modal-auth-b1-surat');
+    if (m) m.style.display = 'flex';
+  }
+  setTimeout(() => pinInput?.focus(), 150);
+}
+
+function submitAdmin1SuratAuth() {
+  const pinInput = document.getElementById('auth-b1-pin-input');
+  const errorMsg = document.getElementById('auth-b1-error-msg');
+  const enteredPin = (pinInput?.value || '').trim();
+
+  const validPin = (state.accountPins && state.accountPins.b1) ? state.accountPins.b1 : '1111';
+
+  if (enteredPin !== validPin) {
+    if (errorMsg) errorMsg.style.display = 'block';
+    if (pinInput) {
+      pinInput.value = '';
+      pinInput.focus();
+    }
+    if (typeof showToast === 'function') {
+      showToast('❌ Akses ditolak: PIN Bendahara 1 salah. Penghapusan dibatalkan demi integritas data!', 'danger');
+    }
+    return;
+  }
+
+  // PIN Terverifikasi Sah!
+  if (typeof closeModal === 'function') {
+    closeModal('modal-auth-b1-surat');
+  } else {
+    const m = document.getElementById('modal-auth-b1-surat');
+    if (m) m.style.display = 'none';
+  }
+
+  if (!pendingSuratDeleteAction) return;
+
+  if (pendingSuratDeleteAction.type === 'single') {
+    executeDeleteSurat(pendingSuratDeleteAction.idx);
+  } else if (pendingSuratDeleteAction.type === 'all') {
+    executeClearAllSurat();
+  }
+  pendingSuratDeleteAction = null;
+}
+
+function executeDeleteSurat(idx) {
+  if (!state.suratRegister || !state.suratRegister[idx]) return;
+  const deletedNo = state.suratRegister[idx].noSurat;
+  state.suratRegister.splice(idx, 1);
+  saveState();
+  renderBukuRegisterSurat();
+  if (typeof showToast === 'function') {
+    showToast(`🗑️ Surat ${deletedNo} berhasil dihapus dengan otorisasi sah Admin 1.`, 'info');
+  }
+}
+
+function executeClearAllSurat() {
+  state.suratRegister = [];
+  saveState();
+  renderBukuRegisterSurat();
+  if (typeof showToast === 'function') {
+    showToast('🧹 Seluruh riwayat Buku Register e-Surat berhasil dibersihkan dengan otorisasi sah Admin 1.', 'success');
   }
 }
 
@@ -13351,6 +13449,7 @@ window.openSuratVerificationModalFromCurrent = openSuratVerificationModalFromCur
 window.renderBukuRegisterSurat = renderBukuRegisterSurat;
 window.deleteSuratFromRegister = deleteSuratFromRegister;
 window.clearAllSuratRegister = clearAllSuratRegister;
+window.submitAdmin1SuratAuth = submitAdmin1SuratAuth;
 
 // ==================== DEDICATED VIEW: KOTAK ASPIRASI & MASUKAN WARGA ====================
 

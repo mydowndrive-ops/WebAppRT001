@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.48">
+  <link rel="stylesheet" href="styles.css?v=2.9.49">
 </head>
 <body>
 
@@ -5336,8 +5336,11 @@
             <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
               <span class="badge-pill badge-emerald" id="badge-total-register-surat">0 Surat Tercatat</span>
               <span class="badge-pill badge-cyan" title="Sistem Kriptografi Aktif"><i class="fa-solid fa-shield-halved"></i> Anti-Pemalsuan SHA-256</span>
-              <button type="button" class="btn btn-outline-danger btn-sm" id="btn-clear-register-surat" onclick="clearAllSuratRegister()" style="padding:3px 10px; font-size:0.75rem; border-color:rgba(239,68,68,0.4); color:#fca5a5; background:rgba(239,68,68,0.12); border-radius:6px; cursor:pointer;" title="Bersihkan Seluruh Riwayat Arsip Surat">
-                <i class="fa-solid fa-trash-can"></i> Bersihkan Arsip
+              <span class="badge-pill" style="font-size:0.72rem; padding:2px 8px; background:rgba(234,179,8,0.12); color:#fde047; border:1px solid rgba(234,179,8,0.3);" title="Wewenang Hapus Dibatasi Khusus Admin 1 (Bendahara 1)">
+                <i class="fa-solid fa-lock text-gold"></i> Hak Hapus: Admin 1 (B1)
+              </span>
+              <button type="button" class="btn btn-outline-danger btn-sm" id="btn-clear-register-surat" onclick="clearAllSuratRegister()" style="padding:3px 10px; font-size:0.75rem; border-color:rgba(239,68,68,0.4); color:#fca5a5; background:rgba(239,68,68,0.12); border-radius:6px; cursor:pointer;" title="Khusus Admin 1 (Bendahara 1) - Memerlukan Verifikasi PIN">
+                <i class="fa-solid fa-lock"></i> Bersihkan Arsip
               </button>
             </div>
           </div>
@@ -7423,6 +7426,57 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL OTORISASI KEAMANAN ADMIN 1 (BENDAHARA 1) ==================== -->
+  <div class="modal-backdrop" id="modal-auth-b1-surat" style="display:none; align-items:center; justify-content:center; z-index:99999;">
+    <div class="glass-panel" style="width:92%; max-width:440px; background:linear-gradient(145deg, rgba(15,23,42,0.98) 0%, rgba(30,41,59,0.98) 100%); border:1px solid rgba(234,179,8,0.45); border-radius:16px; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.85);">
+      <div style="background:linear-gradient(135deg, rgba(161,98,7,0.35) 0%, rgba(202,138,4,0.18) 100%); padding:1.15rem 1.35rem; border-bottom:1px solid rgba(234,179,8,0.25); display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:rgba(234,179,8,0.2); border:1px solid rgba(234,179,8,0.4); display:flex; align-items:center; justify-content:center; color:#fbbf24; font-size:1.1rem;">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <div>
+            <h4 style="margin:0; font-size:0.98rem; color:#f8fafc; font-weight:700;">Otorisasi Admin 1 (Bendahara 1)</h4>
+            <span style="font-size:0.75rem; color:#fde047;">Proteksi Anti-Pemalsuan Arsip RT.001</span>
+          </div>
+        </div>
+        <button class="modal-close text-light" data-close="modal-auth-b1-surat" onclick="closeModal('modal-auth-b1-surat')" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+
+      <div style="padding:1.35rem;">
+        <div style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); border-radius:10px; padding:0.75rem; margin-bottom:1.15rem; font-size:0.8rem; color:#fca5a5; display:flex; gap:10px; align-items:flex-start;">
+          <i class="fa-solid fa-shield-halved" style="font-size:1.1rem; color:#f87171; margin-top:2px;"></i>
+          <div>
+            <strong style="color:#fee2e2; display:block; margin-bottom:2px;">Wewenang Khusus Bendahara 1</strong>
+            Untuk mencegah pemalsuan &amp; manipulasi data kependudukan, penghapusan arsip hanya sah dilakukan oleh <strong>Admin 1 (Bendahara 1)</strong>.
+          </div>
+        </div>
+
+        <div id="auth-b1-action-detail" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.75rem; margin-bottom:1.15rem; font-size:0.8rem; color:#cbd5e1;">
+          <!-- Detail target surat yang akan dihapus -->
+        </div>
+
+        <form id="form-auth-b1-surat" onsubmit="event.preventDefault(); submitAdmin1SuratAuth();">
+          <div style="margin-bottom:1.25rem;">
+            <label for="auth-b1-pin-input" style="display:block; font-size:0.8rem; font-weight:600; color:#cbd5e1; margin-bottom:6px;">
+              <i class="fa-solid fa-key" style="color:#fbbf24;"></i> Masukkan PIN Bendahara 1:
+            </label>
+            <input type="password" id="auth-b1-pin-input" maxlength="12" placeholder="••••" autocomplete="current-password" style="width:100%; padding:9px 14px; font-size:1.2rem; letter-spacing:6px; text-align:center; background:rgba(15,23,42,0.85); border:1px solid rgba(234,179,8,0.45); border-radius:8px; color:#ffffff; font-family:monospace; outline:none;" required>
+            <div id="auth-b1-error-msg" style="display:none; color:#f87171; font-size:0.75rem; margin-top:6px; font-weight:600;">
+              <i class="fa-solid fa-circle-exclamation"></i> PIN Bendahara 1 salah! Akses ditolak.
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="btn btn-outline" data-close="modal-auth-b1-surat" onclick="closeModal('modal-auth-b1-surat')" style="font-size:0.85rem; padding:0.45rem 1.1rem;">Batal</button>
+            <button type="submit" class="btn btn-danger btn-sm" id="btn-auth-b1-submit" style="font-size:0.85rem; padding:0.45rem 1.25rem; background:#dc2626; border-color:#ef4444; color:#ffffff; font-weight:600;">
+              <i class="fa-solid fa-unlock-keyhole"></i> Verifikasi &amp; Hapus
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Luxury Scroll-to-Top Button -->
   <button id="btn-scroll-top" class="scroll-to-top-btn" title="Kembali ke Bagian Atas Halaman (1-Klik)" aria-label="Kembali ke Bagian Atas">
     <div class="scroll-top-icon-wrapper">
@@ -7435,6 +7489,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.48"></script>
+  <script src="app.js?v=2.9.49"></script>
 </body>
 </html>

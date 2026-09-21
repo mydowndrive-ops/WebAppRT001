@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (15:15 WIB)  
-**Versi Rilis Aktif:** `v2.9.48`  
+**Terakhir Diperbarui:** 21 September 2026 (15:50 WIB)  
+**Versi Rilis Aktif:** `v2.9.49`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,25 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🗑️ Fitur Hapus Arsip Surat & Normalisasi Tanggal Buku Register e-Surat (Update v2.9.48 - 21 Sept 2026)
+### 1. 🔒 Proteksi Otorisasi Eksklusif Admin 1 (Bendahara 1) untuk Hapus Arsip Surat (Update v2.9.49 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Harusnya yang bisa menghapus hanya admin 1 (Bendahara 1) saja karena untuk menghindari pemalsuan."*
+  - Menegakkan keamanan tingkat tinggi agar warga atau pihak luar yang membuka Portal Warga tidak dapat menghapus atau memanipulasi riwayat surat resmi RT.001.
+- **Hasil Implementasi**:
+  1. **Modal Otorisasi Keamanan Admin 1 (`#modal-auth-b1-surat`)**:
+     - Ditambahkan modal otorisasi bertema dark/gold glassmorphism yang mewajibkan input PIN resmi Bendahara 1 (PIN default `1111` atau PIN kustom yang telah diatur).
+     - Menampilkan rincian dokumen yang hendak dihapus (Nomor Surat, Nama Pemohon, NIK, dan Keperluan).
+     - Jika PIN salah, akses ditolak seketika dengan pesan peringatan keamanan dan data register tetap 100% aman terlindungi.
+  2. **Verifikasi Hak Akses Cerdas (Smart RBAC)**:
+     - Jika pengguna sedang aktif login sebagai **Admin 1 / Bendahara 1** (`state.currentUser === 'b1'`), penghapusan dapat langsung dikonfirmasi tanpa perlu memasukkan ulang PIN.
+     - Jika pengguna sedang di **Portal Warga / Mode Publik**, sistem secara otomatis membuka modal verifikasi PIN Admin 1.
+  3. **Visual Badge & Indikator Gembok Keamanan**:
+     - Header kartu Buku Register dilengkapi badge: `🔒 Hak Hapus: Admin 1 (B1)`.
+     - Tombol *"Bersihkan Arsip"* dan tombol hapus per baris dilengkapi ikon gembok emas (`<i class="fa-solid fa-lock"></i>`) dengan tooltip informatif bahwa aksi ini khusus Admin 1.
+  4. **Pembaruan Service Worker & Versi PWA**:
+     - Versi dinaikkan ke `rt-finsmart-cache-v2.9.49` pada `sw.js`, `index.html`, dan `app.js`.
+
+### 2. 🗑️ Fitur Hapus Arsip Surat & Normalisasi Tanggal Buku Register e-Surat (Update v2.9.48 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Menjawab pertanyaan *"untuk menghapus daftar surat ini dimana"*: sebelumnya pada Buku Register belum ada tombol aksi hapus arsip per baris maupun tombol bersihkan arsip secara menyeluruh.
   - Memperbaiki bug tanggal `undefined` pada baris riwayat surat yang baru diterbitkan akibat ketidaksinkronan properti `tgl` vs `tglStr`.
