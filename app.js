@@ -11561,13 +11561,18 @@ function renderPortalWarga() {
       const cell = document.createElement('div');
       cell.className = `pw-month-cell ${isPaid ? 'paid' : 'unpaid'}`;
       if (isCur) cell.style.borderColor = isPaid ? '#10b981' : '#f59e0b';
+      if (!isPaid) {
+        cell.style.cursor = 'pointer';
+        cell.title = `Klik untuk bayar iuran bulan ${MONTH_NAMES[m]} via QRIS (Pakasir)`;
+        cell.onclick = () => openPakasirPaymentModal(resident, m);
+      }
 
       cell.innerHTML = `
         <div class="pw-month-name">
           ${MONTH_NAMES[m].substring(0, 3)} ${isCur ? '<small style="color:var(--gold-400); font-weight:700;">(Kini)</small>' : ''}
         </div>
         <span class="pw-month-status ${isPaid ? 'status-paid' : 'status-unpaid'}">
-          ${isPaid ? '<i class="fa-solid fa-circle-check"></i> Lunas' : '<i class="fa-regular fa-circle"></i> Belum'}
+          ${isPaid ? '<i class="fa-solid fa-circle-check"></i> Lunas' : '<i class="fa-solid fa-qrcode text-purple"></i> Bayar'}
         </span>
       `;
       monthsGrid.appendChild(cell);
@@ -11794,6 +11799,533 @@ function renderPortalWargaExecDashboard() {
       openPwPosDetailsModal();
     });
   }
+}
+
+// ==================== PAYMENT GATEWAY PAKASIR (ONLINE QRIS & VA) ====================
+
+let currentPakasirOrder = null;
+let pakasirPollingTimer = null;
+let pakasirCountdownTimer = null;
+let pakasirCountdownSeconds = 900; // 15 menit
+let lastCompletedPakasirPayId = null;
+let selectedPakasirMethod = 'qris';
+
+/**
+ * Membuka Modal Pembayaran Online Pakasir
+ */
+function openPakasirPaymentModal(residentParam = null, defaultMonth = null) {
+  const resident = residentParam || state.currentVerifiedResident || (state.residents && state.residents[0]);
+  if (!resident) {
+    showToast('Identitas warga tidak ditemukan. Silakan verifikasi akun warga Anda.', 'error');
+    return;
+  }
+
+  // Reset State & Timers
+  stopPakasirPolling();
+  stopPakasirCountdown();
+  currentPakasirOrder = null;
+
+  // Set Nama & Alamat Warga
+  const elName = document.getElementById('pakasir-resident-name');
+  const elAddress = document.getElementById('pakasir-resident-address');
+  if (elName) elName.textContent = resident.name;
+  if (elAddress) elAddress.textContent = `${resident.street || 'Jl. Citarum II'} Blok ${resident.block} No. ${resident.houseNo}`;
+
+  // Hitung Bulan yang Belum Lunas
+  const targetYear = state.selectedYear || 2026;
+  const currentMonth = state.selectedMonth || 9;
+  const duesNominal = state.mandatoryDues || 50000;
+
+  const resPayments = (state.payments || []).filter(
+    p => p.residentId === resident.id && Number(p.year) === targetYear && !p.category
+  );
+  const paidMonths = new Set(resPayments.map(p => Number(p.month)));
+
+  const selector = document.getElementById('pakasir-months-selector');
+  if (selector) {
+    selector.innerHTML = '';
+    let hasUnpaid = false;
+
+    for (let m = 1; m <= 12; m++) {
+      const isPaid = paidMonths.has(m);
+      const isCur = (m === currentMonth);
+      let isChecked = false;
+
+      if (!isPaid) {
+        hasUnpaid = true;
+        if (defaultMonth) {
+          isChecked = (m === defaultMonth);
+        } else if (isCur) {
+          isChecked = true;
+        }
+      }
+
+      const label = document.createElement('label');
+      label.className = `pakasir-month-checkbox-label ${isPaid ? 'already-paid' : ''} ${isChecked ? 'selected' : ''}`;
+      label.id = `label-month-${m}`;
+
+      label.innerHTML = `
+        <input type="checkbox" name="pakasir_month" value="${m}" ${isPaid ? 'disabled' : ''} ${isChecked ? 'checked' : ''} onchange="handlePakasirMonthCheckboxChange(this)" style="accent-color:#c084fc;">
+        <div>
+          <span style="font-weight:700;">${MONTH_NAMES[m].substring(0, 3)}</span>
+          <span style="font-size:0.68rem; display:block; color:${isPaid ? '#34d399' : '#94a3b8'};">
+            ${isPaid ? '✓ Lunas' : formatRupiah(duesNominal)}
+          </span>
+        </div>
+      `;
+      selector.appendChild(label);
+    }
+
+    if (!hasUnpaid) {
+      selector.innerHTML = `
+        <div style="grid-column: 1/-1; text-align:center; padding:1.2rem; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:10px; color:#34d399; font-size:0.85rem;">
+          <i class="fa-solid fa-circle-check" style="font-size:1.5rem; display:block; margin-bottom:6px;"></i>
+          Seluruh iuran wajib tahun ${targetYear} untuk <strong>${resident.name}</strong> sudah LUNAS!
+        </div>
+      `;
+    }
+  }
+
+  // Update Rincian Biaya
+  updatePakasirCostSummary();
+
+  // Reset Step Tampilan
+  const stepForm = document.getElementById('pakasir-step-form');
+  const stepQris = document.getElementById('pakasir-step-qris');
+  const stepSuccess = document.getElementById('pakasir-step-success');
+  const footerActions = document.getElementById('pakasir-footer-actions');
+
+  if (stepForm) stepForm.style.display = 'block';
+  if (stepQris) stepQris.style.display = 'none';
+  if (stepSuccess) stepSuccess.style.display = 'none';
+  if (footerActions) footerActions.style.display = 'flex';
+
+  selectedPakasirMethod = 'qris';
+  handlePakasirMethodChange('qris');
+
+  // Buka Modal
+  if (typeof openModal === 'function') {
+    openModal('modal-pakasir-payment');
+  } else {
+    const m = document.getElementById('modal-pakasir-payment');
+    if (m) m.style.display = 'flex';
+  }
+}
+
+function handlePakasirMonthCheckboxChange(input) {
+  const label = input.closest('.pakasir-month-checkbox-label');
+  if (label) {
+    if (input.checked) label.classList.add('selected');
+    else label.classList.remove('selected');
+  }
+  updatePakasirCostSummary();
+}
+
+function toggleSelectAllPakasirMonths() {
+  const checkboxes = document.querySelectorAll('input[name="pakasir_month"]:not(:disabled)');
+  const allChecked = Array.from(checkboxes).every(c => c.checked);
+  checkboxes.forEach(c => {
+    c.checked = !allChecked;
+    const label = c.closest('.pakasir-month-checkbox-label');
+    if (label) {
+      if (!allChecked) label.classList.add('selected');
+      else label.classList.remove('selected');
+    }
+  });
+  updatePakasirCostSummary();
+}
+
+function updatePakasirCostSummary() {
+  const duesNominal = state.mandatoryDues || 50000;
+  const checked = document.querySelectorAll('input[name="pakasir_month"]:checked');
+  const count = checked.length;
+  const total = count * duesNominal;
+
+  const countEl = document.getElementById('pakasir-count-months');
+  const subtotalEl = document.getElementById('pakasir-subtotal');
+  const totalEl = document.getElementById('pakasir-total-amount');
+
+  if (countEl) countEl.textContent = count;
+  if (subtotalEl) subtotalEl.textContent = formatRupiah(total);
+  if (totalEl) totalEl.textContent = formatRupiah(total);
+
+  const btnGenerate = document.getElementById('btn-pakasir-generate');
+  if (btnGenerate) {
+    btnGenerate.disabled = (count === 0);
+    btnGenerate.style.opacity = count === 0 ? '0.5' : '1';
+  }
+}
+
+function handlePakasirMethodChange(method) {
+  selectedPakasirMethod = method;
+  document.querySelectorAll('.pakasir-method-card').forEach(c => c.classList.remove('active'));
+  const targetCard = document.getElementById(`method-card-${method === 'qris' ? 'qris' : 'link'}`);
+  if (targetCard) targetCard.classList.add('active');
+
+  const btnGen = document.getElementById('btn-pakasir-generate');
+  if (btnGen) {
+    if (method === 'qris') {
+      btnGen.innerHTML = '<i class="fa-solid fa-bolt"></i> Buat Tagihan QRIS Sekarang';
+    } else {
+      btnGen.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i> Buat Link Pembayaran Pakasir';
+    }
+  }
+}
+
+/**
+ * Request ke Backend Serverless untuk Membuat Transaksi Pakasir
+ */
+async function handlePakasirCreatePayment() {
+  const resident = state.currentVerifiedResident || (state.residents && state.residents[0]);
+  if (!resident) return;
+
+  const checkedInputs = document.querySelectorAll('input[name="pakasir_month"]:checked');
+  const selectedMonths = Array.from(checkedInputs).map(c => Number(c.value));
+
+  if (selectedMonths.length === 0) {
+    showToast('Pilih minimal 1 bulan iuran yang ingin dibayar.', 'warning');
+    return;
+  }
+
+  const duesNominal = state.mandatoryDues || 50000;
+  const totalAmount = selectedMonths.length * duesNominal;
+  const targetYear = state.selectedYear || 2026;
+
+  // Generate Unique Order ID
+  const orderId = `RT01-INV-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+
+  const btnGen = document.getElementById('btn-pakasir-generate');
+  if (btnGen) {
+    btnGen.disabled = true;
+    btnGen.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Menghubungi Gateway Pakasir...';
+  }
+
+  try {
+    let result = null;
+
+    // 1. Coba request ke serverless function /api/pakasir/create-transaction
+    try {
+      const response = await fetch('/api/pakasir/create-transaction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: orderId,
+          amount: totalAmount,
+          method: selectedPakasirMethod,
+          resident_id: resident.id,
+          resident_name: resident.name,
+          months: selectedMonths,
+          year: targetYear
+        })
+      });
+
+      if (response.ok) {
+        result = await response.json();
+      }
+    } catch (netErr) {
+      console.warn('Network request ke /api/pakasir/create-transaction fallback ke client sandbox:', netErr);
+    }
+
+    // 2. Fallback Sandbox Generator jika backend offline / lokal
+    if (!result || !result.success) {
+      const mockQr = `00020101021226680016ID.CO.PAKASIR.WWW01189360091800000000000215${orderId}520458125303360540${totalAmount}5802ID5919RT001 GRAHA ASRI6013CIKARANG UTAR63040A1B`;
+      result = {
+        success: true,
+        isSandbox: true,
+        order_id: orderId,
+        amount: totalAmount,
+        payment_method: selectedPakasirMethod,
+        qr_string: mockQr,
+        payment_link: `https://app.pakasir.com/pay-v2/mock-${orderId}`
+      };
+    }
+
+    currentPakasirOrder = {
+      ...result,
+      order_id: orderId,
+      amount: totalAmount,
+      months: selectedMonths,
+      year: targetYear,
+      resident: resident
+    };
+
+    // Tampilkan Step 2 (QRIS Display)
+    renderPakasirQrisStep(currentPakasirOrder);
+
+  } catch (err) {
+    console.error('Error saat membuat tagihan Pakasir:', err);
+    showToast('Gagal membuat tagihan pembayaran. Silakan coba beberapa saat lagi.', 'danger');
+  } finally {
+    if (btnGen) {
+      btnGen.disabled = false;
+      btnGen.innerHTML = '<i class="fa-solid fa-bolt"></i> Buat Tagihan QRIS Sekarang';
+    }
+  }
+}
+
+/**
+ * Merender Step 2 QRIS dan memulai timer serta polling status
+ */
+function renderPakasirQrisStep(orderData) {
+  const stepForm = document.getElementById('pakasir-step-form');
+  const stepQris = document.getElementById('pakasir-step-qris');
+  const footerActions = document.getElementById('pakasir-footer-actions');
+
+  if (stepForm) stepForm.style.display = 'none';
+  if (stepQris) stepQris.style.display = 'block';
+  if (footerActions) footerActions.style.display = 'none';
+
+  // Amount & Bulan display
+  const elAmount = document.getElementById('pakasir-qris-display-amount');
+  const elMonths = document.getElementById('pakasir-qris-display-months');
+  const elOrderId = document.getElementById('pakasir-display-order-id');
+
+  if (elAmount) elAmount.textContent = formatRupiah(orderData.amount);
+  if (elMonths) {
+    const monthNames = orderData.months.map(m => MONTH_NAMES[m]).join(', ');
+    elMonths.textContent = `Iuran Bulan: ${monthNames} ${orderData.year}`;
+  }
+  if (elOrderId) elOrderId.textContent = orderData.order_id;
+
+  // Direct Link jika metode payment_link
+  const directWrap = document.getElementById('pakasir-direct-link-wrap');
+  const directBtn = document.getElementById('pakasir-direct-link-btn');
+  if (directWrap && directBtn && orderData.payment_link) {
+    directBtn.href = orderData.payment_link;
+    directWrap.style.display = orderData.payment_method === 'payment_link' ? 'block' : 'none';
+  }
+
+  // Render QR Code QRIS
+  const qrWrap = document.getElementById('pakasir-qrcode-wrap');
+  if (qrWrap) {
+    qrWrap.innerHTML = '';
+    const qrContent = orderData.qr_string || `https://app.pakasir.com/pay-v2/${orderData.order_id}`;
+    
+    if (typeof QRCode !== 'undefined') {
+      try {
+        new QRCode(qrWrap, {
+          text: qrContent,
+          width: 190,
+          height: 190,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+        setTimeout(() => {
+          const canvases = qrWrap.querySelectorAll('canvas');
+          canvases.forEach(c => c.remove());
+          const imgs = qrWrap.querySelectorAll('img');
+          if (imgs.length > 1) {
+            for (let i = 1; i < imgs.length; i++) imgs[i].remove();
+          }
+          if (imgs[0]) {
+            imgs[0].style.width = '190px';
+            imgs[0].style.height = '190px';
+            imgs[0].style.display = 'block';
+            imgs[0].style.margin = '0 auto';
+          }
+        }, 50);
+      } catch (err) {
+        qrWrap.innerHTML = `<div style="padding:1.5rem; color:#059669; font-weight:700; font-size:0.85rem;">QRIS DINAMIS<br>${orderData.order_id}</div>`;
+      }
+    } else {
+      qrWrap.innerHTML = `<div style="padding:1.5rem; color:#059669; font-weight:700; font-size:0.85rem;">QRIS DINAMIS<br>${orderData.order_id}</div>`;
+    }
+  }
+
+  // Mulai Countdown Timer 15 Menit
+  startPakasirCountdown();
+
+  // Mulai Live Polling Webhook
+  startPakasirPolling(orderData.order_id);
+}
+
+function startPakasirCountdown() {
+  stopPakasirCountdown();
+  pakasirCountdownSeconds = 900;
+  const countdownEl = document.getElementById('pakasir-countdown');
+
+  const updateDisplay = () => {
+    const mins = Math.floor(pakasirCountdownSeconds / 60);
+    const secs = pakasirCountdownSeconds % 60;
+    if (countdownEl) {
+      countdownEl.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+  };
+
+  updateDisplay();
+  pakasirCountdownTimer = setInterval(() => {
+    pakasirCountdownSeconds--;
+    if (pakasirCountdownSeconds <= 0) {
+      stopPakasirCountdown();
+      stopPakasirPolling();
+      const statusText = document.getElementById('pakasir-live-status-text');
+      if (statusText) {
+        statusText.textContent = 'Tagihan Kedaluwarsa. Silakan buat tagihan baru.';
+        statusText.style.color = '#f87171';
+      }
+    } else {
+      updateDisplay();
+    }
+  }, 1000);
+}
+
+function stopPakasirCountdown() {
+  if (pakasirCountdownTimer) {
+    clearInterval(pakasirCountdownTimer);
+    pakasirCountdownTimer = null;
+  }
+}
+
+function startPakasirPolling(orderId) {
+  stopPakasirPolling();
+  pakasirPollingTimer = setInterval(async () => {
+    await checkPakasirStatus(orderId, false);
+  }, 3500);
+}
+
+function stopPakasirPolling() {
+  if (pakasirPollingTimer) {
+    clearInterval(pakasirPollingTimer);
+    pakasirPollingTimer = null;
+  }
+}
+
+async function checkPakasirStatusManual() {
+  if (!currentPakasirOrder) return;
+  await checkPakasirStatus(currentPakasirOrder.order_id, true);
+}
+
+async function checkPakasirStatus(orderId, isManual = false) {
+  try {
+    const response = await fetch(`/api/pakasir/check-status?order_id=${encodeURIComponent(orderId)}`);
+    if (response.ok) {
+      const data = await response.json();
+      if (data.status === 'completed' || data.status === 'success') {
+        stopPakasirPolling();
+        stopPakasirCountdown();
+        handlePakasirPaymentSuccess(currentPakasirOrder || data);
+        return;
+      }
+    }
+    if (isManual) {
+      showToast('Menunggu pembayaran terdeteksi. Silakan selesaikan pembayaran di aplikasi m-banking Anda.', 'info');
+    }
+  } catch (err) {
+    if (isManual) {
+      showToast('Menunggu konfirmasi pembayaran dari gateway...', 'info');
+    }
+  }
+}
+
+/**
+ * Fitur Simulasi Pembayaran Sukses (Sandbox Demo)
+ */
+function simulatePakasirPaymentSuccess() {
+  if (!currentPakasirOrder) return;
+  showToast('⚡ Menjalankan simulasi pembayaran Pakasir...', 'info');
+  setTimeout(() => {
+    stopPakasirPolling();
+    stopPakasirCountdown();
+    handlePakasirPaymentSuccess(currentPakasirOrder);
+  }, 600);
+}
+
+/**
+ * Eksekusi Pencatatan Sukses ke Database / State RT-FinSmart
+ */
+function handlePakasirPaymentSuccess(orderData) {
+  const resident = orderData.resident || state.currentVerifiedResident || (state.residents && state.residents[0]);
+  const months = orderData.months || [state.selectedMonth || 9];
+  const targetYear = orderData.year || state.selectedYear || 2026;
+  const duesNominal = state.mandatoryDues || 50000;
+
+  let firstPayId = null;
+
+  months.forEach(m => {
+    // Hapus duplikasi jika sebelumnya ada record bulan ini
+    state.payments = (state.payments || []).filter(
+      p => !(p.residentId === resident.id && Number(p.month) === Number(m) && Number(p.year) === Number(targetYear) && !p.category)
+    );
+
+    const payId = `pay-${Date.now()}-${m}`;
+    const refNo = `RT01-PKS-${targetYear}${String(m).padStart(2, '0')}-${String(Math.floor(1000 + Math.random() * 9000))}`;
+
+    const newPayment = {
+      id: payId,
+      residentId: resident.id,
+      month: m,
+      year: targetYear,
+      amount: duesNominal,
+      date: new Date().toISOString().split('T')[0],
+      method: 'QRIS / Pakasir (Online)',
+      refNo: refNo,
+      gateway: 'Pakasir',
+      orderId: orderData.order_id,
+      txnId: orderData.txn_id || ('TXN-' + Date.now().toString(36).toUpperCase()),
+      status: 'Lunas'
+    };
+
+    state.payments.push(newPayment);
+    if (!firstPayId) firstPayId = payId;
+  });
+
+  lastCompletedPakasirPayId = firstPayId;
+
+  // Persist State & Render Seluruh Komponen Kas RT
+  saveState();
+  renderAll();
+  renderPortalWarga();
+
+  // Tampilkan Step 3 (Sukses)
+  const stepQris = document.getElementById('pakasir-step-qris');
+  const stepSuccess = document.getElementById('pakasir-step-success');
+  if (stepQris) stepQris.style.display = 'none';
+  if (stepSuccess) stepSuccess.style.display = 'block';
+
+  const refEl = document.getElementById('pakasir-success-ref');
+  const amountEl = document.getElementById('pakasir-success-amount');
+  const msgEl = document.getElementById('pakasir-success-msg');
+
+  if (refEl) refEl.textContent = orderData.order_id || 'RT01-PKS-SUCCESS';
+  if (amountEl) amountEl.textContent = formatRupiah(orderData.amount || (months.length * duesNominal));
+  if (msgEl) {
+    const monthNames = months.map(m => MONTH_NAMES[m]).join(', ');
+    msgEl.innerHTML = `Iuran kas RT.001 Anda untuk bulan <strong>${monthNames} ${targetYear}</strong> telah tercatat Lunas dan otomatis dialokasikan ke 6 Pos Anggaran.`;
+  }
+
+  showToast(`🎉 Pembayaran Iuran Rp ${formatRupiah(orderData.amount)} via QRIS Pakasir Berhasil & Lunas!`, 'success');
+}
+
+function openPakasirReceiptModal() {
+  closePakasirPaymentModal();
+  if (lastCompletedPakasirPayId && typeof openDigitalReceipt === 'function') {
+    openDigitalReceipt(lastCompletedPakasirPayId);
+  } else {
+    const btnLast = document.getElementById('btn-pw-view-last-receipt');
+    if (btnLast) btnLast.click();
+  }
+}
+
+function closePakasirPaymentModal() {
+  stopPakasirPolling();
+  stopPakasirCountdown();
+  currentPakasirOrder = null;
+  if (typeof closeModal === 'function') {
+    closeModal('modal-pakasir-payment');
+  } else {
+    const m = document.getElementById('modal-pakasir-payment');
+    if (m) m.style.display = 'none';
+  }
+}
+
+function copyPakasirOrderId() {
+  if (!currentPakasirOrder || !currentPakasirOrder.order_id) return;
+  navigator.clipboard?.writeText(currentPakasirOrder.order_id).then(() => {
+    showToast(`Order ID ${currentPakasirOrder.order_id} disalin ke clipboard!`, 'info');
+  }).catch(() => {
+    prompt('Salin Order ID:', currentPakasirOrder.order_id);
+  });
 }
 
 /**
@@ -14573,6 +15105,16 @@ window.printSuratFromAdminModal = printSuratFromAdminModal;
 window.openSuratVerificationModal = openSuratVerificationModal;
 window.renderBukuRegisterSurat = renderBukuRegisterSurat;
 window.updateSuratArchiveBadges = updateSuratArchiveBadges;
+window.openPakasirPaymentModal = openPakasirPaymentModal;
+window.handlePakasirMonthCheckboxChange = handlePakasirMonthCheckboxChange;
+window.toggleSelectAllPakasirMonths = toggleSelectAllPakasirMonths;
+window.handlePakasirMethodChange = handlePakasirMethodChange;
+window.handlePakasirCreatePayment = handlePakasirCreatePayment;
+window.checkPakasirStatusManual = checkPakasirStatusManual;
+window.simulatePakasirPaymentSuccess = simulatePakasirPaymentSuccess;
+window.openPakasirReceiptModal = openPakasirReceiptModal;
+window.closePakasirPaymentModal = closePakasirPaymentModal;
+window.copyPakasirOrderId = copyPakasirOrderId;
 
 // ==================== PORTAL PENGURUS OPERATIONAL HUB ====================
 

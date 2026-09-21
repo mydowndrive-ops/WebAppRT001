@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (17:35 WIB)  
-**Versi Rilis Aktif:** `v2.9.51`  
+**Terakhir Diperbarui:** 21 September 2026 (18:00 WIB)  
+**Versi Rilis Aktif:** `v2.9.52`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,34 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🗄️ Menu Eksklusif Arsip e-Surat Warga di Dashboard Admin 1 & Penghapusan Arsip dari Portal Warga (Update v2.9.51 - 21 Sept 2026)
+### 1. 💳 Integrasi Payment Gateway Pakasir API v2: Bayar Iuran Online QRIS & Virtual Account Otomatis Ter-update (Update v2.9.52 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Tolong bantu saya menambahkan fitur integrasi payment gateway 'Pakasir' (pakasir.com) ke dalam proyek web RT-FinSmart ini agar warga dapat membayar iuran wajib secara online (melalui QRIS/Virtual Account) dan statusnya terupdate secara otomatis."*
+- **Arsitektur & Komponen yang Dibuat**:
+  1. **Serverless Backend API (Vercel & Local Server Compatible)**:
+     - `api/pakasir/create-transaction.js`: Mengirim request transaksi ke API Pakasir v2 (`POST https://app.pakasir.com/api/v2/create-transaction/{slug}/{order_id}`) dengan header `X-Api-Key` dan payload JSON `{ method, amount }`. Dilengkapi mode Sandbox Simulator otomatis jika environment variable API Key belum dipasang.
+     - `api/pakasir/webhook.js`: Endpoint Webhook / Callback (`/api/pakasir/webhook`) untuk menerima HTTP POST notifikasi pelunasan dari server Pakasir. Memvalidasi payload (`order_id`, `amount`, `status == 'completed' || status == 'success'`) dan mencatat status pembayaran ke server state.
+     - `api/pakasir/check-status.js`: Endpoint verifikasi status transaksi real-time untuk polling frontend (`/api/pakasir/check-status?order_id=...`), dilengkapi fitur query testing `simulate=1`.
+     - `api/pakasir/store.js`: Storage state transaksi fleksibel (in-memory + disk cache `/tmp/pakasir_transactions.json`).
+  2. **Konfigurasi Lingkungan & Keamanan**:
+     - `.env.example`: Template rahasia server untuk `PAKASIR_API_KEY` dan `PAKASIR_PROJECT_SLUG`.
+     - `vercel.json`: Konfigurasi serverless function rewrites (`/api/pakasir/:path*`) dan HTTP Security Headers.
+     - `.gitignore`: Melindungi `.env` agar kredensial API key rahasia tidak pernah bocor ke Git.
+  3. **Antarmuka Pengguna (Frontend Portal Warga)**:
+     - Tombol interaktif **"Bayar Iuran via QRIS (Pakasir)"** di bilah aksi iuran portal warga (`#btn-pw-pay-qris-pakasir`).
+     - Seluruh cell bulan berstatus belum lunas pada matriks iuran 12 bulan kini dapat diklik langsung untuk memicu modal pembayaran.
+     - Modal Pembayaran 3-Langkah (`#modal-pakasir-payment`):
+       - *Langkah 1*: Pemilihan bulan iuran belum lunas (multi-select dengan hitungan nominal otomatis Rp25.000/bulan) & pemilihan metode (QRIS Real-Time atau Virtual Account).
+       - *Langkah 2*: Tampilan QRIS dinamis berkualitas tinggi, rincian Order ID unik (`RT001-YYYYMMDD-...`), countdown waktu kedaluwarsa 15 menit, indikator status pulsing (*Menunggu Pembayaran*), tombol salin data, dan simulator pengujian.
+       - *Langkah 3*: Notifikasi sukses pelunasan, stempel lunas, rincian transaksi, dan tombol cetak kwitansi resmi RT.
+  4. **Otomasi Sinkronisasi State & Buku Kas RT**:
+     - Ketika notifikasi sukses diterima via polling atau webhook, client `app.js` otomatis mengeksekusi `handlePakasirPaymentSuccess()`.
+     - Bulan iuran warga yang dibayar seketika berubah menjadi **"Lunas"** dengan timestamp dan referensi Order ID Pakasir.
+     - Transaksi tercatat ke `state.payments` dan memicu `computeFinancials()`, yang secara otomatis membagi dana masuk ke **6 Pos Anggaran Kas RT** (Operasional, Keamanan, Kebersihan, Sosial, Pembangunan, Dana Cadangan) dan memperbarui grafik tahunan serta laporan kas RT.
+  5. **Bypass Cache PWA**:
+     - Service worker `sw.js` diperbarui agar tidak pernah meng-cache rute dynamic `/api/` dan versi cache dinaikkan ke `rt-finsmart-cache-v2.9.52`.
+
+### 2. 🗄️ Menu Eksklusif Arsip e-Surat Warga di Dashboard Admin 1 & Penghapusan Arsip dari Portal Warga (Update v2.9.51 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Di dashboard Admin 1 saya tidak melihat tabel Buku Register e-Surat. Saya ingin di Admin 1 dibuatkan Menu di side bar mengenai arsip semua surat yang sudah diajukan oleh warga baik yang ditolak atau disetujui. Sehingga semua surat tercatat dan tersimpan di akun Admin 1. Jangan arsipkan surat di dashboard warga."*
 - **Hasil Implementasi Lengkap**:

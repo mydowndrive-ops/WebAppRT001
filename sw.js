@@ -3,12 +3,12 @@
  * Ensures lightning-fast offline access while always prioritizing live updates (Network-First).
  */
 
-const CACHE_NAME = 'rt-finsmart-cache-v2.9.51';
+const CACHE_NAME = 'rt-finsmart-cache-v2.9.52';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './styles.css?v=2.9.51',
-  './app.js?v=2.9.51',
+  './styles.css?v=2.9.52',
+  './app.js?v=2.9.52',
   './assets/qrcode.min.js',
   './assets/MaskingRenta.otf',
   './manifest.json',
@@ -45,7 +45,8 @@ self.addEventListener('activate', (event) => {
 
 // Network-First strategy: Selalu ambil versi terbaru dari server Vercel, hanya fallback ke cache jika offline
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
+  // Jangan pernah cache request API (misal /api/pakasir)
+  if (event.request.method !== 'GET' || !event.request.url.startsWith('http') || event.request.url.includes('/api/')) {
     return;
   }
 

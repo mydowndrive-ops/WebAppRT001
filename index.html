@@ -4852,6 +4852,9 @@
                 <h3 class="text-gold" id="pw-total-paid-nominal" style="margin:0; font-size:1.4rem;">Rp 450.000</h3>
               </div>
               <div class="pw-iuran-actions">
+                <button type="button" class="btn btn-purple" id="btn-pw-pay-qris-pakasir" onclick="openPakasirPaymentModal()" title="Bayar Iuran Otomatis via QRIS atau VA Pakasir">
+                  <i class="fa-solid fa-qrcode"></i> Bayar Iuran via QRIS (Pakasir)
+                </button>
                 <button type="button" class="btn btn-outline-gold" id="btn-pw-view-last-receipt">
                   <i class="fa-solid fa-file-invoice"></i> Kwitansi Terakhir
                 </button>
@@ -7718,6 +7721,212 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL PEMBAYARAN IURAN ONLINE PAKASIR (QRIS & VA) ==================== -->
+  <div class="modal-backdrop" id="modal-pakasir-payment" style="display:none; align-items:center; justify-content:center; z-index:99999;">
+    <div class="glass-panel" style="width:95%; max-width:540px; max-height:92vh; display:flex; flex-direction:column; background:rgba(15,23,42,0.98); border:1px solid rgba(168,85,247,0.45); border-radius:18px; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.85);">
+      
+      <!-- Modal Header -->
+      <div style="background:linear-gradient(135deg, rgba(88,28,135,0.5) 0%, rgba(126,34,206,0.3) 100%); padding:1rem 1.35rem; border-bottom:1px solid rgba(168,85,247,0.25); display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:38px; height:38px; border-radius:10px; background:rgba(168,85,247,0.25); border:1px solid rgba(168,85,247,0.4); display:flex; align-items:center; justify-content:center; color:#c084fc; font-size:1.2rem;">
+            <i class="fa-solid fa-qrcode"></i>
+          </div>
+          <div>
+            <h4 style="margin:0; font-size:1rem; color:#f8fafc; font-weight:700;">Bayar Iuran Online</h4>
+            <span style="font-size:0.75rem; color:#d8b4fe;">Payment Gateway Otomatis Pakasir (QRIS &amp; VA)</span>
+          </div>
+        </div>
+        <button class="modal-close text-light" data-close="modal-pakasir-payment" onclick="closePakasirPaymentModal()" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div style="padding:1.25rem; overflow-y:auto; flex:1;" id="modal-pakasir-body">
+        
+        <!-- STEP 1: FORM PEMILIHAN BULAN & METODE (Tampil saat awal) -->
+        <div id="pakasir-step-form">
+          <!-- Info Warga -->
+          <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.9rem; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between;">
+            <div>
+              <span style="font-size:0.73rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Wajib Iuran (KK):</span>
+              <div style="font-weight:700; color:#f8fafc; font-size:0.95rem;" id="pakasir-resident-name">Bapak Wageyanto</div>
+              <div style="font-size:0.78rem; color:#38bdf8;" id="pakasir-resident-address">Jl. Citarum II Blok B6 No. 02</div>
+            </div>
+            <div style="text-align:right;">
+              <span style="font-size:0.73rem; color:#94a3b8;">Tarif Resmi:</span>
+              <div style="font-weight:800; color:#fbbf24; font-size:0.95rem;">Rp 50.000<span style="font-size:0.75rem; font-weight:400; color:#94a3b8;">/bln</span></div>
+            </div>
+          </div>
+
+          <!-- Pilihan Bulan yang Belum Lunas -->
+          <div style="margin-bottom:1.15rem;">
+            <label class="form-label" style="font-size:0.82rem; color:#e2e8f0; font-weight:600; margin-bottom:6px; display:flex; justify-content:space-between;">
+              <span><i class="fa-regular fa-calendar-check text-purple"></i> Pilih Bulan Iuran yang Ingin Dibayar:</span>
+              <span style="font-size:0.75rem; color:#c084fc; cursor:pointer;" onclick="toggleSelectAllPakasirMonths()">Pilih Semua Belum Lunas</span>
+            </label>
+            <div id="pakasir-months-selector" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap:8px;">
+              <!-- Checkbox bulan dinamis diisi oleh JS -->
+            </div>
+          </div>
+
+          <!-- Pilihan Metode Pembayaran -->
+          <div style="margin-bottom:1.15rem;">
+            <label class="form-label" style="font-size:0.82rem; color:#e2e8f0; font-weight:600; margin-bottom:6px; display:block;">
+              <i class="fa-solid fa-wallet text-gold"></i> Metode Pembayaran:
+            </label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+              <label class="pakasir-method-card active" id="method-card-qris" style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; border:1px solid #c084fc; background:rgba(168,85,247,0.12); cursor:pointer;">
+                <input type="radio" name="pakasir_method" value="qris" checked onchange="handlePakasirMethodChange('qris')" style="accent-color:#c084fc;">
+                <div>
+                  <strong style="display:block; font-size:0.85rem; color:#f8fafc;"><i class="fa-solid fa-qrcode text-purple"></i> QRIS Instan</strong>
+                  <span style="font-size:0.7rem; color:#94a3b8;">Gopay, OVO, Dana, BCA, dll</span>
+                </div>
+              </label>
+              <label class="pakasir-method-card" id="method-card-link" style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); cursor:pointer;">
+                <input type="radio" name="pakasir_method" value="payment_link" onchange="handlePakasirMethodChange('payment_link')" style="accent-color:#c084fc;">
+                <div>
+                  <strong style="display:block; font-size:0.85rem; color:#f8fafc;"><i class="fa-solid fa-arrow-up-right-from-square text-cyan"></i> Web / Link</strong>
+                  <span style="font-size:0.7rem; color:#94a3b8;">Portal Pembayaran Pakasir</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Rincian Biaya -->
+          <div style="background:linear-gradient(145deg, rgba(30,41,59,0.7) 0%, rgba(15,23,42,0.7) 100%); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.9rem; margin-bottom:1.15rem;">
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem; color:#94a3b8; margin-bottom:4px;">
+              <span>Subtotal Iuran (<span id="pakasir-count-months">0</span> bulan):</span>
+              <span style="color:#f8fafc; font-weight:600;" id="pakasir-subtotal">Rp 0</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem; color:#94a3b8; margin-bottom:6px;">
+              <span>Biaya Layanan Gateway:</span>
+              <span style="color:#34d399; font-weight:600;">Gratis / Rp 0</span>
+            </div>
+            <div style="height:1px; background:rgba(255,255,255,0.08); margin:6px 0;"></div>
+            <div style="display:flex; justify-content:space-between; font-size:0.95rem; font-weight:800;">
+              <span style="color:#f8fafc;">Total Bayar:</span>
+              <span style="color:#fbbf24;" id="pakasir-total-amount">Rp 0</span>
+            </div>
+          </div>
+
+          <!-- Tombol Generate QRIS -->
+          <button type="button" class="btn btn-purple" id="btn-pakasir-generate" onclick="handlePakasirCreatePayment()" style="width:100%; padding:0.65rem; font-size:0.92rem; font-weight:700; border-radius:10px; justify-content:center; gap:8px;">
+            <i class="fa-solid fa-bolt"></i> Buat Tagihan QRIS Sekarang
+          </button>
+        </div>
+
+        <!-- STEP 2: TAMPILAN QRIS & LIVE STATUS (Tampil setelah tagihan terbit) -->
+        <div id="pakasir-step-qris" style="display:none; text-align:center;">
+          <!-- Live Status Bar -->
+          <div style="background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); border-radius:10px; padding:8px 12px; margin-bottom:1rem; display:inline-flex; align-items:center; gap:8px;">
+            <span class="pulse-dot" style="background:#f59e0b; width:8px; height:8px; border-radius:50%; display:inline-block; box-shadow:0 0 8px #f59e0b;"></span>
+            <span style="font-size:0.82rem; color:#fef08a; font-weight:700;" id="pakasir-live-status-text">Menunggu Pembayaran Warga...</span>
+          </div>
+
+          <!-- Total Tagihan Display -->
+          <div style="margin-bottom:0.75rem;">
+            <span style="font-size:0.75rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Total yang Harus Dibayar:</span>
+            <div style="font-size:1.8rem; font-weight:900; color:#fbbf24; font-family:'Outfit', sans-serif;" id="pakasir-qris-display-amount">Rp 50.000</div>
+            <div style="font-size:0.78rem; color:#cbd5e1;" id="pakasir-qris-display-months">Iuran Bulan September 2026</div>
+          </div>
+
+          <!-- QRIS Container Card -->
+          <div style="background:#ffffff; border-radius:14px; padding:1.2rem; display:inline-block; margin:0 auto 1rem auto; box-shadow:0 10px 30px rgba(0,0,0,0.5); max-width:280px; width:100%;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #e2e8f0;">
+              <span style="font-weight:900; font-size:1rem; color:#1e293b; letter-spacing:1px;">QRIS</span>
+              <span style="font-size:0.65rem; color:#64748b; font-weight:700;">PEMBAYARAN RESMI RT.001</span>
+            </div>
+
+            <!-- Wadah QR Image -->
+            <div id="pakasir-qrcode-wrap" style="width:200px; height:200px; margin:0 auto; display:flex; align-items:center; justify-content:center; background:#ffffff;">
+              <!-- QR Image rendered dynamically -->
+            </div>
+
+            <div style="font-size:0.65rem; color:#64748b; margin-top:8px; line-height:1.3;">
+              Scan QRIS di atas menggunakan GoPay, OVO, Dana, ShopeePay, BCA Mobile, Livin', atau aplikasi perbankan apa pun.
+            </div>
+          </div>
+
+          <!-- Order ID & Copy -->
+          <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:0.85rem; font-size:0.78rem; color:#94a3b8;">
+            <span>Order ID: <strong style="color:#38bdf8;" id="pakasir-display-order-id">RT01-INV-...</strong></span>
+            <button type="button" class="btn btn-xs btn-outline" onclick="copyPakasirOrderId()" title="Salin Order ID" style="padding:2px 6px; font-size:0.7rem;">
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+
+          <!-- Link Pembayaran Direct (jika ada) -->
+          <div id="pakasir-direct-link-wrap" style="display:none; margin-bottom:1rem;">
+            <a href="#" id="pakasir-direct-link-btn" target="_blank" class="btn btn-outline-cyan btn-sm" style="width:100%; justify-content:center;">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Halaman Pembayaran Pakasir
+            </a>
+          </div>
+
+          <!-- Countdown Timer -->
+          <div style="font-size:0.78rem; color:#94a3b8; margin-bottom:1rem;">
+            <i class="fa-regular fa-clock text-gold"></i> Batas Waktu Bayar: <strong id="pakasir-countdown" style="color:#fbbf24;">15:00</strong>
+          </div>
+
+          <!-- Tombol Aksi: Cek Manual & Simulasi Sandbox -->
+          <div style="display:flex; flex-direction:column; gap:8px; max-width:320px; margin:0 auto;">
+            <button type="button" class="btn btn-outline-cyan btn-sm" onclick="checkPakasirStatusManual()" style="justify-content:center;">
+              <i class="fa-solid fa-rotate"></i> Cek Status Pembayaran Sekarang
+            </button>
+            <button type="button" class="btn btn-outline-gold btn-xs" id="btn-pakasir-sandbox-sim" onclick="simulatePakasirPaymentSuccess()" style="justify-content:center; background:rgba(245,158,11,0.08);">
+              <i class="fa-solid fa-flask"></i> Simulasi Bayar Sukses (Sandbox Demo)
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3: TAMPILAN SUKSES PEMBAYARAN -->
+        <div id="pakasir-step-success" style="display:none; text-align:center; padding:1.5rem 0.5rem;">
+          <div style="width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg, #10b981 0%, #059669 100%); display:inline-flex; align-items:center; justify-content:center; color:#ffffff; font-size:2.2rem; margin-bottom:1rem; box-shadow:0 0 30px rgba(16,185,129,0.5); animation:scaleIn 0.3s ease;">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h3 style="color:#34d399; font-size:1.35rem; font-weight:800; margin:0 0 6px 0;">Alhamdulillah, Pembayaran Berhasil!</h3>
+          <p style="color:#cbd5e1; font-size:0.85rem; margin:0 0 1.25rem 0;" id="pakasir-success-msg">
+            Iuran kas RT.001 Anda telah tercatat Lunas dan otomatis dialokasikan ke 6 Pos Anggaran.
+          </p>
+
+          <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(52,211,153,0.3); border-radius:12px; padding:1rem; margin-bottom:1.5rem; text-align:left;">
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:6px;">
+              <span style="color:#94a3b8;">Nomor Referensi:</span>
+              <strong style="color:#38bdf8;" id="pakasir-success-ref">-</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:6px;">
+              <span style="color:#94a3b8;">Total Terbayar:</span>
+              <strong style="color:#fbbf24;" id="pakasir-success-amount">Rp 50.000</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.82rem;">
+              <span style="color:#94a3b8;">Metode:</span>
+              <strong style="color:#34d399;"><i class="fa-solid fa-qrcode"></i> QRIS Online (Pakasir)</strong>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button type="button" class="btn btn-emerald" id="btn-pakasir-view-receipt" onclick="openPakasirReceiptModal()">
+              <i class="fa-solid fa-file-invoice"></i> Buka Kwitansi Resmi RT
+            </button>
+            <button type="button" class="btn btn-outline" onclick="closePakasirPaymentModal()">
+              Tutup
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer (Hanya tampil di step 1) -->
+      <div id="pakasir-footer-actions" style="background:rgba(15,23,42,0.95); border-top:1px solid rgba(255,255,255,0.08); padding:0.75rem 1.25rem; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.72rem; color:#94a3b8;">
+          <i class="fa-solid fa-shield-check text-emerald"></i> Enkripsi Aman 256-bit Pakasir Gateway
+        </span>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closePakasirPaymentModal()">
+          Batal
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Floating Luxury Scroll-to-Top Button -->
   <button id="btn-scroll-top" class="scroll-to-top-btn" title="Kembali ke Bagian Atas Halaman (1-Klik)" aria-label="Kembali ke Bagian Atas">
     <div class="scroll-top-icon-wrapper">
@@ -7730,6 +7939,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.51"></script>
+  <script src="app.js?v=2.9.52"></script>
 </body>
 </html>
