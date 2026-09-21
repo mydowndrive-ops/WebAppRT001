@@ -7829,6 +7829,19 @@
             <div style="font-size:0.78rem; color:#cbd5e1;" id="pakasir-qris-display-months">Iuran Bulan September 2026</div>
           </div>
 
+          <!-- Alert Mode Sandbox (Jika QRIS masih dummy pengujian) -->
+          <div id="pakasir-sandbox-alert" style="display:none; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.4); border-radius:10px; padding:10px 14px; margin:0 auto 1rem auto; max-width:320px; font-size:0.75rem; text-align:left; color:#fef08a;">
+            <div style="font-weight:800; display:flex; align-items:center; gap:6px; margin-bottom:4px; color:#fbbf24;">
+              <i class="fa-solid fa-triangle-exclamation"></i> MODE PENGUJIAN (SANDBOX PAKASIR)
+            </div>
+            <div style="color:#e2e8f0; line-height:1.4;">
+              Proyek Pakasir masih dalam status <b>Sandbox (Uji Coba)</b>, sehingga kode QR ini adalah dummy teks dan tidak dapat di-scan oleh aplikasi m-banking sungguhan.
+            </div>
+            <div style="margin-top:6px; font-size:0.72rem; color:#cbd5e1;">
+              💡 <i>Klik tombol <b>"Simulasi Bayar Sukses"</b> di bawah untuk menguji auto-update iuran lunas & kas RT.</i>
+            </div>
+          </div>
+
           <!-- QRIS Container Card -->
           <div style="background:#ffffff; border-radius:14px; padding:1.2rem; display:inline-block; margin:0 auto 1rem auto; box-shadow:0 10px 30px rgba(0,0,0,0.5); max-width:280px; width:100%;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid #e2e8f0;">
@@ -7841,7 +7854,7 @@
               <!-- QR Image rendered dynamically -->
             </div>
 
-            <div style="font-size:0.65rem; color:#64748b; margin-top:8px; line-height:1.3;">
+            <div id="pakasir-qris-scan-instructions" style="font-size:0.65rem; color:#64748b; margin-top:8px; line-height:1.3;">
               Scan QRIS di atas menggunakan GoPay, OVO, Dana, ShopeePay, BCA Mobile, Livin', atau aplikasi perbankan apa pun.
             </div>
           </div>

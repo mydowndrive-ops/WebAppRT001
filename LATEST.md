@@ -1,6 +1,6 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (18:40 WIB)  
+**Terakhir Diperbarui:** 21 September 2026 (20:10 WIB)  
 **Versi Rilis Aktif:** `v2.9.52`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
@@ -37,6 +37,7 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
      - Modal Pembayaran 3-Langkah (`#modal-pakasir-payment`):
        - *Langkah 1*: Pemilihan bulan iuran belum lunas (multi-select dengan hitungan nominal otomatis Rp25.000/bulan) & pemilihan metode (QRIS Real-Time atau Virtual Account).
        - *Langkah 2*: Tampilan QRIS dinamis berkualitas tinggi, rincian Order ID unik (`RT001-YYYYMMDD-...`), countdown waktu kedaluwarsa 15 menit, indikator status pulsing (*Menunggu Pembayaran*), tombol salin data, dan simulator pengujian.
+       - *Deteksi Cerdas Mode Sandbox*: Jika akun Pakasir masih berstatus Sandbox (sebelum aktivasi KYC selesai), sistem menampilkan banner penjelasan `#pakasir-sandbox-alert` agar pengguna mengerti bahwa QR dummy Pakasir tidak dapat di-scan m-banking nyata dan diarahkan menggunakan tombol simulasi.
        - *Langkah 3*: Notifikasi sukses pelunasan, stempel lunas, rincian transaksi, dan tombol cetak kwitansi resmi RT.
   4. **Otomasi Sinkronisasi State & Buku Kas RT**:
      - Ketika notifikasi sukses diterima via polling atau webhook, client `app.js` otomatis mengeksekusi `handlePakasirPaymentSuccess()`.

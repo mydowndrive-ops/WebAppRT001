@@ -12095,6 +12095,28 @@ function renderPakasirQrisStep(orderData) {
     directWrap.style.display = orderData.payment_method === 'payment_link' ? 'block' : 'none';
   }
 
+  // Cek apakah mode Sandbox / Dummy QR
+  const isDummyQr = Boolean(
+    orderData.is_sandbox || 
+    !orderData.qr_string || 
+    orderData.qr_string.includes('lorem-ipsum') || 
+    !orderData.qr_string.startsWith('00020101')
+  );
+
+  const sandboxAlert = document.getElementById('pakasir-sandbox-alert');
+  if (sandboxAlert) {
+    sandboxAlert.style.display = isDummyQr ? 'block' : 'none';
+  }
+
+  const scanInstructions = document.getElementById('pakasir-qris-scan-instructions');
+  if (scanInstructions) {
+    if (isDummyQr) {
+      scanInstructions.innerHTML = `<span style="color:#f59e0b; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> QRIS Simulasi Sandbox (Pakasir)</span><br><span style="color:#64748b;">M-Banking akan menolak karena masih dummy uji coba. Gunakan tombol simulasi di bawah untuk mengetes.</span>`;
+    } else {
+      scanInstructions.textContent = "Scan QRIS di atas menggunakan GoPay, OVO, Dana, ShopeePay, BCA Mobile, Livin', atau aplikasi perbankan apa pun.";
+    }
+  }
+
   // Render QR Code QRIS
   const qrWrap = document.getElementById('pakasir-qrcode-wrap');
   if (qrWrap) {
