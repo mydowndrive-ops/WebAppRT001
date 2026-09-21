@@ -15308,8 +15308,31 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* ==================== PORTAL WARGA EXECUTIVE DASHBOARD (READ-ONLY) ==================== */
+.portal-warga-exec-dashboard {
+  border-radius: var(--radius-xl);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(245, 158, 11, 0.2);
+  transition: all 0.3s ease;
+}
 
+.portal-warga-exec-dashboard .hero-balance-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
+.portal-warga-exec-dashboard .collection-kpi-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-
-
+@media (max-width: 900px) {
+  .portal-warga-exec-dashboard {
+    padding: 1rem !important;
+  }
+}

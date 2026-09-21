@@ -5134,6 +5134,7 @@ function renderAll() {
   try { renderAdminFundRequests(); } catch (e) { console.error('Error renderAdminFundRequests', e); }
   try { updateFundRequestBadges(); } catch (e) { console.error('Error updateFundRequestBadges', e); }
   try { populateResidentSelects(); } catch (e) { console.error('Error populateResidentSelects', e); }
+  try { if (typeof renderPortalWarga === 'function') renderPortalWarga(); } catch (e) { console.error('Error renderPortalWarga', e); }
   try { applyRBAC(); } catch (e) { console.error('Error applyRBAC', e); }
   try { updateUserProfileUI(); } catch (e) { console.error('Error updateUserProfileUI', e); }
 }
@@ -8043,13 +8044,21 @@ function applyRBAC() {
         el.style.order = '';
       }
     } else if (isWarga) {
-      // Warga: Hanya Portal Warga, Struktur, dan Aset RT
-      el.style.order = '';
+      // Warga: Hanya Portal Warga, Non-Iuran, Aset RT, Struktur, dan Ronda
       if (WARGA_ALLOWED_TARGETS.includes(target)) {
         el.style.display = '';
         el.classList.remove('menu-item-locked');
+        const wargaOrder = {
+          'portal-warga': 1,
+          'non-iuran': 2,
+          'aset-rt': 3,
+          'pengurus-struktur': 4,
+          'ronda-pengurus': 5
+        };
+        if (typeof wargaOrder[target] !== 'undefined') el.style.order = wargaOrder[target];
       } else {
         el.style.display = 'none';
+        el.style.order = '';
       }
     }
   });
@@ -11622,6 +11631,264 @@ function renderPortalWarga() {
   } catch (err) {
     console.warn('Gagal merender grafik iuran tahunan portal warga:', err);
   }
+
+  // Render Dashboard Eksekutif Keuangan RT (Mode Pantau Warga - Read Only)
+  try {
+    renderPortalWargaExecDashboard();
+  } catch (err) {
+    console.warn('Gagal merender dashboard eksekutif portal warga:', err);
+  }
+}
+
+/**
+ * Renders Executive Financial Dashboard in Portal Warga (Read-Only Transparency)
+ */
+function renderPortalWargaExecDashboard() {
+  const execWrap = document.getElementById('pw-exec-dashboard-wrap');
+  if (!execWrap) return;
+
+  const fin = computeFinancials();
+
+  // 1. Period Badge
+  const periodBadge = document.getElementById('pw-dash-active-period-badge');
+  if (periodBadge) {
+    periodBadge.innerHTML = `<i class="fa-regular fa-calendar-days"></i> Periode ${MONTH_NAMES[state.selectedMonth]} ${state.selectedYear}`;
+  }
+
+  // 2. Top Hero Balances
+  const elBalance = document.getElementById('pw-dash-total-balance');
+  const elIncome = document.getElementById('pw-dash-total-income');
+  const elExpense = document.getElementById('pw-dash-total-expense');
+  const elMandatory = document.getElementById('pw-dash-month-mandatory');
+
+  if (elBalance) elBalance.textContent = formatRupiah(fin.totalConsolidatedBalance);
+  if (elIncome) elIncome.textContent = formatRupiah(fin.totalConsolidatedIncome);
+  if (elExpense) elExpense.textContent = formatRupiah(fin.totalConsolidatedExpense);
+  if (elMandatory) elMandatory.textContent = formatRupiah(fin.monthMandatoryIncome);
+
+  // 3. Collection KPI Card
+  const elPercent = document.getElementById('pw-dash-collection-percent');
+  const elFill = document.getElementById('pw-dash-progress-fill');
+  const elPaid = document.getElementById('pw-dash-paid-count');
+  const elUnpaid = document.getElementById('pw-dash-unpaid-count');
+
+  if (elPercent) elPercent.textContent = `${fin.collectionPercentage}%`;
+  if (elFill) elFill.style.width = `${fin.collectionPercentage}%`;
+  if (elPaid) elPaid.textContent = `${fin.paidResidentsCount} KK`;
+  if (elUnpaid) elUnpaid.textContent = `${fin.unpaidResidentsCount} KK`;
+
+  // Bind Open Rekap Iuran Button
+  const btnRekap = document.getElementById('btn-pw-open-rekap-iuran');
+  if (btnRekap && !btnRekap.dataset.bound) {
+    btnRekap.dataset.bound = 'true';
+    btnRekap.addEventListener('click', () => {
+      openPwRekapIuranModal();
+    });
+  }
+
+  // 4. 6 Pos Anggaran Cards Grid
+  const posGrid = document.getElementById('pw-dashboard-pos-grid');
+  if (posGrid) {
+    posGrid.innerHTML = '';
+    (state.posConfig || []).forEach(pos => {
+      const data = fin.posBalances[pos.id] || { balance: 0, income: 0, expense: 0 };
+      const card = document.createElement('div');
+      card.className = 'pos-card';
+      card.style.setProperty('--pos-accent', pos.color);
+      card.style.cursor = 'pointer';
+      card.title = `Klik untuk melihat rincian kas ${pos.name}`;
+      card.innerHTML = `
+        <div class="pos-card-header">
+          <div class="pos-icon-box" style="background: ${pos.color}22; color: ${pos.color}">
+            <i class="${pos.icon}"></i>
+          </div>
+          <span class="pos-portion-tag">${formatRupiah(pos.defaultNominal)} / kk</span>
+        </div>
+        <h4>${pos.name}</h4>
+        <div class="pos-card-balance">${formatRupiah(data.balance)}</div>
+        <div class="pos-mini-flow">
+          <span><i class="fa-solid fa-arrow-trend-down" style="color:#34d399"></i> ${formatRupiah(data.income)}</span>
+          <span><i class="fa-solid fa-arrow-trend-up" style="color:#fb7185"></i> ${formatRupiah(data.expense)}</span>
+        </div>
+      `;
+      card.addEventListener('click', () => {
+        openPwPosDetailsModal(pos.id);
+      });
+      posGrid.appendChild(card);
+    });
+  }
+
+  // Bind Goto Pos Button
+  const btnGotoPos = document.getElementById('btn-pw-goto-pos');
+  if (btnGotoPos && !btnGotoPos.dataset.bound) {
+    btnGotoPos.dataset.bound = 'true';
+    btnGotoPos.addEventListener('click', () => {
+      openPwPosDetailsModal();
+    });
+  }
+}
+
+/**
+ * Buka Modal Transparansi 6 Pos Anggaran untuk Warga (Read-Only)
+ */
+function openPwPosDetailsModal(selectedPosId = null) {
+  const modalBody = document.getElementById('pw-modal-pos-details-body');
+  if (!modalBody) return;
+
+  const fin = computeFinancials();
+  const allPos = [...(state.posConfig || []), ...(state.otherPosConfig || [])];
+
+  let html = `
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 0.5rem;">
+  `;
+
+  allPos.forEach(pos => {
+    const data = fin.posBalances[pos.id] || { balance: 0, income: 0, expense: 0 };
+    const isSelected = selectedPosId === pos.id;
+    const isCore = (state.posConfig || []).some(p => p.id === pos.id);
+    const borderStyle = isSelected ? `border: 2px solid ${pos.color}; box-shadow: 0 0 15px ${pos.color}40;` : 'border: 1px solid rgba(255,255,255,0.08);';
+
+    html += `
+      <div class="pos-full-card" style="background: rgba(15,23,42,0.65); border-radius: 12px; padding: 1.15rem; ${borderStyle}">
+        <div class="pos-full-top" style="display:flex; align-items:center; gap:10px; margin-bottom: 0.85rem;">
+          <div class="pos-icon-box" style="background: ${pos.color}22; color: ${pos.color}; width: 42px; height: 42px; border-radius: 10px; display:flex; align-items:center; justify-content:center; font-size: 1.2rem;">
+            <i class="${pos.icon}"></i>
+          </div>
+          <div>
+            <h4 style="margin:0; font-size: 0.95rem; color:#fff;">${escapeHtml(pos.name)}</h4>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">${isCore ? `Alokasi: ${formatRupiah(pos.defaultNominal)}/KK` : 'Kas Khusus'}</span>
+          </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem; display:flex; flex-direction:column; gap:6px; font-size: 0.8rem;">
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:var(--text-muted);">Total Masuk:</span>
+            <strong class="text-emerald">+ ${formatRupiah(data.income)}</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between;">
+            <span style="color:var(--text-muted);">Total Keluar:</span>
+            <strong class="text-rose">- ${formatRupiah(data.expense)}</strong>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.06);">
+          <span style="font-size: 0.78rem; color: #94a3b8;">Saldo Tersedia:</span>
+          <strong style="font-size: 1.1rem; color: ${data.balance >= 0 ? '#38bdf8' : 'var(--rose-400)'};">${formatRupiah(data.balance)}</strong>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+
+  modalBody.innerHTML = html;
+  openModal('modal-pw-pos-details');
+}
+
+/**
+ * Buka Modal Transparansi Rekapitulasi Iuran Warga (Read-Only)
+ */
+function openPwRekapIuranModal() {
+  const periodDesc = document.getElementById('pw-modal-rekap-period-desc');
+  if (periodDesc) {
+    periodDesc.textContent = `Realisasi status iuran warga bulan ${MONTH_NAMES[state.selectedMonth]} ${state.selectedYear} (Iuran Wajib Rp ${formatRupiah(state.mandatoryDues || 50000)}/KK)`;
+  }
+
+  const fin = computeFinancials();
+  const elPaid = document.getElementById('pw-modal-rekap-paid');
+  const elUnpaid = document.getElementById('pw-modal-rekap-unpaid');
+  const elPercent = document.getElementById('pw-modal-rekap-percent');
+
+  if (elPaid) elPaid.textContent = `${fin.paidResidentsCount} KK`;
+  if (elUnpaid) elUnpaid.textContent = `${fin.unpaidResidentsCount} KK`;
+  if (elPercent) elPercent.textContent = `${fin.collectionPercentage}%`;
+
+  let currentFilter = 'all';
+  let searchQuery = '';
+
+  const tbody = document.getElementById('pw-modal-rekap-tbody');
+
+  function renderTable() {
+    if (!tbody) return;
+    const residents = state.residents || [];
+    const payments = (state.payments || []).filter(
+      p => p.month === state.selectedMonth && p.year === state.selectedYear && !p.category
+    );
+
+    const rows = [];
+    residents.forEach((r, idx) => {
+      const pay = payments.find(p => p.residentId === r.id);
+      const isPaid = !!pay;
+
+      if (currentFilter === 'paid' && !isPaid) return;
+      if (currentFilter === 'unpaid' && isPaid) return;
+
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        const matchName = (r.name || '').toLowerCase().includes(q);
+        const matchHouse = `${r.block || ''} ${r.houseNo || ''}`.toLowerCase().includes(q);
+        const matchStreet = (r.street || '').toLowerCase().includes(q);
+        if (!matchName && !matchHouse && !matchStreet) return;
+      }
+
+      const houseDisplay = `${r.block || ''} ${r.houseNo || ''}`.trim() || `No.${r.noUrut || idx + 1}`;
+      const statusBadge = isPaid
+        ? `<span class="badge badge-emerald" style="font-size:0.75rem; padding:3px 8px; font-weight:700;"><i class="fa-solid fa-circle-check"></i> LUNAS</span>`
+        : `<span class="badge badge-rose" style="font-size:0.75rem; padding:3px 8px; font-weight:700;"><i class="fa-solid fa-clock"></i> BELUM</span>`;
+
+      rows.push(`
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <td style="padding: 10px 14px; font-weight:600; color:#38bdf8;">${escapeHtml(houseDisplay)}</td>
+          <td style="padding: 10px 14px; color:#f8fafc; font-weight:500;">
+            ${escapeHtml(r.name)}
+            ${(state.currentVerifiedResident && state.currentVerifiedResident.id === r.id) ? '<span class="badge-me-tag" style="margin-left:6px;">Anda</span>' : ''}
+          </td>
+          <td style="padding: 10px 14px; color:#94a3b8; font-size:0.8rem;">${escapeHtml(r.street || 'Jl. Citarum II')}</td>
+          <td style="padding: 10px 14px; text-align:center; font-family:monospace; color:var(--gold-400);">${formatRupiah(state.mandatoryDues || 50000)}</td>
+          <td style="padding: 10px 14px; text-align:center;">${statusBadge}</td>
+        </tr>
+      `);
+    });
+
+    if (rows.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align:center; padding: 2rem; color: #94a3b8; font-size: 0.85rem;">
+            <i class="fa-solid fa-magnifying-glass" style="font-size: 1.5rem; margin-bottom: 0.5rem; display:block; color: #64748b;"></i>
+            Tidak ada data warga yang cocok dengan filter / pencarian.
+          </td>
+        </tr>
+      `;
+    } else {
+      tbody.innerHTML = rows.join('');
+    }
+  }
+
+  // Setup tab filter events
+  const tabBtns = document.querySelectorAll('#pw-rekap-filter-tabs button');
+  tabBtns.forEach(btn => {
+    btn.onclick = () => {
+      tabBtns.forEach(b => {
+        b.className = 'btn btn-xs btn-outline';
+      });
+      btn.className = 'btn btn-xs btn-emerald';
+      currentFilter = btn.getAttribute('data-filter') || 'all';
+      renderTable();
+    };
+  });
+
+  // Setup search input
+  const searchInput = document.getElementById('pw-rekap-search-input');
+  if (searchInput) {
+    searchInput.value = '';
+    searchInput.oninput = (e) => {
+      searchQuery = e.target.value.trim();
+      renderTable();
+    };
+  }
+
+  renderTable();
+  openModal('modal-pw-rekap-iuran');
 }
 
 /**

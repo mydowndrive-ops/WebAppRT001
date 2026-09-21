@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (01:18 WIB)  
-**Versi Rilis Aktif:** `v2.9.36`  
+**Terakhir Diperbarui:** 21 September 2026 (12:02 WIB)  
+**Versi Rilis Aktif:** `v2.9.37`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,24 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🔤 Flagship Typography Enhancement: Larger & Bolder Official Title & Subtitle (Update v2.9.36 - 21 Sept 2026)
+### 1. 📊 Integrasi Dashboard Eksekutif Keuangan RT di Portal Warga (Read-Only Mode) (Update v2.9.37 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Menampilkan modul Dashboard Eksekutif (Total Kas Terkonsolidasi, Capaian Iuran Bulan Ini, dan Alokasi 6 Pos Anggaran) di dalam Dashboard Portal Warga (`#view-portal-warga`) dalam mode **Read Only** (hanya pantau/baca secara transparan tanpa hak akses pengubahan/edit bagi warga).
+- **Hasil Implementasi Fitur**:
+  1. **Modul Dashboard Eksekutif di Portal Warga (`#pw-exec-dashboard-wrap`)**:
+     - **Kartu TOTAL KAS TERKONSOLIDASI**: Menampilkan Saldo Kas Terkonsolidasi secara *live*, Total Pemasukan, Total Pengeluaran, dan Iuran Wajib Periode Ini.
+     - **Kartu Capaian Iuran Bulan Ini**: Menampilkan persentase capaian iuran bulanan, progress bar visual, jumlah KK sudah bayar dan belum bayar.
+     - **Tombol Transparansi Iuran (Read Only)**: Menggantikan tombol checklist admin dengan tombol *"Buka Rekapitulasi Iuran Warga (Hanya Baca)"* yang membuka modal transparansi status lunas/belum tanpa fitur checkbox pengubah status.
+     - **Seksi Alokasi POS ANGGARAN**: Menampilkan 6 kartu pos anggaran (Sampah & Kebersihan, Kas RT, Dana Sosial, Dana Kematian, PHBI, dan 17-an) dengan alokasi nominal per KK, saldo pos, serta indikator flow masuk/keluar.
+  2. **Dua Modal Read-Only Khusus Warga**:
+     - `#modal-pw-rekap-iuran`: Modal rekapitulasi iuran warga per bulan dengan filter pencarian dan tab filter (Semua, Lunas, Belum Bayar) secara transparan tanpa kemampuan edit.
+     - `#modal-pw-pos-details`: Modal rincian alokasi & saldo pos kas RT tanpa tombol penarikan dana (*Tarik / Catat Keluar* ditiadakan).
+  3. **Navigasi Sidebar Warga**:
+     - Menambahkan menu **Dashboard Portal Warga** di posisi teratas sidebar warga (`order: 1`) saat warga login.
+  4. **Sinkronisasi Cache & Service Worker**:
+     - Update Service Worker cache ke `rt-finsmart-cache-v2.9.37`.
+
+### 2. 🔤 Flagship Typography Enhancement: Larger & Bolder Official Title & Subtitle (Update v2.9.36 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Memperbesar ukuran teks judul utama **"WARGA RT.001 RW.013"** agar saat dibuka di ponsel (smartphone) tampil jauh lebih tegas, jelas, berwibawa, dan mudah dibaca secara instan tanpa menyipitkan mata.
   - Menyesuaikan secara proporsional ukuran font kalimat penanda di atasnya: **"WEB APLIKASI RESMI"** agar seimbang dan serasi secara visual.
