@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (14:00 WIB)  
-**Versi Rilis Aktif:** `v2.9.41`  
+**Terakhir Diperbarui:** 21 September 2026 (14:15 WIB)  
+**Versi Rilis Aktif:** `v2.9.42`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,19 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📊 Perbaikan Grafik Penerimaan Iuran & Pembuatan Formulir Mandiri 3 Layanan Warga (Update v2.9.41 - 21 Sept 2026)
+### 1. 📄 Penyederhanaan Tampilan Layanan Surat Pengantar RT (Update v2.9.42 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Menghapus tombol **"Buka Mode Dialog"** pada formulir mandiri pembuatan surat pengantar agar warga tidak bingung.
+  - Menyatukan 6 kotak informasi jenis surat (*Pengantar KTP & KK*, *Keterangan Domisili*, *Pengantar SKCK Polsek*, *Keterangan Izin Usaha*, *Keterangan Belum Menikah/Nikah*, *Keterangan Lainnya*) yang sebelumnya terpisah-pisah menjadi **1 kotak informasi terpadu** agar tampilan tidak penuh sesak.
+- **Hasil Implementasi**:
+  1. **Penghapusan Tombol Redundan "Buka Mode Dialog"**:
+     - Form kini berfokus langsung pada tombol aksi utama: **"Cetak / Unduh PDF"** dan **"Buat & Tampilkan Pratinjau KOP Resmi"**.
+  2. **Penyatuan Informasi Jenis Layanan Surat**:
+     - 6 kartu terpisah digantikan oleh 1 kotak panel informasi elegan (`Informasi & Lingkup Layanan Surat Pengantar RT.001`) dengan tata letak micro-grid responsif yang rapi, ringkas, dan proporsional.
+  3. **Pembaruan Service Worker & Versi PWA**:
+     - Versi dinaikkan ke `rt-finsmart-cache-v2.9.42` pada `sw.js`, `index.html`, dan `app.js`.
+
+### 2. 📊 Perbaikan Grafik Penerimaan Iuran & Pembuatan Formulir Mandiri 3 Layanan Warga (Update v2.9.41 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Di Dashboard Warga, **"Grafik Penerimaan Iuran Bulanan 1 Tahun Berjalan"** tidak muncul.
   - Menu sidebar warga **"Layanan Pengajuan Fasum RT"**, **"e-Surat Pengantar RT Mandiri"**, dan **"Kotak Aspirasi & Masukan Warga"** saat diklik tidak memberikan respon apapun.
