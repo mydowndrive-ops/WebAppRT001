@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (14:30 WIB)  
-**Versi Rilis Aktif:** `v2.9.45`  
+**Terakhir Diperbarui:** 21 September 2026 (14:40 WIB)  
+**Versi Rilis Aktif:** `v2.9.46`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,29 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🏛️ Koreksi Resmi KOP Surat RT (Update v2.9.45 - 21 Sept 2026)
+### 1. 🔏 Sistem Verifikasi Digital Sign & QR Code e-Surat Pengantar RT.001 (Update v2.9.46 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Mengimplementasikan sistem **Digital Sign resmi berbasis QR Code** untuk memvalidasi keaslian Surat Pengantar RT Mandiri yang dibuat warga.
+  - Memastikan siapapun (pihak kelurahan, kecamatan, kepolisian, atau warga) yang memindai (*scan*) QR Code melalui kamera HP/Google Lens atau mengklik QR Code di layar dapat langsung melihat lembar validasi resmi keabsahan dokumen.
+- **Hasil Implementasi**:
+  1. **Integrasi Pustaka QR Code Lokal PWA 100% Offline (`assets/qrcode.min.js`)**:
+     - Mengunduh dan menyimpan pustaka `qrcode.min.js` secara lokal di dalam folder `assets/`, sehingga pembuatan QR Code bekerja instan tanpa membutuhkan koneksi internet (PWA 100% offline).
+     - Menambahkan berkas `assets/qrcode.min.js` ke dalam `ASSETS_TO_CACHE` pada Service Worker (`sw.js`).
+  2. **QR Code Digital Sign Interaktif pada Lembar Surat (`#inpage-surat-paper` & `#print-area-surat`)**:
+     - Menggantikan teks statis tanda tangan dengan wadah QR Code interaktif (`#inpage-surat-qrcode` & `#print-surat-qrcode`) serta badge resmi `DIGITAL SIGNED • RT.001`.
+     - QR Code memuat tautan verifikasi resmi dengan parameter nomor surat, nama warga pemohon, NIK, keperluan, dan tanggal terbit.
+     - Mengklik atau mengetuk QR Code di layar akan langsung membuka dialog sertifikat verifikasi keabsahan.
+  3. **Modal Dialog Sertifikat Verifikasi Resmi (`#modal-verify-surat`)**:
+     - Desain visual emerald premium dengan ikon perisai terverifikasi (`fa-shield-check`).
+     - Menampilkan rincian validasi: Nomor Surat, Nama Pemohon, NIK Terdaftar, Keperluan, Tanggal Terbit, dan Penandatangan Sah: **Maryanto (Ketua RT.001)**.
+     - Mendeteksi otomatis query parameter `?verify_surat=1` saat tautan QR dibuka, langsung memunculkan sertifikat validasi ke layar pengguna.
+  4. **Optimasi Cetak A4 / PDF (`styles.css` & `app.js`)**:
+     - Menambahkan kelas `print-inpage-surat-active` dan perbaikan CSS `@media print` sehingga pencetakan langsung dari halaman berjalan bersih tanpa memuat elemen latar web.
+     - Mengatur rendering QR Code menjadi tajam (*crisp-edges/pixelated*) agar mudah dipindai mesin scanner fisik.
+  5. **Pembaruan Service Worker & Versi PWA**:
+     - Versi dinaikkan ke `rt-finsmart-cache-v2.9.46` pada `sw.js`, `index.html`, dan `app.js`.
+
+### 2. 🏛️ Koreksi Resmi KOP Surat RT (Update v2.9.45 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Mengoreksi data KOP Surat Resmi pada formulir pembuatan surat pengantar mandiri warga:
     ```text

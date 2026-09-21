@@ -26,10 +26,13 @@
   <!-- Chart.js for Executive Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <!-- QRCode.js for Digital Signature Verification -->
+  <script src="assets/qrcode.min.js"></script>
+
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.45">
+  <link rel="stylesheet" href="styles.css?v=2.9.46">
 </head>
 <body>
 
@@ -5243,9 +5246,10 @@
               <div>
                 <span style="font-size:0.82rem; color:#475569;">Mengetahui,</span><br>
                 <span style="font-size:0.85rem; font-weight:600;">Ketua RT.001 / RW.013,</span>
-                <div style="height:55px; display:flex; align-items:center; justify-content:center;">
-                  <span style="border:1px solid #10b981; color:#059669; padding:2px 8px; border-radius:4px; font-size:0.7rem; font-weight:700;">
-                    <i class="fa-solid fa-stamp"></i> DIGITAL SIGN RT.001
+                <div style="margin:6px auto; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                  <div id="inpage-surat-qrcode" style="width:72px; height:72px; min-height:72px; background:#ffffff; border:1px dashed #cbd5e1; border-radius:6px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:2px;" title="Scan QR atau klik untuk verifikasi digital sign"></div>
+                  <span onclick="openSuratVerificationModalFromCurrent()" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:0.68rem; font-weight:700; color:#059669; letter-spacing:0.3px; border:1px solid #10b981; padding:1px 6px; border-radius:4px; background:rgba(16,185,129,0.06);" title="Klik untuk verifikasi keabsahan dokumen">
+                    <i class="fa-solid fa-circle-check"></i> DIGITAL SIGNED &bull; RT.001
                   </span>
                 </div>
                 <strong style="text-decoration:underline;">Maryanto</strong>
@@ -7090,8 +7094,11 @@
           <div class="surat-ttd-box">
             <span class="ttd-tgl">&nbsp;</span>
             <span class="ttd-jabatan">Ketua RT.001 / RW.013,</span>
-            <div class="ttd-space">
-              <span class="ttd-stempel-digital"><i class="fa-solid fa-stamp"></i> TERTANDATANGAN DIGITAL RT.001</span>
+            <div class="ttd-space" style="height:auto; min-height:68px; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:4px 0;">
+              <div id="print-surat-qrcode" style="width:68px; height:68px; display:flex; align-items:center; justify-content:center; background:#ffffff;"></div>
+              <span class="ttd-stempel-digital" style="margin-top:4px; font-size:0.65rem; padding:1px 6px;">
+                <i class="fa-solid fa-circle-check"></i> TERTANDATANGAN DIGITAL RT.001
+              </span>
             </div>
             <strong class="ttd-nama">Maryanto</strong>
           </div>
@@ -7306,6 +7313,66 @@
     </div>
   </div>
 
+  <!-- Modal: Verifikasi Keabsahan Dokumen & Digital Sign RT.001 -->
+  <div class="modal-backdrop" id="modal-verify-surat" style="display:none; align-items:center; justify-content:center; z-index:99999;">
+    <div class="modal-dialog" style="max-width:520px; width:92%; border-radius:18px; overflow:hidden; border:1px solid rgba(16,185,129,0.4); box-shadow:0 25px 60px rgba(0,0,0,0.65); background:#0f172a; margin:auto;">
+      <!-- Header Hijau Emerald Mewah -->
+      <div style="background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%); padding: 1.5rem 1.25rem; text-align:center; color:#ffffff; position:relative;">
+        <button class="modal-close" data-close="modal-verify-surat" style="position:absolute; right:14px; top:14px; color:#ffffff; background:rgba(255,255,255,0.2); border:none; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem;">&times;</button>
+        <div style="width:58px; height:58px; margin:0 auto 10px; background:rgba(255,255,255,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#34d399; box-shadow:0 0 20px rgba(52,211,153,0.35);">
+          <i class="fa-solid fa-shield-check"></i>
+        </div>
+        <h3 style="margin:0; font-size:1.18rem; font-weight:800; letter-spacing:0.5px; color:#ffffff;">DOKUMEN RESMI TERVERIFIKASI</h3>
+        <p style="margin:4px 0 0; font-size:0.8rem; color:#a7f3d0;">Sistem Verifikasi Digital Sign RT.001 / RW.013 Graha Asri</p>
+      </div>
+
+      <!-- Body Verifikasi -->
+      <div style="padding: 1.25rem 1.5rem; background: #0f172a; color:#f8fafc;">
+        <div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:10px; padding:10px 14px; margin-bottom:1.1rem; display:flex; align-items:center; gap:12px;">
+          <div style="color:#10b981; font-size:1.3rem;"><i class="fa-solid fa-circle-check"></i></div>
+          <div style="font-size:0.8rem; line-height:1.45; color:#cbd5e1;">
+            Keabsahan tanda tangan digital dan nomor surat telah tervalidasi sah oleh sistem kependudukan resmi RT.001 / RW.013.
+          </div>
+        </div>
+
+        <table style="width:100%; font-size:0.85rem; border-collapse:collapse; margin-bottom:1.25rem;">
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+            <td style="padding:8px 0; color:#94a3b8; width:130px;">Nomor Surat</td>
+            <td style="padding:8px 0; font-weight:700; color:#38bdf8;" id="verify-surat-no">-</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+            <td style="padding:8px 0; color:#94a3b8;">Nama Pemohon</td>
+            <td style="padding:8px 0; font-weight:700; color:#ffffff;" id="verify-surat-nama">-</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+            <td style="padding:8px 0; color:#94a3b8;">NIK Terdaftar</td>
+            <td style="padding:8px 0; font-family:monospace; color:#cbd5e1; font-weight:600;" id="verify-surat-nik">-</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+            <td style="padding:8px 0; color:#94a3b8;">Keperluan</td>
+            <td style="padding:8px 0; font-weight:600; color:#fbbf24;" id="verify-surat-kep">-</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+            <td style="padding:8px 0; color:#94a3b8;">Tanggal Terbit</td>
+            <td style="padding:8px 0; color:#e2e8f0;" id="verify-surat-tgl">-</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 0; color:#94a3b8;">Penandatangan</td>
+            <td style="padding:8px 0; color:#34d399; font-weight:700;">
+              <i class="fa-solid fa-signature"></i> Maryanto (Ketua RT.001)
+            </td>
+          </tr>
+        </table>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" class="btn btn-emerald btn-sm" data-close="modal-verify-surat" style="padding:0.45rem 1.25rem; font-size:0.85rem; border-radius:8px;">
+            <i class="fa-solid fa-check"></i> Selesai / Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Luxury Scroll-to-Top Button -->
   <button id="btn-scroll-top" class="scroll-to-top-btn" title="Kembali ke Bagian Atas Halaman (1-Klik)" aria-label="Kembali ke Bagian Atas">
     <div class="scroll-top-icon-wrapper">
@@ -7318,6 +7385,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.45"></script>
+  <script src="app.js?v=2.9.46"></script>
 </body>
 </html>

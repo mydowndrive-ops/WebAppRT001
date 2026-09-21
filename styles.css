@@ -13883,6 +13883,17 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 4px;
 }
 
+#inpage-surat-qrcode img,
+#inpage-surat-qrcode canvas,
+#print-surat-qrcode img,
+#print-surat-qrcode canvas {
+  display: block !important;
+  margin: auto !important;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
 /* Print specific rules */
 @media print {
   body * {
@@ -13900,6 +13911,26 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: none;
     padding: 0;
   }
+
+  body.print-inpage-surat-active * {
+    visibility: hidden !important;
+  }
+  body.print-inpage-surat-active #inpage-surat-paper,
+  body.print-inpage-surat-active #inpage-surat-paper * {
+    visibility: visible !important;
+  }
+  body.print-inpage-surat-active #inpage-surat-paper {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 2rem 2.5rem !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
   .d-print-none {
     display: none !important;
   }

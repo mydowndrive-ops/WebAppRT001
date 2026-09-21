@@ -5129,10 +5129,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.45';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.46';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.45')
+      navigator.serviceWorker.register('sw.js?v=2.9.46')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -7971,6 +7971,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupResidentAccountsEvents();
   setupAsetRtModule();
   setupAppHistoryNavigation();
+  checkUrlForSuratVerification();
 
   // Check session → if logged in, go to admin dashboard/portal; else show public landing page
   if (isLoggedIn()) {
@@ -12340,6 +12341,11 @@ function setupPortalWargaESurat() {
     if (pNomor) pNomor.textContent = `Nomor: ${noSurat}`;
     if (pPemohon) pPemohon.textContent = nama;
     if (pStatus) pStatus.textContent = resident.domicile ? `Warga ${resident.domicile} Terdaftar` : 'Warga Tetap Terdaftar';
+
+    // Generate QR Code Digital Signature untuk Lembar Cetak Modal
+    const baseUrl = window.location.href.split('?')[0].split('#')[0];
+    const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(noSurat)}&nama=${encodeURIComponent(nama)}&nik=${encodeURIComponent(nik)}&kep=${encodeURIComponent(jenisTeks + ' - ' + keperluan)}&tgl=${encodeURIComponent(tglStr)}`;
+    renderSuratQRCode('print-surat-qrcode', verifyUrl, { no: noSurat, nama, nik, kep: `${jenisTeks} - ${keperluan}`, tgl: tglStr });
   }
 
   if (btnPreviewSurat) {
@@ -12733,6 +12739,11 @@ function handleGenerateSuratInPage() {
   if (elTgl) elTgl.textContent = tglStr;
   if (elTtdNama) elTtdNama.textContent = nama;
 
+  // Generate QR Code Digital Signature Resmi RT.001
+  const baseUrl = window.location.href.split('?')[0].split('#')[0];
+  const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(noSurat)}&nama=${encodeURIComponent(nama)}&nik=${encodeURIComponent(nik)}&kep=${encodeURIComponent(keperluan)}&tgl=${encodeURIComponent(tglStr)}`;
+  renderSuratQRCode('inpage-surat-qrcode', verifyUrl, { no: noSurat, nama, nik, kep: keperluan, tgl: tglStr });
+
   // Show live preview box
   const previewBox = document.getElementById('surat-live-preview-box');
   if (previewBox) {
@@ -12740,7 +12751,7 @@ function handleGenerateSuratInPage() {
     previewBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  showToast('📄 Surat pengantar berhasil dibuat dengan KOP resmi! Anda dapat langsung mencetaknya.', 'success');
+  showToast('📄 Surat pengantar berhasil dibuat dengan KOP resmi dan QR Digital Sign! Anda dapat langsung mencetaknya.', 'success');
 }
 
 function printSuratInPage() {
@@ -12748,8 +12759,15 @@ function printSuratInPage() {
   if (!previewBox || previewBox.style.display === 'none') {
     handleGenerateSuratInPage();
   }
+  document.body.classList.add('print-inpage-surat-active');
+  const cleanup = () => {
+    document.body.classList.remove('print-inpage-surat-active');
+    window.removeEventListener('afterprint', cleanup);
+  };
+  window.addEventListener('afterprint', cleanup);
   setTimeout(() => {
     window.print();
+    setTimeout(cleanup, 1500);
   }, 250);
 }
 
@@ -12764,6 +12782,97 @@ function shareSuratInPageWA() {
   const waMsg = `*PERMOHONAN PENGESAHAN e-SURAT PENGANTAR RT.001*\n-----------------------------------------\nKepada Yth. Ketua RT.001 / RW.013 Graha Asri,\n\nSaya telah membuat e-Surat Pengantar Mandiri melalui Portal Warga dengan rincian sbb:\n\nNama Pemohon : *${nama}*\nNIK          : ${nik}\nKeperluan    : *${keperluan}*\n${noSurat}\n\nMohon bantuannya untuk pengesahan / tanda tangan basah dan stempel RT jika diperlukan. Terima kasih! 🙏`;
   window.open(`https://wa.me/${ketuaPhone}?text=${encodeURIComponent(waMsg)}`, '_blank');
 }
+
+// ==================== SISTEM VERIFIKASI DIGITAL SIGN e-SURAT RT.001 ====================
+
+function renderSuratQRCode(containerId, verifyUrl, metadata) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (typeof QRCode !== 'undefined') {
+    try {
+      new QRCode(container, {
+        text: verifyUrl,
+        width: 68,
+        height: 68,
+        colorDark: '#0f172a',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } catch (err) {
+      console.warn('Gagal membuat QRCode:', err);
+      container.innerHTML = `<div style="font-size:0.65rem; color:#059669; font-weight:700; text-align:center; padding:4px;">QR DIGITAL SIGN<br>RT.001</div>`;
+    }
+  } else {
+    container.innerHTML = `<div style="font-size:0.65rem; color:#059669; font-weight:700; text-align:center; padding:4px;">QR DIGITAL SIGN<br>RT.001</div>`;
+  }
+
+  if (metadata) {
+    container.style.cursor = 'pointer';
+    container.onclick = () => openSuratVerificationModal(metadata);
+  }
+}
+
+function openSuratVerificationModal(data) {
+  if (!data) return;
+  const elNo = document.getElementById('verify-surat-no');
+  const elNama = document.getElementById('verify-surat-nama');
+  const elNik = document.getElementById('verify-surat-nik');
+  const elKep = document.getElementById('verify-surat-kep');
+  const elTgl = document.getElementById('verify-surat-tgl');
+
+  if (elNo) elNo.textContent = data.no || '-';
+  if (elNama) elNama.textContent = data.nama || '-';
+  if (elNik) elNik.textContent = data.nik || '-';
+  if (elKep) elKep.textContent = data.kep || '-';
+  if (elTgl) elTgl.textContent = data.tgl || '-';
+
+  openModal('modal-verify-surat');
+}
+
+function openSuratVerificationModalFromCurrent() {
+  const elNomor = document.getElementById('inpage-surat-nomor');
+  const elNama = document.getElementById('inpage-preview-nama');
+  const elNik = document.getElementById('inpage-preview-nik');
+  const elKeperluan = document.getElementById('inpage-preview-keperluan');
+  const elTgl = document.getElementById('inpage-preview-tanggal');
+
+  openSuratVerificationModal({
+    no: elNomor ? elNomor.textContent.replace(/^Nomor:\s*/i, '') : '-',
+    nama: elNama ? elNama.textContent : '-',
+    nik: elNik ? elNik.textContent : '-',
+    kep: elKeperluan ? elKeperluan.textContent : '-',
+    tgl: elTgl ? elTgl.textContent : '-'
+  });
+}
+
+function checkUrlForSuratVerification() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('verify_surat') && urlParams.get('verify_surat') === '1') {
+      const no = urlParams.get('no') || '-';
+      const nama = urlParams.get('nama') || '-';
+      const nik = urlParams.get('nik') || '-';
+      const kep = urlParams.get('kep') || '-';
+      const tgl = urlParams.get('tgl') || '-';
+
+      // Sembunyikan splash screen agar modal verifikasi langsung tampak jelas
+      const splash = document.getElementById('app-splash-screen');
+      if (splash) splash.style.display = 'none';
+
+      setTimeout(() => {
+        openSuratVerificationModal({ no, nama, nik, kep, tgl });
+      }, 350);
+    }
+  } catch (e) {
+    console.warn('Error checking surat verification from URL:', e);
+  }
+}
+
+// Pasang ke window scope untuk event listener inline onclick
+window.openSuratVerificationModal = openSuratVerificationModal;
+window.openSuratVerificationModalFromCurrent = openSuratVerificationModalFromCurrent;
 
 // ==================== DEDICATED VIEW: KOTAK ASPIRASI & MASUKAN WARGA ====================
 
