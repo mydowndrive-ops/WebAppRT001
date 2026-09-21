@@ -1954,7 +1954,7 @@ function loadState() {
       }
 
       // Pastikan Buku Register e-Surat RT.001 tersedia & terverifikasi
-      if (!state.suratRegister || !Array.isArray(state.suratRegister) || state.suratRegister.length === 0) {
+      if (!state.suratRegister || !Array.isArray(state.suratRegister)) {
         state.suratRegister = getSeedSuratRegister();
         saveState();
       }
@@ -5136,10 +5136,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.47';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.48';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.47')
+      navigator.serviceWorker.register('sw.js?v=2.9.48')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -12967,12 +12967,16 @@ function recordSuratToRegister(entry) {
     return s.noSurat && s.noSurat.replace(/\s+/g, '') === (entry.noSurat || '').replace(/\s+/g, '');
   });
 
+  const tglNormalized = entry.tgl || entry.tglStr || (typeof formatDateIndo === 'function' ? formatDateIndo(new Date()) : '21 September 2026');
+
   const recordData = {
-    id: `SURAT-${Date.now()}`,
+    id: entry.id || `SURAT-${Date.now()}`,
     status: 'Sah & Tervalidasi',
     createdAt: new Date().toISOString(),
     tujuan: entry.tujuan || 'Kantor Desa Simpangan',
-    ...entry
+    ...entry,
+    tgl: tglNormalized,
+    tglStr: tglNormalized
   };
 
   if (existingIdx !== -1) {
@@ -12993,7 +12997,7 @@ function renderBukuRegisterSurat() {
   const tbody = document.getElementById('table-body-register-surat');
   if (!tbody) return;
 
-  if (!state.suratRegister || !Array.isArray(state.suratRegister) || state.suratRegister.length === 0) {
+  if (!state.suratRegister || !Array.isArray(state.suratRegister)) {
     state.suratRegister = getSeedSuratRegister();
     saveState();
   }
@@ -13004,20 +13008,41 @@ function renderBukuRegisterSurat() {
   }
 
   tbody.innerHTML = '';
+
+  // Kondisi saat arsip kosong (telah dihapus semua oleh admin)
+  if (state.suratRegister.length === 0) {
+    const trEmpty = document.createElement('tr');
+    trEmpty.innerHTML = `
+      <td colspan="6" style="text-align:center; padding:36px 16px; color:#94a3b8;">
+        <div style="font-size:2.2rem; color:#475569; margin-bottom:8px;"><i class="fa-solid fa-box-archive"></i></div>
+        <div style="font-weight:600; color:#cbd5e1; font-size:0.95rem;">Belum Ada Riwayat Surat Terdaftar</div>
+        <div style="font-size:0.8rem; color:#64748b; margin-top:4px;">Buku register saat ini bersih. Surat pengantar yang baru dibuat akan otomatis tercatat di sini.</div>
+      </td>
+    `;
+    tbody.appendChild(trEmpty);
+    return;
+  }
+
   state.suratRegister.forEach((item, idx) => {
+    // Normalisasi & perbaikan otomatis jika ada data lama yang tanggalnya undefined
+    const tglDisplay = (item.tgl && item.tgl !== 'undefined')
+      ? item.tgl
+      : (item.tglStr || (item.createdAt ? formatDateIndo(new Date(item.createdAt)) : '21 September 2026'));
+    item.tgl = tglDisplay;
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>
-        <strong style="color:#38bdf8; font-size:0.83rem;">${item.noSurat}</strong>
+        <strong style="color:#38bdf8; font-size:0.83rem;">${item.noSurat || '-'}</strong>
         <div style="font-size:0.72rem; color:#64748b;">Tujuan: ${item.tujuan || 'Instansi Terkait'}</div>
       </td>
-      <td style="color:#cbd5e1; font-size:0.82rem;">${item.tgl}</td>
+      <td style="color:#cbd5e1; font-size:0.82rem; white-space:nowrap;">${tglDisplay}</td>
       <td>
-        <strong style="color:#f8fafc;">${item.nama}</strong>
-        <div style="font-family:monospace; font-size:0.75rem; color:#94a3b8;">${item.nik}</div>
+        <strong style="color:#f8fafc;">${item.nama || '-'}</strong>
+        <div style="font-family:monospace; font-size:0.75rem; color:#94a3b8;">${item.nik || '-'}</div>
       </td>
       <td>
-        <span style="color:#fbbf24; font-size:0.83rem; font-weight:600;">${item.keperluan}</span>
+        <span style="color:#fbbf24; font-size:0.83rem; font-weight:600;">${item.keperluan || '-'}</span>
       </td>
       <td style="text-align:center;">
         <span class="badge-pill badge-emerald" style="font-size:0.7rem; padding:2px 8px; font-family:monospace;" title="Token SHA-256: ${item.sig}">
@@ -13025,9 +13050,14 @@ function renderBukuRegisterSurat() {
         </span>
       </td>
       <td style="text-align:center;">
-        <button type="button" class="btn btn-outline-cyan btn-sm btn-action-verify-row" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem;" title="Cek Sertifikat Validasi">
-          <i class="fa-solid fa-shield-check"></i> Cek Sah
-        </button>
+        <div style="display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+          <button type="button" class="btn btn-outline-cyan btn-sm btn-action-verify-row" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem;" title="Cek Sertifikat Validasi">
+            <i class="fa-solid fa-shield-check"></i> Cek Sah
+          </button>
+          <button type="button" class="btn btn-outline-danger btn-sm btn-action-delete-surat" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem; color:#f87171; border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.08);" title="Hapus Surat dari Buku Register">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
       </td>
     `;
     tbody.appendChild(tr);
@@ -13050,6 +13080,56 @@ function renderBukuRegisterSurat() {
       }
     });
   });
+
+  // Event listener tombol Hapus per baris register
+  tbody.querySelectorAll('.btn-action-delete-surat').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      deleteSuratFromRegister(idx);
+    });
+  });
+}
+
+/**
+ * Menghapus satu surat tertentu dari Buku Register e-Surat RT.001
+ */
+function deleteSuratFromRegister(idx) {
+  if (!state.suratRegister || !state.suratRegister[idx]) return;
+  const target = state.suratRegister[idx];
+  const confirmMsg = `Hapus surat ini dari Buku Register RT.001?\n\n• No Surat: ${target.noSurat}\n• Pemohon: ${target.nama} (${target.nik})\n• Keperluan: ${target.keperluan}\n\nData yang dihapus tidak dapat dikembalikan. Lanjutkan?`;
+  
+  if (confirm(confirmMsg)) {
+    const deletedNo = target.noSurat;
+    state.suratRegister.splice(idx, 1);
+    saveState();
+    renderBukuRegisterSurat();
+    if (typeof showToast === 'function') {
+      showToast(`🗑️ Surat ${deletedNo} berhasil dihapus dari Buku Register.`, 'info');
+    }
+  }
+}
+
+/**
+ * Mengosongkan / membersihkan seluruh riwayat Buku Register e-Surat RT.001
+ */
+function clearAllSuratRegister() {
+  if (!state.suratRegister || state.suratRegister.length === 0) {
+    if (typeof showToast === 'function') {
+      showToast('Buku Register e-Surat saat ini sudah kosong.', 'warning');
+    }
+    return;
+  }
+  const count = state.suratRegister.length;
+  const confirmMsg = `PERINGATAN: Apakah Anda yakin ingin mengosongkan seluruh Buku Register (${count} surat)?\n\nSeluruh riwayat arsip penerbitan surat pengantar akan dihapus secara permanen.`;
+  
+  if (confirm(confirmMsg)) {
+    state.suratRegister = [];
+    saveState();
+    renderBukuRegisterSurat();
+    if (typeof showToast === 'function') {
+      showToast('🧹 Seluruh riwayat Buku Register e-Surat berhasil dibersihkan.', 'success');
+    }
+  }
 }
 
 function renderSuratQRCode(containerId, verifyUrl, metadata) {
@@ -13269,6 +13349,8 @@ function checkUrlForSuratVerification() {
 window.openSuratVerificationModal = openSuratVerificationModal;
 window.openSuratVerificationModalFromCurrent = openSuratVerificationModalFromCurrent;
 window.renderBukuRegisterSurat = renderBukuRegisterSurat;
+window.deleteSuratFromRegister = deleteSuratFromRegister;
+window.clearAllSuratRegister = clearAllSuratRegister;
 
 // ==================== DEDICATED VIEW: KOTAK ASPIRASI & MASUKAN WARGA ====================
 

@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (14:55 WIB)  
-**Versi Rilis Aktif:** `v2.9.47`  
+**Terakhir Diperbarui:** 21 September 2026 (15:15 WIB)  
+**Versi Rilis Aktif:** `v2.9.48`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,27 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🛡️ Sistem Kriptografi SHA-256 Anti-Pemalsuan & Buku Register e-Surat RT.001 (Update v2.9.47 - 21 Sept 2026)
+### 1. 🗑️ Fitur Hapus Arsip Surat & Normalisasi Tanggal Buku Register e-Surat (Update v2.9.48 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Menjawab pertanyaan *"untuk menghapus daftar surat ini dimana"*: sebelumnya pada Buku Register belum ada tombol aksi hapus arsip per baris maupun tombol bersihkan arsip secara menyeluruh.
+  - Memperbaiki bug tanggal `undefined` pada baris riwayat surat yang baru diterbitkan akibat ketidaksinkronan properti `tgl` vs `tglStr`.
+  - Mencegah pengisian ulang otomatis data demo (*re-seeding*) ketika seluruh arsip telah dihapus bersih oleh pengurus.
+- **Hasil Implementasi**:
+  1. **Tombol Hapus Per Baris Surat (`.btn-action-delete-surat`)**:
+     - Ditambahkan tombol ikon tempat sampah berwarna merah lembut pada kolom **Aksi** di setiap baris tabel Buku Register.
+     - Dilengkapi dialog konfirmasi interaktif sebelum penghapusan dilakukan untuk mencegah ketidaksengajaan (`confirm`).
+  2. **Tombol "Bersihkan Arsip" (`#btn-clear-register-surat`)**:
+     - Ditambahkan tombol *"Bersihkan Arsip"* pada header panel Buku Register di samping badge statistik.
+     - Memungkinkan pengurus menghapus/mengosongkan seluruh riwayat arsip penerbitan e-surat sekaligus dengan konfirmasi keamanan.
+  3. **Perbaikan Tampilan Tanggal (`undefined` Fix & Auto-Healing)**:
+     - Normalisasi format tanggal pada fungsi `recordSuratToRegister`: menyelaraskan `tgl` dan `tglStr` secara otomatis.
+     - Auto-healing pada fungsi `renderBukuRegisterSurat` sehingga data tersimpan yang tanggalnya sempat `undefined` langsung tampil normal dengan tanggal yang benar.
+  4. **Tampilan Status Kosong Ramah Pengguna (Empty State)**:
+     - Ketika semua arsip dihapus, tabel menampilkan indikator ramah bertuliskan *"Belum Ada Riwayat Surat Terdaftar"* tanpa me-reset ulang ke data demo bawaan.
+  5. **Pembaruan Service Worker & Versi PWA**:
+     - Versi dinaikkan ke `rt-finsmart-cache-v2.9.48` pada `sw.js`, `index.html`, dan `app.js`.
+
+### 2. 🛡️ Sistem Kriptografi SHA-256 Anti-Pemalsuan & Buku Register e-Surat RT.001 (Update v2.9.47 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Menjawab kekhawatiran apakah QR Code surat pengantar bisa dipalsukan jika parameter URL diubah oleh pihak tidak bertanggung jawab.
   - Menerapkan pengamanan kriptografi tingkat tinggi (Tamper-Proof Digital Signature) dan Buku Register Arsip e-Surat Digital RT.001 agar surat **100% mustahil dipalsukan/dimanipulasi**.

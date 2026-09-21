@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.47">
+  <link rel="stylesheet" href="styles.css?v=2.9.48">
 </head>
 <body>
 
@@ -5333,9 +5333,12 @@
                 <p style="margin:0; font-size:0.8rem; color:#94a3b8;">Daftar resmi surat yang telah diterbitkan dengan sidik jari digital SHA-256</p>
               </div>
             </div>
-            <div style="display:flex; align-items:center; gap:8px;">
+            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
               <span class="badge-pill badge-emerald" id="badge-total-register-surat">0 Surat Tercatat</span>
               <span class="badge-pill badge-cyan" title="Sistem Kriptografi Aktif"><i class="fa-solid fa-shield-halved"></i> Anti-Pemalsuan SHA-256</span>
+              <button type="button" class="btn btn-outline-danger btn-sm" id="btn-clear-register-surat" onclick="clearAllSuratRegister()" style="padding:3px 10px; font-size:0.75rem; border-color:rgba(239,68,68,0.4); color:#fca5a5; background:rgba(239,68,68,0.12); border-radius:6px; cursor:pointer;" title="Bersihkan Seluruh Riwayat Arsip Surat">
+                <i class="fa-solid fa-trash-can"></i> Bersihkan Arsip
+              </button>
             </div>
           </div>
 
@@ -5349,7 +5352,7 @@
                   <th>Nama Pemohon / NIK</th>
                   <th>Keperluan / Maksud</th>
                   <th style="width:145px; text-align:center;">Validasi Kriptografi</th>
-                  <th style="width:110px; text-align:center;">Aksi</th>
+                  <th style="width:130px; text-align:center;">Aksi</th>
                 </tr>
               </thead>
               <tbody id="table-body-register-surat">
@@ -7432,6 +7435,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.47"></script>
+  <script src="app.js?v=2.9.48"></script>
 </body>
 </html>
