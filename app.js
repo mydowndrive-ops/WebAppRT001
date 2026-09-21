@@ -4311,8 +4311,14 @@ function navigateToView(viewId) {
     'pengaturan': { title: 'Pengaturan Sistem', sub: 'Konfigurasi Iuran, Split Anggaran & Cadangan Database' },
     'jimpitan': { title: 'Uang Jimpitan', sub: 'Perolehan & Pengeluaran Kas Ronda Malam Minggu' },
     'non-iuran': { title: 'Pemasukan NON iuran', sub: 'Pemasukan, Pengeluaran & Saldo Kas Non-Iuran (Donasi, Hibah, Sewa Fasum & Usaha RT)' },
-    'ronda-pengurus': { title: 'Jadwal Ronda', sub: 'Tata Kelola 8 Regu Ronda & Penarikan Jimpitan Warga RT.001' },
+    'ronda-pengurus': {
+      title: isCurrentWarga() ? 'Ronda Malam Minggu & Jimpitan' : 'Jadwal Ronda',
+      sub: isCurrentWarga() ? 'Jadwal Regu Ronda Pribadi, Roster 8 Regu & Penarikan Jimpitan Warga' : 'Tata Kelola 8 Regu Ronda & Penarikan Jimpitan Warga RT.001'
+    },
     'pengajuan-dana-admin': { title: 'Pengajuan Anggaran dari Warga', sub: 'Verifikasi, Persetujuan & Realisasi Pencairan Kas Fasilitas' },
+    'pengajuan-fasum': { title: 'Layanan Pengajuan Fasum RT', sub: 'Pengajuan Perbaikan Sarana Prasarana & Fasum Lingkungan RT.001' },
+    'surat-pengantar': { title: 'e-Surat Pengantar RT Mandiri', sub: 'Layanan Mandiri Cetak Surat Pengantar Ber-KOP RT.001 24/7' },
+    'aspirasi-warga': { title: 'Kotak Aspirasi & Masukan Warga', sub: 'Penyampaian Saran, Ide Kreatif & Masukan Warga Demi Kemajuan RT.001' },
     'pengurus-struktur': { title: 'Bagan & Struktur Pengurus RT', sub: 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027' },
     'aset-rt': { title: 'Inventaris & Aset RT.001', sub: 'Pencatatan Sarana Prasarana & Nilai Perolehan Aset Lingkungan Graha Asri' },
     'portal-warga': { title: 'Portal Mandiri Warga RT.001', sub: 'Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan' }
@@ -4335,13 +4341,17 @@ function navigateToView(viewId) {
   if (viewId === 'pengaturan') renderSettings();
   if (viewId === 'dashboard') renderDashboard();
   if (viewId === 'jimpitan') renderJimpitan();
-  if (viewId === 'ronda-pengurus' && typeof renderPengurusRondaPanel === 'function') {
-    renderPengurusRondaPanel(typeof currentPengurusRondaFilter !== 'undefined' ? currentPengurusRondaFilter : 'all');
+  if (viewId === 'ronda-pengurus') {
+    if (typeof renderPengurusRondaPanel === 'function') renderPengurusRondaPanel(typeof currentPengurusRondaFilter !== 'undefined' ? currentPengurusRondaFilter : 'all');
+    if (typeof renderPortalWarga === 'function') renderPortalWarga();
   }
   if (viewId === 'pengajuan-dana-admin') renderAdminFundRequests();
   if (viewId === 'pengurus-struktur') renderPengurusStruktur();
   if (viewId === 'aset-rt') renderAsetRt();
   if (viewId === 'portal-warga') renderPortalWarga();
+  if (viewId === 'pengajuan-fasum' || viewId === 'surat-pengantar' || viewId === 'aspirasi-warga') {
+    if (typeof renderPortalWarga === 'function') renderPortalWarga();
+  }
 
   // Update header buttons & RBAC saat berpindah tampilan
   try {
@@ -7982,7 +7992,7 @@ const B1_ALLOWED_TARGETS = [
 ];
 const B2_ALLOWED_TARGETS = ['pengurus-struktur', 'jimpitan', 'aset-rt'];
 const PENGURUS_ALLOWED_TARGETS = ['dashboard', 'pengurus-struktur', 'warga', 'ronda-pengurus', 'jimpitan', 'pengajuan-dana-admin', 'non-iuran', 'aset-rt'];
-const WARGA_ALLOWED_TARGETS = ['portal-warga', 'pengurus-struktur', 'ronda-pengurus', 'aset-rt', 'non-iuran'];
+const WARGA_ALLOWED_TARGETS = ['portal-warga', 'non-iuran', 'ronda-pengurus', 'pengajuan-fasum', 'surat-pengantar', 'aspirasi-warga', 'pengurus-struktur', 'aset-rt'];
 
 function applyRBAC() {
   const currentAcc = (state.adminAccounts || DEFAULT_ACCOUNTS).find(a => a.id === state.currentUser) || { accessLevel: state.currentUser === 'b2' ? 'B2' : (state.currentUser === 'pengurus' ? 'PENGURUS' : (state.currentUser === 'warga' ? 'WARGA' : 'B1')) };
@@ -8046,12 +8056,18 @@ function applyRBAC() {
           'aset-rt': 7
         };
         if (typeof pengurusOrder[target] !== 'undefined') el.style.order = pengurusOrder[target];
+
+        if (target === 'ronda-pengurus') {
+          const textSpan = el.querySelector('span:not(.counter-badge)');
+          if (textSpan) textSpan.textContent = 'Jadwal Ronda';
+          el.setAttribute('data-tooltip', 'Jadwal Ronda');
+        }
       } else {
         el.style.display = 'none';
         el.style.order = '';
       }
     } else if (isWarga) {
-      // Warga: Hanya Portal Warga, Non-Iuran, Aset RT, Struktur, dan Ronda
+      // Warga: 1. Portal Warga, 2. Pemasukan NON iuran, 3. Ronda Malam Minggu & Jimpitan, 4. Layanan Pengajuan Fasum RT, 5. e-Surat Pengantar RT Mandiri, 6. Kotak Aspirasi & Masukan Warga, 7. Pengurus RT, 8. Inventaris dan Aset RT
       if (WARGA_ALLOWED_TARGETS.includes(target)) {
         el.style.display = '';
         el.classList.remove('menu-item-locked');
@@ -8059,10 +8075,19 @@ function applyRBAC() {
           'portal-warga': 1,
           'non-iuran': 2,
           'ronda-pengurus': 3,
-          'pengurus-struktur': 4,
-          'aset-rt': 5
+          'pengajuan-fasum': 4,
+          'surat-pengantar': 5,
+          'aspirasi-warga': 6,
+          'pengurus-struktur': 7,
+          'aset-rt': 8
         };
         if (typeof wargaOrder[target] !== 'undefined') el.style.order = wargaOrder[target];
+
+        if (target === 'ronda-pengurus') {
+          const textSpan = el.querySelector('span:not(.counter-badge)');
+          if (textSpan) textSpan.textContent = 'Ronda Malam Minggu & Jimpitan';
+          el.setAttribute('data-tooltip', 'Ronda Malam Minggu & Jimpitan');
+        }
       } else {
         el.style.display = 'none';
         el.style.order = '';
@@ -8101,6 +8126,12 @@ function applyRBAC() {
   // Tombol Cadangkan Data: Sembunyikan untuk Warga
   const backupBtn = document.getElementById('btn-backup-data');
   if (backupBtn) backupBtn.style.display = isWarga ? 'none' : '';
+
+  // Kartu Ronda Khusus Warga Login: Tampilkan hanya jika peran Warga
+  const rondaPersonalCard = document.getElementById('ronda-warga-personal-card');
+  if (rondaPersonalCard) {
+    rondaPersonalCard.style.display = isWarga ? '' : 'none';
+  }
 
   // Tombol Atur Jadwal Ronda: Sembunyikan untuk Warga dan Admin 2 (B2)
   const rondaBtns = [

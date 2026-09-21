@@ -13012,10 +13012,10 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-secondary);
 }
 
-/* 2-Column Grid */
+/* 2-Column Grid (Kartu Iuran & Pemasukan Non Iuran Berdampingan Rapi) */
 .portal-warga-grid {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
   gap: 1.5rem;
 }
 

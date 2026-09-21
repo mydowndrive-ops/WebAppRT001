@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (12:47 WIB)  
-**Versi Rilis Aktif:** `v2.9.39`  
+**Terakhir Diperbarui:** 21 September 2026 (13:30 WIB)  
+**Versi Rilis Aktif:** `v2.9.40`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,39 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🛡️ Penyembunyian Tombol "Bayar Cepat" & "Data Demografi" pada Tampilan Jadwal Ronda (Update v2.9.39 - 21 Sept 2026)
+### 1. 🧹 Pembersihan Tampilan Portal Warga & Pemindahan Layanan ke Sidebar (Update v2.9.40 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Tampilan Portal Warga dibuat bersih, elegan, dan tidak membingungkan warga.
+  - Mengubah kalimat **"Dashboard Eksekutif Keuangan RT"** menjadi **"Keuangan dan KAS RT"**.
+  - Menghilangkan 4 kartu layanan dari halaman Portal Warga:
+    1. Ronda Malam Minggu & Jimpitan
+    2. Layanan Pengajuan Fasum RT
+    3. e-Surat Pengantar RT Mandiri
+    4. Kotak Aspirasi & Masukan Warga
+  - Memindahkan menu 1~4 tersebut ke dalam bagian **Sidebar Portal Warga** sebagai modul menu tersendiri.
+- **Hasil Implementasi & Arsitektur Baru**:
+  1. **Penyempurnaan Halaman Portal Warga (`#view-portal-warga`)**:
+     - Judul seksi keuangan diubah resmi menjadi: `Keuangan dan KAS RT`.
+     - 4 kartu layanan dipisahkan keluar dari grid portal warga sehingga halaman menjadi sangat ringkas, terfokus pada data personal warga, transparansi kas 6 pos, kartu iuran wajib 2026, dan penerimaan tahunan.
+     - Kartu Iuran Wajib Anda dan Kartu Transparansi Pemasukan NON Iuran RT kini berdampingan rapi secara proporsional.
+  2. **Pemindahan 4 Layanan ke Sidebar Warga**:
+     - Menu 1: **Ronda Malam Minggu & Jimpitan** (`ronda-pengurus`) &bull; Menampilkan jadwal lengkap 8 regu dengan kartu personal jadwal rumah warga & pengingat jimpitan di posisi teratas.
+     - Menu 2: **Layanan Pengajuan Fasum RT** (`pengajuan-fasum`) &bull; View tersendiri dengan alur pengajuan 4 langkah, tombol ajukan fasum baru, dan daftar riwayat status permohonan warga.
+     - Menu 3: **e-Surat Pengantar RT Mandiri** (`surat-pengantar`) &bull; View tersendiri dengan 6 katalog jenis surat (KTP, KK, Domisili, SKCK, Usaha, dsb.), panduan legalitas KOP RT, dan tombol buat surat instan.
+     - Menu 4: **Kotak Aspirasi & Masukan Warga** (`aspirasi-warga`) &bull; View tersendiri dengan 3 pilar aspirasi (Keamanan, Kebersihan, Inovasi Fasilitas), tombol kirim aspirasi, dan kontak langsung WhatsApp Humas RT.
+  3. **Penataan Urutan Sidebar Warga (`wargaOrder`)**:
+     1. Portal Warga (`order: 1`)
+     2. Pemasukan NON iuran (`order: 2`)
+     3. Ronda Malam Minggu & Jimpitan (`order: 3`)
+     4. Layanan Pengajuan Fasum RT (`order: 4`)
+     5. e-Surat Pengantar RT Mandiri (`order: 5`)
+     6. Kotak Aspirasi & Masukan Warga (`order: 6`)
+     7. Pengurus RT (`order: 7`)
+     8. Inventaris dan Aset RT (`order: 8`)
+  4. **Pembaruan Service Worker & Versi Aset**:
+     - Versi cache Service Worker diperbarui ke `rt-finsmart-cache-v2.9.40`.
+
+### 2. 🛡️ Penyembunyian Tombol "Bayar Cepat" & "Data Demografi" pada Tampilan Jadwal Ronda (Update v2.9.39 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Menghilangkan tombol aksi top-header **"⚡ Bayar Cepat"** dan **"👥 Data Demografi"** saat pengguna berada di tampilan modul **Jadwal Ronda** (`#ronda-pengurus`).
 - **Hasil Implementasi & Perlindungan Ganda (CSS + JS)**:

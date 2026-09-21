@@ -29,7 +29,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.39">
+  <link rel="stylesheet" href="styles.css?v=2.9.40">
 </head>
 <body>
 
@@ -2405,6 +2405,20 @@
           <span>Portal Warga</span>
         </a>
 
+        <!-- Menu Layanan Mandiri Khusus Warga -->
+        <a href="#pengajuan-fasum" class="menu-item" data-target="pengajuan-fasum" data-role-req="WARGA" data-tooltip="Layanan Pengajuan Fasum RT">
+          <i class="fa-solid fa-hand-holding-dollar text-emerald"></i>
+          <span>Layanan Pengajuan Fasum RT</span>
+        </a>
+        <a href="#surat-pengantar" class="menu-item" data-target="surat-pengantar" data-role-req="WARGA" data-tooltip="e-Surat Pengantar RT Mandiri">
+          <i class="fa-solid fa-file-signature text-purple"></i>
+          <span>e-Surat Pengantar RT Mandiri</span>
+        </a>
+        <a href="#aspirasi-warga" class="menu-item" data-target="aspirasi-warga" data-role-req="WARGA" data-tooltip="Kotak Aspirasi &amp; Masukan Warga">
+          <i class="fa-solid fa-comments text-cyan"></i>
+          <span>Kotak Aspirasi &amp; Masukan Warga</span>
+        </a>
+
         <!-- 1. Dashboard Eksekutif -->
         <a href="#dashboard" class="menu-item active" data-target="dashboard" data-role-req="B1" data-tooltip="Dashboard Eksekutif">
           <i class="fa-solid fa-chart-pie"></i>
@@ -4234,6 +4248,27 @@
     <!-- ==================== VIEW: JADWAL & REGU RONDA MALAM (PENGURUS) ==================== -->
     <section class="view-section" id="view-ronda-pengurus">
       <div class="glass-panel p-4 mb-4">
+        <!-- Card Ronda Khusus Warga Login (Sabtu Malam & Jimpitan) -->
+        <div class="glass-panel p-3 mb-4" id="ronda-warga-personal-card" style="display:none; border: 1px solid rgba(6, 182, 212, 0.35); background: rgba(8, 20, 29, 0.75);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-moon text-cyan" style="font-size: 1.2rem;"></i>
+              <h3 style="margin: 0; font-size: 1.05rem; color: #fff; font-family: var(--font-heading);">Ronda Malam Minggu &amp; Jimpitan Rumah Anda</h3>
+            </div>
+            <span class="badge-pill badge-gold">Sabtu Malam &bull; 21.00 - 04.00 WIB</span>
+          </div>
+          <div class="pw-ronda-info-box" id="pw-ronda-info-box">
+            <!-- Dynamically populated by renderPortalWarga() -->
+          </div>
+          <div class="pw-jimpitan-reminder mt-3">
+            <i class="fa-solid fa-coins text-gold" style="font-size: 1.4rem;"></i>
+            <div>
+              <strong style="color: #fff; font-size: 0.88rem;">Uang Jimpitan Ronda Malam Minggu</strong>
+              <p style="margin: 0; font-size: 0.78rem; color: #cbd5e1;">Mohon sediakan uang jimpitan koin/uang pas di kotak depan rumah setiap Sabtu malam untuk diambil petugas ronda saat keliling.</p>
+            </div>
+          </div>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
           <div>
             <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
@@ -4555,7 +4590,7 @@
             <div>
               <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
                 <h2 style="font-size: 1.35rem; margin: 0; font-family: var(--font-heading); color: #ffffff; display: flex; align-items: center; gap: 8px;">
-                  <i class="fa-solid fa-chart-pie text-gold"></i> Dashboard Eksekutif Keuangan RT
+                  <i class="fa-solid fa-chart-pie text-gold"></i> Keuangan dan KAS RT
                 </h2>
                 <span class="badge-pill badge-cyan" style="font-size: 0.75rem;"><i class="fa-solid fa-eye"></i> Mode Pantau Warga (Read Only)</span>
                 <span class="badge-status-live" style="font-size: 0.7rem;"><span class="pulse-dot"></span> LIVE SALDO</span>
@@ -4653,7 +4688,7 @@
           </div>
         </div>
 
-        <!-- 2-Column Grid: Left (Iuran Wajib & Kwitansi) & Right (Ronda & Layanan Pengajuan) -->
+        <!-- 2-Column Grid: Left (Iuran Wajib & Kwitansi) & Right (Transparansi Pemasukan NON Iuran RT) -->
         <div class="portal-warga-grid">
           <!-- Col 1: Status Iuran Wajib Warga Tahun Berjalan -->
           <div class="glass-panel pw-card">
@@ -4688,135 +4723,54 @@
                 </button>
               </div>
             </div>
-
-            <!-- Card: Transparansi Pemasukkan NON Iuran RT (Read/View Only Warga) -->
-            <div class="pw-non-dues-card" style="margin-top: 1.5rem; background: rgba(8, 20, 29, 0.65); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: var(--radius-lg); padding: 1.25rem;">
-              <div class="pw-card-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-                <div class="pw-card-title" style="display:flex; align-items:center; gap:8px;">
-                  <i class="fa-solid fa-hand-holding-dollar text-cyan" style="font-size:1.2rem;"></i>
-                  <h3 style="font-size:1.05rem; margin:0; font-family:var(--font-heading);">Pemasukkan NON Iuran RT</h3>
-                </div>
-                <span class="badge-pill badge-cyan"><i class="fa-solid fa-eye"></i> Mode Pantau Warga</span>
-              </div>
-              <p class="pw-card-desc" style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;">
-                Transparansi kas non-iuran RT (Donasi sukarela warga, hibah pemerintah, sewa fasum &amp; peralatan, sponsor, dan daur ulang).
-              </p>
-
-              <div class="jimpitan-stats-grid" style="grid-template-columns: repeat(3, 1fr); gap:0.75rem; margin-bottom: 1.25rem;">
-                <div class="jimpitan-stat-card" style="padding:0.75rem; border-radius:10px;">
-                  <div>
-                    <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">TOTAL PEMASUKKAN</p>
-                    <h4 id="pw-non-dues-in" style="font-size:1rem; font-family:var(--font-heading); color:var(--emerald-400); margin:0;">Rp 0</h4>
-                  </div>
-                </div>
-
-                <div class="jimpitan-stat-card" style="padding:0.75rem; border-radius:10px;">
-                  <div>
-                    <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">TOTAL PENGELUARAN</p>
-                    <h4 id="pw-non-dues-out" style="font-size:1rem; font-family:var(--font-heading); color:var(--rose-400); margin:0;">Rp 0</h4>
-                  </div>
-                </div>
-
-                <div class="jimpitan-stat-card" style="padding:0.75rem; border-radius:10px; border-color:rgba(245,158,11,0.35);">
-                  <div>
-                    <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">SALDO BERSIH KAS</p>
-                    <h4 id="pw-non-dues-saldo" style="font-size:1rem; font-family:var(--font-heading); color:var(--gold-400); margin:0;">Rp 0</h4>
-                  </div>
-                </div>
-              </div>
-
-              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.08);">
-                <small id="pw-non-dues-last-tx" style="color:var(--text-muted); font-size:0.78rem;">
-                  <i class="fa-regular fa-clock text-gold"></i> Memuat mutasi terbaru...
-                </small>
-                <div style="display:flex; gap:8px;">
-                  <button type="button" class="btn btn-outline-cyan btn-xs" onclick="navigateToView('non-iuran')">
-                    <i class="fa-solid fa-eye"></i> Rincian Kas
-                  </button>
-                  <button type="button" class="btn btn-outline-gold btn-xs" onclick="window.openNonDuesFullReportModal(event)">
-                    <i class="fa-solid fa-print"></i> Laporan Lengkap
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
 
-          <!-- Col 2: Jadwal Ronda & Layanan Fasilitas -->
-          <div class="pw-col-stack">
-            <!-- Card Ronda -->
-            <div class="glass-panel pw-card">
-              <div class="pw-card-header">
-                <div class="pw-card-title">
-                  <i class="fa-solid fa-moon text-cyan"></i>
-                  <h3>Ronda Malam Minggu &amp; Jimpitan</h3>
-                </div>
-                <span class="badge-pill badge-gold">Sabtu Malam</span>
+          <!-- Col 2: Transparansi Pemasukkan NON Iuran RT (Read/View Only Warga) -->
+          <div class="pw-non-dues-card glass-panel pw-card" style="margin-top: 0; background: rgba(8, 20, 29, 0.65); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: var(--radius-lg); padding: 1.35rem 1.5rem;">
+            <div class="pw-card-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+              <div class="pw-card-title" style="display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-hand-holding-dollar text-cyan" style="font-size:1.2rem;"></i>
+                <h3 style="font-size:1.05rem; margin:0; font-family:var(--font-heading);">Pemasukkan NON Iuran RT</h3>
               </div>
-              <div class="pw-ronda-info-box" id="pw-ronda-info-box">
-                <!-- Dynamically populated -->
-              </div>
-              <div class="pw-jimpitan-reminder">
-                <i class="fa-solid fa-coins text-gold" style="font-size:1.4rem;"></i>
+              <span class="badge-pill badge-cyan"><i class="fa-solid fa-eye"></i> Mode Pantau Warga</span>
+            </div>
+            <p class="pw-card-desc" style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;">
+              Transparansi kas non-iuran RT (Donasi sukarela warga, hibah pemerintah, sewa fasum &amp; peralatan, sponsor, dan daur ulang).
+            </p>
+
+            <div class="jimpitan-stats-grid" style="grid-template-columns: repeat(3, 1fr); gap:0.75rem; margin-bottom: 1.25rem;">
+              <div class="jimpitan-stat-card" style="padding:0.75rem; border-radius:10px;">
                 <div>
-                  <strong style="color:#fff; font-size:0.88rem;">Uang Jimpitan Ronda Malam Minggu</strong>
-                  <p style="margin:0; font-size:0.78rem; color:#cbd5e1;">Mohon sediakan uang jimpitan koin/uang pas di kotak depan rumah setiap Sabtu malam untuk diambil petugas ronda.</p>
+                  <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">TOTAL PEMASUKKAN</p>
+                  <h4 id="pw-non-dues-in" style="font-size:1rem; font-family:var(--font-heading); color:var(--emerald-400); margin:0;">Rp 0</h4>
+                </div>
+              </div>
+
+              <div class="jimpitan-stat-card" style="padding:0.75rem; border-radius:10px;">
+                <div>
+                  <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">TOTAL PENGELUARAN</p>
+                  <h4 id="pw-non-dues-out" style="font-size:1rem; font-family:var(--font-heading); color:var(--rose-400); margin:0;">Rp 0</h4>
+                </div>
+              </div>
+
+              <div class="jimpitan-stat-card" style="padding:0.75rem; border-radius:10px; border-color:rgba(245,158,11,0.35);">
+                <div>
+                  <p style="font-size:0.68rem; color:var(--text-muted); margin-bottom:2px; font-weight:600;">SALDO BERSIH KAS</p>
+                  <h4 id="pw-non-dues-saldo" style="font-size:1rem; font-family:var(--font-heading); color:var(--gold-400); margin:0;">Rp 0</h4>
                 </div>
               </div>
             </div>
 
-            <!-- Card Layanan Fasilitas & Bantuan -->
-            <div class="glass-panel pw-card">
-              <div class="pw-card-header">
-                <div class="pw-card-title">
-                  <i class="fa-solid fa-hand-holding-dollar text-emerald"></i>
-                  <h3>Layanan Pengajuan Fasum RT</h3>
-                </div>
-                <button type="button" class="btn btn-sm btn-emerald" id="btn-pw-open-pengajuan">
-                  <i class="fa-solid fa-plus"></i> Ajukan Baru
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.08);">
+              <small id="pw-non-dues-last-tx" style="color:var(--text-muted); font-size:0.78rem;">
+                <i class="fa-regular fa-clock text-gold"></i> Memuat mutasi terbaru...
+              </small>
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="btn btn-outline-cyan btn-xs" onclick="navigateToView('non-iuran')">
+                  <i class="fa-solid fa-eye"></i> Rincian Kas
                 </button>
-              </div>
-              <p class="pw-card-desc">
-                Lampu jalan padam, got mampet, atau kerusakan fasilitas umum? Ajukan perbaikan di sini untuk segera ditindaklanjuti pengurus RT.
-              </p>
-              <div class="pw-my-requests-list" id="pw-my-requests-list">
-                <!-- List of requests by this resident -->
-              </div>
-            </div>
-
-            <!-- Card e-Surat Pengantar RT Mandiri -->
-            <div class="glass-panel pw-card">
-              <div class="pw-card-header">
-                <div class="pw-card-title">
-                  <i class="fa-solid fa-file-signature text-purple"></i>
-                  <h3>e-Surat Pengantar RT Mandiri</h3>
-                </div>
-                <span class="badge-pill badge-purple">Digital 24/7</span>
-              </div>
-              <p class="pw-card-desc">
-                Butuh surat pengantar RT untuk KTP baru/perpanjangan, KK, Keterangan Domisili, SKCK, atau Usaha? Buat surat pengantar resmi ber-KOP RT.001 secara mandiri &amp; instan.
-              </p>
-              <div class="pw-surat-actions">
-                <button type="button" class="btn btn-outline-purple w-100" id="btn-pw-open-surat">
-                  <i class="fa-solid fa-pen-nib"></i> Ajukan e-Surat Pengantar
-                </button>
-              </div>
-            </div>
-
-            <!-- Card Kotak Aspirasi & Laporan Warga -->
-            <div class="glass-panel pw-card">
-              <div class="pw-card-header">
-                <div class="pw-card-title">
-                  <i class="fa-solid fa-comments text-cyan"></i>
-                  <h3>Kotak Aspirasi &amp; Masukan Warga</h3>
-                </div>
-                <span class="badge-pill badge-cyan">Langsung ke Pengurus</span>
-              </div>
-              <p class="pw-card-desc">
-                Sampaikan saran, masukan perbaikan lingkungan, pertanyaan, atau apresiasi Anda langsung kepada jajaran pengurus RT.001 secara tertib dan transparan.
-              </p>
-              <div class="pw-aspirasi-actions">
-                <button type="button" class="btn btn-outline-cyan w-100" id="btn-pw-open-aspirasi">
-                  <i class="fa-solid fa-paper-plane"></i> Tulis Aspirasi &amp; Masukan
+                <button type="button" class="btn btn-outline-gold btn-xs" onclick="window.openNonDuesFullReportModal(event)">
+                  <i class="fa-solid fa-print"></i> Laporan Lengkap
                 </button>
               </div>
             </div>
@@ -4937,6 +4891,226 @@
               <i class="fa-solid fa-shield-halved text-emerald"></i>
               <span>Data tersinkronisasi otomatis secara realtime dari pembukuan kas bendahara terverifikasi.</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: LAYANAN PENGAJUAN FASUM RT (KHUSUS WARGA) ==================== -->
+      <section class="view-section" id="view-pengajuan-fasum">
+        <div class="view-header-banner glass-panel mb-4">
+          <div class="banner-text">
+            <div class="banner-pre-badge mb-1">
+              <span class="badge-pill badge-emerald"><i class="fa-solid fa-circle-check"></i> Layanan Warga Mandiri</span>
+            </div>
+            <h2 style="display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-hand-holding-dollar text-emerald"></i> Layanan Pengajuan Fasum RT</h2>
+            <p>Lampu jalan padam, got mampet, atau kerusakan fasilitas umum? Ajukan perbaikan di sini untuk segera ditindaklanjuti pengurus RT.</p>
+          </div>
+          <div class="banner-actions">
+            <button type="button" class="btn btn-emerald" id="btn-pw-open-pengajuan">
+              <i class="fa-solid fa-plus"></i> Ajukan Fasum Baru
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Cards Alur Pelayanan Fasum -->
+        <div class="pos-cards-grid mb-4" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+          <div class="glass-panel p-3">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--emerald-400); margin-bottom:4px;">LANGKAH 1</div>
+            <h4 style="margin:0 0 4px; font-size:0.95rem; color:#fff;"><i class="fa-solid fa-pen-to-square text-emerald"></i> Kirim Formulir</h4>
+            <p style="margin:0; font-size:0.78rem; color:var(--text-muted);">Sampaikan detail lokasi &amp; kebutuhan perbaikan fasum melalui tombol ajukan baru.</p>
+          </div>
+          <div class="glass-panel p-3">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--cyan-400); margin-bottom:4px;">LANGKAH 2</div>
+            <h4 style="margin:0 0 4px; font-size:0.95rem; color:#fff;"><i class="fa-solid fa-clipboard-check text-cyan"></i> Tinjauan Pengurus</h4>
+            <p style="margin:0; font-size:0.78rem; color:var(--text-muted);">Pengurus RT meninjau lokasi fisik &amp; ketersediaan anggaran kas RT.</p>
+          </div>
+          <div class="glass-panel p-3">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--gold-400); margin-bottom:4px;">LANGKAH 3</div>
+            <h4 style="margin:0 0 4px; font-size:0.95rem; color:#fff;"><i class="fa-solid fa-screwdriver-wrench text-gold"></i> Pelaksanaan Kerja</h4>
+            <p style="margin:0; font-size:0.78rem; color:var(--text-muted);">Pekerjaan fisik atau pengadaan fasilitas dilakukan oleh tim pelaksana RT.</p>
+          </div>
+          <div class="glass-panel p-3">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--purple-400); margin-bottom:4px;">LANGKAH 4</div>
+            <h4 style="margin:0 0 4px; font-size:0.95rem; color:#fff;"><i class="fa-solid fa-circle-check text-purple"></i> Selesai &amp; Arsip</h4>
+            <p style="margin:0; font-size:0.78rem; color:var(--text-muted);">Status pengajuan selesai, dicatat dalam pembukuan kas &amp; inventaris RT.</p>
+          </div>
+        </div>
+
+        <!-- Riwayat Pengajuan Fasum Warga -->
+        <div class="glass-panel p-4">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:8px;">
+            <h3 style="margin:0; font-size:1.1rem; color:#fff; display:flex; align-items:center; gap:8px;">
+              <i class="fa-solid fa-clock-rotate-left text-emerald"></i> Riwayat &amp; Status Pengajuan Fasum Anda
+            </h3>
+            <span class="badge-pill badge-emerald"><i class="fa-solid fa-shield-halved"></i> Data Terverifikasi</span>
+          </div>
+          <div class="pw-my-requests-list" id="pw-my-requests-list">
+            <!-- List of requests dynamically populated -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: e-SURAT PENGANTAR RT MANDIRI (KHUSUS WARGA) ==================== -->
+      <section class="view-section" id="view-surat-pengantar">
+        <div class="view-header-banner glass-panel mb-4">
+          <div class="banner-text">
+            <div class="banner-pre-badge mb-1">
+              <span class="badge-pill badge-purple"><i class="fa-solid fa-bolt"></i> Digital 24/7 Mandiri</span>
+            </div>
+            <h2 style="display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-file-signature text-purple"></i> e-Surat Pengantar RT Mandiri</h2>
+            <p>Butuh surat pengantar RT untuk KTP baru/perpanjangan, KK, Keterangan Domisili, SKCK, atau Usaha? Buat surat pengantar resmi ber-KOP RT.001 secara mandiri &amp; instan.</p>
+          </div>
+          <div class="banner-actions">
+            <button type="button" class="btn btn-purple" id="btn-pw-open-surat">
+              <i class="fa-solid fa-pen-nib"></i> Ajukan e-Surat Pengantar
+            </button>
+          </div>
+        </div>
+
+        <!-- 6 Layanan Surat Mandiri Tersedia -->
+        <div class="pos-cards-grid mb-4" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+          <div class="glass-panel p-3">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:rgba(168,85,247,0.2); display:flex; align-items:center; justify-content:center; color:#c084fc;">
+                <i class="fa-solid fa-id-card"></i>
+              </div>
+              <h4 style="margin:0; font-size:0.95rem; color:#fff;">Pengantar KTP &amp; KK</h4>
+            </div>
+            <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Pengurusan e-KTP baru, perpanjangan, penggantian hilang/rusak, serta penerbitan Kartu Keluarga baru di Kantor Kelurahan/Desa.</p>
+          </div>
+
+          <div class="glass-panel p-3">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:rgba(6,182,212,0.2); display:flex; align-items:center; justify-content:center; color:#22d3ee;">
+                <i class="fa-solid fa-house-chimney-window"></i>
+              </div>
+              <h4 style="margin:0; font-size:0.95rem; color:#fff;">Keterangan Domisili</h4>
+            </div>
+            <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Surat resmi bukti kependudukan aktif tinggal di wilayah lingkungan RT.001 / RW.013 Perumahan Graha Asri.</p>
+          </div>
+
+          <div class="glass-panel p-3">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:rgba(16,185,129,0.2); display:flex; align-items:center; justify-content:center; color:#34d399;">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <h4 style="margin:0; font-size:0.95rem; color:#fff;">Pengantar SKCK Polsek</h4>
+            </div>
+            <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Syarat administrasi pengantar Surat Keterangan Catatan Kepolisian (SKCK) untuk keperluan melamar kerja &amp; kedinasan.</p>
+          </div>
+
+          <div class="glass-panel p-3">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:rgba(245,158,11,0.2); display:flex; align-items:center; justify-content:center; color:#fbbf24;">
+                <i class="fa-solid fa-shop"></i>
+              </div>
+              <h4 style="margin:0; font-size:0.95rem; color:#fff;">Keterangan Izin Usaha</h4>
+            </div>
+            <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Surat keterangan domisili usaha rumahan/UMKM warga RT.001 untuk kelengkapan izin berusaha atau perbankan.</p>
+          </div>
+
+          <div class="glass-panel p-3">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:rgba(244,63,94,0.2); display:flex; align-items:center; justify-content:center; color:#fb7185;">
+                <i class="fa-solid fa-hands-holding-child"></i>
+              </div>
+              <h4 style="margin:0; font-size:0.95rem; color:#fff;">Keterangan Belum Menikah / Nikah</h4>
+            </div>
+            <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Pengantar administrasi KUA, pendaftaran sekolah anak, atau keterangan status pernikahan warga.</p>
+          </div>
+
+          <div class="glass-panel p-3">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:rgba(59,130,246,0.2); display:flex; align-items:center; justify-content:center; color:#60a5fa;">
+                <i class="fa-solid fa-file-contract"></i>
+              </div>
+              <h4 style="margin:0; font-size:0.95rem; color:#fff;">Keterangan Lainnya</h4>
+            </div>
+            <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Surat pengantar keperluan umum seperti instalasi listrik PLN/PDAM, klaim asuransi/BPJS, bank, atau yayasan.</p>
+          </div>
+        </div>
+
+        <!-- Panduan & Legalitas Surat -->
+        <div class="glass-panel p-4">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.75rem;">
+            <i class="fa-solid fa-circle-info text-cyan" style="font-size:1.2rem;"></i>
+            <h3 style="margin:0; font-size:1.05rem; color:#fff;">Petunjuk Penggunaan &amp; Validasi Surat</h3>
+          </div>
+          <p style="font-size:0.83rem; color:var(--text-muted); line-height:1.6; margin-bottom:1rem;">
+            Seluruh surat yang dibuat melalui e-Surat Pengantar RT Mandiri dilengkapi dengan KOP resmi RT.001 / RW.013 Perumahan Graha Asri, penomoran surat otomatis, dan tanda tangan resmi. Anda dapat langsung mengunduh/mencetak formulir atau meneruskannya ke kontak WhatsApp Ketua/Sekretaris RT untuk pengesahan tanda tangan fisik jika diperlukan oleh instansi tujuan.
+          </p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline-purple" onclick="document.getElementById('btn-pw-open-surat')?.click();">
+              <i class="fa-solid fa-print"></i> Buka Formulir Pembuatan Surat
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW: KOTAK ASPIRASI & MASUKAN WARGA (KHUSUS WARGA) ==================== -->
+      <section class="view-section" id="view-aspirasi-warga">
+        <div class="view-header-banner glass-panel mb-4">
+          <div class="banner-text">
+            <div class="banner-pre-badge mb-1">
+              <span class="badge-pill badge-cyan"><i class="fa-solid fa-bullhorn"></i> Suara &amp; Partisipasi Warga</span>
+            </div>
+            <h2 style="display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-comments text-cyan"></i> Kotak Aspirasi &amp; Masukan Warga</h2>
+            <p>Sampaikan saran, masukan perbaikan lingkungan, pertanyaan, atau apresiasi Anda langsung kepada jajaran pengurus RT.001 secara tertib dan transparan.</p>
+          </div>
+          <div class="banner-actions">
+            <button type="button" class="btn btn-cyan" id="btn-pw-open-aspirasi">
+              <i class="fa-solid fa-paper-plane"></i> Tulis Aspirasi &amp; Masukan
+            </button>
+          </div>
+        </div>
+
+        <!-- 3 Pilar Penyaluran Aspirasi -->
+        <div class="pos-cards-grid mb-4" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+          <div class="glass-panel p-3">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:rgba(6,182,212,0.2); display:flex; align-items:center; justify-content:center; color:#22d3ee;">
+                <i class="fa-solid fa-shield-cat"></i>
+              </div>
+              <h4 style="margin:0; font-size:0.95rem; color:#fff;">Keamanan &amp; Ketertiban</h4>
+            </div>
+            <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Masukan terkait jadwal ronda, portal jalan, tamu wajib lapor, lampu penerangan jalan umum, dan ketertiban lingkungan.</p>
+          </div>
+
+          <div class="glass-panel p-3">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:rgba(16,185,129,0.2); display:flex; align-items:center; justify-content:center; color:#34d399;">
+                <i class="fa-solid fa-tree"></i>
+              </div>
+              <h4 style="margin:0; font-size:0.95rem; color:#fff;">Kebersihan &amp; Lingkungan</h4>
+            </div>
+            <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Saran jadwal pengangkutan sampah, kerja bakti gotong royong, pembersihan saluran drainase, dan fogging nyamuk.</p>
+          </div>
+
+          <div class="glass-panel p-3">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:rgba(245,158,11,0.2); display:flex; align-items:center; justify-content:center; color:#fbbf24;">
+                <i class="fa-solid fa-lightbulb"></i>
+              </div>
+              <h4 style="margin:0; font-size:0.95rem; color:#fff;">Fasilitas &amp; Inovasi RT</h4>
+            </div>
+            <p style="margin:0; font-size:0.8rem; color:var(--text-muted);">Ide kreatif sarana olahraga, perbaikan balai warga, kegiatan anak/remaja, serta perbaikan sistem keuangan digital RT.</p>
+          </div>
+        </div>
+
+        <!-- Kanal Langsung Humas RT -->
+        <div class="glass-panel p-4">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h3 style="margin:0 0 4px; font-size:1.05rem; color:#fff; display:flex; align-items:center; gap:8px;">
+                <i class="fa-brands fa-whatsapp text-emerald"></i> Kontak WhatsApp Humas RT.001
+              </h3>
+              <p style="margin:0; font-size:0.82rem; color:var(--text-muted);">
+                Untuk hal darurat atau komunikasi langsung yang membutuhkan respon cepat, Anda dapat menghubungi Seksi Humas &amp; Komunikasi Warga.
+              </p>
+            </div>
+            <a href="https://wa.me/?text=Halo%20Pengurus%20RT.001%2C%20saya%20warga%20ingin%20menyampaikan%20masukan%3A" target="_blank" rel="noopener" class="btn btn-emerald">
+              <i class="fa-brands fa-whatsapp"></i> Chat WhatsApp Humas
+            </a>
           </div>
         </div>
       </section>
@@ -6795,6 +6969,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.39"></script>
+  <script src="app.js?v=2.9.40"></script>
 </body>
 </html>
