@@ -4342,6 +4342,13 @@ function navigateToView(viewId) {
   if (viewId === 'pengurus-struktur') renderPengurusStruktur();
   if (viewId === 'aset-rt') renderAsetRt();
   if (viewId === 'portal-warga') renderPortalWarga();
+
+  // Update header buttons & RBAC saat berpindah tampilan
+  try {
+    applyRBAC();
+  } catch (err) {
+    console.warn('applyRBAC in navigateToView:', err);
+  }
 }
 
 function setupModalEventListeners() {
@@ -8078,13 +8085,16 @@ function applyRBAC() {
     }
   }
 
-  // Quick-pay button: sembunyikan untuk non-Admin 1
-  const qpBtn = document.getElementById('btn-quick-pay');
-  if (qpBtn) qpBtn.style.display = isB1 ? '' : 'none';
+  const currentViewId = activeSection ? activeSection.id.replace('view-', '') : '';
+  const isRondaView = currentViewId === 'ronda-pengurus';
 
-  // Demografi edit buttons: sembunyikan untuk non-Admin 1 (hanya Admin 1 yang dapat mengubah demografi)
+  // Quick-pay button: sembunyikan untuk non-Admin 1 atau saat berada di tampilan Jadwal Ronda
+  const qpBtn = document.getElementById('btn-quick-pay');
+  if (qpBtn) qpBtn.style.display = (isB1 && !isWarga && !isRondaView) ? '' : 'none';
+
+  // Demografi edit buttons: sembunyikan untuk non-Admin 1 atau saat berada di tampilan Jadwal Ronda
   const demoTopBtn = document.getElementById('btn-top-open-demografi');
-  if (demoTopBtn) demoTopBtn.style.display = isB1 ? '' : 'none';
+  if (demoTopBtn) demoTopBtn.style.display = (isB1 && !isWarga && !isRondaView) ? '' : 'none';
   const demoWargaBtn = document.getElementById('btn-open-demografi-modal-admin');
   if (demoWargaBtn) demoWargaBtn.style.display = isB1 ? '' : 'none';
 

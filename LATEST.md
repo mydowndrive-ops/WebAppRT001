@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (12:38 WIB)  
-**Versi Rilis Aktif:** `v2.9.38`  
+**Terakhir Diperbarui:** 21 September 2026 (12:47 WIB)  
+**Versi Rilis Aktif:** `v2.9.39`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,21 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🧭 Penataan Ulang Urutan & Penamaan Menu Sidebar Dashboard Warga (Update v2.9.38 - 21 Sept 2026)
+### 1. 🛡️ Penyembunyian Tombol "Bayar Cepat" & "Data Demografi" pada Tampilan Jadwal Ronda (Update v2.9.39 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Menghilangkan tombol aksi top-header **"⚡ Bayar Cepat"** dan **"👥 Data Demografi"** saat pengguna berada di tampilan modul **Jadwal Ronda** (`#ronda-pengurus`).
+- **Hasil Implementasi & Perlindungan Ganda (CSS + JS)**:
+  1. **CSS Selector Rules (`styles.css`)**:
+     - Menambahkan aturan otomatis:
+       `body:has(#view-ronda-pengurus.active) #btn-quick-pay, body:has(#view-ronda-pengurus.active) #btn-top-open-demografi { display: none !important; }`
+       sehingga saat tampilan `#view-ronda-pengurus` berstatus aktif, kedua tombol tersebut langsung disembunyikan seketika.
+  2. **JavaScript Dynamic State (`app.js`)**:
+     - Pada fungsi `applyRBAC()`, ditambahkan pengecekan `isRondaView`. Tombol `btn-quick-pay` dan `btn-top-open-demografi` dipastikan `display = 'none'` saat `isRondaView` aktif atau saat diakses oleh peran Warga.
+     - Pada fungsi `navigateToView(viewId)`, dipanggil `applyRBAC()` secara dinamis setiap kali terjadi perpindahan halaman/modul.
+  3. **Service Worker & Aset**:
+     - Cache Service Worker di-update ke `rt-finsmart-cache-v2.9.39`.
+
+### 2. 🧭 Penataan Ulang Urutan & Penamaan Menu Sidebar Dashboard Warga (Update v2.9.38 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Mengatur ulang susunan posisi menu sidebar warga serta menyesuaikan label menu agar lebih ringkas, natural, dan mudah diakses.
 - **Hasil Penataan Menu Sidebar Warga**:

@@ -15336,3 +15336,13 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1rem !important;
   }
 }
+
+/* Sembunyikan tombol Bayar Cepat & Data Demografi saat berada di tampilan Jadwal Ronda */
+body:has(#view-ronda-pengurus.active) #btn-quick-pay,
+body:has(#view-ronda-pengurus.active) #btn-top-open-demografi,
+.app-container:has(#view-ronda-pengurus.active) #btn-quick-pay,
+.app-container:has(#view-ronda-pengurus.active) #btn-top-open-demografi,
+main:has(#view-ronda-pengurus.active) #btn-quick-pay,
+main:has(#view-ronda-pengurus.active) #btn-top-open-demografi {
+  display: none !important;
+}
