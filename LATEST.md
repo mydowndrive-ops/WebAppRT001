@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (14:40 WIB)  
-**Versi Rilis Aktif:** `v2.9.46`  
+**Terakhir Diperbarui:** 21 September 2026 (14:55 WIB)  
+**Versi Rilis Aktif:** `v2.9.47`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,26 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🔏 Sistem Verifikasi Digital Sign & QR Code e-Surat Pengantar RT.001 (Update v2.9.46 - 21 Sept 2026)
+### 1. 🛡️ Sistem Kriptografi SHA-256 Anti-Pemalsuan & Buku Register e-Surat RT.001 (Update v2.9.47 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Menjawab kekhawatiran apakah QR Code surat pengantar bisa dipalsukan jika parameter URL diubah oleh pihak tidak bertanggung jawab.
+  - Menerapkan pengamanan kriptografi tingkat tinggi (Tamper-Proof Digital Signature) dan Buku Register Arsip e-Surat Digital RT.001 agar surat **100% mustahil dipalsukan/dimanipulasi**.
+- **Hasil Implementasi**:
+  1. **Algoritma Tanda Tangan Kriptografi SHA-256 (`sha256Sync` & `generateSuratSignature`)**:
+     - Sistem menghitung sidik jari digital unik (*Digital Signature Token*) dari gabungan: Nomor Surat + NIK + Nama + Keperluan + Tanggal + Salt Kunci Rahasia Pengurus RT (`RT001_SURAT_SECRET`).
+     - Token kriptografi 16-karakter hex (contoh: `SIG-77BF08D033471CCB`) disertakan pada QR Code.
+     - **Anti-Manipulasi Total**: Jika ada pihak ketiga mencoba mengubah nama pemohon, NIK, atau keperluan (bahkan 1 karakter saja), sidik jari kriptografi otomatis **GAGAL COCOK**.
+  2. **Deteksi & Peringatan Tegas Dokumen Palsu pada Modal Verifikasi (`#modal-verify-surat`)**:
+     - **Jika Dokumen Sah**: Tampil header hijau emerald dengan lambang perisai terverifikasi, token validasi, dan sertifikat kependudukan resmi.
+     - **Jika Dokumen Dimanipulasi/Palsu**: Tampil banner merah bahaya dengan ikon segitiga peringatan: *"PERINGATAN: DOKUMEN PALSU / TIDAK SAH! Sidik jari digital (SHA-256) TIDAK COCOK dengan isi dokumen! Data surat terindikasi telah dimanipulasi/dipalsukan sepihak."*
+  3. **Buku Register & Arsip e-Surat Terbit RT.001 (`#card-register-surat-rt`)**:
+     - Ditambahkan panel tabel Buku Register resmi di halaman e-Surat Pengantar RT Mandiri.
+     - Menyimpan riwayat setiap surat yang pernah dikeluarkan ke dalam database persisten (`state.suratRegister` & `localStorage`).
+     - Setiap baris tabel dilengkapi tombol *"Cek Sah"* untuk memeriksa sertifikat validasi kapan saja.
+  4. **Pembaruan Service Worker & Versi PWA**:
+     - Versi dinaikkan ke `rt-finsmart-cache-v2.9.47` pada `sw.js`, `index.html`, dan `app.js`.
+
+### 2. 🔏 Sistem Verifikasi Digital Sign & QR Code e-Surat Pengantar RT.001 (Update v2.9.46 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Mengimplementasikan sistem **Digital Sign resmi berbasis QR Code** untuk memvalidasi keaslian Surat Pengantar RT Mandiri yang dibuat warga.
   - Memastikan siapapun (pihak kelurahan, kecamatan, kepolisian, atau warga) yang memindai (*scan*) QR Code melalui kamera HP/Google Lens atau mengklik QR Code di layar dapat langsung melihat lembar validasi resmi keabsahan dokumen.

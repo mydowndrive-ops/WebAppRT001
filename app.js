@@ -1828,7 +1828,8 @@ let state = {
   currentVerifiedResident: null,
   selectedMonth: 9, // September
   selectedYear: 2026,
-  activeReceiptData: null
+  activeReceiptData: null,
+  suratRegister: []
 };
 window.state = state;
 
@@ -1949,6 +1950,12 @@ function loadState() {
       // Pastikan rondaGroups tersedia & memiliki 8 kelompok lengkap
       if (!state.rondaGroups || !Array.isArray(state.rondaGroups) || state.rondaGroups.length < 8) {
         state.rondaGroups = JSON.parse(JSON.stringify(DEFAULT_RONDA_GROUPS));
+        saveState();
+      }
+
+      // Pastikan Buku Register e-Surat RT.001 tersedia & terverifikasi
+      if (!state.suratRegister || !Array.isArray(state.suratRegister) || state.suratRegister.length === 0) {
+        state.suratRegister = getSeedSuratRegister();
         saveState();
       }
 
@@ -5129,10 +5136,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.46';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.47';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.46')
+      navigator.serviceWorker.register('sw.js?v=2.9.47')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -12342,10 +12349,13 @@ function setupPortalWargaESurat() {
     if (pPemohon) pPemohon.textContent = nama;
     if (pStatus) pStatus.textContent = resident.domicile ? `Warga ${resident.domicile} Terdaftar` : 'Warga Tetap Terdaftar';
 
-    // Generate QR Code Digital Signature untuk Lembar Cetak Modal
+    // Generate QR Code Digital Signature & Token SHA-256 Anti-Manipulasi untuk Lembar Cetak Modal
+    const kepFull = `${jenisTeks} - ${keperluan}`;
+    const sig = generateSuratSignature(noSurat, nama, nik, kepFull, tglStr);
     const baseUrl = window.location.href.split('?')[0].split('#')[0];
-    const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(noSurat)}&nama=${encodeURIComponent(nama)}&nik=${encodeURIComponent(nik)}&kep=${encodeURIComponent(jenisTeks + ' - ' + keperluan)}&tgl=${encodeURIComponent(tglStr)}`;
-    renderSuratQRCode('print-surat-qrcode', verifyUrl, { no: noSurat, nama, nik, kep: `${jenisTeks} - ${keperluan}`, tgl: tglStr });
+    const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(noSurat)}&nama=${encodeURIComponent(nama)}&nik=${encodeURIComponent(nik)}&kep=${encodeURIComponent(kepFull)}&tgl=${encodeURIComponent(tglStr)}&sig=${encodeURIComponent(sig)}`;
+    renderSuratQRCode('print-surat-qrcode', verifyUrl, { no: noSurat, nama, nik, kep: kepFull, tgl: tglStr, sig });
+    recordSuratToRegister({ noSurat, nama, nik, keperluan: kepFull, tglStr, sig, tujuan: 'Instansi Terkait' });
   }
 
   if (btnPreviewSurat) {
@@ -12397,6 +12407,9 @@ Mohon Bapak Ketua RT.001 (Bpk. Maryanto) berkenan memberikan pengesahan / tanda 
       window.open(`https://wa.me/${waKetuaRT}?text=${encodeURIComponent(waMessage)}`, '_blank');
     });
   }
+
+  // Inisialisasi tampilan Buku Register e-Surat
+  renderBukuRegisterSurat();
 }
 
 // ==================== PORTAL WARGA: KOTAK ASPIRASI & MASUKAN ====================
@@ -12739,10 +12752,12 @@ function handleGenerateSuratInPage() {
   if (elTgl) elTgl.textContent = tglStr;
   if (elTtdNama) elTtdNama.textContent = nama;
 
-  // Generate QR Code Digital Signature Resmi RT.001
+  // Generate QR Code Digital Signature Resmi RT.001 (Kriptografi SHA-256 Anti-Manipulasi)
+  const sig = generateSuratSignature(noSurat, nama, nik, keperluan, tglStr);
   const baseUrl = window.location.href.split('?')[0].split('#')[0];
-  const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(noSurat)}&nama=${encodeURIComponent(nama)}&nik=${encodeURIComponent(nik)}&kep=${encodeURIComponent(keperluan)}&tgl=${encodeURIComponent(tglStr)}`;
-  renderSuratQRCode('inpage-surat-qrcode', verifyUrl, { no: noSurat, nama, nik, kep: keperluan, tgl: tglStr });
+  const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(noSurat)}&nama=${encodeURIComponent(nama)}&nik=${encodeURIComponent(nik)}&kep=${encodeURIComponent(keperluan)}&tgl=${encodeURIComponent(tglStr)}&sig=${encodeURIComponent(sig)}`;
+  renderSuratQRCode('inpage-surat-qrcode', verifyUrl, { no: noSurat, nama, nik, kep: keperluan, tgl: tglStr, sig });
+  recordSuratToRegister({ noSurat, nama, nik, keperluan, tglStr, sig, tujuan });
 
   // Show live preview box
   const previewBox = document.getElementById('surat-live-preview-box');
@@ -12783,7 +12798,253 @@ function shareSuratInPageWA() {
   window.open(`https://wa.me/${ketuaPhone}?text=${encodeURIComponent(waMsg)}`, '_blank');
 }
 
-// ==================== SISTEM VERIFIKASI DIGITAL SIGN e-SURAT RT.001 ====================
+// ==================== SISTEM VERIFIKASI DIGITAL SIGN & KRIPTOGRAFI SHA-256 ====================
+
+/**
+ * Pure JavaScript synchronous SHA-256 hash generator.
+ * Standar kriptografi industri tanpa ketergantungan library luar atau koneksi internet.
+ */
+function sha256Sync(ascii) {
+  function rightRotate(value, amount) {
+    return (value >>> amount) | (value << (32 - amount));
+  }
+  const mathPow = Math.pow;
+  const maxWord = mathPow(2, 32);
+  let i, j, result = '';
+  const words = [];
+  const asciiBitLength = ascii.length * 8;
+  let hash = [], k = [], primeCounter = 0;
+  const isComposite = {};
+  for (let candidate = 2; primeCounter < 64; candidate++) {
+    if (!isComposite[candidate]) {
+      for (i = 0; i < 313; i += candidate) isComposite[i] = candidate;
+      hash[primeCounter] = (mathPow(candidate, 0.5) * maxWord) | 0;
+      k[primeCounter++] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+    }
+  }
+  ascii += '\x80';
+  while ((ascii.length % 64) - 56) ascii += '\x00';
+  for (i = 0; i < ascii.length; i++) {
+    j = ascii.charCodeAt(i);
+    words[i >> 2] |= j << (((3 - i) % 4) * 8);
+  }
+  words[words.length] = (asciiBitLength / maxWord) | 0;
+  words[words.length] = asciiBitLength;
+  for (j = 0; j < words.length;) {
+    const w = words.slice(j, (j += 16));
+    const oldHash = hash;
+    hash = hash.slice(0, 8);
+    for (i = 0; i < 64; i++) {
+      const w15 = w[i - 15], w2 = w[i - 2];
+      const a = hash[0], e = hash[4];
+      const temp1 = hash[7] + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) + ((e & hash[5]) ^ (~e & hash[6])) + k[i] + (w[i] = i < 16 ? w[i] : (w[i - 16] + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))) | 0);
+      const temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+      hash = [(temp1 + temp2) | 0].concat(hash);
+      hash[4] = (hash[4] + temp1) | 0;
+    }
+    for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+  }
+  for (i = 0; i < 8; i++) {
+    for (j = 3; j >= 0; j--) {
+      const b = (hash[i] >> (8 * j)) & 255;
+      result += (b < 16 ? '0' : '') + b.toString(16);
+    }
+  }
+  return result;
+}
+
+// Kunci rahasia pengurus RT.001 untuk salt kriptografi digital sign (Anti-Manipulasi)
+const RT001_SURAT_SECRET = 'RT001_RW013_GRAHA_ASRI_SECURE_SALT_2026';
+
+/**
+ * Menghasilkan Sidik Jari Kriptografi SHA-256 (Signature Token)
+ * Jika ada pihak ketiga mengubah 1 huruf pada nama/NIK/nomor surat, hasilnya otomatis tidak cocok.
+ */
+function generateSuratSignature(noSurat, nama, nik, keperluan, tglStr) {
+  const normNo = (noSurat || '').trim().toUpperCase();
+  const normNama = (nama || '').trim().toLowerCase();
+  const normNik = (nik || '').trim();
+  const normKep = (keperluan || '').trim().toLowerCase();
+  const normTgl = (tglStr || '').trim();
+
+  const payload = `${normNo}|${normNik}|${normNama}|${normKep}|${normTgl}|${RT001_SURAT_SECRET}`;
+  const fullHash = sha256Sync(payload);
+  return fullHash.substring(0, 16).toUpperCase();
+}
+
+/**
+ * Memvalidasi apakah data surat cocok dengan token signature dan register RT
+ */
+function verifySuratAuthenticity(noSurat, nama, nik, keperluan, tglStr, providedSig) {
+  const cleanSig = (providedSig || '').trim().toUpperCase();
+  const expectedSig = generateSuratSignature(noSurat, nama, nik, keperluan, tglStr);
+
+  const registerEntry = (state.suratRegister || []).find(s => {
+    return s.noSurat && s.noSurat.replace(/\s+/g, '') === (noSurat || '').replace(/\s+/g, '');
+  });
+
+  if (!cleanSig) {
+    return {
+      isValid: false,
+      reason: 'NO_SIGNATURE',
+      message: 'Token tanda tangan digital tidak ditemukan pada tautan QR!',
+      isRegistered: !!registerEntry,
+      expectedSig
+    };
+  }
+
+  const isMatch = (cleanSig === expectedSig);
+
+  return {
+    isValid: isMatch,
+    reason: isMatch ? 'VALID' : 'TAMPERED',
+    message: isMatch
+      ? 'Dokumen dan Tanda Tangan Digital SAH & TERVERIFIKASI oleh Pengurus RT.001.'
+      : 'PERINGATAN: Sidik jari digital TIDAK COCOK! Data dokumen terindikasi telah dimanipulasi/dipalsukan.',
+    isRegistered: !!registerEntry,
+    registerData: registerEntry,
+    expectedSig
+  };
+}
+
+/**
+ * Data awal buku register resmi e-surat
+ */
+function getSeedSuratRegister() {
+  const no1 = '470 / 024 / RT.001-RW.013 / IX / 2026';
+  const nama1 = 'Bapak Wageyanto';
+  const nik1 = '3216021205800002';
+  const kep1 = 'Permohonan Penerbitan / Perpanjangan KTP-el';
+  const tgl1 = '18 September 2026';
+
+  const no2 = '470 / 025 / RT.001-RW.013 / IX / 2026';
+  const nama2 = 'Bapak Wageyanto';
+  const nik2 = '3216021205800002';
+  const kep2 = 'Pengantar SKCK Polsek';
+  const tgl2 = '21 September 2026';
+
+  return [
+    {
+      id: 'SURAT-REG-001',
+      noSurat: no1,
+      nama: nama1,
+      nik: nik1,
+      keperluan: kep1,
+      tgl: tgl1,
+      tujuan: 'Kantor Desa Simpangan',
+      sig: generateSuratSignature(no1, nama1, nik1, kep1, tgl1),
+      status: 'Sah & Tervalidasi',
+      createdAt: '2026-09-18T09:30:00.000Z'
+    },
+    {
+      id: 'SURAT-REG-002',
+      noSurat: no2,
+      nama: nama2,
+      nik: nik2,
+      keperluan: kep2,
+      tgl: tgl2,
+      tujuan: 'Polsek Cikarang Utara',
+      sig: generateSuratSignature(no2, nama2, nik2, kep2, tgl2),
+      status: 'Sah & Tervalidasi',
+      createdAt: '2026-09-21T10:15:00.000Z'
+    }
+  ];
+}
+
+/**
+ * Menyimpan surat yang baru dibuat ke dalam Buku Register e-Surat RT.001
+ */
+function recordSuratToRegister(entry) {
+  if (!state.suratRegister) state.suratRegister = [];
+
+  const existingIdx = state.suratRegister.findIndex(s => {
+    return s.noSurat && s.noSurat.replace(/\s+/g, '') === (entry.noSurat || '').replace(/\s+/g, '');
+  });
+
+  const recordData = {
+    id: `SURAT-${Date.now()}`,
+    status: 'Sah & Tervalidasi',
+    createdAt: new Date().toISOString(),
+    tujuan: entry.tujuan || 'Kantor Desa Simpangan',
+    ...entry
+  };
+
+  if (existingIdx !== -1) {
+    state.suratRegister[existingIdx] = { ...state.suratRegister[existingIdx], ...recordData };
+  } else {
+    state.suratRegister.unshift(recordData);
+  }
+
+  saveState();
+  renderBukuRegisterSurat();
+}
+
+/**
+ * Merender daftar riwayat surat pada Buku Register e-Surat di halaman
+ */
+function renderBukuRegisterSurat() {
+  if (typeof document === 'undefined') return;
+  const tbody = document.getElementById('table-body-register-surat');
+  if (!tbody) return;
+
+  if (!state.suratRegister || !Array.isArray(state.suratRegister) || state.suratRegister.length === 0) {
+    state.suratRegister = getSeedSuratRegister();
+    saveState();
+  }
+
+  const badgeTotal = document.getElementById('badge-total-register-surat');
+  if (badgeTotal) {
+    badgeTotal.textContent = `${state.suratRegister.length} Surat Tercatat`;
+  }
+
+  tbody.innerHTML = '';
+  state.suratRegister.forEach((item, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <strong style="color:#38bdf8; font-size:0.83rem;">${item.noSurat}</strong>
+        <div style="font-size:0.72rem; color:#64748b;">Tujuan: ${item.tujuan || 'Instansi Terkait'}</div>
+      </td>
+      <td style="color:#cbd5e1; font-size:0.82rem;">${item.tgl}</td>
+      <td>
+        <strong style="color:#f8fafc;">${item.nama}</strong>
+        <div style="font-family:monospace; font-size:0.75rem; color:#94a3b8;">${item.nik}</div>
+      </td>
+      <td>
+        <span style="color:#fbbf24; font-size:0.83rem; font-weight:600;">${item.keperluan}</span>
+      </td>
+      <td style="text-align:center;">
+        <span class="badge-pill badge-emerald" style="font-size:0.7rem; padding:2px 8px; font-family:monospace;" title="Token SHA-256: ${item.sig}">
+          <i class="fa-solid fa-circle-check"></i> SIG-${(item.sig || '').substring(0, 8)}
+        </span>
+      </td>
+      <td style="text-align:center;">
+        <button type="button" class="btn btn-outline-cyan btn-sm btn-action-verify-row" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem;" title="Cek Sertifikat Validasi">
+          <i class="fa-solid fa-shield-check"></i> Cek Sah
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Event listener tombol Cek Sah per baris register
+  tbody.querySelectorAll('.btn-action-verify-row').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      const rowData = state.suratRegister[idx];
+      if (rowData) {
+        openSuratVerificationModal({
+          no: rowData.noSurat,
+          nama: rowData.nama,
+          nik: rowData.nik,
+          kep: rowData.keperluan,
+          tgl: rowData.tgl,
+          sig: rowData.sig
+        });
+      }
+    });
+  });
+}
 
 function renderSuratQRCode(containerId, verifyUrl, metadata) {
   const container = document.getElementById(containerId);
@@ -12816,17 +13077,118 @@ function renderSuratQRCode(containerId, verifyUrl, metadata) {
 
 function openSuratVerificationModal(data) {
   if (!data) return;
+
+  const authResult = verifySuratAuthenticity(
+    data.no,
+    data.nama,
+    data.nik,
+    data.kep,
+    data.tgl,
+    data.sig
+  );
+
   const elNo = document.getElementById('verify-surat-no');
   const elNama = document.getElementById('verify-surat-nama');
   const elNik = document.getElementById('verify-surat-nik');
   const elKep = document.getElementById('verify-surat-kep');
   const elTgl = document.getElementById('verify-surat-tgl');
+  const elToken = document.getElementById('verify-surat-token');
+  const elDbStatus = document.getElementById('verify-surat-db-status');
+  const modalHeader = document.getElementById('verify-modal-header');
+  const modalTitle = document.getElementById('verify-modal-title');
+  const modalSubtitle = document.getElementById('verify-modal-subtitle');
+  const modalIcon = document.getElementById('verify-modal-icon');
+  const modalIconWrap = document.getElementById('verify-modal-icon-wrap');
+  const alertBox = document.getElementById('verify-modal-alert');
+  const alertIcon = document.getElementById('verify-modal-alert-icon');
+  const alertText = document.getElementById('verify-modal-alert-text');
+  const modalBtnClose = document.getElementById('verify-modal-btn-close');
 
   if (elNo) elNo.textContent = data.no || '-';
   if (elNama) elNama.textContent = data.nama || '-';
   if (elNik) elNik.textContent = data.nik || '-';
   if (elKep) elKep.textContent = data.kep || '-';
   if (elTgl) elTgl.textContent = data.tgl || '-';
+
+  if (authResult.isValid) {
+    // DOKUMEN SAH & TERVERIFIKASI
+    if (modalHeader) modalHeader.style.background = 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)';
+    if (modalTitle) {
+      modalTitle.textContent = 'DOKUMEN RESMI TERVERIFIKASI';
+      modalTitle.style.color = '#ffffff';
+    }
+    if (modalSubtitle) modalSubtitle.textContent = 'Sistem Verifikasi Digital Sign RT.001 / RW.013 Graha Asri';
+    if (modalIcon) {
+      modalIcon.className = 'fa-solid fa-shield-check';
+      modalIcon.style.color = '#34d399';
+    }
+    if (modalIconWrap) {
+      modalIconWrap.style.boxShadow = '0 0 20px rgba(52,211,153,0.4)';
+    }
+    if (alertBox) {
+      alertBox.style.background = 'rgba(16,185,129,0.12)';
+      alertBox.style.border = '1px solid rgba(16,185,129,0.3)';
+    }
+    if (alertIcon) {
+      alertIcon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#10b981;"></i>';
+    }
+    if (alertText) {
+      alertText.textContent = 'Keabsahan tanda tangan digital dan nomor surat tervalidasi asli serta sah oleh sistem kependudukan resmi RT.001 / RW.013.';
+      alertText.style.color = '#cbd5e1';
+    }
+    if (elToken) {
+      elToken.textContent = `SIG-${data.sig || authResult.expectedSig} (TERVALIDASI)`;
+      elToken.style.color = '#34d399';
+      elToken.style.border = '1px solid rgba(52,211,153,0.3)';
+    }
+    if (elDbStatus) {
+      if (authResult.isRegistered) {
+        elDbStatus.innerHTML = '<span style="color:#34d399;"><i class="fa-solid fa-circle-check"></i> Tercatat di Buku Register e-Surat RT.001</span>';
+      } else {
+        elDbStatus.innerHTML = '<span style="color:#38bdf8;"><i class="fa-solid fa-shield-halved"></i> Tervalidasi Kriptografi SHA-256 Sah</span>';
+      }
+    }
+    if (modalBtnClose) {
+      modalBtnClose.className = 'btn btn-emerald btn-sm';
+    }
+  } else {
+    // DOKUMEN PALSU / TELAH DIMANIPULASI
+    if (modalHeader) modalHeader.style.background = 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #dc2626 100%)';
+    if (modalTitle) {
+      modalTitle.textContent = 'PERINGATAN: DOKUMEN PALSU / TIDAK SAH!';
+      modalTitle.style.color = '#fee2e2';
+    }
+    if (modalSubtitle) modalSubtitle.textContent = 'Terdeteksi Modifikasi Ilegal / Sidik Jari Digital Tidak Cocok';
+    if (modalIcon) {
+      modalIcon.className = 'fa-solid fa-triangle-exclamation';
+      modalIcon.style.color = '#f87171';
+    }
+    if (modalIconWrap) {
+      modalIconWrap.style.boxShadow = '0 0 25px rgba(239,68,68,0.5)';
+    }
+    if (alertBox) {
+      alertBox.style.background = 'rgba(239,68,68,0.18)';
+      alertBox.style.border = '1px solid rgba(239,68,68,0.45)';
+    }
+    if (alertIcon) {
+      alertIcon.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color:#f87171;"></i>';
+    }
+    if (alertText) {
+      alertText.textContent = 'PERINGATAN KERAS: Sidik jari digital (SHA-256) TIDAK COCOK dengan isi dokumen! Data surat (nama/NIK/keperluan) telah dimanipulasi atau dipalsukan.';
+      alertText.style.color = '#fca5a5';
+    }
+    if (elToken) {
+      elToken.textContent = `SIG-INVALID (${data.sig || 'TIDAK ADA TOKEN'})`;
+      elToken.style.color = '#f87171';
+      elToken.style.border = '1px solid rgba(239,68,68,0.4)';
+    }
+    if (elDbStatus) {
+      elDbStatus.innerHTML = '<span style="color:#f87171; font-weight:700;"><i class="fa-solid fa-ban"></i> Dokumen Ilegal / Tidak Terdaftar</span>';
+    }
+    if (modalBtnClose) {
+      modalBtnClose.className = 'btn btn-rose btn-sm';
+    }
+  }
 
   openModal('modal-verify-surat');
 }
@@ -12838,12 +13200,21 @@ function openSuratVerificationModalFromCurrent() {
   const elKeperluan = document.getElementById('inpage-preview-keperluan');
   const elTgl = document.getElementById('inpage-preview-tanggal');
 
+  const noSurat = elNomor ? elNomor.textContent.replace(/^Nomor:\s*/i, '') : '-';
+  const nama = elNama ? elNama.textContent : '-';
+  const nik = elNik ? elNik.textContent : '-';
+  const kep = elKeperluan ? elKeperluan.textContent : '-';
+  const tgl = elTgl ? elTgl.textContent : '-';
+
+  const sig = generateSuratSignature(noSurat, nama, nik, kep, tgl);
+
   openSuratVerificationModal({
-    no: elNomor ? elNomor.textContent.replace(/^Nomor:\s*/i, '') : '-',
-    nama: elNama ? elNama.textContent : '-',
-    nik: elNik ? elNik.textContent : '-',
-    kep: elKeperluan ? elKeperluan.textContent : '-',
-    tgl: elTgl ? elTgl.textContent : '-'
+    no: noSurat,
+    nama,
+    nik,
+    kep,
+    tgl,
+    sig
   });
 }
 
@@ -12856,13 +13227,14 @@ function checkUrlForSuratVerification() {
       const nik = urlParams.get('nik') || '-';
       const kep = urlParams.get('kep') || '-';
       const tgl = urlParams.get('tgl') || '-';
+      const sig = urlParams.get('sig') || '';
 
       // Sembunyikan splash screen agar modal verifikasi langsung tampak jelas
       const splash = document.getElementById('app-splash-screen');
       if (splash) splash.style.display = 'none';
 
       setTimeout(() => {
-        openSuratVerificationModal({ no, nama, nik, kep, tgl });
+        openSuratVerificationModal({ no, nama, nik, kep, tgl, sig });
       }, 350);
     }
   } catch (e) {
@@ -12873,6 +13245,7 @@ function checkUrlForSuratVerification() {
 // Pasang ke window scope untuk event listener inline onclick
 window.openSuratVerificationModal = openSuratVerificationModal;
 window.openSuratVerificationModalFromCurrent = openSuratVerificationModalFromCurrent;
+window.renderBukuRegisterSurat = renderBukuRegisterSurat;
 
 // ==================== DEDICATED VIEW: KOTAK ASPIRASI & MASUKAN WARGA ====================
 

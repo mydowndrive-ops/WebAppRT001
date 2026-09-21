@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.46">
+  <link rel="stylesheet" href="styles.css?v=2.9.47">
 </head>
 <body>
 
@@ -5320,6 +5320,44 @@
             </div>
           </div>
         </div>
+
+        <!-- BUKU REGISTER & ARSIP e-SURAT TERBIT RT.001 (ANTI-PEMANIPULASIAN) -->
+        <div class="glass-panel p-4 mb-4" id="card-register-surat-rt" style="border: 1px solid rgba(16,185,129,0.3); background: rgba(15, 23, 42, 0.5); border-radius: 14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid rgba(255,255,255,0.08);">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:40px; height:40px; border-radius:10px; background:rgba(16,185,129,0.2); display:flex; align-items:center; justify-content:center; color:#34d399; font-size:1.2rem;">
+                <i class="fa-solid fa-book-bookmark"></i>
+              </div>
+              <div>
+                <h4 style="margin:0; font-size:1.05rem; color:#f8fafc; font-weight:700;">Buku Register &amp; Arsip e-Surat Pengantar RT.001</h4>
+                <p style="margin:0; font-size:0.8rem; color:#94a3b8;">Daftar resmi surat yang telah diterbitkan dengan sidik jari digital SHA-256</p>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="badge-pill badge-emerald" id="badge-total-register-surat">0 Surat Tercatat</span>
+              <span class="badge-pill badge-cyan" title="Sistem Kriptografi Aktif"><i class="fa-solid fa-shield-halved"></i> Anti-Pemalsuan SHA-256</span>
+            </div>
+          </div>
+
+          <!-- Tabel Register e-Surat -->
+          <div style="overflow-x:auto;">
+            <table class="table-fin" style="width:100%; min-width:680px; font-size:0.85rem;">
+              <thead>
+                <tr>
+                  <th style="width:180px;">No. Surat Resmi</th>
+                  <th style="width:115px;">Tanggal</th>
+                  <th>Nama Pemohon / NIK</th>
+                  <th>Keperluan / Maksud</th>
+                  <th style="width:145px; text-align:center;">Validasi Kriptografi</th>
+                  <th style="width:110px; text-align:center;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-body-register-surat">
+                <!-- Diisi secara dinamis via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
       <!-- ==================== VIEW: KOTAK ASPIRASI & MASUKAN WARGA (KHUSUS WARGA) ==================== -->
@@ -7315,29 +7353,29 @@
 
   <!-- Modal: Verifikasi Keabsahan Dokumen & Digital Sign RT.001 -->
   <div class="modal-backdrop" id="modal-verify-surat" style="display:none; align-items:center; justify-content:center; z-index:99999;">
-    <div class="modal-dialog" style="max-width:520px; width:92%; border-radius:18px; overflow:hidden; border:1px solid rgba(16,185,129,0.4); box-shadow:0 25px 60px rgba(0,0,0,0.65); background:#0f172a; margin:auto;">
-      <!-- Header Hijau Emerald Mewah -->
-      <div style="background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%); padding: 1.5rem 1.25rem; text-align:center; color:#ffffff; position:relative;">
+    <div class="modal-dialog" style="max-width:540px; width:92%; border-radius:18px; overflow:hidden; border:1px solid rgba(16,185,129,0.4); box-shadow:0 25px 60px rgba(0,0,0,0.65); background:#0f172a; margin:auto;" id="verify-modal-dialog">
+      <!-- Header Dinamis (Hijau jika Sah, Merah jika Palsu) -->
+      <div id="verify-modal-header" style="background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%); padding: 1.5rem 1.25rem; text-align:center; color:#ffffff; position:relative; transition:background 0.3s ease;">
         <button class="modal-close" data-close="modal-verify-surat" style="position:absolute; right:14px; top:14px; color:#ffffff; background:rgba(255,255,255,0.2); border:none; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem;">&times;</button>
-        <div style="width:58px; height:58px; margin:0 auto 10px; background:rgba(255,255,255,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#34d399; box-shadow:0 0 20px rgba(52,211,153,0.35);">
-          <i class="fa-solid fa-shield-check"></i>
+        <div id="verify-modal-icon-wrap" style="width:58px; height:58px; margin:0 auto 10px; background:rgba(255,255,255,0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; color:#34d399; box-shadow:0 0 20px rgba(52,211,153,0.35);">
+          <i class="fa-solid fa-shield-check" id="verify-modal-icon"></i>
         </div>
-        <h3 style="margin:0; font-size:1.18rem; font-weight:800; letter-spacing:0.5px; color:#ffffff;">DOKUMEN RESMI TERVERIFIKASI</h3>
-        <p style="margin:4px 0 0; font-size:0.8rem; color:#a7f3d0;">Sistem Verifikasi Digital Sign RT.001 / RW.013 Graha Asri</p>
+        <h3 style="margin:0; font-size:1.18rem; font-weight:800; letter-spacing:0.5px; color:#ffffff;" id="verify-modal-title">DOKUMEN RESMI TERVERIFIKASI</h3>
+        <p style="margin:4px 0 0; font-size:0.8rem; color:#a7f3d0;" id="verify-modal-subtitle">Sistem Verifikasi Digital Sign RT.001 / RW.013 Graha Asri</p>
       </div>
 
       <!-- Body Verifikasi -->
       <div style="padding: 1.25rem 1.5rem; background: #0f172a; color:#f8fafc;">
-        <div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:10px; padding:10px 14px; margin-bottom:1.1rem; display:flex; align-items:center; gap:12px;">
-          <div style="color:#10b981; font-size:1.3rem;"><i class="fa-solid fa-circle-check"></i></div>
-          <div style="font-size:0.8rem; line-height:1.45; color:#cbd5e1;">
+        <div id="verify-modal-alert" style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:10px; padding:10px 14px; margin-bottom:1.1rem; display:flex; align-items:center; gap:12px;">
+          <div id="verify-modal-alert-icon" style="color:#10b981; font-size:1.3rem;"><i class="fa-solid fa-circle-check"></i></div>
+          <div id="verify-modal-alert-text" style="font-size:0.8rem; line-height:1.45; color:#cbd5e1;">
             Keabsahan tanda tangan digital dan nomor surat telah tervalidasi sah oleh sistem kependudukan resmi RT.001 / RW.013.
           </div>
         </div>
 
         <table style="width:100%; font-size:0.85rem; border-collapse:collapse; margin-bottom:1.25rem;">
           <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
-            <td style="padding:8px 0; color:#94a3b8; width:130px;">Nomor Surat</td>
+            <td style="padding:8px 0; color:#94a3b8; width:135px;">Nomor Surat</td>
             <td style="padding:8px 0; font-weight:700; color:#38bdf8;" id="verify-surat-no">-</td>
           </tr>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
@@ -7356,6 +7394,12 @@
             <td style="padding:8px 0; color:#94a3b8;">Tanggal Terbit</td>
             <td style="padding:8px 0; color:#e2e8f0;" id="verify-surat-tgl">-</td>
           </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.08);">
+            <td style="padding:8px 0; color:#94a3b8;">Token SHA-256</td>
+            <td style="padding:8px 0;" id="verify-surat-token-wrap">
+              <span id="verify-surat-token" style="font-family:monospace; font-size:0.75rem; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:4px; color:#38bdf8; font-weight:700;">-</span>
+            </td>
+          </tr>
           <tr>
             <td style="padding:8px 0; color:#94a3b8;">Penandatangan</td>
             <td style="padding:8px 0; color:#34d399; font-weight:700;">
@@ -7364,8 +7408,11 @@
           </tr>
         </table>
 
-        <div style="display:flex; justify-content:flex-end; gap:8px;">
-          <button type="button" class="btn btn-emerald btn-sm" data-close="modal-verify-surat" style="padding:0.45rem 1.25rem; font-size:0.85rem; border-radius:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div id="verify-surat-db-status" style="font-size:0.75rem; color:#94a3b8;">
+            <i class="fa-solid fa-database"></i> Memeriksa register...
+          </div>
+          <button type="button" class="btn btn-emerald btn-sm" data-close="modal-verify-surat" id="verify-modal-btn-close" style="padding:0.45rem 1.25rem; font-size:0.85rem; border-radius:8px;">
             <i class="fa-solid fa-check"></i> Selesai / Tutup
           </button>
         </div>
@@ -7385,6 +7432,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.46"></script>
+  <script src="app.js?v=2.9.47"></script>
 </body>
 </html>
