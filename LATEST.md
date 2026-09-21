@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (15:50 WIB)  
-**Versi Rilis Aktif:** `v2.9.49`  
+**Terakhir Diperbarui:** 21 September 2026 (16:05 WIB)  
+**Versi Rilis Aktif:** `v2.9.50`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,36 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🔒 Proteksi Otorisasi Eksklusif Admin 1 (Bendahara 1) untuk Hapus Arsip Surat (Update v2.9.49 - 21 Sept 2026)
+### 1. 🛡️ Sistem Persetujuan Otoritatif Ketua RT / Admin 1 Sebelum Penerbitan QRIS / QR Digital Sign (Update v2.9.50 - 21 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Untuk menghindari penyalahgunaan surat, QRIS ada/muncul di surat jika sudah mendapatkan persetujuan dari Ketua RT atau Admin 1"*
+  - Mencegah warga atau oknum mencetak surat mandiri dengan QR Code Digital Sign sah tanpa izin atau verifikasi resmi dari Ketua RT atau Bendahara 1.
+- **Hasil Implementasi Lengkap**:
+  1. **Status Bertahap Surat Pengantar (Pending Approval Workflow)**:
+     - Setiap surat yang dibuat mandiri oleh warga melalui Portal Warga kini berstatus awal **`Menunggu Persetujuan`** (`isApproved: false`).
+     - **QR Code Digital Sign disembunyikan / tidak ditampilkan** pada draft surat pengantar fisik maupun pratinjau inpage.
+     - Posisi QR digantikan oleh kotak stempel resmi: `[ MENUNGGU PERSETUJUAN - Ketua RT / Admin 1 ]` bergaris putus-putus amber dengan ikon jam pasir, menegaskan bahwa dokumen tersebut masih berupa draf dan belum sah.
+  2. **Banner Peringatan Interaktif Pratinjau Surat (`#inpage-surat-approval-banner`)**:
+     - Ditambahkan banner elegan di atas lembar surat yang menginformasikan status draft dokumen.
+     - Dilengkapi tombol cepat *"✍️ Otorisasi & Setujui Surat"* untuk Ketua RT atau Admin 1 yang sedang meninjau.
+  3. **Modal Otorisasi Persetujuan Resmi (`#modal-auth-approve-surat`)**:
+     - Modal persetujuan bertema emerald glassmorphism yang memvalidasi PIN resmi:
+       - **Ketua RT (Maryanto)**: PIN default `3333`
+       - **Admin 1 (Bendahara 1)**: PIN default `1111`
+     - Jika PIN cocok, surat langsung disahkan (`isApproved: true`, `status: 'Sah & Tervalidasi'`), pencatat pengesah dicatat (misal: *Disahkan oleh Ketua RT.001 (Maryanto)*), dan QR Code Digital Sign seketika aktif dan dicetak.
+     - Jika pengguna sudah aktif login sebagai Ketua RT atau Admin 1, sistem langsung meminta konfirmasi 1-klik tanpa meminta PIN berulang kali.
+  4. **Pembaruan Buku Register e-Surat**:
+     - Kolom status kini membedakan dengan jelas:
+       - **Badge Amber**: `Menunggu Persetujuan` (Draft)
+       - **Badge Emerald**: `SAH • SIG-XXXXXXXX` (Disahkan & Tervalidasi) disertai nama pengesah.
+     - Menambahkan tombol aksi **"Setujui"** pada baris surat yang masih pending.
+     - Menambahkan tombol aksi **"Lihat"** untuk membuka lembar pratinjau surat secara instan dari tabel register.
+  5. **Verifikasi Digital Tahan Manipulasi (Security Verification)**:
+     - Jika tautan QR pada surat berstatus pending diperiksa atau discan, modal verifikasi menampilkan status **`SURAT MENUNGGU PERSETUJUAN`** bertema amber dengan peringatan tegas bahwa dokumen masih berstatus draf dan belum memiliki kekuatan hukum.
+  6. **Pembaruan Service Worker & Versi PWA**:
+     - Versi cache PWA dinaikkan ke `rt-finsmart-cache-v2.9.50` pada `sw.js`, `index.html`, dan `app.js`.
+
+### 2. 🔒 Proteksi Otorisasi Eksklusif Admin 1 (Bendahara 1) untuk Hapus Arsip Surat (Update v2.9.49 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Harusnya yang bisa menghapus hanya admin 1 (Bendahara 1) saja karena untuk menghindari pemalsuan."*
   - Menegakkan keamanan tingkat tinggi agar warga atau pihak luar yang membuka Portal Warga tidak dapat menghapus atau memanipulasi riwayat surat resmi RT.001.

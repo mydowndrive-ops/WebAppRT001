@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.49">
+  <link rel="stylesheet" href="styles.css?v=2.9.50">
 </head>
 <body>
 
@@ -5182,7 +5182,7 @@
         <div class="glass-panel p-4 mb-4" id="surat-live-preview-box" style="display:none; background:#ffffff; color:#0f172a; border-radius:16px; border:2px solid #a855f7;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid #e2e8f0; padding-bottom:0.75rem;">
             <h4 style="margin:0; color:#0f172a; display:flex; align-items:center; gap:8px;">
-              <i class="fa-solid fa-circle-check text-purple"></i> Dokumen Resmi Siap Cetak
+              <i class="fa-solid fa-circle-check text-purple"></i> Dokumen Resmi Surat Pengantar
             </h4>
             <div style="display:flex; gap:8px;">
               <button type="button" class="btn btn-sm btn-purple" onclick="printSuratInPage()">
@@ -5193,6 +5193,9 @@
               </button>
             </div>
           </div>
+
+          <!-- Banner Status Persetujuan Surat Resmi -->
+          <div id="inpage-surat-approval-banner" style="margin-bottom:1rem; padding:10px 14px; border-radius:10px; font-size:0.83rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;"></div>
 
           <div id="inpage-surat-paper" class="surat-kertas-formal" style="background:#ffffff; color:#0f172a; padding:1.5rem; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
             <!-- KOP SURAT RT -->
@@ -5247,9 +5250,21 @@
                 <span style="font-size:0.82rem; color:#475569;">Mengetahui,</span><br>
                 <span style="font-size:0.85rem; font-weight:600;">Ketua RT.001 / RW.013,</span>
                 <div style="margin:6px auto; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                  <!-- Wadah QR Code (Hanya muncul jika sudah disetujui Ketua RT / Admin 1) -->
                   <div id="inpage-surat-qrcode" style="width:104px; height:104px; min-height:104px; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:4px; margin:4px auto;" title="Scan QR atau klik untuk verifikasi digital sign"></div>
-                  <span onclick="openSuratVerificationModalFromCurrent()" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:0.68rem; font-weight:700; color:#059669; letter-spacing:0.3px; border:1px solid #10b981; padding:1px 6px; border-radius:4px; background:rgba(16,185,129,0.06);" title="Klik untuk verifikasi keabsahan dokumen">
+                  
+                  <!-- Wadah Placeholder jika belum disetujui (QR disembunyikan untuk cegah penyalahgunaan) -->
+                  <div id="inpage-surat-pending-box" style="display:none; width:135px; min-height:85px; border:2px dashed #f59e0b; border-radius:8px; background:#fffbeb; padding:8px 6px; text-align:center; margin:4px auto;">
+                    <i class="fa-solid fa-clock-rotate-left" style="color:#d97706; font-size:1.3rem; margin-bottom:4px;"></i>
+                    <div style="font-size:0.7rem; font-weight:800; color:#b45309; line-height:1.2;">MENUNGGU PERSETUJUAN</div>
+                    <div style="font-size:0.62rem; color:#64748b; margin-top:2px;">Ketua RT / Admin 1</div>
+                  </div>
+
+                  <span id="inpage-surat-badge-signed" onclick="openSuratVerificationModalFromCurrent()" style="cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin-top:4px; font-size:0.68rem; font-weight:700; color:#059669; letter-spacing:0.3px; border:1px solid #10b981; padding:1px 6px; border-radius:4px; background:rgba(16,185,129,0.06);" title="Klik untuk verifikasi keabsahan dokumen">
                     <i class="fa-solid fa-circle-check"></i> DIGITAL SIGNED &bull; RT.001
+                  </span>
+                  <span id="inpage-surat-badge-pending" style="display:none; font-size:0.65rem; font-weight:700; color:#b45309; border:1px dashed #f59e0b; padding:2px 8px; border-radius:4px; background:#fef3c7; margin-top:4px;">
+                    <i class="fa-solid fa-hourglass-half"></i> QR BELUM TERBIT (BELUM DISETUJUI)
                   </span>
                 </div>
                 <strong style="text-decoration:underline;">Maryanto</strong>
@@ -7139,9 +7154,21 @@
             <span class="ttd-tgl">&nbsp;</span>
             <span class="ttd-jabatan">Ketua RT.001 / RW.013,</span>
             <div class="ttd-space" style="height:auto; min-height:96px; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:4px 0;">
+              <!-- QR Code jika sudah disetujui -->
               <div id="print-surat-qrcode" style="width:96px; height:96px; min-height:96px; display:flex; align-items:center; justify-content:center; background:#ffffff; margin:4px auto;"></div>
-              <span class="ttd-stempel-digital" style="margin-top:4px; font-size:0.65rem; padding:1px 6px;">
+              
+              <!-- Placeholder pending jika belum disetujui -->
+              <div id="print-surat-pending-box" style="display:none; width:135px; min-height:85px; border:2px dashed #f59e0b; border-radius:8px; background:#fffbeb; padding:8px 6px; text-align:center; margin:4px auto;">
+                <i class="fa-solid fa-clock-rotate-left" style="color:#d97706; font-size:1.3rem; margin-bottom:4px;"></i>
+                <div style="font-size:0.7rem; font-weight:800; color:#b45309; line-height:1.2;">MENUNGGU PERSETUJUAN</div>
+                <div style="font-size:0.62rem; color:#64748b; margin-top:2px;">Ketua RT / Admin 1</div>
+              </div>
+
+              <span id="print-surat-badge-signed" class="ttd-stempel-digital" style="margin-top:4px; font-size:0.65rem; padding:1px 6px;">
                 <i class="fa-solid fa-circle-check"></i> TERTANDATANGAN DIGITAL RT.001
+              </span>
+              <span id="print-surat-badge-pending" style="display:none; font-size:0.65rem; font-weight:700; color:#b45309; border:1px dashed #f59e0b; padding:2px 8px; border-radius:4px; background:#fef3c7; margin-top:4px;">
+                <i class="fa-solid fa-hourglass-half"></i> QR BELUM TERBIT (BELUM DISETUJUI)
               </span>
             </div>
             <strong class="ttd-nama">Maryanto</strong>
@@ -7477,6 +7504,57 @@
     </div>
   </div>
 
+  <!-- ==================== MODAL PERSETUJUAN SURAT (KETUA RT / ADMIN 1) ==================== -->
+  <div class="modal-backdrop" id="modal-auth-approve-surat" style="display:none; align-items:center; justify-content:center; z-index:99999;">
+    <div class="glass-panel" style="width:92%; max-width:440px; background:linear-gradient(145deg, rgba(15,23,42,0.98) 0%, rgba(30,41,59,0.98) 100%); border:1px solid rgba(16,185,129,0.45); border-radius:16px; overflow:hidden; box-shadow:0 25px 50px -12px rgba(0,0,0,0.85);">
+      <div style="background:linear-gradient(135deg, rgba(6,78,59,0.4) 0%, rgba(4,120,87,0.2) 100%); padding:1.15rem 1.35rem; border-bottom:1px solid rgba(16,185,129,0.25); display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.4); display:flex; align-items:center; justify-content:center; color:#34d399; font-size:1.1rem;">
+            <i class="fa-solid fa-signature"></i>
+          </div>
+          <div>
+            <h4 style="margin:0; font-size:0.98rem; color:#f8fafc; font-weight:700;">Persetujuan &amp; Pengesahan Surat</h4>
+            <span style="font-size:0.75rem; color:#6ee7b7;">Penerbitan QR Digital Sign Resmi RT.001</span>
+          </div>
+        </div>
+        <button class="modal-close text-light" data-close="modal-auth-approve-surat" onclick="closeModal('modal-auth-approve-surat')" style="background:none; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+
+      <div style="padding:1.35rem;">
+        <div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:10px; padding:0.75rem; margin-bottom:1.15rem; font-size:0.8rem; color:#a7f3d0; display:flex; gap:10px; align-items:flex-start;">
+          <i class="fa-solid fa-shield-check" style="font-size:1.1rem; color:#34d399; margin-top:2px;"></i>
+          <div>
+            <strong style="color:#ecfdf5; display:block; margin-bottom:2px;">Otorisasi Pengurus Sah</strong>
+            Menyetujui surat ini akan langsung menerbitkan <strong>QR Code Digital Sign</strong> resmi yang dapat diverifikasi keasliannya oleh instansi/kelurahan.
+          </div>
+        </div>
+
+        <div id="auth-approve-action-detail" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.75rem; margin-bottom:1.15rem; font-size:0.8rem; color:#cbd5e1;">
+          <!-- Detail surat yang akan disetujui -->
+        </div>
+
+        <form id="form-auth-approve-surat" onsubmit="event.preventDefault(); submitAdminSuratApprovalAuth();">
+          <div style="margin-bottom:1.25rem;">
+            <label for="auth-approve-pin-input" style="display:block; font-size:0.8rem; font-weight:600; color:#cbd5e1; margin-bottom:6px;">
+              <i class="fa-solid fa-key" style="color:#34d399;"></i> Masukkan PIN Ketua RT (3333) atau Admin 1 (1111):
+            </label>
+            <input type="password" id="auth-approve-pin-input" maxlength="12" placeholder="••••" autocomplete="current-password" style="width:100%; padding:9px 14px; font-size:1.2rem; letter-spacing:6px; text-align:center; background:rgba(15,23,42,0.85); border:1px solid rgba(16,185,129,0.45); border-radius:8px; color:#ffffff; font-family:monospace; outline:none;" required>
+            <div id="auth-approve-error-msg" style="display:none; color:#f87171; font-size:0.75rem; margin-top:6px; font-weight:600;">
+              <i class="fa-solid fa-circle-exclamation"></i> PIN tidak cocok dengan Ketua RT maupun Admin 1!
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="btn btn-outline" data-close="modal-auth-approve-surat" onclick="closeModal('modal-auth-approve-surat')" style="font-size:0.85rem; padding:0.45rem 1.1rem;">Batal</button>
+            <button type="submit" class="btn btn-emerald btn-sm" id="btn-auth-approve-submit" style="font-size:0.85rem; padding:0.45rem 1.25rem; font-weight:600;">
+              <i class="fa-solid fa-stamp"></i> Setujui &amp; Terbitkan QR
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Luxury Scroll-to-Top Button -->
   <button id="btn-scroll-top" class="scroll-to-top-btn" title="Kembali ke Bagian Atas Halaman (1-Klik)" aria-label="Kembali ke Bagian Atas">
     <div class="scroll-top-icon-wrapper">
@@ -7489,6 +7567,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.49"></script>
+  <script src="app.js?v=2.9.50"></script>
 </body>
 </html>

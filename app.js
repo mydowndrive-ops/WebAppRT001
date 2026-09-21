@@ -12357,8 +12357,18 @@ function setupPortalWargaESurat() {
       baseUrl = 'https://mydowndrive-ops.github.io/WebAppRT001/';
     }
     const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(noSurat)}&nama=${encodeURIComponent(nama)}&nik=${encodeURIComponent(nik)}&kep=${encodeURIComponent(kepFull)}&tgl=${encodeURIComponent(tglStr)}&sig=${encodeURIComponent(sig)}`;
+    
+    const isAuthAdmin = (state.currentUser === 'b1' || state.currentUser === 'pengurus');
+    const isApproved = isAuthAdmin;
+    const status = isApproved ? 'Sah & Tervalidasi' : 'Menunggu Persetujuan';
+    const approvedBy = isApproved ? (state.currentUser === 'b1' ? 'Admin 1 (Bendahara 1)' : 'Ketua RT.001 (Maryanto)') : null;
+    const approvedAt = isApproved ? new Date().toISOString() : null;
+
     renderSuratQRCode('print-surat-qrcode', verifyUrl, { no: noSurat, nama, nik, kep: kepFull, tgl: tglStr, sig });
-    recordSuratToRegister({ noSurat, nama, nik, keperluan: kepFull, tglStr, sig, tujuan: 'Instansi Terkait' });
+    recordSuratToRegister({ noSurat, nama, nik, keperluan: kepFull, tglStr, sig, tujuan: 'Instansi Terkait', isApproved, status, approvedBy, approvedAt });
+    if (typeof applySuratApprovalVisuals === 'function') {
+      applySuratApprovalVisuals({ noSurat, approvedBy }, isApproved);
+    }
   }
 
   if (btnPreviewSurat) {
@@ -12680,6 +12690,117 @@ function handleSuratJenisChange() {
   handleSuratKeperluanChange();
 }
 
+/**
+ * Mengatur tampilan visual Surat Pengantar berdasarkan status persetujuan (Ketua RT / Admin 1)
+ * QRIS / QR Digital Sign hanya muncul jika surat telah disetujui untuk mencegah penyalahgunaan.
+ */
+function applySuratApprovalVisuals(suratData, isApproved) {
+  // 1. Elemen Lembar Cetak / Pratinjau Halaman Langsung (Inpage)
+  const inpageQr = document.getElementById('inpage-surat-qrcode');
+  const inpagePendingBox = document.getElementById('inpage-surat-pending-box');
+  const inpageBadgeSigned = document.getElementById('inpage-surat-badge-signed');
+  const inpageBadgePending = document.getElementById('inpage-surat-badge-pending');
+  const inpageBanner = document.getElementById('inpage-surat-approval-banner');
+
+  // 2. Elemen Lembar Cetak Modal
+  const printQr = document.getElementById('print-surat-qrcode');
+  const printPendingBox = document.getElementById('print-surat-pending-box');
+  const printBadgeSigned = document.getElementById('print-surat-badge-signed');
+  const printBadgePending = document.getElementById('print-surat-badge-pending');
+
+  const safeNo = (suratData && suratData.noSurat) ? suratData.noSurat : '';
+  const approverName = (suratData && suratData.approvedBy) ? suratData.approvedBy : 'Ketua RT.001 / Admin 1';
+
+  if (isApproved) {
+    if (inpageQr) {
+      inpageQr.classList.remove('is-pending');
+      inpageQr.style.display = 'flex';
+    }
+    if (inpagePendingBox) inpagePendingBox.style.display = 'none';
+    if (inpageBadgeSigned) inpageBadgeSigned.style.display = 'inline-block';
+    if (inpageBadgePending) inpageBadgePending.style.display = 'none';
+
+    if (printQr) {
+      printQr.classList.remove('is-pending');
+      printQr.style.display = 'flex';
+    }
+    if (printPendingBox) printPendingBox.style.display = 'none';
+    if (printBadgeSigned) printBadgeSigned.style.display = 'inline-block';
+    if (printBadgePending) printBadgePending.style.display = 'none';
+
+    if (inpageBanner) {
+      inpageBanner.style.display = 'block';
+      inpageBanner.innerHTML = `
+        <div style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.4); border-radius:10px; padding:10px 14px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:32px; height:32px; border-radius:8px; background:rgba(16,185,129,0.25); color:#34d399; display:flex; align-items:center; justify-content:center; font-size:1.1rem;">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+              <div style="font-weight:700; color:#34d399; font-size:0.88rem;">SURAT RESMI TELAH DISETUJUI &amp; SAH</div>
+              <div style="font-size:0.75rem; color:#cbd5e1;">QR Code Digital Sign aktif &bull; Disahkan oleh: <strong style="color:#f8fafc;">${approverName}</strong></div>
+            </div>
+          </div>
+          <span class="badge-pill badge-emerald" style="font-size:0.72rem; padding:4px 10px;">
+            <i class="fa-solid fa-stamp"></i> SAH &bull; RT.001
+          </span>
+        </div>
+      `;
+    }
+  } else {
+    // Belum disetujui (Draft)
+    if (inpageQr) {
+      inpageQr.classList.add('is-pending');
+      inpageQr.style.display = 'none';
+    }
+    if (inpagePendingBox) inpagePendingBox.style.display = 'block';
+    if (inpageBadgeSigned) inpageBadgeSigned.style.display = 'none';
+    if (inpageBadgePending) inpageBadgePending.style.display = 'inline-block';
+
+    if (printQr) {
+      printQr.classList.add('is-pending');
+      printQr.style.display = 'none';
+    }
+    if (printPendingBox) printPendingBox.style.display = 'block';
+    if (printBadgeSigned) printBadgeSigned.style.display = 'none';
+    if (printBadgePending) printBadgePending.style.display = 'inline-block';
+
+    if (inpageBanner) {
+      inpageBanner.style.display = 'block';
+      inpageBanner.innerHTML = `
+        <div style="background:linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(180,83,9,0.12) 100%); border:1px solid rgba(245,158,11,0.45); border-radius:10px; padding:12px 14px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+          <div style="display:flex; align-items:flex-start; gap:10px; max-width:650px;">
+            <div style="width:34px; height:34px; border-radius:8px; background:rgba(245,158,11,0.25); color:#fbbf24; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; margin-top:2px;">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <div>
+              <div style="font-weight:700; color:#fbbf24; font-size:0.88rem;">STATUS: DRAFT &bull; MENUNGGU PERSETUJUAN KETUA RT / ADMIN 1</div>
+              <div style="font-size:0.75rem; color:#cbd5e1; margin-top:2px; line-height:1.4;">
+                Untuk menghindari penyalahgunaan, <strong>QRIS / QR Code Digital Sign</strong> disembunyikan dan baru aktif setelah disetujui oleh <strong>Ketua RT (Maryanto)</strong> atau <strong>Admin 1 (Bendahara 1)</strong>.
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-emerald btn-sm" onclick="requestApproveSuratByNo('${safeNo}')" style="font-size:0.8rem; padding:6px 14px; font-weight:600; white-space:nowrap; box-shadow:0 2px 8px rgba(16,185,129,0.3);">
+            <i class="fa-solid fa-signature"></i> Otorisasi &amp; Setujui Surat
+          </button>
+        </div>
+      `;
+    }
+  }
+}
+
+function requestApproveSuratByNo(noSurat) {
+  if (!state.suratRegister || !noSurat) return;
+  const idx = state.suratRegister.findIndex(s => s.noSurat && s.noSurat.replace(/\s+/g, '') === noSurat.replace(/\s+/g, ''));
+  if (idx !== -1) {
+    requestApproveSurat(idx);
+  } else {
+    if (typeof showToast === 'function') {
+      showToast('Data surat tidak ditemukan di register!', 'warning');
+    }
+  }
+}
+
 function handleGenerateSuratInPage() {
   const resident = state.currentVerifiedResident || (state.residents && state.residents[0]) || { name: 'Bapak Wageyanto' };
   const selKeperluan = document.getElementById('surat-inpage-keperluan');
@@ -12762,8 +12883,17 @@ function handleGenerateSuratInPage() {
     baseUrl = 'https://mydowndrive-ops.github.io/WebAppRT001/';
   }
   const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(noSurat)}&nama=${encodeURIComponent(nama)}&nik=${encodeURIComponent(nik)}&kep=${encodeURIComponent(keperluan)}&tgl=${encodeURIComponent(tglStr)}&sig=${encodeURIComponent(sig)}`;
+  
+  const isAuthAdmin = (state.currentUser === 'b1' || state.currentUser === 'pengurus');
+  const isApproved = isAuthAdmin;
+  const status = isApproved ? 'Sah & Tervalidasi' : 'Menunggu Persetujuan';
+  const approvedBy = isApproved ? (state.currentUser === 'b1' ? 'Admin 1 (Bendahara 1)' : 'Ketua RT.001 (Maryanto)') : null;
+  const approvedAt = isApproved ? new Date().toISOString() : null;
+
   renderSuratQRCode('inpage-surat-qrcode', verifyUrl, { no: noSurat, nama, nik, kep: keperluan, tgl: tglStr, sig });
-  recordSuratToRegister({ noSurat, nama, nik, keperluan, tglStr, sig, tujuan });
+  renderSuratQRCode('print-surat-qrcode', verifyUrl, { no: noSurat, nama, nik, kep: keperluan, tgl: tglStr, sig });
+  recordSuratToRegister({ noSurat, nama, nik, keperluan, tglStr, sig, tujuan, isApproved, status, approvedBy, approvedAt });
+  applySuratApprovalVisuals({ noSurat, approvedBy }, isApproved);
 
   // Show live preview box
   const previewBox = document.getElementById('surat-live-preview-box');
@@ -12772,7 +12902,11 @@ function handleGenerateSuratInPage() {
     previewBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  showToast('📄 Surat pengantar berhasil dibuat dengan KOP resmi dan QR Digital Sign! Anda dapat langsung mencetaknya.', 'success');
+  if (isApproved) {
+    showToast('📄 Surat pengantar disahkan dengan KOP resmi dan QR Digital Sign aktif!', 'success');
+  } else {
+    showToast('📝 Draft surat berhasil dibuat! Menunggu persetujuan Ketua RT atau Admin 1 sebelum QR Digital Sign aktif.', 'warning');
+  }
 }
 
 function printSuratInPage() {
@@ -12880,6 +13014,7 @@ function generateSuratSignature(noSurat, nama, nik, keperluan, tglStr) {
 
 /**
  * Memvalidasi apakah data surat cocok dengan token signature dan register RT
+ * Serta memverifikasi apakah surat sudah mendapatkan persetujuan sah Ketua RT / Admin 1
  */
 function verifySuratAuthenticity(noSurat, nama, nik, keperluan, tglStr, providedSig) {
   const cleanSig = (providedSig || '').trim().toUpperCase();
@@ -12901,12 +13036,33 @@ function verifySuratAuthenticity(noSurat, nama, nik, keperluan, tglStr, provided
 
   const isMatch = (cleanSig === expectedSig);
 
+  if (!isMatch) {
+    return {
+      isValid: false,
+      reason: 'TAMPERED',
+      message: 'PERINGATAN: Sidik jari digital TIDAK COCOK! Data dokumen terindikasi telah dimanipulasi/dipalsukan.',
+      isRegistered: !!registerEntry,
+      registerData: registerEntry,
+      expectedSig
+    };
+  }
+
+  // Cek apakah surat masih dalam status pending (belum disetujui Ketua RT atau Admin 1)
+  if (registerEntry && (registerEntry.isApproved === false || registerEntry.status === 'Menunggu Persetujuan')) {
+    return {
+      isValid: false,
+      reason: 'PENDING_APPROVAL',
+      message: 'PERHATIAN: Surat ini masih DRAFT / MENUNGGU PERSETUJUAN dari Ketua RT.001 atau Admin 1. QR Code Digital Sign belum berkekuatan hukum sah.',
+      isRegistered: true,
+      registerData: registerEntry,
+      expectedSig
+    };
+  }
+
   return {
-    isValid: isMatch,
-    reason: isMatch ? 'VALID' : 'TAMPERED',
-    message: isMatch
-      ? 'Dokumen dan Tanda Tangan Digital SAH & TERVERIFIKASI oleh Pengurus RT.001.'
-      : 'PERINGATAN: Sidik jari digital TIDAK COCOK! Data dokumen terindikasi telah dimanipulasi/dipalsukan.',
+    isValid: true,
+    reason: 'VALID',
+    message: 'Dokumen dan Tanda Tangan Digital SAH & TERVERIFIKASI oleh Pengurus RT.001.',
     isRegistered: !!registerEntry,
     registerData: registerEntry,
     expectedSig
@@ -12940,6 +13096,9 @@ function getSeedSuratRegister() {
       tujuan: 'Kantor Desa Simpangan',
       sig: generateSuratSignature(no1, nama1, nik1, kep1, tgl1),
       status: 'Sah & Tervalidasi',
+      isApproved: true,
+      approvedBy: 'Ketua RT.001 (Maryanto)',
+      approvedAt: '2026-09-18T09:30:00.000Z',
       createdAt: '2026-09-18T09:30:00.000Z'
     },
     {
@@ -12952,6 +13111,9 @@ function getSeedSuratRegister() {
       tujuan: 'Polsek Cikarang Utara',
       sig: generateSuratSignature(no2, nama2, nik2, kep2, tgl2),
       status: 'Sah & Tervalidasi',
+      isApproved: true,
+      approvedBy: 'Ketua RT.001 (Maryanto)',
+      approvedAt: '2026-09-21T10:15:00.000Z',
       createdAt: '2026-09-21T10:15:00.000Z'
     }
   ];
@@ -12959,6 +13121,8 @@ function getSeedSuratRegister() {
 
 /**
  * Menyimpan surat yang baru dibuat ke dalam Buku Register e-Surat RT.001
+ * Jika dibuat oleh warga/tamu, statusnya Menunggu Persetujuan (QR disembunyikan sampai disahkan)
+ * Jika dibuat oleh Ketua RT atau Admin 1, otomatis langsung Sah & Tervalidasi
  */
 function recordSuratToRegister(entry) {
   if (!state.suratRegister) state.suratRegister = [];
@@ -12969,9 +13133,18 @@ function recordSuratToRegister(entry) {
 
   const tglNormalized = entry.tgl || entry.tglStr || (typeof formatDateIndo === 'function' ? formatDateIndo(new Date()) : '21 September 2026');
 
+  const isAuthAdmin = (state.currentUser === 'b1' || state.currentUser === 'pengurus');
+  const defaultIsApproved = (entry.isApproved !== undefined) ? entry.isApproved : isAuthAdmin;
+  const defaultStatus = entry.status || (defaultIsApproved ? 'Sah & Tervalidasi' : 'Menunggu Persetujuan');
+  const defaultApprovedBy = entry.approvedBy || (defaultIsApproved ? (state.currentUser === 'b1' ? 'Admin 1 (Bendahara 1)' : 'Ketua RT.001 (Maryanto)') : null);
+  const defaultApprovedAt = entry.approvedAt || (defaultIsApproved ? new Date().toISOString() : null);
+
   const recordData = {
     id: entry.id || `SURAT-${Date.now()}`,
-    status: 'Sah & Tervalidasi',
+    status: defaultStatus,
+    isApproved: defaultIsApproved,
+    approvedBy: defaultApprovedBy,
+    approvedAt: defaultApprovedAt,
     createdAt: new Date().toISOString(),
     tujuan: entry.tujuan || 'Kantor Desa Simpangan',
     ...entry,
@@ -13030,6 +13203,22 @@ function renderBukuRegisterSurat() {
       : (item.tglStr || (item.createdAt ? formatDateIndo(new Date(item.createdAt)) : '21 September 2026'));
     item.tgl = tglDisplay;
 
+    const isApproved = (item.isApproved === true || item.status === 'Sah & Tervalidasi');
+
+    const statusBadge = isApproved
+      ? `<span class="badge-pill badge-emerald" style="font-size:0.7rem; padding:2px 8px; font-family:monospace;" title="Disetujui oleh: ${item.approvedBy || 'Ketua RT / Admin 1'} | Token: ${item.sig}">
+           <i class="fa-solid fa-circle-check"></i> SAH &bull; SIG-${(item.sig || '').substring(0, 8)}
+         </span>`
+      : `<span class="badge-pill" style="font-size:0.7rem; padding:2px 8px; background:rgba(245,158,11,0.18); color:#fbbf24; border:1px dashed rgba(245,158,11,0.5);" title="Draft surat belum disetujui, QR Code disembunyikan">
+           <i class="fa-solid fa-clock-rotate-left"></i> Menunggu Persetujuan
+         </span>`;
+
+    const approveButton = !isApproved
+      ? `<button type="button" class="btn btn-emerald btn-sm btn-action-approve-surat" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem;" title="Setujui & Terbitkan QR Code (Ketua RT / Admin 1)">
+           <i class="fa-solid fa-signature"></i> Setujui
+         </button>`
+      : '';
+
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>
@@ -13045,13 +13234,16 @@ function renderBukuRegisterSurat() {
         <span style="color:#fbbf24; font-size:0.83rem; font-weight:600;">${item.keperluan || '-'}</span>
       </td>
       <td style="text-align:center;">
-        <span class="badge-pill badge-emerald" style="font-size:0.7rem; padding:2px 8px; font-family:monospace;" title="Token SHA-256: ${item.sig}">
-          <i class="fa-solid fa-circle-check"></i> SIG-${(item.sig || '').substring(0, 8)}
-        </span>
+        ${statusBadge}
+        ${isApproved && item.approvedBy ? `<div style="font-size:0.65rem; color:#6ee7b7; margin-top:2px;"><i class="fa-solid fa-user-check"></i> ${item.approvedBy}</div>` : ''}
       </td>
       <td style="text-align:center;">
-        <div style="display:inline-flex; align-items:center; justify-content:center; gap:6px;">
-          <button type="button" class="btn btn-outline-cyan btn-sm btn-action-verify-row" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem;" title="Cek Sertifikat Validasi">
+        <div style="display:inline-flex; align-items:center; justify-content:center; gap:5px; flex-wrap:nowrap;">
+          ${approveButton}
+          <button type="button" class="btn btn-outline btn-sm btn-action-view-surat" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem;" title="Buka Pratinjau Surat Ini">
+            <i class="fa-solid fa-eye"></i> Lihat
+          </button>
+          <button type="button" class="btn btn-outline-cyan btn-sm btn-action-verify-row" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem;" title="Cek Sertifikat Validasi Digital">
             <i class="fa-solid fa-shield-check"></i> Cek Sah
           </button>
           <button type="button" class="btn btn-outline-danger btn-sm btn-action-delete-surat" data-idx="${idx}" style="padding:3px 8px; font-size:0.75rem; color:#f87171; border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.08);" title="Hapus Surat (Khusus Admin 1 / Bendahara 1)">
@@ -13061,6 +13253,22 @@ function renderBukuRegisterSurat() {
       </td>
     `;
     tbody.appendChild(tr);
+  });
+
+  // Event listener tombol Setujui per baris register
+  tbody.querySelectorAll('.btn-action-approve-surat').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      requestApproveSurat(idx);
+    });
+  });
+
+  // Event listener tombol Lihat Surat per baris register
+  tbody.querySelectorAll('.btn-action-view-surat').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      viewSuratInPageFromRegister(idx);
+    });
   });
 
   // Event listener tombol Cek Sah per baris register
@@ -13230,6 +13438,171 @@ function executeClearAllSurat() {
   }
 }
 
+let pendingSuratApprovalIdx = null;
+
+/**
+ * Meminta persetujuan pengesahan surat pengantar oleh Ketua RT (Maryanto) atau Admin 1 (Bendahara 1)
+ */
+function requestApproveSurat(idx) {
+  if (!state.suratRegister || !state.suratRegister[idx]) return;
+  const target = state.suratRegister[idx];
+
+  // 1. Jika pengguna saat ini SUDAH login aktif sebagai Ketua RT (pengurus) atau Admin 1 (b1)
+  if (state.currentUser === 'pengurus' || state.currentUser === 'b1') {
+    const roleName = state.currentUser === 'pengurus' ? 'Ketua RT.001 (Maryanto)' : 'Admin 1 (Bendahara 1)';
+    const confirmMsg = `Persetujuan & Pengesahan Surat:\n\n• No Surat: ${target.noSurat}\n• Pemohon: ${target.nama} (${target.nik})\n• Keperluan: ${target.keperluan}\n\nSetujui surat ini dan terbitkan QR Code Digital Sign resmi selaku ${roleName}?`;
+    if (confirm(confirmMsg)) {
+      executeApproveSurat(idx, roleName);
+    }
+    return;
+  }
+
+  // 2. Jika belum login sebagai Ketua RT / Admin 1 (warga / publik):
+  // Tampilkan modal PIN otorisasi Ketua RT (3333) atau Admin 1 (1111)
+  pendingSuratApprovalIdx = idx;
+  const detailEl = document.getElementById('auth-approve-action-detail');
+  if (detailEl) {
+    detailEl.innerHTML = `
+      <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:4px;">Surat yang akan disetujui:</div>
+      <div style="font-weight:700; color:#38bdf8; font-size:0.85rem;">${target.noSurat || '-'}</div>
+      <div style="color:#f8fafc; font-size:0.83rem; margin-top:2px;">${target.nama || '-'} (${target.nik || '-'})</div>
+      <div style="color:#fbbf24; font-size:0.78rem; margin-top:2px;">Keperluan: ${target.keperluan || '-'}</div>
+    `;
+  }
+  resetAndOpenAuthApproveModal();
+}
+
+function resetAndOpenAuthApproveModal() {
+  const pinInput = document.getElementById('auth-approve-pin-input');
+  const errorMsg = document.getElementById('auth-approve-error-msg');
+  if (pinInput) pinInput.value = '';
+  if (errorMsg) errorMsg.style.display = 'none';
+  if (typeof openModal === 'function') {
+    openModal('modal-auth-approve-surat');
+  } else {
+    const m = document.getElementById('modal-auth-approve-surat');
+    if (m) m.style.display = 'flex';
+  }
+  setTimeout(() => pinInput?.focus(), 150);
+}
+
+function submitAdminSuratApprovalAuth() {
+  const pinInput = document.getElementById('auth-approve-pin-input');
+  const errorMsg = document.getElementById('auth-approve-error-msg');
+  const enteredPin = (pinInput?.value || '').trim();
+
+  const validPinB1 = (state.accountPins && state.accountPins.b1) ? state.accountPins.b1 : '1111';
+  const validPinPengurus = (state.accountPins && state.accountPins.pengurus) ? state.accountPins.pengurus : '3333';
+
+  let approver = null;
+  if (enteredPin === validPinPengurus) {
+    approver = 'Ketua RT.001 (Maryanto)';
+  } else if (enteredPin === validPinB1) {
+    approver = 'Admin 1 (Bendahara 1)';
+  }
+
+  if (!approver) {
+    if (errorMsg) errorMsg.style.display = 'block';
+    if (pinInput) {
+      pinInput.value = '';
+      pinInput.focus();
+    }
+    if (typeof showToast === 'function') {
+      showToast('❌ Akses ditolak: PIN salah! Hanya Ketua RT (3333) atau Admin 1 (1111) yang dapat menyetujui surat.', 'danger');
+    }
+    return;
+  }
+
+  // Otorisasi Sukses
+  if (typeof closeModal === 'function') {
+    closeModal('modal-auth-approve-surat');
+  } else {
+    const m = document.getElementById('modal-auth-approve-surat');
+    if (m) m.style.display = 'none';
+  }
+
+  if (pendingSuratApprovalIdx !== null) {
+    executeApproveSurat(pendingSuratApprovalIdx, approver);
+    pendingSuratApprovalIdx = null;
+  }
+}
+
+function executeApproveSurat(idx, approver) {
+  if (!state.suratRegister || !state.suratRegister[idx]) return;
+  const target = state.suratRegister[idx];
+  target.isApproved = true;
+  target.status = 'Sah & Tervalidasi';
+  target.approvedBy = approver;
+  target.approvedAt = new Date().toISOString();
+
+  saveState();
+  renderBukuRegisterSurat();
+
+  // Jika surat yang disetujui sedang tampil di inpage live preview atau preview modal:
+  const curNo = document.getElementById('inpage-surat-nomor')?.textContent?.replace(/^Nomor:\s*/i, '');
+  if (curNo && curNo.replace(/\s+/g, '') === target.noSurat.replace(/\s+/g, '')) {
+    applySuratApprovalVisuals(target, true);
+    let baseUrl = window.location.href.split('?')[0].split('#')[0];
+    if (!baseUrl.startsWith('http')) {
+      baseUrl = 'https://mydowndrive-ops.github.io/WebAppRT001/';
+    }
+    const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(target.noSurat)}&nama=${encodeURIComponent(target.nama)}&nik=${encodeURIComponent(target.nik)}&kep=${encodeURIComponent(target.keperluan)}&tgl=${encodeURIComponent(target.tgl)}&sig=${encodeURIComponent(target.sig)}`;
+    renderSuratQRCode('inpage-surat-qrcode', verifyUrl, { no: target.noSurat, nama: target.nama, nik: target.nik, kep: target.keperluan, tgl: target.tgl, sig: target.sig });
+    renderSuratQRCode('print-surat-qrcode', verifyUrl, { no: target.noSurat, nama: target.nama, nik: target.nik, kep: target.keperluan, tgl: target.tgl, sig: target.sig });
+  }
+
+  if (typeof showToast === 'function') {
+    showToast(`✅ Surat ${target.noSurat} berhasil disetujui & disahkan oleh ${approver}! QR Code Digital Sign kini resmi aktif.`, 'success');
+  }
+}
+
+function viewSuratInPageFromRegister(idx) {
+  if (!state.suratRegister || !state.suratRegister[idx]) return;
+  const rowData = state.suratRegister[idx];
+
+  if (typeof switchPortalSubTab === 'function') {
+    switchPortalSubTab('surat');
+  }
+
+  const elNomor = document.getElementById('inpage-surat-nomor');
+  const elNama = document.getElementById('inpage-preview-nama');
+  const elNik = document.getElementById('inpage-preview-nik');
+  const elKeperluan = document.getElementById('inpage-preview-keperluan');
+  const elTgl = document.getElementById('inpage-preview-tanggal');
+  const elTujuan = document.getElementById('inpage-preview-tujuan');
+  const elTtdNama = document.getElementById('inpage-preview-ttd-nama');
+
+  if (elNomor) elNomor.textContent = `Nomor: ${rowData.noSurat}`;
+  if (elNama) elNama.textContent = rowData.nama;
+  if (elNik) elNik.textContent = rowData.nik;
+  if (elKeperluan) elKeperluan.textContent = rowData.keperluan;
+  if (elTgl) elTgl.textContent = rowData.tgl;
+  if (elTujuan) elTujuan.textContent = rowData.tujuan || 'Instansi Terkait';
+  if (elTtdNama) elTtdNama.textContent = rowData.nama;
+
+  const isApproved = (rowData.isApproved === true || rowData.status === 'Sah & Tervalidasi');
+
+  let baseUrl = window.location.href.split('?')[0].split('#')[0];
+  if (!baseUrl.startsWith('http')) {
+    baseUrl = 'https://mydowndrive-ops.github.io/WebAppRT001/';
+  }
+  const verifyUrl = `${baseUrl}?verify_surat=1&no=${encodeURIComponent(rowData.noSurat)}&nama=${encodeURIComponent(rowData.nama)}&nik=${encodeURIComponent(rowData.nik)}&kep=${encodeURIComponent(rowData.keperluan)}&tgl=${encodeURIComponent(rowData.tgl)}&sig=${encodeURIComponent(rowData.sig)}`;
+  renderSuratQRCode('inpage-surat-qrcode', verifyUrl, { no: rowData.noSurat, nama: rowData.nama, nik: rowData.nik, kep: rowData.keperluan, tgl: rowData.tgl, sig: rowData.sig });
+  renderSuratQRCode('print-surat-qrcode', verifyUrl, { no: rowData.noSurat, nama: rowData.nama, nik: rowData.nik, kep: rowData.keperluan, tgl: rowData.tgl, sig: rowData.sig });
+
+  applySuratApprovalVisuals(rowData, isApproved);
+
+  const previewBox = document.getElementById('surat-live-preview-box');
+  if (previewBox) {
+    previewBox.style.display = 'block';
+    previewBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  if (typeof showToast === 'function') {
+    showToast(`📄 Membuka surat ${rowData.noSurat} (${isApproved ? 'Telah Disetujui' : 'Menunggu Persetujuan'})`, 'info');
+  }
+}
+
 function renderSuratQRCode(containerId, verifyUrl, metadata) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -13352,6 +13725,43 @@ function openSuratVerificationModal(data) {
     if (modalBtnClose) {
       modalBtnClose.className = 'btn btn-emerald btn-sm';
     }
+  } else if (authResult.reason === 'PENDING_APPROVAL') {
+    // DOKUMEN BELUM DISETUJUI KETUA RT / ADMIN 1
+    if (modalHeader) modalHeader.style.background = 'linear-gradient(135deg, #78350f 0%, #b45309 50%, #d97706 100%)';
+    if (modalTitle) {
+      modalTitle.textContent = 'SURAT MENUNGGU PERSETUJUAN';
+      modalTitle.style.color = '#fef3c7';
+    }
+    if (modalSubtitle) modalSubtitle.textContent = 'Menunggu Pengesahan Resmi Ketua RT (Maryanto) / Admin 1';
+    if (modalIcon) {
+      modalIcon.className = 'fa-solid fa-clock-rotate-left';
+      modalIcon.style.color = '#fbbf24';
+    }
+    if (modalIconWrap) {
+      modalIconWrap.style.boxShadow = '0 0 20px rgba(245,158,11,0.4)';
+    }
+    if (alertBox) {
+      alertBox.style.background = 'rgba(245,158,11,0.15)';
+      alertBox.style.border = '1px solid rgba(245,158,11,0.4)';
+    }
+    if (alertIcon) {
+      alertIcon.innerHTML = '<i class="fa-solid fa-hourglass-half" style="color:#fbbf24;"></i>';
+    }
+    if (alertText) {
+      alertText.textContent = 'PERHATIAN: Surat pengantar ini berstatus DRAFT dan BELUM MENDAPATKAN PERSETUJUAN dari Ketua RT atau Admin 1. QR Code Digital Sign belum memiliki kekuatan hukum resmi.';
+      alertText.style.color = '#fde68a';
+    }
+    if (elToken) {
+      elToken.textContent = `SIG-${data.sig || authResult.expectedSig} (MENUNGGU PERSETUJUAN)`;
+      elToken.style.color = '#fbbf24';
+      elToken.style.border = '1px solid rgba(245,158,11,0.4)';
+    }
+    if (elDbStatus) {
+      elDbStatus.innerHTML = '<span style="color:#fbbf24; font-weight:700;"><i class="fa-solid fa-clock-rotate-left"></i> Belum Disetujui (Menunggu Otorisasi)</span>';
+    }
+    if (modalBtnClose) {
+      modalBtnClose.className = 'btn btn-amber btn-sm';
+    }
   } else {
     // DOKUMEN PALSU / TELAH DIMANIPULASI
     if (modalHeader) modalHeader.style.background = 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #dc2626 100%)';
@@ -13450,6 +13860,11 @@ window.renderBukuRegisterSurat = renderBukuRegisterSurat;
 window.deleteSuratFromRegister = deleteSuratFromRegister;
 window.clearAllSuratRegister = clearAllSuratRegister;
 window.submitAdmin1SuratAuth = submitAdmin1SuratAuth;
+window.requestApproveSurat = requestApproveSurat;
+window.requestApproveSuratByNo = requestApproveSuratByNo;
+window.submitAdminSuratApprovalAuth = submitAdminSuratApprovalAuth;
+window.viewSuratInPageFromRegister = viewSuratInPageFromRegister;
+window.applySuratApprovalVisuals = applySuratApprovalVisuals;
 
 // ==================== DEDICATED VIEW: KOTAK ASPIRASI & MASUKAN WARGA ====================
 

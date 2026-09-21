@@ -13884,6 +13884,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Pastikan hanya 1 QR code tunggal (img) yang tampil, canvas qrcodejs disembunyikan agar tidak dobel/berdempetan */
+#inpage-surat-qrcode.is-pending,
+#print-surat-qrcode.is-pending {
+  display: none !important;
+}
+
 #inpage-surat-qrcode canvas,
 #print-surat-qrcode canvas {
   display: none !important;
