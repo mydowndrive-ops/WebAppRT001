@@ -6440,7 +6440,7 @@ function setupLoginPortal() {
         directHeader.style.display = 'block';
         if (directBadge) directBadge.className = 'direct-portal-badge badge-warga-glow';
         if (directIcon) directIcon.className = 'fa-solid fa-house-chimney-user text-cyan';
-        if (directName) directName.textContent = 'Portal Mandiri Warga RT.001';
+        if (directName) directName.textContent = 'Selamat datang di WebApp RT.001/013';
         if (directTitle) directTitle.textContent = 'Masuk Portal Warga';
         if (directSubtitle) directSubtitle.textContent = 'Masukkan PIN Anda untuk cek iuran & layanan mandiri';
       }
@@ -11430,6 +11430,12 @@ function setupResidentAccountsEvents() {
 function renderPortalWarga() {
   const resident = state.currentVerifiedResident || (state.residents && state.residents[0]);
   if (!resident) return;
+
+  // Pastikan judul halaman portal warga selalu ter-update
+  const pTitle = document.getElementById('page-title');
+  if (pTitle) {
+    pTitle.textContent = 'Selamat datang di WebApp RT.001/013';
+  }
 
   // 1. Hero Card Info
   const heroName = document.getElementById('pw-hero-name');
