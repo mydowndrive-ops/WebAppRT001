@@ -2531,6 +2531,16 @@
             <h1 id="page-title">Dashboard Eksekutif</h1>
             <p id="page-subtitle">Ringkasan Arus Kas & Pos Anggaran Terkini</p>
           </div>
+          <script>
+            (function() {
+              try {
+                if (sessionStorage.getItem('RT001_LOGIN_SESSION_V1') === 'warga') {
+                  var pt = document.getElementById('page-title');
+                  if (pt) pt.textContent = 'Selamat datang di WebApp RT.001/013';
+                }
+              } catch(e) {}
+            })();
+          </script>
         </div>
 
         <div class="header-right">

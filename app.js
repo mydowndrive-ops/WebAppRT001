@@ -7987,6 +7987,20 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAppHistoryNavigation();
   checkUrlForSuratVerification();
 
+  // Safety Observer: cegah teks lama muncul kembali pada judul portal warga
+  const pTitleEl = document.getElementById('page-title');
+  if (pTitleEl) {
+    if (pTitleEl.textContent.trim() === 'Portal Mandiri Warga RT.001') {
+      pTitleEl.textContent = 'Selamat datang di WebApp RT.001/013';
+    }
+    const titleObs = new MutationObserver(() => {
+      if (pTitleEl.textContent.trim() === 'Portal Mandiri Warga RT.001') {
+        pTitleEl.textContent = 'Selamat datang di WebApp RT.001/013';
+      }
+    });
+    titleObs.observe(pTitleEl, { childList: true, characterData: true, subtree: true });
+  }
+
   // Check session → if logged in, go to admin dashboard/portal; else show public landing page
   if (isLoggedIn()) {
     const sessionRole = sessionStorage.getItem(LOGIN_SESSION_KEY);
