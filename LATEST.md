@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 21 September 2026 (20:10 WIB)  
-**Versi Rilis Aktif:** `v2.9.52`  
+**Terakhir Diperbarui:** 23 September 2026 (00:52 WIB)  
+**Versi Rilis Aktif:** `v2.9.53`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,19 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 💳 Integrasi Payment Gateway Pakasir API v2: Bayar Iuran Online QRIS & Virtual Account Otomatis Ter-update (Update v2.9.52 - 21 Sept 2026)
+### 1. 🏷️ Penyesuaian Kalimat Header Portal Warga: "Selamat datang di WebApp RT.001/013" (Update v2.9.53 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Dibagian ini ganti kalimat 'Portal Mandiri Warga RT.001' menjadi 'Selamat datang di WebApp RT.001/013'"*
+- **Hasil Implementasi**:
+  1. **Pembaruan Top Header Title Portal Warga (`app.js`)**:
+     - Pada kamus judul navigasi `titles['portal-warga'].title`, teks resmi diubah dari `Portal Mandiri Warga RT.001` menjadi **`Selamat datang di WebApp RT.001/013`**.
+     - Sub-judul tetap terjaga: *"Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan"*.
+  2. **Sinkronisasi Cache PWA & Cache Busting**:
+     - `sw.js`: `CACHE_NAME` dinaikkan ke `rt-finsmart-cache-v2.9.53` dengan pembaruan referensi `./styles.css?v=2.9.53` dan `./app.js?v=2.9.53`.
+     - `app.js`: `CURRENT_CACHE_NAME` dan registrasi Service Worker diselaraskan ke `v2.9.53`.
+     - `index.html`: Versi stylesheet dan skrip diselaraskan ke `v2.9.53` untuk memastikan browser klien langsung memperbarui cache tanpa tertahan.
+
+### 2. 💳 Integrasi Payment Gateway Pakasir API v2: Bayar Iuran Online QRIS & Virtual Account Otomatis Ter-update (Update v2.9.52 - 21 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Tolong bantu saya menambahkan fitur integrasi payment gateway 'Pakasir' (pakasir.com) ke dalam proyek web RT-FinSmart ini agar warga dapat membayar iuran wajib secara online (melalui QRIS/Virtual Account) dan statusnya terupdate secara otomatis."*
 - **Arsitektur & Komponen yang Dibuat**:

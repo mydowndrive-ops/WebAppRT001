@@ -4334,7 +4334,7 @@ function navigateToView(viewId) {
     'aspirasi-warga': { title: 'Kotak Aspirasi & Masukan Warga', sub: 'Penyampaian Saran, Ide Kreatif & Masukan Warga Demi Kemajuan RT.001' },
     'pengurus-struktur': { title: 'Bagan & Struktur Pengurus RT', sub: 'Tata Kelola Organisasi RT.001 / RW.013 Graha Asri Periode 2022–2027' },
     'aset-rt': { title: 'Inventaris & Aset RT.001', sub: 'Pencatatan Sarana Prasarana & Nilai Perolehan Aset Lingkungan Graha Asri' },
-    'portal-warga': { title: 'Portal Mandiri Warga RT.001', sub: 'Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan' },
+    'portal-warga': { title: 'Selamat datang di WebApp RT.001/013', sub: 'Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan' },
     'arsip-surat': { title: 'Buku Register & Arsip e-Surat Warga', sub: 'Pusat Otorisasi, Verifikasi Digital Sign & Arsip Permohonan Surat RT.001' }
   };
 
@@ -5141,10 +5141,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.49';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.53';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.49')
+      navigator.serviceWorker.register('sw.js?v=2.9.53')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
