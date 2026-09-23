@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (18:35 WIB)  
-**Versi Rilis Aktif:** `v2.9.71`  
+**Terakhir Diperbarui:** 23 September 2026 (18:40 WIB)  
+**Versi Rilis Aktif:** `v2.9.72`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,22 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🔐 Penyempurnaan Teks & Pembersihan Tombol Demo pada Modal Login Warga (Update v2.9.71 - 23 Sept 2026)
+### 1. 🗑️ Penghapusan Tabel Catatan Arus Transaksi Kas Terkini dari Pusat Transparansi (Update v2.9.72 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Hapus/hilangkan tampilan kotak ini dari halaman Pusat Transparansi Kas & Keuangan RT.001"*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Penghapusan Bagian Catatan Arus Transaksi Kas**:
+     - Elemen kontainer `.public-tx-section` beserta kartu tabel mutasi kas (`public-tx-table-wrap`) telah dihapus secara bersih dari subview publik `Pusat Transparansi Kas & Keuangan RT.001` (`#subview-layanan` di `index.html`).
+  2. **Tampilan Halaman Lebih Padat & Terfokus**:
+     - Halaman kini menampilkan informasi keuangan yang paling esensial dan representatif:
+       - 📈 **Grafik Performa Iuran Bulanan 1 Tahun Berjalan** (posisi teratas).
+       - 🏛️ **4 Kartu Saldo Kas Eksekutif Terkonsolidasi**.
+       - 📑 **6 Pos Anggaran Terbuka Kas RT.001**.
+  3. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.72` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.72` dan `app.js?v=2.9.72`.
+
+### 2. 🔐 Penyempurnaan Teks & Pembersihan Tombol Demo pada Modal Login Warga (Update v2.9.71 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Diportal login warga, hilangkan kotak dan teks 'Coba Akses Akun Demo(Bpk.Wageyanto-B6 No.2)'. Ganti teks 'Info Password Akun rumah warga silahkan hubungi admin RT' menjadi 'Info Password Akun silakan hubungi admin'. Ganti Teks 'Masukkan PIN Anda untuk cek iuran & layanan mandiri' menjadi 'Masukkan paswword Anda untuk bisa cek iuran,Detail info Keuangan,Jadwal Ronda & layanan mandiri'"*
 - **Hasil Implementasi & Optimalisasi**:
