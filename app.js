@@ -5204,10 +5204,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.64';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.65';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.64')
+      navigator.serviceWorker.register('sw.js?v=2.9.65')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -8513,9 +8513,8 @@ function renderJimpitan() {
     if (btnExpense) btnExpense.style.display = 'inline-flex';
 
     if (roleBadgeEl) {
-      roleBadgeEl.style.display = 'inline-flex';
-      roleBadgeEl.innerHTML = '<i class="fa-solid fa-crown text-gold"></i> Bendahara 1 Utama (Akses Penuh)';
-      roleBadgeEl.className = 'jimp-role-badge badge-b1-mode';
+      roleBadgeEl.style.display = 'none';
+      roleBadgeEl.innerHTML = '';
     }
   }
 
