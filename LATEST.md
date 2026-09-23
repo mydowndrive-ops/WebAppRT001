@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (16:15 WIB)  
-**Versi Rilis Aktif:** `v2.9.65`  
+**Terakhir Diperbarui:** 23 September 2026 (17:00 WIB)  
+**Versi Rilis Aktif:** `v2.9.66`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,19 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🛡️ Penghapusan Badge "Bendahara 1 Utama (Akses Penuh)" di Menu Jimpitan & Shortcut Pengaturan Pembagian Pos (Update v2.9.65 - 23 Sept 2026)
+### 1. 🔄 Reposisi Panel "INFAQ ANAK YATIM" di Bawah Kotak "Pemasukan NON Iuran" (Update v2.9.66 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Agar warga tidak bingung membaca tabel/kotaknya. Pindahkan kotak INFAQ ANAK YATIM dibawahnya kotak 'Pemasukan NON Iuran'"*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Penataan Hierarki Visual yang Intuitif**:
+     - Kotak KPI Utama Kas Non-Iuran Umum (Total Pemasukan, Total Pengeluaran, Saldo Sekarang, Mutasi Terakhir) kini berada di urutan teratas tepat di bawah banner header.
+     - Panel Khusus **"INFAQ ANAK YATIM"** (Penerimaan, Penyaluran, Saldo Terbaru) kini diposisikan tepat di bawah rekapitulasi utama kas non-iuran.
+     - Alur baca warga menjadi sangat runtut: Pembacaan Kas Non-Iuran Utama -> Sub-Kas Khusus Amanah Yatim -> Filter Pencarian -> Tabel Riwayat Transaksi.
+  2. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.66` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.66` dan `app.js?v=2.9.66`.
+
+### 2. 🛡️ Penghapusan Badge "Bendahara 1 Utama (Akses Penuh)" di Menu Jimpitan & Shortcut Pengaturan Pembagian Pos (Update v2.9.65 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Di dasboard admin1, dimenu Uang Jimpitan hapus kotak kapsul dan teks Bendahara 1 Utama (Akses Penuh)"*
   - *"Untuk pengaturan pembagian iuran per pos anggaran dimana ?"*

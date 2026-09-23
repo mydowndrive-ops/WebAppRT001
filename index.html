@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.65">
+  <link rel="stylesheet" href="styles.css?v=2.9.66">
 </head>
 <body>
 
@@ -2982,8 +2982,55 @@
           </div>
         </div>
 
+        <!-- KPI Cards: Pemasukkan (Penerimaan), Pengeluaran, Saldo Kas Non-Iuran -->
+        <div class="jimpitan-stats-grid" style="margin-top: 1.5rem;">
+          <div class="jimpitan-stat-card">
+            <div class="jimpitan-icon-box" style="background: rgba(16,185,129,0.18);">
+              <i class="fa-solid fa-arrow-trend-up text-emerald" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:rgba(52,211,153,0.75); margin-bottom:4px; font-weight:700; letter-spacing:0.6px;">TOTAL PEMASUKKAN (PENERIMAAN)</p>
+              <h3 id="non-dues-total-income" style="font-size:1.35rem; font-family:var(--font-heading); color:var(--emerald-400);">Rp 0</h3>
+              <small id="non-dues-income-count" style="color:rgba(52,211,153,0.55);">0 transaksi masuk</small>
+            </div>
+          </div>
+
+          <div class="jimpitan-stat-card">
+            <div class="jimpitan-icon-box" style="background: rgba(244,63,94,0.15);">
+              <i class="fa-solid fa-arrow-trend-down text-rose" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:rgba(251,113,133,0.75); margin-bottom:4px; font-weight:700; letter-spacing:0.6px;">TOTAL PENGELUARAN</p>
+              <h3 id="non-dues-total-expense" style="font-size:1.35rem; font-family:var(--font-heading); color:var(--rose-400);">Rp 0</h3>
+              <small id="non-dues-expense-count" style="color:rgba(251,113,133,0.55);">0 pos pengeluaran</small>
+            </div>
+          </div>
+
+          <div class="jimpitan-stat-card" style="border-color: rgba(245,158,11,0.35);">
+            <div class="jimpitan-icon-box" style="background: rgba(245,158,11,0.18);">
+              <i class="fa-solid fa-vault text-gold" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:rgba(251,191,36,0.78); margin-bottom:4px; font-weight:700; letter-spacing:0.6px;">SALDO SEKARANG</p>
+              <h3 id="non-dues-saldo" style="font-size:1.35rem; font-family:var(--font-heading); color:var(--gold-400);">Rp 0</h3>
+              <small style="color:rgba(251,191,36,0.55);">Pemasukan − Pengeluaran</small>
+            </div>
+          </div>
+
+          <div class="jimpitan-stat-card">
+            <div class="jimpitan-icon-box" style="background: rgba(6,182,212,0.18);">
+              <i class="fa-solid fa-calendar-check text-cyan" style="font-size:1.5rem;"></i>
+            </div>
+            <div>
+              <p style="font-size:0.75rem; color:rgba(34,211,238,0.75); margin-bottom:4px; font-weight:700; letter-spacing:0.6px;">MUTASI TERAKHIR</p>
+              <h3 id="non-dues-last-date" style="font-size:1.05rem; font-family:var(--font-heading); color:var(--text-primary);">Belum ada data</h3>
+              <small id="non-dues-last-info" style="color:rgba(34,211,238,0.55);">-</small>
+            </div>
+          </div>
+        </div>
+
         <!-- ==================== KOTAK KHUSUS: INFAQ ANAK YATIM ==================== -->
-        <div class="glass-panel luxury-gold-border" style="margin-top: 1.25rem; padding: 1.25rem 1.5rem; border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(6, 78, 59, 0.25) 0%, rgba(120, 53, 15, 0.2) 100%); border: 1.5px solid rgba(245, 158, 11, 0.45); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);">
+        <div class="glass-panel luxury-gold-border" style="margin-top: 1.5rem; padding: 1.25rem 1.5rem; border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(6, 78, 59, 0.25) 0%, rgba(120, 53, 15, 0.2) 100%); border: 1.5px solid rgba(245, 158, 11, 0.45); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; border-bottom: 1px dashed rgba(245, 158, 11, 0.3); padding-bottom: 0.85rem;">
             <div>
               <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
@@ -3048,53 +3095,6 @@
                 <h3 id="yatim-saldo" style="font-size: 1.45rem; font-family: var(--font-heading); color: #fbbf24; margin: 0;">Rp 0</h3>
                 <small style="color: rgba(253, 224, 71, 0.7); font-size: 0.75rem;">Penerimaan − Penyaluran</small>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- KPI Cards: Pemasukkan (Penerimaan), Pengeluaran, Saldo Kas Non-Iuran -->
-        <div class="jimpitan-stats-grid" style="margin-top: 1.25rem;">
-          <div class="jimpitan-stat-card">
-            <div class="jimpitan-icon-box" style="background: rgba(16,185,129,0.18);">
-              <i class="fa-solid fa-arrow-trend-up text-emerald" style="font-size:1.5rem;"></i>
-            </div>
-            <div>
-              <p style="font-size:0.75rem; color:rgba(52,211,153,0.75); margin-bottom:4px; font-weight:700; letter-spacing:0.6px;">TOTAL PEMASUKKAN (PENERIMAAN)</p>
-              <h3 id="non-dues-total-income" style="font-size:1.35rem; font-family:var(--font-heading); color:var(--emerald-400);">Rp 0</h3>
-              <small id="non-dues-income-count" style="color:rgba(52,211,153,0.55);">0 transaksi masuk</small>
-            </div>
-          </div>
-
-          <div class="jimpitan-stat-card">
-            <div class="jimpitan-icon-box" style="background: rgba(244,63,94,0.15);">
-              <i class="fa-solid fa-arrow-trend-down text-rose" style="font-size:1.5rem;"></i>
-            </div>
-            <div>
-              <p style="font-size:0.75rem; color:rgba(251,113,133,0.75); margin-bottom:4px; font-weight:700; letter-spacing:0.6px;">TOTAL PENGELUARAN</p>
-              <h3 id="non-dues-total-expense" style="font-size:1.35rem; font-family:var(--font-heading); color:var(--rose-400);">Rp 0</h3>
-              <small id="non-dues-expense-count" style="color:rgba(251,113,133,0.55);">0 pos pengeluaran</small>
-            </div>
-          </div>
-
-          <div class="jimpitan-stat-card" style="border-color: rgba(245,158,11,0.35);">
-            <div class="jimpitan-icon-box" style="background: rgba(245,158,11,0.18);">
-              <i class="fa-solid fa-vault text-gold" style="font-size:1.5rem;"></i>
-            </div>
-            <div>
-              <p style="font-size:0.75rem; color:rgba(251,191,36,0.78); margin-bottom:4px; font-weight:700; letter-spacing:0.6px;">SALDO SEKARANG</p>
-              <h3 id="non-dues-saldo" style="font-size:1.35rem; font-family:var(--font-heading); color:var(--gold-400);">Rp 0</h3>
-              <small style="color:rgba(251,191,36,0.55);">Pemasukan − Pengeluaran</small>
-            </div>
-          </div>
-
-          <div class="jimpitan-stat-card">
-            <div class="jimpitan-icon-box" style="background: rgba(6,182,212,0.18);">
-              <i class="fa-solid fa-calendar-check text-cyan" style="font-size:1.5rem;"></i>
-            </div>
-            <div>
-              <p style="font-size:0.75rem; color:rgba(34,211,238,0.75); margin-bottom:4px; font-weight:700; letter-spacing:0.6px;">MUTASI TERAKHIR</p>
-              <h3 id="non-dues-last-date" style="font-size:1.05rem; font-family:var(--font-heading); color:var(--text-primary);">Belum ada data</h3>
-              <small id="non-dues-last-info" style="color:rgba(34,211,238,0.55);">-</small>
             </div>
           </div>
         </div>
@@ -8026,6 +8026,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.65"></script>
+  <script src="app.js?v=2.9.66"></script>
 </body>
 </html>
