@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 24 September 2026 (00:35 WIB)  
-**Versi Rilis Aktif:** `v2.9.78`  
+**Terakhir Diperbarui:** 24 September 2026 (00:45 WIB)  
+**Versi Rilis Aktif:** `v2.9.79`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,30 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 👁️ Penghapusan Kotak & Teks "Mode Pantau Warga" pada Kartu Pemasukkan NON Iuran RT (Update v2.9.78 - 24 Sept 2026)
+### 1. 🛡️ Pembaruan Tata Kelola Ronda: Kapsul 2-Baris (SIKLUS / KE x & BERTUGAS / PEKAN INI) & Banner Peringatan Tugas Aktif (Update v2.9.79 - 24 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Dibagian ini edit :*
+    *1. Teks dalam kotak kapsul jadikan 2 baris (atas=SIKLUS, bawahnya=KE x)*
+    *2. Teks dalam kotak "Bertugas Pekan ini" juga jadi kan 2 baris (atas=BERTUGAS, bawahnya=PEKAN INI)*
+    *3. Khusus saat jadwalnya sampai di "BERTUGAS PEKAN INI", berikan peringatan agar warga ingat dan tidak lupa"* (dengan melampirkan screenshot modul *Tata Kelola Jadwal Ronda Malam Live Aktif*).
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Format Kapsul 2-Baris Siklus Ronda (`.ronda-cycle-capsule`)**:
+     - Kapsul status siklus non-aktif pada kartu regu kini ditata bertingkat 2 baris terpusat:
+       - **Baris Atas**: `SIKLUS` (ukuran 0.62rem, uppercase bold, opacity 85%).
+       - **Baris Bawah**: `KE x` (ukuran 0.75rem, font-weight 800) sesuai nomor siklus perputaran masing-masing regu.
+  2. **Format Kapsul 2-Baris Regu Aktif (`.ronda-active-badge-2line`)**:
+     - Kapsul status aktif pada kartu regu yang sedang bertugas pekan ini ditata bertingkat 2 baris bernuansa emas berkilau (*pulsing border*):
+       - **Baris Atas**: `BERTUGAS` (lengkap dengan pulsing green/amber live dot).
+       - **Baris Bawah**: `PEKAN INI` (warna emas terang `#fef08a`, font-weight 800).
+  3. **Banner Peringatan Khusus Tugas Ronda Pekan Ini (`.ronda-duty-alert-banner`)**:
+     - Khusus kartu regu yang berstatus **BERTUGAS PEKAN INI**, kini otomatis memunculkan banner peringatan mencolok bernuansa gradien emas-merah (*emergency warning glow*).
+     - Dilengkapi ikon lonceng bergetar (*fa-bell fa-shake*) dan pesan pengingat tegas: *"Regu ini bertugas Malam Minggu ini (21.00 - 04.00 WIB). Harap seluruh personel siap siaga & tidak lupa hadir tepat waktu di Pos Kamling!"*.
+     - Pengingat peringatan tugas ini juga disinkronkan ke kartu jadwal di **Portal Warga** untuk memastikan warga petugas tidak lupa hadir.
+  4. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.79` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.79` dan `app.js?v=2.9.79`.
+
+### 2. 👁️ Penghapusan Kotak & Teks "Mode Pantau Warga" pada Kartu Pemasukkan NON Iuran RT (Update v2.9.78 - 24 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Dibagian ini Hikangkan kotak dan teks "Mode Pantau Warga""* (dengan melampirkan screenshot kartu transparansi kas non-iuran RT pada Portal Warga).
 - **Hasil Implementasi & Optimalisasi**:

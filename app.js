@@ -5429,10 +5429,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.78';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.79';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.78')
+      navigator.serviceWorker.register('sw.js?v=2.9.79')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -7782,10 +7782,34 @@ function setupRondaSchedule() {
               <span class="ronda-week-tag">${escapeHtml(g.weekName)}</span>
               <span class="ronda-week-cycle"><i class="fa-regular fa-calendar"></i> ${escapeHtml(g.cycle)}</span>
             </div>
-            <span class="ronda-badge-status-current" style="display: ${isCurrent ? 'inline-flex' : 'none'};">
-              <span class="dot-pulse"></span> Bertugas Pekan Ini
-            </span>
+            ${isCurrent ? `
+              <div class="ronda-active-badge-2line" title="Regu Bertugas Pekan Ini">
+                <span class="duty-top"><span class="pulse-dot" style="width:6px; height:6px;"></span> BERTUGAS</span>
+                <span class="duty-bottom">PEKAN INI</span>
+              </div>
+            ` : `
+              <div class="ronda-cycle-capsule" title="Siklus ke-${g.week}">
+                <span class="cycle-top">SIKLUS</span>
+                <span class="cycle-bottom">KE ${g.week}</span>
+              </div>
+            `}
           </div>
+
+          ${isCurrent ? `
+            <div class="ronda-duty-alert-banner">
+              <div class="ronda-duty-alert-icon">
+                <i class="fa-solid fa-bell text-gold fa-shake" style="font-size:1.15rem;"></i>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:0.82rem; font-weight:800; color:#ffffff; display:flex; align-items:center; gap:6px; text-transform:uppercase; letter-spacing:0.03em;">
+                  <i class="fa-solid fa-triangle-exclamation text-gold"></i> PERINGATAN: BERTUGAS PEKAN INI!
+                </div>
+                <div style="font-size:0.77rem; color:#fef08a; margin-top:2px; line-height:1.35; font-weight:500;">
+                  Regu ini bertugas <strong>Malam Minggu ini (21.00 - 04.00 WIB)</strong>. Harap seluruh personel siap siaga &amp; tidak lupa hadir tepat waktu di Pos Kamling!
+                </div>
+              </div>
+            </div>
+          ` : ''}
 
           <div class="ronda-leader-box">
             <div class="ronda-leader-avatar">
@@ -11990,12 +12014,33 @@ function renderPortalWarga() {
             <span class="badge badge-emerald" style="font-size:0.85rem; font-weight:700;">
               <i class="fa-solid fa-shield-halved"></i> ${escapeHtml(group.weekName)}
             </span>
-            ${isCurrentActive ? '<span class="badge badge-gold" style="font-size:0.75rem;"><i class="fa-solid fa-bell"></i> Bertugas Pekan Ini!</span>' : ''}
+            ${isCurrentActive ? `
+              <div class="ronda-active-badge-2line" style="padding:2px 8px;" title="Regu Bertugas Pekan Ini">
+                <span class="duty-top" style="font-size:0.6rem;"><span class="pulse-dot" style="width:5px; height:5px;"></span> BERTUGAS</span>
+                <span class="duty-bottom" style="font-size:0.72rem;">PEKAN INI</span>
+              </div>
+            ` : ''}
           </div>
           <span style="font-size:0.75rem; color:#38bdf8; background:rgba(6,182,212,0.15); padding:3px 8px; border-radius:6px; border:1px solid rgba(6,182,212,0.25);">
             <i class="fa-regular fa-calendar"></i> ${escapeHtml(group.cycle)}
           </span>
         </div>
+
+        ${isCurrentActive ? `
+          <div class="ronda-duty-alert-banner" style="margin-bottom:0.75rem;">
+            <div class="ronda-duty-alert-icon">
+              <i class="fa-solid fa-bell text-gold fa-shake" style="font-size:1.1rem;"></i>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:0.8rem; font-weight:800; color:#ffffff; display:flex; align-items:center; gap:6px; text-transform:uppercase;">
+                <i class="fa-solid fa-triangle-exclamation text-gold"></i> PENGINGAT: BERTUGAS PEKAN INI!
+              </div>
+              <div style="font-size:0.76rem; color:#fef08a; margin-top:2px; line-height:1.35;">
+                Regu Anda <strong>BERTUGAS PEKAN INI (Malam Minggu, 21.00 - 04.00 WIB)</strong>. Mohon hadir tepat waktu di Pos Kamling RT.001 &amp; tidak lupa tugas ronda!
+              </div>
+            </div>
+          </div>
+        ` : ''}
 
         <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.75rem; margin-bottom:0.75rem;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
@@ -15800,13 +15845,33 @@ function renderPengurusRondaPanel(filterVal = 'all') {
             <span class="pengurus-ronda-cycle-lbl">${escapeHtml(g.cycle)} &bull; 21.00 - 04.00 WIB</span>
           </div>
           ${isCurrent ? `
-            <span class="cyber-badge-sm" style="background:rgba(245,158,11,0.25); color:#fbbf24; border-color:rgba(245,158,11,0.5);">
-              <span class="pulse-dot"></span> Bertugas Pekan Ini
-            </span>
+            <div class="ronda-active-badge-2line" title="Regu Bertugas Pekan Ini">
+              <span class="duty-top"><span class="pulse-dot" style="width:6px; height:6px;"></span> BERTUGAS</span>
+              <span class="duty-bottom">PEKAN INI</span>
+            </div>
           ` : `
-            <span class="badge-tag-cyan" style="font-size:0.72rem;">Siklus ke-${g.week}</span>
+            <div class="ronda-cycle-capsule" title="Siklus ke-${g.week}">
+              <span class="cycle-top">SIKLUS</span>
+              <span class="cycle-bottom">KE ${g.week}</span>
+            </div>
           `}
         </div>
+
+        ${isCurrent ? `
+          <div class="ronda-duty-alert-banner">
+            <div class="ronda-duty-alert-icon">
+              <i class="fa-solid fa-bell text-gold fa-shake" style="font-size:1.15rem;"></i>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:0.82rem; font-weight:800; color:#ffffff; display:flex; align-items:center; gap:6px; text-transform:uppercase; letter-spacing:0.03em;">
+                <i class="fa-solid fa-triangle-exclamation text-gold"></i> PERINGATAN: BERTUGAS PEKAN INI!
+              </div>
+              <div style="font-size:0.77rem; color:#fef08a; margin-top:2px; line-height:1.35; font-weight:500;">
+                Regu ini bertugas <strong>Malam Minggu ini (21.00 - 04.00 WIB)</strong>. Harap seluruh personel siap siaga &amp; tidak lupa hadir tepat waktu di Pos Kamling!
+              </div>
+            </div>
+          </div>
+        ` : ''}
 
         <div class="pengurus-ronda-leader-box">
           <div class="pengurus-ronda-leader-avatar">${leaderInitials}</div>
