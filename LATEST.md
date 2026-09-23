@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (18:25 WIB)  
-**Versi Rilis Aktif:** `v2.9.70`  
+**Terakhir Diperbarui:** 23 September 2026 (18:35 WIB)  
+**Versi Rilis Aktif:** `v2.9.71`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,23 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📈 Reposisi Grafik Performa Iuran Bulanan 1 Tahun Berjalan ke Posisi Paling Atas (Update v2.9.70 - 23 Sept 2026)
+### 1. 🔐 Penyempurnaan Teks & Pembersihan Tombol Demo pada Modal Login Warga (Update v2.9.71 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Diportal login warga, hilangkan kotak dan teks 'Coba Akses Akun Demo(Bpk.Wageyanto-B6 No.2)'. Ganti teks 'Info Password Akun rumah warga silahkan hubungi admin RT' menjadi 'Info Password Akun silakan hubungi admin'. Ganti Teks 'Masukkan PIN Anda untuk cek iuran & layanan mandiri' menjadi 'Masukkan paswword Anda untuk bisa cek iuran,Detail info Keuangan,Jadwal Ronda & layanan mandiri'"*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Penghapusan Tombol Akun Demo Warga**:
+     - Tombol `#btn-quick-demo-warga` (*"Coba Akses Akun Demo (Bpk. Wageyanto - B6 No. 02)"*) dihapus dari modal login warga agar antarmuka lebih bersih dan autentik bagi warga sebenarnya.
+  2. **Pembaruan Teks Bantuan Password**:
+     - Teks hint badge di bawah kolom input password diperbarui menjadi:
+       `Info Password Akun silakan hubungi admin` (lengkap dengan ikon WhatsApp hijau).
+  3. **Penyempurnaan Subtitle Modal Login Warga**:
+     - Teks subjudul di bawah *"Masuk Portal Warga"* diperbarui di `index.html` dan `app.js` menjadi:
+       `Masukkan password Anda untuk bisa cek iuran, Detail info Keuangan, Jadwal Ronda & layanan mandiri`.
+  4. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.71` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.71` dan `app.js?v=2.9.71`.
+
+### 2. 📈 Reposisi Grafik Performa Iuran Bulanan 1 Tahun Berjalan ke Posisi Paling Atas (Update v2.9.70 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"dihalaman Pusat Transparansi Kas & Keuangan RT.001, pindahkan posisi Grafik Performa Iuran Bulanan 1 Tahun Berjalan berada di paling atas dibawahnya 'Pusat Transparansi Kas & Keuangan RT.001'"*
 - **Hasil Implementasi & Optimalisasi**:

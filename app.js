@@ -5309,10 +5309,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.70';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.71';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.70')
+      navigator.serviceWorker.register('sw.js?v=2.9.71')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -6610,7 +6610,7 @@ function setupLoginPortal() {
         if (directIcon) directIcon.className = 'fa-solid fa-house-chimney-user text-cyan';
         if (directName) directName.textContent = 'Selamat datang di WebApp RT.001/013';
         if (directTitle) directTitle.textContent = 'Masuk Portal Warga';
-        if (directSubtitle) directSubtitle.textContent = 'Masukkan PIN Anda untuk cek iuran & layanan mandiri';
+        if (directSubtitle) directSubtitle.textContent = 'Masukkan password Anda untuk bisa cek iuran, Detail info Keuangan, Jadwal Ronda & layanan mandiri';
       }
 
       if (pinSection) pinSection.style.display = 'none';
