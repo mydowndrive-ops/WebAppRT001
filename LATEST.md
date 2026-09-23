@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (17:45 WIB)  
-**Versi Rilis Aktif:** `v2.9.68`  
+**Terakhir Diperbarui:** 23 September 2026 (18:00 WIB)  
+**Versi Rilis Aktif:** `v2.9.69`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,20 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📊 Penambahan Field & Kolom Kapsul Demografi (Jenis Kelamin, Usia, Jumlah) pada Database Warga (Update v2.9.68 - 23 Sept 2026)
+### 1. 📋 Reposisi Alamat Rumah di Bawah Nama Warga pada Tabel Checklist Iuran Wajib (Update v2.9.69 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Didalam dashboard admin 1, Pindahkan alamat dibawahnya nama warga, agar lebih mudah dalam pengecekan dan halaman lebih lega"*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Penggabungan Kolom Alamat ke Bawah Nama Warga**:
+     - Kolom tabel `Alamat (Jalan / Blok & No)` yang terpisah pada menu **Checklist Iuran Wajib** (`#table-checklist`) kini disatukan ke dalam kolom `Nama & Alamat Warga`.
+     - Tepat di bawah nama warga dicantumkan alamat rumah lengkap dengan ikon pin lokasi emas (`Jl. Citarum II • Blok B6 No. 02 • Tetap (4 Jiwa)`) serta nomor WhatsApp aktif.
+  2. **Tampilan Checklist Lebih Ramping & Halaman Jauh Lebih Lega**:
+     - Kolom tabel berkurang dari 7 menjadi 6 kolom, memberikan ruang yang sangat lapang untuk kolom Nominal Iuran, Rincian Split 6 Pos, Tanggal Pembayaran, dan Tombol Aksi Kwitansi/WA.
+  3. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.69` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.69` dan `app.js?v=2.9.69`.
+
+### 2. 📊 Penambahan Field & Kolom Kapsul Demografi (Jenis Kelamin, Usia, Jumlah) pada Database Warga (Update v2.9.68 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Didalam Data & edit warga ini tambahkan filed/kolom kapsul lg tentang Jenis kelamin,usia,jumlah sehingga menjadi database yang akurat untuk Data Statistik warga"*
 - **Hasil Implementasi & Optimalisasi**:

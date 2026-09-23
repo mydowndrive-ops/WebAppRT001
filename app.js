@@ -3126,12 +3126,16 @@ function renderChecklist() {
         </div>
       </td>
       <td>
-        <div style="font-weight: 600; color: #fff; font-size: 0.95rem;">${resident.name}</div>
-        <div class="text-xs text-muted"><i class="fa-brands fa-whatsapp text-emerald"></i> ${resident.phone}</div>
-      </td>
-      <td>
-        <strong style="color: var(--emerald-300); font-weight: 600;">${resident.street || 'Jl. Citarum II'}</strong>
-        <div class="text-xs text-muted">${resident.block} ${resident.houseNo} • ${resident.domicile} (${resident.members} Jiwa)</div>
+        <div style="font-weight: 700; color: #fff; font-size: 0.96rem; line-height: 1.3;">${resident.name}</div>
+        <div style="font-size: 0.78rem; color: var(--emerald-300); margin-top: 3px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
+          <i class="fa-solid fa-location-dot" style="font-size: 0.72rem; color: var(--gold-400);"></i>
+          <span>${resident.street || 'Jl. Citarum II'} • <strong style="color: #fef08a;">${resident.block} ${resident.houseNo}</strong></span>
+          <span style="color: rgba(255,255,255,0.4);">•</span>
+          <span style="color: var(--text-muted); font-size: 0.74rem;">${resident.domicile} (${resident.members || 4} Jiwa)</span>
+        </div>
+        <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 3px;">
+          <i class="fa-brands fa-whatsapp text-emerald"></i> ${resident.phone}
+        </div>
       </td>
       <td>
         <strong style="color: ${isPaid ? 'var(--emerald-400)' : 'var(--text-muted)'}">${formatRupiah(state.mandatoryDues)}</strong>
@@ -5305,10 +5309,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.68';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.69';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.68')
+      navigator.serviceWorker.register('sw.js?v=2.9.69')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
