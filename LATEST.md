@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (15:00 WIB)  
-**Versi Rilis Aktif:** `v2.9.63`  
+**Terakhir Diperbarui:** 23 September 2026 (16:00 WIB)  
+**Versi Rilis Aktif:** `v2.9.64`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,32 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 💡 Efek Pendar Cahaya Terang (Luminous Aura & Glow Backlight) pada Teks "WARGA RT.001 RW.013" (Update v2.9.63 - 23 Sept 2026)
+### 1. 🤲 Penambahan Pos Pemasukan Khusus "INFAQ ANAK YATIM" & Penghapusan Kapsul "Khusus Bendahara 1" (Update v2.9.64 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Di menu Pemasukan NON iuran ini tambahkan 1 pemaukan khusus yaitu 'INFAQ ANAK YATIM'. Didalamnya ada PENERIMAAN, PENYALURAN dan SALDO TERBARU. Hilangkan kotak kapsul yang bertuliskan 'Khusus Bendahara 1 (Full Access)'"*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Penghapusan Kotak Kapsul "Khusus Bendahara 1 (Full Access)"**:
+     - Elemen badge `#non-dues-role-badge` pada header banner *"Pemasukan NON iuran"* telah dihilangkan sepenuhnya baik dari markup HTML (`index.html`) maupun dinonaktifkan di logika JavaScript (`app.js`).
+  2. **Penambahan Kotak Panel Khusus "INFAQ ANAK YATIM"**:
+     - Ditempatkan panel eksklusif bertemakan kemanusiaan & amanah bernuansa emas-zamrud (`luxury-gold-border`) tepat di bawah banner header.
+     - Menyediakan 3 KPI Card utama:
+       - **PENERIMAAN**: Menampilkan total akumulasi donasi/sedekah anak yatim yang terkumpul beserta jumlah transaksi donatur masuk (`#yatim-total-income`).
+       - **PENYALURAN**: Menampilkan total realisasi santunan atau bantuan anak yatim yang telah disalurkan beserta jumlah kegiatan santunan (`#yatim-total-expense`).
+       - **SALDO TERBARU**: Menampilkan saldo kas riil anak yatim saat ini (Penerimaan − Penyaluran) dengan aksen emas cerah (`#yatim-saldo`).
+     - Dilengkapi tombol aksi langsung:
+       - `+ Catat Infaq Masuk`: Membuka formulir pencatatan pemasukan dengan kategori otomatis *Infaq Anak Yatim*.
+       - `Catat Penyaluran Santunan`: Membuka formulir pengeluaran dengan kategori otomatis *Santunan Anak Yatim*.
+       - `Mutasi Khusus Yatim`: Memfilter tabel riwayat transaksi secara otomatis khusus pos anak yatim.
+  3. **Integrasi Kategori Form Modal & State Migration**:
+     - Menambahkan opsi `"Infaq Anak Yatim"` pada form Catat Penerimaan (`#modal-add-non-dues-income`).
+     - Menambahkan opsi `"Santunan Anak Yatim"` pada form Catat Pengeluaran (`#modal-add-non-dues-expense`).
+     - Menambahkan opsi filter khusus pada dropdown filter kategori.
+     - Menyediakan data sampel default anak yatim otomatis agar dashboard langsung terisi angka valid.
+  4. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.64` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.64` dan `app.js?v=2.9.64`.
+
+### 2. 💡 Efek Pendar Cahaya Terang (Luminous Aura & Glow Backlight) pada Teks "WARGA RT.001 RW.013" (Update v2.9.63 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Berikan efek cahaya di teks WARGA RT.001 RW.013 agar lebih terlihat jelas"*
 - **Hasil Implementasi & Optimalisasi**:

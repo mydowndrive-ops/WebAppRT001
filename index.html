@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.63">
+  <link rel="stylesheet" href="styles.css?v=2.9.64">
 </head>
 <body>
 
@@ -2959,7 +2959,6 @@
           <div class="banner-text">
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px;">
               <h2 style="margin: 0;"><i class="fa-solid fa-hand-holding-dollar text-cyan"></i> Pemasukkan NON iuran</h2>
-              <span id="non-dues-role-badge" class="badge-gold-pill"><i class="fa-solid fa-crown text-gold"></i> Khusus Bendahara 1</span>
             </div>
             <p style="margin: 0; color: var(--text-muted);">Pencatatan Pemasukan, Pengeluaran &amp; Saldo Kas Non-Iuran (Donasi Warga, Hibah Pemda/Kelurahan, Sewa Fasum, Sponsor &amp; Daur Ulang)</p>
           </div>
@@ -2980,8 +2979,78 @@
           </div>
         </div>
 
+        <!-- ==================== KOTAK KHUSUS: INFAQ ANAK YATIM ==================== -->
+        <div class="glass-panel luxury-gold-border" style="margin-top: 1.25rem; padding: 1.25rem 1.5rem; border-radius: var(--radius-lg); background: linear-gradient(135deg, rgba(6, 78, 59, 0.25) 0%, rgba(120, 53, 15, 0.2) 100%); border: 1.5px solid rgba(245, 158, 11, 0.45); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; border-bottom: 1px dashed rgba(245, 158, 11, 0.3); padding-bottom: 0.85rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: rgba(245, 158, 11, 0.22); color: #fbbf24; font-size: 1.2rem; box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);">
+                  <i class="fa-solid fa-hands-holding-child"></i>
+                </span>
+                <h3 style="margin: 0; font-size: 1.25rem; font-family: var(--font-heading); color: #fef08a; letter-spacing: 0.5px;">
+                  INFAQ ANAK YATIM
+                </h3>
+                <span class="badge-tag-gold" style="font-weight: 700; letter-spacing: 0.5px;"><i class="fa-solid fa-star"></i> Pos Khusus Amanah</span>
+              </div>
+              <p style="margin: 4px 0 0 0; color: var(--text-muted); font-size: 0.84rem;">
+                Pencatatan Khusus Penerimaan Infaq Warga, Penyaluran Santunan &amp; Saldo Kas Anak Yatim RT.001
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn btn-sm btn-emerald" onclick="window.openAddInfaqYatimModal(event)">
+                <i class="fa-solid fa-plus-circle"></i> Catat Infaq Masuk
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-rose" onclick="window.openAddPenyaluranYatimModal(event)">
+                <i class="fa-solid fa-hand-holding-heart"></i> Catat Penyaluran Santunan
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-gold" onclick="window.filterInfaqYatimOnly()">
+                <i class="fa-solid fa-filter"></i> Mutasi Khusus Yatim
+              </button>
+            </div>
+          </div>
+
+          <!-- 3 KPI Cards Khusus: PENERIMAAN, PENYALURAN, SALDO TERBARU -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+            <!-- 1. PENERIMAAN -->
+            <div class="jimpitan-stat-card" style="background: rgba(6, 78, 59, 0.35); border-color: rgba(52, 211, 153, 0.4);">
+              <div class="jimpitan-icon-box" style="background: rgba(16, 185, 129, 0.25);">
+                <i class="fa-solid fa-hand-holding-dollar text-emerald" style="font-size: 1.45rem;"></i>
+              </div>
+              <div>
+                <p style="font-size: 0.72rem; color: #6ee7b7; margin-bottom: 3px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;">PENERIMAAN</p>
+                <h3 id="yatim-total-income" style="font-size: 1.35rem; font-family: var(--font-heading); color: #34d399; margin: 0;">Rp 0</h3>
+                <small id="yatim-income-count" style="color: rgba(110, 231, 183, 0.7); font-size: 0.75rem;">0 donasi infaq masuk</small>
+              </div>
+            </div>
+
+            <!-- 2. PENYALURAN -->
+            <div class="jimpitan-stat-card" style="background: rgba(136, 19, 55, 0.3); border-color: rgba(251, 113, 133, 0.4);">
+              <div class="jimpitan-icon-box" style="background: rgba(244, 63, 94, 0.25);">
+                <i class="fa-solid fa-hand-holding-heart text-rose" style="font-size: 1.45rem;"></i>
+              </div>
+              <div>
+                <p style="font-size: 0.72rem; color: #fda4af; margin-bottom: 3px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;">PENYALURAN</p>
+                <h3 id="yatim-total-expense" style="font-size: 1.35rem; font-family: var(--font-heading); color: #fb7185; margin: 0;">Rp 0</h3>
+                <small id="yatim-expense-count" style="color: rgba(253, 164, 175, 0.7); font-size: 0.75rem;">0 santunan disalurkan</small>
+              </div>
+            </div>
+
+            <!-- 3. SALDO TERBARU -->
+            <div class="jimpitan-stat-card" style="background: rgba(120, 53, 15, 0.35); border-color: rgba(245, 158, 11, 0.55); box-shadow: 0 4px 20px rgba(245, 158, 11, 0.15);">
+              <div class="jimpitan-icon-box" style="background: rgba(245, 158, 11, 0.25);">
+                <i class="fa-solid fa-vault text-gold" style="font-size: 1.45rem;"></i>
+              </div>
+              <div>
+                <p style="font-size: 0.72rem; color: #fde047; margin-bottom: 3px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;">SALDO TERBARU</p>
+                <h3 id="yatim-saldo" style="font-size: 1.45rem; font-family: var(--font-heading); color: #fbbf24; margin: 0;">Rp 0</h3>
+                <small style="color: rgba(253, 224, 71, 0.7); font-size: 0.75rem;">Penerimaan − Penyaluran</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- KPI Cards: Pemasukkan (Penerimaan), Pengeluaran, Saldo Kas Non-Iuran -->
-        <div class="jimpitan-stats-grid" style="margin-top: 1.5rem;">
+        <div class="jimpitan-stats-grid" style="margin-top: 1.25rem;">
           <div class="jimpitan-stat-card">
             <div class="jimpitan-icon-box" style="background: rgba(16,185,129,0.18);">
               <i class="fa-solid fa-arrow-trend-up text-emerald" style="font-size:1.5rem;"></i>
@@ -3036,6 +3105,8 @@
           <div class="filter-group" style="display: flex; gap: 10px; align-items: center;">
             <select id="non-dues-filter-category" class="custom-select" onchange="window.renderNonDuesView()">
               <option value="ALL">Semua Kategori Sumber</option>
+              <option value="Infaq Anak Yatim">Khusus Infaq Anak Yatim</option>
+              <option value="Santunan Anak Yatim">Khusus Santunan Anak Yatim</option>
               <option value="Donasi Warga">Donasi / Sumbangan Warga</option>
               <option value="Hibah Pemerintah">Hibah / Bantuan Pemerintah</option>
               <option value="Sewa Fasum">Sewa Fasum &amp; Perlengkapan</option>
@@ -6451,6 +6522,7 @@
           <div class="form-group">
             <label class="form-label">Kategori Sumber</label>
             <select class="form-input" id="non-dues-in-category" required>
+              <option value="Infaq Anak Yatim">Infaq / Sedekah Anak Yatim</option>
               <option value="Donasi Warga">Donasi / Sumbangan Warga</option>
               <option value="Hibah Pemerintah">Hibah / Bantuan Kelurahan / Pemda</option>
               <option value="Sewa Fasum">Sewa Fasum / Tenda / Inventaris RT</option>
@@ -6514,6 +6586,7 @@
           <div class="form-group">
             <label class="form-label">Kategori Pengeluaran</label>
             <select class="form-input" id="non-dues-out-category" required>
+              <option value="Santunan Anak Yatim">Penyaluran / Santunan Anak Yatim</option>
               <option value="Kegiatan Sosial">Bantuan Sosial / Musibah Khusus</option>
               <option value="Konsumsi Acara">Konsumsi Kegiatan / Acara Khusus RT</option>
               <option value="Perawatan Fasum">Perawatan / Perbaikan Fasum Donatur</option>
@@ -7950,6 +8023,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.63"></script>
+  <script src="app.js?v=2.9.64"></script>
 </body>
 </html>

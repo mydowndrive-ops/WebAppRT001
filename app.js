@@ -1784,6 +1784,24 @@ const DEFAULT_NON_DUES_INCOMES = [
     amount: 1000000,
     method: 'Transfer Bank',
     notes: 'Dana pembinaan ketahanan lingkungan & operasional RT triwulan III'
+  },
+  {
+    id: 'NDI-202609-005',
+    date: '2026-09-18',
+    category: 'Infaq Anak Yatim',
+    source: 'Hamba Allah (Warga Blok B5)',
+    amount: 600000,
+    method: 'Transfer Bank',
+    notes: 'Infaq dan sedekah khusus santunan anak yatim RT 001'
+  },
+  {
+    id: 'NDI-202609-006',
+    date: '2026-09-20',
+    category: 'Infaq Anak Yatim',
+    source: 'Keluarga Bpk. Herman (Blok B6 No. 12)',
+    amount: 400000,
+    method: 'Tunai',
+    notes: 'Infaq santunan anak yatim bulan September 2026'
   }
 ];
 
@@ -1805,6 +1823,15 @@ const DEFAULT_NON_DUES_EXPENSES = [
     pic: 'Agus Nursanto',
     amount: 150000,
     notes: 'Kuitansi Bengkel Terpal Cikarang'
+  },
+  {
+    id: 'NDE-202609-003',
+    date: '2026-09-22',
+    category: 'Santunan Anak Yatim',
+    desc: 'Pemberian santunan dan paket perlengkapan sekolah 2 anak yatim',
+    pic: 'Ustadz Ahmad / Seksi Kerohanian',
+    amount: 500000,
+    notes: 'Santunan anak yatim periode September 2026'
   }
 ];
 
@@ -1941,9 +1968,45 @@ function loadState() {
       if (!state.nonDuesIncomes || !Array.isArray(state.nonDuesIncomes) || state.nonDuesIncomes.length === 0) {
         state.nonDuesIncomes = JSON.parse(JSON.stringify(DEFAULT_NON_DUES_INCOMES));
         saveState();
+      } else if (!state.nonDuesIncomes.some(i => (i.category || '').toLowerCase().includes('yatim'))) {
+        state.nonDuesIncomes.unshift(
+          {
+            id: 'NDI-202609-005',
+            date: '2026-09-18',
+            category: 'Infaq Anak Yatim',
+            source: 'Hamba Allah (Warga Blok B5)',
+            amount: 600000,
+            method: 'Transfer Bank',
+            notes: 'Infaq dan sedekah khusus santunan anak yatim RT 001'
+          },
+          {
+            id: 'NDI-202609-006',
+            date: '2026-09-20',
+            category: 'Infaq Anak Yatim',
+            source: 'Keluarga Bpk. Herman (Blok B6 No. 12)',
+            amount: 400000,
+            method: 'Tunai',
+            notes: 'Infaq santunan anak yatim bulan September 2026'
+          }
+        );
+        saveState();
       }
+
       if (!state.nonDuesExpenses || !Array.isArray(state.nonDuesExpenses) || state.nonDuesExpenses.length === 0) {
         state.nonDuesExpenses = JSON.parse(JSON.stringify(DEFAULT_NON_DUES_EXPENSES));
+        saveState();
+      } else if (!state.nonDuesExpenses.some(e => (e.category || '').toLowerCase().includes('yatim'))) {
+        state.nonDuesExpenses.unshift(
+          {
+            id: 'NDE-202609-003',
+            date: '2026-09-22',
+            category: 'Santunan Anak Yatim',
+            desc: 'Pemberian santunan dan paket perlengkapan sekolah 2 anak yatim',
+            pic: 'Ustadz Ahmad / Seksi Kerohanian',
+            amount: 500000,
+            notes: 'Santunan anak yatim periode September 2026'
+          }
+        );
         saveState();
       }
 
@@ -5141,10 +5204,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.63';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.64';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.63')
+      navigator.serviceWorker.register('sw.js?v=2.9.64')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -8783,24 +8846,40 @@ function renderNonDuesView() {
   if (btnAddInc) btnAddInc.style.display = isB1 ? '' : 'none';
   if (btnAddExp) btnAddExp.style.display = isB1 ? '' : 'none';
 
-  // Badge hak akses di banner
+  // Badge hak akses di banner dihilangkan sesuai permintaan
   const roleBadge = document.getElementById('non-dues-role-badge');
   if (roleBadge) {
-    if (isB1) {
-      roleBadge.className = 'badge-gold-pill';
-      roleBadge.innerHTML = '<i class="fa-solid fa-crown text-gold"></i> Khusus Bendahara 1 (Full Access)';
-    } else {
-      roleBadge.className = 'badge-tag-cyan';
-      roleBadge.innerHTML = '<i class="fa-solid fa-eye"></i> Mode Pantau (Read / View Only)';
-    }
+    roleBadge.style.display = 'none';
+  }
+
+  // ==================== STATISTIK KHUSUS: INFAQ ANAK YATIM ====================
+  const isYatimIn = (i) => (i.category || '').toLowerCase().includes('yatim') || (i.notes || '').toLowerCase().includes('yatim') || (i.source || '').toLowerCase().includes('yatim');
+  const isYatimOut = (e) => (e.category || '').toLowerCase().includes('yatim') || (e.notes || '').toLowerCase().includes('yatim') || (e.desc || '').toLowerCase().includes('yatim');
+
+  const yatimIncomes = incomes.filter(isYatimIn);
+  const yatimExpenses = expenses.filter(isYatimOut);
+
+  const yatimTotalIn = yatimIncomes.reduce((s, r) => s + parseNominal(r.amount), 0);
+  const yatimTotalOut = yatimExpenses.reduce((s, r) => s + parseNominal(r.amount), 0);
+  const yatimSaldo = yatimTotalIn - yatimTotalOut;
+
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('yatim-total-income', formatCurrency(yatimTotalIn));
+  setEl('yatim-income-count', `${yatimIncomes.length} donasi infaq masuk`);
+  setEl('yatim-total-expense', formatCurrency(yatimTotalOut));
+  setEl('yatim-expense-count', `${yatimExpenses.length} santunan disalurkan`);
+  setEl('yatim-saldo', formatCurrency(yatimSaldo));
+
+  const yatimSaldoEl = document.getElementById('yatim-saldo');
+  if (yatimSaldoEl) {
+    yatimSaldoEl.style.color = yatimSaldo >= 0 ? '#fbbf24' : 'var(--rose-400)';
   }
 
   const totalIncome = incomes.reduce((s, r) => s + parseNominal(r.amount), 0);
   const totalExpense = expenses.reduce((s, r) => s + parseNominal(r.amount), 0);
   const saldo = totalIncome - totalExpense;
 
-  // Update KPI Cards
-  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  // Update KPI Cards Umum
   setEl('non-dues-total-income', formatCurrency(totalIncome));
   setEl('non-dues-income-count', `${incomes.length} transaksi masuk`);
   setEl('non-dues-total-expense', formatCurrency(totalExpense));
@@ -9069,6 +9148,40 @@ function openAddNonDuesExpenseModal(e) {
   openModal('modal-add-non-dues-expense');
 }
 window.openAddNonDuesExpenseModal = openAddNonDuesExpenseModal;
+
+window.openAddInfaqYatimModal = function(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  openAddNonDuesIncomeModal(e);
+  const cat = document.getElementById('non-dues-in-category');
+  if (cat) cat.value = 'Infaq Anak Yatim';
+  const notes = document.getElementById('non-dues-in-notes');
+  if (notes) notes.value = 'Infaq & sedekah khusus santunan anak yatim RT.001';
+};
+
+window.openAddPenyaluranYatimModal = function(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  openAddNonDuesExpenseModal(e);
+  const cat = document.getElementById('non-dues-out-category');
+  if (cat) cat.value = 'Santunan Anak Yatim';
+  const desc = document.getElementById('non-dues-out-desc');
+  if (desc) desc.value = 'Penyaluran santunan anak yatim RT.001';
+  const notes = document.getElementById('non-dues-out-notes');
+  if (notes) notes.value = 'Penyaluran santunan periode berjalan';
+};
+
+window.filterInfaqYatimOnly = function() {
+  const catFilter = document.getElementById('non-dues-filter-category');
+  if (catFilter) {
+    catFilter.value = 'Infaq Anak Yatim';
+  }
+  const searchInput = document.getElementById('non-dues-search');
+  if (searchInput) {
+    searchInput.value = '';
+  }
+  renderNonDuesView();
+  const tbl = document.getElementById('table-non-dues-income');
+  if (tbl) tbl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
 
 function handleNonDuesIncomeSubmit(e) {
   if (e && e.preventDefault) e.preventDefault();
