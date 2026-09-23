@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 24 September 2026 (00:26 WIB)  
-**Versi Rilis Aktif:** `v2.9.76`  
+**Terakhir Diperbarui:** 24 September 2026 (00:30 WIB)  
+**Versi Rilis Aktif:** `v2.9.77`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,21 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🏡 Harmonisasi Visual Portal Warga & Penghapusan Badge Read-Only (Update v2.9.76 - 24 Sept 2026)
+### 1. 📇 Pembaruan Format Kolom Nama & Alamat pada Tabel Daftar Warga (Update v2.9.77 - 24 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Dibagian daftar warga ini, Hilangkan tanda pin google map dan ganti format penulisan seperti ini : Nama, Nama Jalan, Blok dan no rumah. Jika semua perubahan sudah selesai dilakukan tanpa menunggu perintah saya lagi segera update file LATEST.md dan sinkronkan dengan github agar bisa segera saya uji."*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Penghapusan Pin Google Map (`fa-location-dot`)**:
+     - Ikon pin google map berwarna emas pada kolom Nama & Alamat Warga di tabel warga telah dihilangkan secara bersih.
+  2. **Format Penulisan 3 Baris Rapi & Terstruktur**:
+     - **Baris 1**: `Nama Warga` (lengkap dengan badge nama istri jika terdaftar) dengan tipografi putih tebal (`font-weight: 700; color: #fff`).
+     - **Baris 2**: `Nama Jalan` (misal: *Jl. Citarum II*) dengan warna hijau emerald lembut (`var(--emerald-300)`).
+     - **Baris 3**: `Blok dan no rumah` (misal: *Blok B6 No. 02*) dengan warna kuning emas tegas (`#fef08a; font-weight: 600`).
+  3. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.77` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.77` dan `app.js?v=2.9.77`.
+
+### 2. 🏡 Harmonisasi Visual Portal Warga & Penghapusan Badge Read-Only (Update v2.9.76 - 24 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Gambar 1 : HIlangkan kotak dan teks 'Mode Pantau Warga (Read Only)'"*
   - *"Gambar 2 : Agar terlihat 1 keluarga ,Hilangkan kotak daftar nama anggota keluarga (warna hitam) atau buat transparant lalu pindahkan posisinya di area yang saya beri kotak putih. Jika semua perubahan sudah selesai dilakukan update file LATEST.md dan sinkronkan dengan github agar bisa segera saya uji."*

@@ -3407,13 +3407,15 @@ function renderResidents() {
     tr.innerHTML = `
       <td>${res.noUrut || no++}</td>
       <td>
-        <div style="font-weight: 700; color: #fff; font-size: 0.96rem; line-height: 1.3; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+        <div style="font-weight: 700; color: #fff; font-size: 0.96rem; line-height: 1.35; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
           <span>${escapeHtml(res.name)}</span>
           ${res.wifeNama && res.wifeNama.trim() ? `<span class="badge-wife"><span class="badge-wife-bullet">●</span> [ ${escapeHtml(res.wifeNama.trim())} ]</span>` : ''}
         </div>
-        <div style="font-size: 0.78rem; color: var(--emerald-300); margin-top: 4px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
-          <i class="fa-solid fa-location-dot" style="font-size: 0.72rem; color: var(--gold-400);"></i>
-          <span>${res.street || 'Jl. Citarum II'} • <strong style="color: #fef08a;">${res.block} ${res.houseNo}</strong></span>
+        <div style="font-size: 0.8rem; color: var(--emerald-300); margin-top: 3px; line-height: 1.35;">
+          ${escapeHtml(res.street || 'Jl. Citarum II')}
+        </div>
+        <div style="font-size: 0.8rem; color: #fef08a; font-weight: 600; margin-top: 2px; line-height: 1.35;">
+          ${escapeHtml(res.block)} ${escapeHtml(res.houseNo)}
         </div>
       </td>
       <td>
@@ -5427,10 +5429,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.76';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.77';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.76')
+      navigator.serviceWorker.register('sw.js?v=2.9.77')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
