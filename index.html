@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.69">
+  <link rel="stylesheet" href="styles.css?v=2.9.70">
 </head>
 <body>
 
@@ -1754,6 +1754,67 @@
             </p>
           </div>
 
+          <!-- GRAFIK PENERIMAAN IURAN TAHUNAN (DILETAKKAN PALING ATAS DIBAWAH HEADER) -->
+          <div class="public-annual-dues-card">
+            <div class="annual-dues-header">
+              <div class="annual-header-text">
+                <span class="annual-badge"><i class="fa-solid fa-chart-area"></i> Akuntabilitas Iuran Publik</span>
+                <h3 class="annual-title">Grafik Performa Iuran Bulanan 1 Tahun Berjalan</h3>
+                <p class="annual-subtitle">Tingkat kelancaran dan partisipasi gotong royong warga RT.001 dalam memenuhi kewajiban iuran lingkungan bulanan.</p>
+              </div>
+              <div class="annual-controls-row">
+                <div class="annual-chart-type-toggle">
+                  <button type="button" class="annual-toggle-btn active" data-chart-type="line" title="Grafik Area Halus">
+                    <i class="fa-solid fa-chart-line"></i> <span>Area</span>
+                  </button>
+                  <button type="button" class="annual-toggle-btn" data-chart-type="bar" title="Grafik Batang Presisi">
+                    <i class="fa-solid fa-chart-simple"></i> <span>Batang</span>
+                  </button>
+                </div>
+                <div class="annual-filter-group">
+                  <label for="select-keuangan-chart-year" class="annual-filter-label"><i class="fa-regular fa-calendar"></i> Tahun:</label>
+                  <div class="annual-select-wrap">
+                    <select id="select-keuangan-chart-year" class="annual-year-select">
+                      <option value="2026" selected>2026 (Berjalan)</option>
+                      <option value="2025">2025 (Arsip)</option>
+                      <option value="2024">2024 (Arsip)</option>
+                      <option value="2023">2023 (Arsip)</option>
+                      <option value="2022">2022 (Arsip)</option>
+                      <option value="2021">2021 (Arsip)</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down annual-select-arrow"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="annual-chart-container">
+              <div class="annual-chart-canvas-wrap">
+                <canvas id="chartKeuanganAnnualDues"></canvas>
+              </div>
+            </div>
+
+            <div class="annual-chart-footer">
+              <div class="annual-legend-list">
+                <div class="annual-legend-item">
+                  <span class="annual-legend-bar bg-emerald-gradient"></span>
+                  <span>Realisasi Penerimaan Bulanan</span>
+                </div>
+                <div class="annual-legend-item">
+                  <span class="annual-legend-line border-gold-dashed"></span>
+                  <span>Rata-Rata Partisipasi Warga</span>
+                </div>
+              </div>
+              <div class="annual-single-stat-box" style="display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fa-solid fa-circle-check text-emerald" style="font-size: 1.2rem;"></i>
+                <div>
+                  <strong id="public-annual-stat-single-compliance" class="text-emerald" style="display: block; font-size: 0.95rem;">--% Partisipasi Aktif</strong>
+                  <span id="public-annual-stat-single-sub" style="font-size: 0.75rem; color: #94a3b8;">Tingkat kelancaran gotong royong 71 KK RT.001</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- 4 Executive Vault Stat Cards -->
           <div class="public-stats-grid">
             <div class="public-stat-box">
@@ -1870,67 +1931,6 @@
                 <p>Tabungan cadangan darurat kebencanaan dan persiapan pembangunan fasilitas jangka panjang.</p>
                 <div class="public-pos-bar-track"><div class="public-pos-bar-fill bg-blue-gradient" style="width: 5%;"></div></div>
                 <div class="public-pos-footer"><span>Saldo Pos:</span><strong id="pos-val-cadangan" class="text-blue">Rp 0</strong></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- GRAFIK PENERIMAAN IURAN TAHUNAN -->
-          <div class="public-annual-dues-card">
-            <div class="annual-dues-header">
-              <div class="annual-header-text">
-                <span class="annual-badge"><i class="fa-solid fa-chart-area"></i> Akuntabilitas Iuran Publik</span>
-                <h3 class="annual-title">Grafik Performa Iuran Bulanan 1 Tahun Berjalan</h3>
-                <p class="annual-subtitle">Tingkat kelancaran dan partisipasi gotong royong warga RT.001 dalam memenuhi kewajiban iuran lingkungan bulanan.</p>
-              </div>
-              <div class="annual-controls-row">
-                <div class="annual-chart-type-toggle">
-                  <button type="button" class="annual-toggle-btn active" data-chart-type="line" title="Grafik Area Halus">
-                    <i class="fa-solid fa-chart-line"></i> <span>Area</span>
-                  </button>
-                  <button type="button" class="annual-toggle-btn" data-chart-type="bar" title="Grafik Batang Presisi">
-                    <i class="fa-solid fa-chart-simple"></i> <span>Batang</span>
-                  </button>
-                </div>
-                <div class="annual-filter-group">
-                  <label for="select-keuangan-chart-year" class="annual-filter-label"><i class="fa-regular fa-calendar"></i> Tahun:</label>
-                  <div class="annual-select-wrap">
-                    <select id="select-keuangan-chart-year" class="annual-year-select">
-                      <option value="2026" selected>2026 (Berjalan)</option>
-                      <option value="2025">2025 (Arsip)</option>
-                      <option value="2024">2024 (Arsip)</option>
-                      <option value="2023">2023 (Arsip)</option>
-                      <option value="2022">2022 (Arsip)</option>
-                      <option value="2021">2021 (Arsip)</option>
-                    </select>
-                    <i class="fa-solid fa-chevron-down annual-select-arrow"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="annual-chart-container">
-              <div class="annual-chart-canvas-wrap">
-                <canvas id="chartKeuanganAnnualDues"></canvas>
-              </div>
-            </div>
-
-            <div class="annual-chart-footer">
-              <div class="annual-legend-list">
-                <div class="annual-legend-item">
-                  <span class="annual-legend-bar bg-emerald-gradient"></span>
-                  <span>Realisasi Penerimaan Bulanan</span>
-                </div>
-                <div class="annual-legend-item">
-                  <span class="annual-legend-line border-gold-dashed"></span>
-                  <span>Rata-Rata Partisipasi Warga</span>
-                </div>
-              </div>
-              <div class="annual-single-stat-box" style="display: flex; align-items: center; gap: 0.75rem;">
-                <i class="fa-solid fa-circle-check text-emerald" style="font-size: 1.2rem;"></i>
-                <div>
-                  <strong id="public-annual-stat-single-compliance" class="text-emerald" style="display: block; font-size: 0.95rem;">--% Partisipasi Aktif</strong>
-                  <span id="public-annual-stat-single-sub" style="font-size: 0.75rem; color: #94a3b8;">Tingkat kelancaran gotong royong 71 KK RT.001</span>
-                </div>
               </div>
             </div>
           </div>
@@ -8070,6 +8070,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.69"></script>
+  <script src="app.js?v=2.9.70"></script>
 </body>
 </html>

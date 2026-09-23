@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (18:00 WIB)  
-**Versi Rilis Aktif:** `v2.9.69`  
+**Terakhir Diperbarui:** 23 September 2026 (18:25 WIB)  
+**Versi Rilis Aktif:** `v2.9.70`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,19 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📋 Reposisi Alamat Rumah di Bawah Nama Warga pada Tabel Checklist Iuran Wajib (Update v2.9.69 - 23 Sept 2026)
+### 1. 📈 Reposisi Grafik Performa Iuran Bulanan 1 Tahun Berjalan ke Posisi Paling Atas (Update v2.9.70 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"dihalaman Pusat Transparansi Kas & Keuangan RT.001, pindahkan posisi Grafik Performa Iuran Bulanan 1 Tahun Berjalan berada di paling atas dibawahnya 'Pusat Transparansi Kas & Keuangan RT.001'"*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Pemindahan Elemen Kartu Grafik ke Posisi Teratas**:
+     - Kontainer `.public-annual-dues-card` (Grafik Performa Iuran Bulanan 1 Tahun Berjalan lengkap dengan toggle Area/Batang, filter Tahun, dan badge status kepatuhan) dipindahkan tepat di bawah banner judul utama `Pusat Transparansi Kas & Keuangan RT.001` (`#subview-layanan`).
+  2. **Alur Informasi yang Lebih Menonjol & Informatif**:
+     - Warga maupun publik kini langsung disuguhkan visualisasi performa dan tingkat kepatuhan gotong royong iuran tahun berjalan pada saat pertama kali membuka halaman Transparansi Keuangan, sebelum melihat rincian Saldo Kas dan 6 Pos Anggaran.
+  3. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.70` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.70` dan `app.js?v=2.9.70`.
+
+### 2. 📋 Reposisi Alamat Rumah di Bawah Nama Warga pada Tabel Checklist Iuran Wajib (Update v2.9.69 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Didalam dashboard admin 1, Pindahkan alamat dibawahnya nama warga, agar lebih mudah dalam pengecekan dan halaman lebih lega"*
 - **Hasil Implementasi & Optimalisasi**:
