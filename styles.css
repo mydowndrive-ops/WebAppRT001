@@ -4735,50 +4735,56 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'MaskingRenta', 'Masking Renta', var(--font-heading, 'Plus Jakarta Sans'), sans-serif;
   font-size: clamp(1.25rem, 2.7vw, 2.05rem);
   font-weight: 800;
-  letter-spacing: 0.085em; /* Character spacing lega & tidak mepet */
-  word-spacing: 0.22em;
+  letter-spacing: 0.08em;
+  word-spacing: 0.2em;
   text-transform: uppercase;
   margin: 0;
   line-height: 1.1;
-  color: #ffffff;
-  display: inline-block;
-  -webkit-text-stroke: 1.5px #026639; /* Outline Hijau Zamrud Tebal & Jelas */
-  text-shadow: 
-    2px 2px 0 #025932,
-    -2px -2px 0 #025932,
-    2px -2px 0 #025932,
-    -2px 2px 0 #025932,
-    0 2px 0 #025932,
-    0 -2px 0 #025932,
-    2px 0 0 #025932,
-    -2px 0 0 #025932,
-    0 3px 8px rgba(0, 0, 0, 0.9),
-    0 0 16px rgba(5, 150, 105, 0.9); /* Glow Ambien Hijau Zamrud */
+  color: #014421; /* Hijau Zamrud Gelap Pekat (Dark Emerald Green) */
+  -webkit-text-stroke: 0 !important; /* Tanpa Outline */
+  text-shadow: none !important; /* Tanpa Outline */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
   white-space: nowrap;
-  animation: flagTitleMotion 4.2s ease-in-out infinite;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
-  will-change: transform, filter;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: default;
 }
 
-.nav-flag-title-main:hover {
-  transform: translateY(-3px) scale(1.025);
-  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 20px rgba(16, 185, 129, 0.85));
+/* Efek Tulisan Gelombang Laut (Ocean Wave Rolling across Characters) */
+.ocean-wave-char {
+  display: inline-block;
+  animation: seaWaveRoll 2.6s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.085s);
+  will-change: transform;
 }
 
-@keyframes flagTitleMotion {
+.ocean-wave-space {
+  display: inline-block;
+  width: 0.32em;
+}
+
+.nav-flag-title-main:hover .ocean-wave-char {
+  animation-duration: 1.5s; /* Gerak gelombang laut lebih dinamis saat kursor diarahkan */
+}
+
+@keyframes seaWaveRoll {
   0%, 100% {
-    transform: translateY(0px) scale(1);
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-4.5px) rotate(-1.5deg) scale(1.02);
   }
   50% {
-    transform: translateY(-3.5px) scale(1.018);
-    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 18px rgba(16, 185, 129, 0.6));
+    transform: translateY(2px) rotate(0.8deg);
+  }
+  75% {
+    transform: translateY(-1.5px) rotate(-0.5deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nav-flag-title-main {
+  .ocean-wave-char {
     animation: none !important;
   }
 }

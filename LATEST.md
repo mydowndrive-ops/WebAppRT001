@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (14:10 WIB)  
-**Versi Rilis Aktif:** `v2.9.60`  
+**Terakhir Diperbarui:** 23 September 2026 (14:20 WIB)  
+**Versi Rilis Aktif:** `v2.9.61`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,24 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. ✨ Penambahan Character Spacing Lega & Efek Gerak Interaktif Judul "WARGA RT.001 RW.013" (Update v2.9.60 - 23 Sept 2026)
+### 1. 🌊 Font Hijau Zamrud Gelap Tanpa Outline & Efek Gerak Gelombang Laut (*Sea Wave*) (Update v2.9.61 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Ganti warna font WARGA RT.001 RW.013 dengan warna hijau zamrud gelap tanpa outline.Ganti efek tulisan seperti gelaombang laut."*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Warna Font Hijau Zamrud Gelap (*Dark Emerald Green*) Tanpa Outline**:
+     - Warna font `.nav-flag-title-main` diubah menjadi warna solid **Hijau Zamrud Gelap Pekat** (`#014421`).
+     - Seluruh garis luar (*stroke outline*) dan bayangan kontur tebal dihilangkan sepenuhnya (`-webkit-text-stroke: 0 !important; text-shadow: none !important;`).
+     - Teks tampil sangat bersih, pekat, tegas, dan natural di atas kibaran bendera merah putih.
+  2. **Efek Animasi Gelombang Laut Berirama (*Ocean Sea-Wave Rolling Effect*)**:
+     - Tiap karakter pada kalimat *"WARGA RT.001 RW.013"* dibungkus ke dalam elemen `<span class="ocean-wave-char" style="--i:...">` dengan variabel indeks berurutan.
+     - Diberikan animasi khusus `@keyframes seaWaveRoll` yang bergulir mengombak dari kiri ke kanan secara terus-menerus (*continuous staggered phase*), menyerupai riak dan gelombang air laut (*ocean waves*).
+     - Saat kursor diarahkan (*hover*), frekuensi gelombang bergulir lebih cepat dan dinamis (`1.5s`).
+     - Tetap mendukung standar aksesibilitas `prefers-reduced-motion` dan `aria-label` utuh untuk pembaca layar (*screen reader*).
+  3. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.61` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.61` dan `app.js?v=2.9.61`.
+
+### 2. ✨ Penambahan Character Spacing Lega & Efek Gerak Interaktif Judul "WARGA RT.001 RW.013" (Update v2.9.60 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Tambahkan character spacing secukupnya unutk kalimat 'WARGA RT.001 RW.013' agar antara character tidak terlihat terlalu mepet.Tambahkan juga efek gerak untuk font 'WARGA RT.001 RW.013' agar terlihat interaktif"*
 - **Hasil Implementasi & Optimalisasi**:
