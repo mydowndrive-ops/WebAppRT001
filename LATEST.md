@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (14:00 WIB)  
-**Versi Rilis Aktif:** `v2.9.59`  
+**Terakhir Diperbarui:** 23 September 2026 (14:10 WIB)  
+**Versi Rilis Aktif:** `v2.9.60`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,22 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📍 Penyesuaian Posisi Alamat Wilayah & Slogan Menempel Rapat di Bawah Garis Bendera (Update v2.9.59 - 23 Sept 2026)
+### 1. ✨ Penambahan Character Spacing Lega & Efek Gerak Interaktif Judul "WARGA RT.001 RW.013" (Update v2.9.60 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Tambahkan character spacing secukupnya unutk kalimat 'WARGA RT.001 RW.013' agar antara character tidak terlihat terlalu mepet.Tambahkan juga efek gerak untuk font 'WARGA RT.001 RW.013' agar terlihat interaktif"*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Character Spacing & Word Spacing Proporsional**:
+     - Parameter `letter-spacing` pada `.nav-flag-title-main` ditingkatkan dari `0.035em` menjadi `0.085em` (desktop) dan `0.055em` - `0.06em` (tablet/mobile).
+     - Menambahkan `word-spacing: 0.22em` agar pemisahan antar kata (*WARGA*, *RT.001*, dan *RW.013*) terlihat sangat tegas, tidak berdempetan, dan outline hijau zamrud di sekeliling tiap huruf memiliki ruang pisah yang bersih dan elegan.
+  2. **Efek Gerak Interaktif (*Interactive Floating & Breathing Motion*)**:
+     - Mengimplementasikan animasi melayang halus bergelombang `@keyframes flagTitleMotion` (durasi `4.2s ease-in-out infinite`) yang selaras dengan irama kibaran bendera merah putih.
+     - Mengaktifkan interaksi kursor (*hover effect*): ketika kursor mouse diarahkan ke judul, font terangkat dinamis (`translateY(-3px) scale(1.025)`) dengan pembesaran bayangan pendaran zamrud berkilau (`filter: drop-shadow(0 6px 16px rgba(0,0,0,0.9)) drop-shadow(0 0 20px rgba(16, 185, 129, 0.85))`).
+     - Mendukung preferensi aksesibilitas `prefers-reduced-motion` untuk kenyamanan pengguna.
+  3. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.60` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.60` dan `app.js?v=2.9.60`.
+
+### 2. 📍 Penyesuaian Posisi Alamat Wilayah & Slogan Menempel Rapat di Bawah Garis Bendera (Update v2.9.59 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Untuk kalimat 'Perumahan Graha Asri-Sektor Graha Jababeka-Desa Simpangan•Kecamatan Cikarang Utara-Kabupaten Bekasi-17530' dinaikkan lagi mendekati garis bawah bendera"*
 - **Hasil Implementasi & Optimalisasi**:
