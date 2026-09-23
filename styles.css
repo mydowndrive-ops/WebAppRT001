@@ -4742,8 +4742,12 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.1;
   color: #014421; /* Hijau Zamrud Gelap Pekat (Dark Emerald Green) */
   -webkit-text-stroke: 0 !important; /* Tanpa Outline */
-  text-shadow: none !important; /* Tanpa Outline */
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+  text-shadow: 
+    0 0 6px rgba(255, 255, 255, 0.92),
+    0 0 12px rgba(255, 255, 255, 0.75),
+    0 0 20px rgba(52, 211, 153, 0.85),
+    0 0 32px rgba(16, 185, 129, 0.65); /* Efek Pendar Cahaya Terang (Luminous Backlight Aura) */
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.65)) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
@@ -4756,7 +4760,7 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-block;
   animation: seaWaveRoll 2.6s ease-in-out infinite;
   animation-delay: calc(var(--i) * 0.085s);
-  will-change: transform;
+  will-change: transform, filter;
 }
 
 .ocean-wave-space {
@@ -4771,15 +4775,19 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes seaWaveRoll {
   0%, 100% {
     transform: translateY(0px) rotate(0deg);
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
   }
   25% {
     transform: translateY(-4.5px) rotate(-1.5deg) scale(1.02);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 16px rgba(52, 211, 153, 0.85));
   }
   50% {
     transform: translateY(2px) rotate(0.8deg);
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.4));
   }
   75% {
     transform: translateY(-1.5px) rotate(-0.5deg);
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.65));
   }
 }
 
