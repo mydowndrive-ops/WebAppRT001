@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (13:55 WIB)  
-**Versi Rilis Aktif:** `v2.9.58`  
+**Terakhir Diperbarui:** 23 September 2026 (14:00 WIB)  
+**Versi Rilis Aktif:** `v2.9.59`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,21 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🟢 Penyesuaian Kotak Kapsul Menu Layanan: Background Hijau NU & Font Putih Solid (Update v2.9.58 - 23 Sept 2026)
+### 1. 📍 Penyesuaian Posisi Alamat Wilayah & Slogan Menempel Rapat di Bawah Garis Bendera (Update v2.9.59 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Untuk kalimat 'Perumahan Graha Asri-Sektor Graha Jababeka-Desa Simpangan•Kecamatan Cikarang Utara-Kabupaten Bekasi-17530' dinaikkan lagi mendekati garis bawah bendera"*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Pengurangan Ruang Kosong (Gap/Padding) Vertikal**:
+     - `.public-home-hub` disesuaikan dari `justify-content: center` menjadi `justify-content: flex-start` dengan padding atas yang dipangkas dari `1.5rem` menjadi `0.25rem`.
+     - Gap pada `.hub-container` dirampingkan dari `1.25rem` menjadi `0.75rem`.
+  2. **Penaikan Posisi Kalimat Alamat & Slogan**:
+     - Margin atas `.hub-hero-subtitle` diperkecil menjadi `0.05rem auto 0.2rem auto` sehingga teks alamat wilayah resmi langsung naik rapat persis di bawah garis emas pembatas navbar bendera.
+     - Slogan resmi **CIPTA • KARYA • BERSAMA** mengikuti tepat di bawahnya secara proporsional dan harmonis.
+  3. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.59` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.59` dan `app.js?v=2.9.59`.
+
+### 2. 🟢 Penyesuaian Kotak Kapsul Menu Layanan: Background Hijau NU & Font Putih Solid (Update v2.9.58 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Agar terlihat oleh warga, untuk kotak kapsul menu layanan berikan background hijau NU dengan font warna putih."*
 - **Hasil Implementasi & Optimalisasi**:
