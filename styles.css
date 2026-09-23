@@ -13412,15 +13412,15 @@ h1, h2, h3, h4, h5, h6 {
 /* Family-row item in edit modal */
 .family-member-row {
   display: grid;
-  grid-template-columns: 1fr 140px 32px;
+  grid-template-columns: 1fr 85px 135px 32px;
   gap: 0.5rem;
   align-items: center;
   margin-bottom: 0.5rem;
 }
 
 .family-member-row select {
-  min-width: 130px;
-  max-width: 150px;
+  min-width: 125px;
+  max-width: 135px;
 }
 
 .family-member-row .btn-remove-family {

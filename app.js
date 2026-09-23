@@ -4565,13 +4565,14 @@ function navigateToView(viewId) {
 }
 
 // =================== HELPER: FAMILY MEMBER ROWS IN MODAL-WARGA ===================
-function addFamilyRow(nama = '', hub = 'Anak') {
+function addFamilyRow(nama = '', hub = 'Anak', usia = '') {
   const container = document.getElementById('family-rows-container');
   if (!container) return;
   const row = document.createElement('div');
   row.className = 'family-member-row';
   row.innerHTML = `
-    <input type="text" class="custom-input fm-nama" placeholder="Nama (Anak / Saudara / Orangtua / dll)" value="${escapeHtml(nama)}" style="font-size:0.83rem; padding:0.35rem 0.6rem;">
+    <input type="text" class="custom-input fm-nama" placeholder="Nama (Anak / Saudara / dll)" value="${escapeHtml(nama)}" style="font-size:0.83rem; padding:0.35rem 0.6rem;">
+    <input type="number" class="custom-input fm-usia" placeholder="Usia" min="0" max="120" value="${escapeHtml(usia !== undefined && usia !== null ? usia : '')}" style="font-size:0.83rem; padding:0.35rem 0.5rem; text-align:center;">
     <select class="custom-select fm-hub" style="font-size:0.83rem; padding:0.32rem 0.5rem;">
       <option value="Anak" ${hub === 'Anak' ? 'selected' : ''}>Anak</option>
       <option value="Istri" ${hub === 'Istri' ? 'selected' : ''}>Istri</option>
@@ -4815,15 +4816,23 @@ function setupModalEventListeners() {
     const username = (document.getElementById('warga-username')?.value || '').trim() || name;
     // Nama Istri
     const wifeNama = (document.getElementById('warga-wife-name')?.value || '').trim();
-    // Anggota keluarga lain (array of {nama, hub})
+    // Anggota keluarga lain (array of {nama, hub, usia})
     const familyMemberRows = document.querySelectorAll('#family-rows-container .family-member-row');
     const familyMembers = [];
     familyMemberRows.forEach(row => {
       const namaInput = row.querySelector('.fm-nama');
+      const usiaInput = row.querySelector('.fm-usia');
       const hubSelect = row.querySelector('.fm-hub');
       const namaVal = (namaInput ? namaInput.value.trim() : '');
+      const usiaVal = (usiaInput ? usiaInput.value.trim() : '');
       const hubVal = (hubSelect ? hubSelect.value : 'Anak');
-      if (namaVal) familyMembers.push({ nama: namaVal, hub: hubVal });
+      if (namaVal) {
+        familyMembers.push({
+          nama: namaVal,
+          hub: hubVal,
+          usia: usiaVal ? parseInt(usiaVal, 10) : ''
+        });
+      }
     });
 
     const cleanBlock = block.replace(/[^bB0-9]/g, '').toUpperCase();
@@ -5100,7 +5109,7 @@ function setupDelegatedEvents() {
         const wifeInput = document.getElementById('warga-wife-name');
         if (wifeInput) wifeInput.value = res.wifeNama || '';
         clearFamilyRowsContainer();
-        (res.familyMembers || []).forEach(fm => addFamilyRow(fm.nama, fm.hub));
+        (res.familyMembers || []).forEach(fm => addFamilyRow(fm.nama, fm.hub, fm.usia));
 
         document.getElementById('modal-warga')?.classList.add('active');
       }
@@ -5418,10 +5427,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.74';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.75';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.74')
+      navigator.serviceWorker.register('sw.js?v=2.9.75')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -11780,7 +11789,7 @@ function setupResidentAccountsEvents() {
         const wifeInputM = document.getElementById('warga-wife-name');
         if (wifeInputM) wifeInputM.value = res.wifeNama || '';
         clearFamilyRowsContainer();
-        (res.familyMembers || []).forEach(fm => addFamilyRow(fm.nama, fm.hub));
+        (res.familyMembers || []).forEach(fm => addFamilyRow(fm.nama, fm.hub, fm.usia));
 
         document.getElementById('modal-warga')?.classList.add('active');
       }
@@ -11878,11 +11887,13 @@ function renderPortalWarga() {
     }
   }
 
-  // Populate kolom Nama Anggota Keluarga & Hub. Keluarga (Box 1 & Box 2 di Gambar 2)
+  // Populate kolom Nama Anggota Keluarga, Usia, & Hub. Keluarga (Box 1 & Box 2 di Gambar 2)
   const familyColumnsWrap = document.getElementById('pw-family-columns');
   const familyNamesCol = document.getElementById('pw-family-names-col');
+  const familyAgesCol = document.getElementById('pw-family-ages-col');
   const familyRelsCol = document.getElementById('pw-family-rels-col');
   const members = resident.familyMembers || [];
+  const hasAnyAge = members.some(m => m.usia !== undefined && m.usia !== null && m.usia !== '');
 
   if (members.length > 0 && familyColumnsWrap) {
     familyColumnsWrap.style.display = 'flex';
@@ -11891,6 +11902,17 @@ function renderPortalWarga() {
         <div class="pw-family-header-row"><span class="pw-family-col-header">Nama</span></div>
         ${members.map(m => `<span class="pw-family-name-item">${escapeHtml(m.nama)}</span>`).join('')}
       `;
+    }
+    if (familyAgesCol) {
+      if (hasAnyAge) {
+        familyAgesCol.style.display = 'flex';
+        familyAgesCol.innerHTML = `
+          <div class="pw-family-header-row"><span class="pw-family-col-header">Usia</span></div>
+          ${members.map(m => `<span class="pw-family-age-item" style="color:#fef08a; font-size:0.85rem; font-weight:600; line-height:1.45; text-align:center;">${m.usia ? m.usia + ' Thn' : '-'}</span>`).join('')}
+        `;
+      } else {
+        familyAgesCol.style.display = 'none';
+      }
     }
     if (familyRelsCol) {
       familyRelsCol.innerHTML = `

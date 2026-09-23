@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.74">
+  <link rel="stylesheet" href="styles.css?v=2.9.75">
 </head>
 <body>
 
@@ -4714,10 +4714,13 @@
               </div>
             </div>
 
-            <!-- Kolom Nama Anggota Keluarga & Hub. Keluarga (ditampilkan otomatis dari data warga) -->
+            <!-- Kolom Nama Anggota Keluarga, Usia, & Hub. Keluarga (ditampilkan otomatis dari data warga) -->
             <div class="pw-family-columns" id="pw-family-columns" style="display:none;">
               <div class="pw-family-col pw-family-names" id="pw-family-names-col">
                 <!-- Diisi oleh renderPortalWarga() -->
+              </div>
+              <div class="pw-family-col pw-family-ages" id="pw-family-ages-col" style="display:none;">
+                <!-- Diisi oleh renderPortalWarga() jika ada data usia -->
               </div>
               <div class="pw-family-col pw-family-rels" id="pw-family-rels-col">
                 <!-- Diisi oleh renderPortalWarga() -->
@@ -5991,9 +5994,10 @@
             </small>
 
             <!-- Header Kolom -->
-            <div style="display: grid; grid-template-columns: 1fr 140px 32px; gap: 0.5rem; font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.35rem; padding: 0 2px;">
+            <div style="display: grid; grid-template-columns: 1fr 85px 135px 32px; gap: 0.5rem; font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.35rem; padding: 0 2px;">
               <span><i class="fa-solid fa-font text-cyan"></i> Kolom Nama:</span>
-              <span><i class="fa-solid fa-people-arrows text-gold"></i> Hub. Keluarga:</span>
+              <span><i class="fa-solid fa-cake-candles text-gold"></i> Usia:</span>
+              <span><i class="fa-solid fa-people-arrows text-purple"></i> Hub. Keluarga:</span>
               <span></span>
             </div>
 
@@ -8102,6 +8106,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.74"></script>
+  <script src="app.js?v=2.9.75"></script>
 </body>
 </html>

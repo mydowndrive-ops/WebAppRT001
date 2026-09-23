@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 24 September 2026 (00:10 WIB)  
-**Versi Rilis Aktif:** `v2.9.74`  
+**Terakhir Diperbarui:** 24 September 2026 (00:20 WIB)  
+**Versi Rilis Aktif:** `v2.9.75`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,22 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🏷️ Penambahan Label "Nama" & Warna Font Putih pada Header Kolom Keluarga Portal Warga (Update v2.9.74 - 24 Sept 2026)
+### 1. 🎂 Penambahan Kolom Isian "Usia" di Samping Nama Anak pada Modal Warga & Portal Warga (Update v2.9.75 - 24 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Dibagian ini, disamping nama anak, tambahkan kolom isian "Usia". Jika semua perubahan sudah selesai dilakukan update file LATEST.md dan sinkronkan dengan github agar bisa segera saya uji"* (dengan melampirkan screenshot modal *Data Anggota Keluarga Lainnya & Statistik Warga*).
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Penambahan Kolom Input "Usia" pada Baris Anggota Keluarga (`#family-rows-container`)**:
+     - Ditambahkan input number `.fm-usia` di samping kolom Nama Anak/Anggota Keluarga (`min="0" max="120" placeholder="Usia"`).
+     - Header baris kini memiliki label **"Usia:"** lengkap dengan ikon lilin ulang tahun emas (`fa-cake-candles text-gold`).
+     - Layout grid `.family-member-row` disesuaikan menjadi 4 kolom yang presisi: `Nama` (1fr), `Usia` (85px), `Hub. Keluarga` (135px), dan tombol hapus (32px).
+  2. **Penyimpanan & Tampilan Otomatis di Portal Warga**:
+     - Properti `usia` disimpan ke objek `familyMembers` saat form warga disubmit dan dimuat kembali saat edit warga dibuka.
+     - Di Portal Warga hero card (`#pw-family-columns`), jika ada data usia anak yang diisi, otomatis muncul kolom tengah **"Usia"** berlabel putih dengan angka usia berwarna emas (contoh: *14 Thn*, *10 Thn*, *5 Thn*).
+  3. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.75` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.75` dan `app.js?v=2.9.75`.
+
+### 2. 🏷️ Penambahan Label "Nama" & Warna Font Putih pada Header Kolom Keluarga Portal Warga (Update v2.9.74 - 24 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Diatas nama-nama anak ( diseblah kiri) Hub.Keluarga) berikan label "Nama". Ganti warna font Hub.Keluarga dan Nama menjadi warna putih"* (dengan melampirkan screenshot hero Portal Warga).
 - **Hasil Implementasi & Optimalisasi**:
