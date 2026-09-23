@@ -10461,7 +10461,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: start;
   gap: 1.5rem;
   width: 100%;
-  max-width: 1140px;
+  max-width: 1240px;
   margin: 0 auto;
   position: relative;
 }
@@ -10585,7 +10585,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .hub-orbital-container {
   width: 100%;
-  max-width: 530px;
+  max-width: 610px;
   position: relative;
   aspect-ratio: 1 / 1;
   display: flex;
@@ -10760,13 +10760,19 @@ h1, h2, h3, h4, h5, h6 {
 
 .orbital-petal-label {
   font-family: var(--font-heading, system-ui, sans-serif);
-  font-size: 12.5px;
-  font-weight: 800;
-  letter-spacing: 0.45px;
+  font-size: 15.5px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
   fill: #ffffff;
   text-transform: uppercase;
   pointer-events: none;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.95));
+  -webkit-text-stroke: 0.35px rgba(255, 255, 255, 0.92);
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 1)) drop-shadow(0 0 8px rgba(0, 0, 0, 0.85));
+}
+
+.orbital-petal-label.orbital-petal-label-compact {
+  font-size: 13.8px;
+  letter-spacing: 0.4px;
 }
 
 /* 6 Outer Satellite Node Buttons */
@@ -10775,8 +10781,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .orbital-sat-btn {
-  width: 56px;
-  height: 56px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #0e3b28, #051d13);
   border: 2.5px solid #38bdf8;
@@ -10784,7 +10790,7 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6), 0 0 14px rgba(56, 189, 248, 0.3);
@@ -10814,9 +10820,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .orbital-center-core {
-  width: 190px;
-  height: 190px;
-  margin: 10px auto;
+  width: 195px;
+  height: 195px;
+  margin: 7px auto;
   border-radius: 50%;
   position: relative;
   display: flex;
@@ -10857,8 +10863,8 @@ h1, h2, h3, h4, h5, h6 {
 .orbital-center-disc {
   position: relative;
   z-index: 3;
-  width: 172px;
-  height: 172px;
+  width: 176px;
+  height: 176px;
   border-radius: 50%;
   background: radial-gradient(circle at 50% 40%, #ffffff 0%, #f1f5f9 80%, #e2e8f0 100%);
   display: flex;
@@ -10870,8 +10876,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .orbital-center-logo-img {
-  width: 102px;
-  height: 102px;
+  width: 110px;
+  height: 110px;
   object-fit: contain;
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
   transition: transform 0.3s ease;
@@ -10883,16 +10889,16 @@ h1, h2, h3, h4, h5, h6 {
 
 .orbital-center-badge {
   margin-top: 3px;
-  padding: 3px 11px;
+  padding: 4px 13px;
   border-radius: 999px;
   background: rgba(4, 19, 13, 0.94);
-  border: 1.2px solid rgba(251, 191, 36, 0.88);
+  border: 1.5px solid rgba(251, 191, 36, 0.95);
   font-family: var(--font-heading, sans-serif);
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-size: 0.82rem;
+  font-weight: 900;
   color: #fbbf24;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  letter-spacing: 0.7px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.6);
   white-space: nowrap;
 }
 
@@ -10908,7 +10914,7 @@ h1, h2, h3, h4, h5, h6 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     width: 100%;
-    max-width: 530px;
+    max-width: 610px;
     gap: 0.75rem;
     padding-top: 0;
   }
@@ -10934,16 +10940,22 @@ h1, h2, h3, h4, h5, h6 {
     justify-content: center;
   }
   .hub-orbital-container {
-    max-width: 100%;
+    width: 100%;
+    max-width: min(100%, 480px);
   }
   .orbital-petal-label {
-    font-size: 11px;
-    letter-spacing: 0.3px;
+    font-size: 13.8px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+  }
+  .orbital-petal-label.orbital-petal-label-compact {
+    font-size: 12.2px;
+    letter-spacing: 0.25px;
   }
   .orbital-sat-btn {
-    width: 48px;
-    height: 48px;
-    font-size: 1.1rem;
+    width: 52px;
+    height: 52px;
+    font-size: 1.22rem;
   }
 }
 

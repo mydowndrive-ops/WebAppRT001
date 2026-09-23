@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (01:21 WIB)  
-**Versi Rilis Aktif:** `v2.9.53`  
+**Terakhir Diperbarui:** 23 September 2026 (12:25 WIB)  
+**Versi Rilis Aktif:** `v2.9.54`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,32 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🏷️ Penyesuaian Kalimat Header Portal Warga: "Selamat datang di WebApp RT.001/013" (Update v2.9.53 - 23 Sept 2026)
+### 1. 🔍 Peningkatan Ukuran Diagram Orbital & Tipografi Super Jelas & Mudah Dibaca (Update v2.9.54 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Buat gambar ini lebih besar dan ukuran font tulisan yang ada di dalamnya mudah dibaca."*
+- **Hasil Implementasi & Optimalisasi Menyeluruh**:
+  1. **Pembesaran Dimensi Diagram Navigasi Orbital (`styles.css`)**:
+     - Wadah roda diagram `.hub-orbital-container` diperbesar dari `max-width: 530px` menjadi **`max-width: 610px`** pada desktop, dan `.hub-cockpit-grid` diperlebar menjadi **`max-width: 1240px`** untuk memberikan ruang bernapas optimal bagi roda cockpit di antara dua sayap statistik (*flanks*).
+     - Pada layar smartphone/seluler (`@media (max-width: 600px)`), kontainer dioptimalkan menjadi `width: 100%; max-width: min(100%, 480px)` sehingga memanfaatkan lebar layar secara penuh tanpa terpotong.
+  2. **Peningkatan Ukuran & Ketebalan Font Label Petal (`.orbital-petal-label`)**:
+     - Ukuran font label kelopak (*petals*) dinaikkan drastis dari `12.5px` (font-weight 800) menjadi **`15.5px` (font-weight 900 / Ultra-Bold)** dengan `letter-spacing: 0.6px`.
+     - Ditambahkan lapisan text-stroke putih tajam (`-webkit-text-stroke: 0.35px rgba(255, 255, 255, 0.92)`) dan double drop-shadow kontras tinggi (`filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 1)) drop-shadow(0 0 8px rgba(0, 0, 0, 0.85))`) agar tulisan tetap sangat jelas terbaca di atas gradien warna apapun.
+     - Penyesuaian khusus kelas `.orbital-petal-label-compact` (`13.8px`) pada teks panjang "PROFIL DAN PETA" agar proporsional dan tidak berhimpitan.
+     - Pada mode ponsel (`@media (max-width: 600px)`), ukuran font dipertahankan tetap besar di **`13.8px`** (sebelumnya hanya 11px yang sulit terbaca di layar HP).
+  3. **Penyempurnaan Busur Teks SVG (`index.html`)**:
+     - Busur `orb-txt-0` (PENGURUS RT) dan `orb-txt-3` (PROFIL DAN PETA) diperpanjang lengkungannya (`A 150 150`) sehingga teks memiliki ruang rentang yang lega dan simetris di tengah kelopak.
+  4. **Peningkatan Skala Logo & Badge Pusat (`styles.css`)**:
+     - Dimensi logo resmi RT.001 di piringan tengah dinaikkan dari `102px` ke **`110px`** agar teks identitas RT di dalam logo tampil jauh lebih tajam.
+     - Badge kapsul kependudukan `#orbital-center-hub` ditingkatkan fontnya ke `0.82rem` dengan `font-weight: 900` dan padding `4px 13px`.
+     - Tombol-tombol satelit ikon luar diperbesar dari `56px` ke **`58px`** dengan ikon `1.35rem` (dan `52px` pada ponsel).
+  5. **Penyediaan Aset Gambar Resolusi Tinggi**:
+     - Dibuatkan gambar grafis baru beresolusi tinggi dengan tipografi tebal dan jelas, tersimpan di `assets/diagram-orbital-rt001-large.jpg`.
+  6. **Sinkronisasi Cache PWA & Cache Busting**:
+     - `sw.js`: `CACHE_NAME` dinaikkan ke `rt-finsmart-cache-v2.9.54` dengan pembaruan referensi `./styles.css?v=2.9.54` dan `./app.js?v=2.9.54`.
+     - `app.js`: `CURRENT_CACHE_NAME` dan registrasi Service Worker diselaraskan ke `v2.9.54`.
+     - `index.html`: Versi stylesheet dan skrip diselaraskan ke `v2.9.54`.
+
+### 2. 🏷️ Penyesuaian Kalimat Header Portal Warga: "Selamat datang di WebApp RT.001/013" (Update v2.9.53 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Dibagian ini ganti kalimat 'Portal Mandiri Warga RT.001' menjadi 'Selamat datang di WebApp RT.001/013'"*
 - **Hasil Implementasi & 4 Lapis Pengamanan (Multi-Layer Safeguards)**:
