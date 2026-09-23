@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.54">
+  <link rel="stylesheet" href="styles.css?v=2.9.55">
 </head>
 <body>
 
@@ -89,11 +89,19 @@
       </div>
     </div>
 
-    <!-- NAVBAR STICKY LUXURY -->
+    <!-- NAVBAR STICKY LUXURY WITH WAVING INDONESIAN FLAG BACKGROUND -->
     <!-- ==================== PUBLIC NAVBAR ==================== -->
-    <nav class="public-navbar">
+    <nav class="public-navbar public-navbar-flag" aria-label="Identitas Resmi &amp; Navigasi WebApp RT.001">
+      <!-- Video Background Bendera Merah Putih Berkibar Sepanjang Halaman -->
+      <video class="navbar-flag-video" autoplay loop muted playsinline preload="auto">
+        <source src="redwihite.mp4" type="video/mp4">
+        <source src="assets/redwihite.mp4" type="video/mp4">
+      </video>
+      <div class="navbar-flag-scrim" aria-hidden="true"></div>
+
       <div class="public-nav-container">
-        <a href="javascript:void(0)" class="public-brand" id="nav-brand-link">
+        <!-- Pokok Kiri: Logo RT.001 (sedikit dibesarkan) -->
+        <a href="javascript:void(0)" class="public-brand" id="nav-brand-link" title="Beranda Resmi RT.001 / RW.013">
           <div class="public-brand-logo-wrap">
             <div class="brand-orbital-track"></div>
             <div class="brand-orbital-spinner"></div>
@@ -101,22 +109,20 @@
               <img src="assets/logo.png?v=2.6.7" alt="Logo RT.001" class="public-logo-img">
             </div>
           </div>
-          <div class="public-brand-title">
-            <span class="public-brand-main">RT.001 / RW.013</span>
-            <span class="public-brand-sub"><i class="fa-solid fa-location-dot text-gold"></i> Graha Asri &bull; Cikarang Utara</span>
-          </div>
         </a>
 
-        <!-- Right Side Nav Actions: Portal Buttons (Warga, Pengurus) & Drawer Button -->
+        <!-- Tengah: Teks Identitas Resmi Persis di Tengah dengan Animasi Bendera Merah Putih -->
+        <div class="navbar-center-title" id="nav-center-title">
+          <span class="nav-flag-title-sub">WEB APLIKASI RESMI</span>
+          <h1 class="nav-flag-title-main" id="hero-split-title">WARGA RT.001 RW.013</h1>
+        </div>
+
+        <!-- Kanan: Tombol Akses Portal Warga & Menu Layanan (Menu Pengurus di Navbar Dihilangkan) -->
         <div class="public-nav-actions">
           <div class="nav-portal-group" role="group" aria-label="Akses Cepat Portal">
             <button type="button" class="btn-nav-portal btn-nav-warga" id="btn-nav-portal-warga" title="Buka Portal Mandiri Warga RT.001">
               <i class="fa-solid fa-house-chimney-user"></i>
               <span>Warga</span>
-            </button>
-            <button type="button" class="btn-nav-portal btn-nav-pengurus" id="btn-nav-portal-pengurus" title="Buka Portal Pengurus RT.001">
-              <i class="fa-solid fa-crown"></i>
-              <span>Pengurus</span>
             </button>
           </div>
 
@@ -277,28 +283,8 @@
       </div>
 
       <div class="hub-container">
-        <!-- Compact Hero Header -->
+        <!-- Compact Sub-Header: Lokasi Wilayah & Slogan CIPTA•KARYA•BERSAMA Tepat di Bawah Bendera -->
         <header class="hub-hero-header">
-          <!-- Bendera Merah Putih Video Background Banner Container -->
-          <div class="indonesia-flag-waving-banner flag-container" role="banner" aria-label="WARGA RT.001 RW.013">
-            <!-- Video Background Bendera Merah Putih Berkibar (Bebas Watermark) -->
-            <video class="flag-video-bg" autoplay loop muted playsinline preload="auto">
-              <source src="redwihite.mp4" type="video/mp4">
-              <source src="assets/redwihite.mp4" type="video/mp4">
-            </video>
-
-            <!-- Overlay Pelindung Kontras Semi-Transparan (Memastikan Teks Terbaca Jelas) -->
-            <div class="flag-contrast-scrim" aria-hidden="true"></div>
-
-            <!-- Lapisan Teks Terdepan Persis di Tengah (Center Alignment) -->
-            <div class="flag-banner-overlay flag-content-centered">
-              <h1 class="hub-hero-title flag-h1-title flag-text-warga split-text-reveal" id="hero-split-title">
-                <span class="split-line split-line-sub">Web Aplikasi Resmi</span>
-                <span class="split-line split-line-main">WARGA RT.001 RW.013</span>
-              </h1>
-            </div>
-          </div>
-
           <h2 class="hub-hero-subtitle">
             <span>Perumahan Graha Asri-Sektor Graha Jababeka-Desa Simpangan</span>
             <span class="hub-sub-dot">&bull;</span>
@@ -306,7 +292,7 @@
           </h2>
 
           <p class="hub-hero-slogan">
-            <span class="text-gradient-emerald">&ldquo;Melayani dengan Hati, Membangun dalam Kebersamaan&rdquo;</span>
+            <span class="slogan-cipta-karya">CIPTA &bull; KARYA &bull; BERSAMA</span>
           </p>
         </header>
 
@@ -7962,6 +7948,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.54"></script>
+  <script src="app.js?v=2.9.55"></script>
 </body>
 </html>
