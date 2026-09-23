@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.55">
+  <link rel="stylesheet" href="styles.css?v=2.9.56">
 </head>
 <body>
 
@@ -536,8 +536,9 @@
                     <path id="orb-txt-2-1" d="M 197.36 389.22 A 136 136 0 0 0 274.05 433.5"/>
                     <path id="orb-txt-2-2" d="M 180.76 403.66 A 158 158 0 0 0 269.85 455.1"/>
 
-                    <!-- Sector 3: West (180 deg) - Centered Contour Arc -->
-                    <path id="orb-txt-3" d="M 168 372 A 150 150 0 0 1 168 228"/>
+                    <!-- Sector 3: West (180 deg) - 2-Line Contour Arcs -->
+                    <path id="orb-txt-3-1" d="M 153.5 359.2 A 158 158 0 0 1 153.5 240.8"/>
+                    <path id="orb-txt-3-2" d="M 173.9 351 A 136 136 0 0 1 173.9 249"/>
 
                     <!-- Sector 4: Top-Left (240 deg) -->
                     <path id="orb-txt-4-1" d="M 180.76 196.34 A 158 158 0 0 1 269.85 144.9"/>
@@ -577,7 +578,8 @@
                   <!-- Sector 3: West (Profil dan Peta Cakupan Wilayah) -->
                   <g class="orbital-petal-group" data-sector="3" data-subview="tentang" role="button" tabindex="0" aria-label="Profil dan Peta Cakupan Wilayah">
                     <path class="orbital-petal-shape" d="M 194.94 346.77 L 137.39 372.4 A 178 178 0 0 1 122.55 313.97 L 102 300 L 122.55 286.03 A 178 178 0 0 1 137.39 227.6 L 194.94 253.23 A 115 115 0 0 0 194.94 346.77 Z" fill="url(#orb-grad-3)"/>
-                    <text class="orbital-petal-label orbital-petal-label-compact"><textPath href="#orb-txt-3" startOffset="50%" text-anchor="middle">PROFIL DAN PETA</textPath></text>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-3-1" startOffset="50%" text-anchor="middle">PROFIL</textPath></text>
+                    <text class="orbital-petal-label"><textPath href="#orb-txt-3-2" startOffset="50%" text-anchor="middle">DAN PETA</textPath></text>
                   </g>
 
                   <!-- Sector 4: North-West (Data & Statistik Kependudukan) -->
@@ -7948,6 +7950,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.55"></script>
+  <script src="app.js?v=2.9.56"></script>
 </body>
 </html>
