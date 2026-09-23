@@ -4615,27 +4615,28 @@ h1, h2, h3, h4, h5, h6 {
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 1;
-  opacity: 0.95;
+  opacity: 1;
+  filter: contrast(1.15) brightness(1.12) saturate(1.15);
 }
 
 .navbar-flag-scrim {
   position: absolute;
   inset: 0;
   z-index: 2;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.48) 0%, rgba(3, 20, 13, 0.58) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.02) 50%, rgba(3, 20, 13, 0.16) 100%);
   pointer-events: none;
 }
 
 .public-nav-container {
   position: relative;
   z-index: 3;
-  max-width: 1360px;
+  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
   padding: 0.65rem 1.5rem;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
-  gap: 1.25rem;
+  justify-content: space-between;
 }
 
 .public-brand {
@@ -4643,7 +4644,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 0.95rem;
   text-decoration: none;
-  justify-self: start;
+  z-index: 4;
 }
 
 .public-brand-logo-wrap {
@@ -4697,8 +4698,12 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75), 0 0 22px rgba(239, 68, 68, 0.65);
 }
 
-/* Center Official Title over Waving Flag */
+/* Center Official Title over Waving Flag - DEAD CENTER TO SCREEN */
 .navbar-center-title {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -4707,6 +4712,9 @@ h1, h2, h3, h4, h5, h6 {
   user-select: none;
   pointer-events: none;
   line-height: 1.15;
+  width: max-content;
+  max-width: calc(100% - 320px);
+  z-index: 5;
 }
 
 .nav-flag-title-sub {
@@ -4732,14 +4740,18 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0;
   line-height: 1.1;
   color: #ffffff;
-  -webkit-text-stroke: 0.8px rgba(0, 0, 0, 0.95);
+  -webkit-text-stroke: 1.5px #026639; /* Outline Hijau Zamrud Tebal & Jelas */
   text-shadow: 
-    1.5px 1.5px 0 #000,
-    -1.5px -1.5px 0 #000,
-    1.5px -1.5px 0 #000,
-    -1.5px 1.5px 0 #000,
+    2px 2px 0 #025932,
+    -2px -2px 0 #025932,
+    2px -2px 0 #025932,
+    -2px 2px 0 #025932,
+    0 2px 0 #025932,
+    0 -2px 0 #025932,
+    2px 0 0 #025932,
+    -2px 0 0 #025932,
     0 3px 8px rgba(0, 0, 0, 0.9),
-    0 0 16px rgba(0, 0, 0, 0.7);
+    0 0 16px rgba(5, 150, 105, 0.9); /* Glow Ambien Hijau Zamrud */
   white-space: nowrap;
 }
 
@@ -8921,6 +8933,8 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  z-index: 4;
+  margin-left: auto;
 }
 
 /* Nav Portal Group (Warga & Pengurus) */
@@ -11754,7 +11768,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-@media (max-width: 540px) {
+@media (max-width: 680px) {
   .public-nav-container {
     display: flex;
     flex-wrap: wrap;
@@ -11765,8 +11779,11 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .navbar-center-title {
+    position: static;
+    transform: none;
     order: 3;
     width: 100%;
+    max-width: 100%;
     margin-top: 0.15rem;
     padding-top: 0.25rem;
     border-top: 1px solid rgba(255, 255, 255, 0.18);
