@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 24 September 2026 (00:30 WIB)  
-**Versi Rilis Aktif:** `v2.9.77`  
+**Terakhir Diperbarui:** 24 September 2026 (00:35 WIB)  
+**Versi Rilis Aktif:** `v2.9.78`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,18 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📇 Pembaruan Format Kolom Nama & Alamat pada Tabel Daftar Warga (Update v2.9.77 - 24 Sept 2026)
+### 1. 👁️ Penghapusan Kotak & Teks "Mode Pantau Warga" pada Kartu Pemasukkan NON Iuran RT (Update v2.9.78 - 24 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Dibagian ini Hikangkan kotak dan teks "Mode Pantau Warga""* (dengan melampirkan screenshot kartu transparansi kas non-iuran RT pada Portal Warga).
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Penghapusan Badge "Mode Pantau Warga"**:
+     - Elemen badge `<span class="badge-pill badge-cyan"><i class="fa-solid fa-eye"></i> Mode Pantau Warga</span>` pada header kartu *Pemasukkan NON Iuran RT* (`.pw-non-dues-card`) telah dihilangkan secara bersih dari `index.html`.
+     - Tampilan header kartu kini bersih, konsisten, dan elegan tanpa kotak badge yang mengalihkan perhatian.
+  2. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.78` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.78` dan `app.js?v=2.9.78`.
+
+### 2. 📇 Pembaruan Format Kolom Nama & Alamat pada Tabel Daftar Warga (Update v2.9.77 - 24 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Dibagian daftar warga ini, Hilangkan tanda pin google map dan ganti format penulisan seperti ini : Nama, Nama Jalan, Blok dan no rumah. Jika semua perubahan sudah selesai dilakukan tanpa menunggu perintah saya lagi segera update file LATEST.md dan sinkronkan dengan github agar bisa segera saya uji."*
 - **Hasil Implementasi & Optimalisasi**:
