@@ -5418,10 +5418,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.73';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.74';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.73')
+      navigator.serviceWorker.register('sw.js?v=2.9.74')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -11888,7 +11888,7 @@ function renderPortalWarga() {
     familyColumnsWrap.style.display = 'flex';
     if (familyNamesCol) {
       familyNamesCol.innerHTML = `
-        <div class="pw-family-header-row"><span class="pw-family-header-spacer"></span></div>
+        <div class="pw-family-header-row"><span class="pw-family-col-header">Nama</span></div>
         ${members.map(m => `<span class="pw-family-name-item">${escapeHtml(m.nama)}</span>`).join('')}
       `;
     }
