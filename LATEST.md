@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (17:00 WIB)  
-**Versi Rilis Aktif:** `v2.9.66`  
+**Terakhir Diperbarui:** 23 September 2026 (17:20 WIB)  
+**Versi Rilis Aktif:** `v2.9.67`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,20 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🔄 Reposisi Panel "INFAQ ANAK YATIM" di Bawah Kotak "Pemasukan NON Iuran" (Update v2.9.66 - 23 Sept 2026)
+### 1. 🏡 Penggabungan Alamat Rumah di Bawah Nama Warga pada Menu Data Warga (Update v2.9.67 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Dimenu Data Warga, apakah alamat rumahnya bisa dipindahkan di bawahnya Nama setiap warga."*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Penggabungan Kolom Alamat di Bawah Nama**:
+     - Kolom tabel `Alamat (Jalan / Blok & No)` yang sebelumnya terpisah kini disatukan ke dalam kolom `Nama & Alamat Warga` (`index.html`).
+     - Alamat rumah ditampilkan tepat di bawah nama warga dengan pin lokasi emas (`<i class="fa-solid fa-location-dot text-gold"></i>`), nama jalan (*Jl. Citarum II*), serta penegasan blok dan nomor rumah berwarna kuning cerah (*Blok B6 No. 02*).
+  2. **Tampilan Tabel Lebih Ramping, Lapang & Kompak**:
+     - Jumlah kolom berkurang dari 9 kolom menjadi 8 kolom, memberikan ruang baca yang lebih nyaman dan lega untuk kolom Akun Portal, WhatsApp, dan Domisili, baik di desktop maupun perangkat mobile.
+  3. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.67` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.67` dan `app.js?v=2.9.67`.
+
+### 2. 🔄 Reposisi Panel "INFAQ ANAK YATIM" di Bawah Kotak "Pemasukan NON Iuran" (Update v2.9.66 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Agar warga tidak bingung membaca tabel/kotaknya. Pindahkan kotak INFAQ ANAK YATIM dibawahnya kotak 'Pemasukan NON Iuran'"*
 - **Hasil Implementasi & Optimalisasi**:

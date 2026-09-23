@@ -3324,10 +3324,12 @@ function renderResidents() {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${res.noUrut || no++}</td>
-      <td><span style="font-weight: 600; color: #fff; font-size: 0.95rem;">${res.name}</span></td>
       <td>
-        <strong style="color: var(--emerald-300); font-weight: 600;">${res.street || 'Jl. Citarum II'}</strong>
-        <div class="text-xs text-muted">${res.block} ${res.houseNo}</div>
+        <div style="font-weight: 700; color: #fff; font-size: 0.96rem; line-height: 1.3;">${res.name}</div>
+        <div style="font-size: 0.78rem; color: var(--emerald-300); margin-top: 4px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
+          <i class="fa-solid fa-location-dot" style="font-size: 0.72rem; color: var(--gold-400);"></i>
+          <span>${res.street || 'Jl. Citarum II'} • <strong style="color: #fef08a;">${res.block} ${res.houseNo}</strong></span>
+        </div>
       </td>
       <td>
         <div style="display:flex; flex-direction:column; gap:0.25rem;">
@@ -5204,10 +5206,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.66';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.67';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.66')
+      navigator.serviceWorker.register('sw.js?v=2.9.67')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
