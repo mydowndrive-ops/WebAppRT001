@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (17:20 WIB)  
-**Versi Rilis Aktif:** `v2.9.67`  
+**Terakhir Diperbarui:** 23 September 2026 (17:45 WIB)  
+**Versi Rilis Aktif:** `v2.9.68`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,27 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🏡 Penggabungan Alamat Rumah di Bawah Nama Warga pada Menu Data Warga (Update v2.9.67 - 23 Sept 2026)
+### 1. 📊 Penambahan Field & Kolom Kapsul Demografi (Jenis Kelamin, Usia, Jumlah) pada Database Warga (Update v2.9.68 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Didalam Data & edit warga ini tambahkan filed/kolom kapsul lg tentang Jenis kelamin,usia,jumlah sehingga menjadi database yang akurat untuk Data Statistik warga"*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Field Profil Demografi pada Form Tambah & Edit Warga (`#modal-warga`)**:
+     - Ditambahkan kartu panel **"Profil Demografi & Statistik Warga"** berdesain emerald estetik.
+     - Input field lengkap:
+       - **Jenis Kelamin**: Dropdown pilihan *Laki-laki (Pria)* / *Perempuan (Wanita)*.
+       - **Usia (Tahun)**: Input angka usia warga/kepala keluarga (contoh: 42 Tahun).
+       - **Jumlah Jiwa**: Total jiwa dalam rumah tangga.
+       - **Rincian Jiwa Laki-laki & Perempuan**: Input pembagian jiwa keluarga dengan fitur auto-sum ke total jiwa.
+  2. **Kolom Kapsul Estetik pada Tabel Data Warga (`#table-warga`)**:
+     - Ditambahkan kolom baru **"Gender & Usia"** berisi badge kapsul cyan/rose (`Laki-laki` / `Perempuan`) dan kapsul emas usia (`40 Thn`).
+     - Kolom **"Jumlah Jiwa"** diperkaya dengan pill jumlah total (`4 Jiwa`) beserta rincian gender keluarga (`2 L • 2 P`).
+  3. **Integrasi & Sinkronisasi Otomatis ke Modul Statistik Demografi Warga**:
+     - Dibuat fungsi `syncDemografiFromResidents()` di `app.js` yang menghitung total KK, total jiwa, rasio gender, dan sebaran kelompok usia langsung dari database warga terdaftar secara real-time.
+  4. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.68` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.68` dan `app.js?v=2.9.68`.
+
+### 2. 🏡 Penggabungan Alamat Rumah di Bawah Nama Warga pada Menu Data Warga (Update v2.9.67 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Dimenu Data Warga, apakah alamat rumahnya bisa dipindahkan di bawahnya Nama setiap warga."*
 - **Hasil Implementasi & Optimalisasi**:

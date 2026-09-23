@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.67">
+  <link rel="stylesheet" href="styles.css?v=2.9.68">
 </head>
 <body>
 
@@ -3468,6 +3468,7 @@
                   <th>No</th>
                   <th>Nama &amp; Alamat Warga</th>
                   <th>Akun Portal (User / Sandi)</th>
+                  <th>Gender &amp; Usia</th>
                   <th>Status Domisili</th>
                   <th>No. WhatsApp</th>
                   <th>Jumlah Jiwa</th>
@@ -5921,9 +5922,54 @@
           </div>
         </div>
 
-        <div class="form-group mb-3">
-          <label for="warga-family-members">Jumlah Jiwa dalam Rumah:</label>
-          <input type="number" id="warga-family-members" class="custom-input" value="4" min="1">
+        <!-- Profil Demografi & Data Statistik Warga -->
+        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.32); border-radius: 10px; padding: 0.95rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-chart-pie text-emerald"></i>
+              <strong style="color: #fff; font-size: 0.9rem;">Profil Demografi &amp; Statistik Warga</strong>
+            </div>
+            <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #34d399; font-weight: 700;">Database Statistik</span>
+          </div>
+
+          <div class="form-row-3 mb-2">
+            <div class="form-group">
+              <label for="warga-gender" style="font-size: 0.82rem; color: #cbd5e1;">
+                <i class="fa-solid fa-venus-mars text-cyan"></i> Jenis Kelamin:
+              </label>
+              <select id="warga-gender" class="custom-select" style="font-size: 0.88rem;">
+                <option value="Laki-laki">Laki-laki (Pria)</option>
+                <option value="Perempuan">Perempuan (Wanita)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="warga-age" style="font-size: 0.82rem; color: #cbd5e1;">
+                <i class="fa-solid fa-cake-candles text-gold"></i> Usia (Tahun):
+              </label>
+              <input type="number" id="warga-age" class="custom-input" placeholder="Contoh: 42" min="1" max="120" value="40" style="font-size: 0.88rem;">
+            </div>
+            <div class="form-group">
+              <label for="warga-family-members" style="font-size: 0.82rem; color: #cbd5e1;">
+                <i class="fa-solid fa-users text-purple"></i> Jumlah Jiwa:
+              </label>
+              <input type="number" id="warga-family-members" class="custom-input" value="4" min="1" placeholder="Contoh: 4" style="font-size: 0.88rem;">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed rgba(255,255,255,0.1);">
+            <div class="form-group">
+              <label for="warga-members-male" style="font-size: 0.75rem; color: #94a3b8;">
+                <i class="fa-solid fa-mars text-cyan"></i> Rincian Jiwa Laki-laki:
+              </label>
+              <input type="number" id="warga-members-male" class="custom-input" style="padding: 0.35rem 0.6rem; font-size: 0.82rem;" min="0" value="2">
+            </div>
+            <div class="form-group">
+              <label for="warga-members-female" style="font-size: 0.75rem; color: #94a3b8;">
+                <i class="fa-solid fa-venus text-rose"></i> Rincian Jiwa Perempuan:
+              </label>
+              <input type="number" id="warga-members-female" class="custom-input" style="padding: 0.35rem 0.6rem; font-size: 0.82rem;" min="0" value="2">
+            </div>
+          </div>
         </div>
 
         <!-- Bagian Akun Login Portal Warga (Fleksibel: Admin 1 bisa ubah kapan saja) -->
@@ -8025,6 +8071,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.67"></script>
+  <script src="app.js?v=2.9.68"></script>
 </body>
 </html>
