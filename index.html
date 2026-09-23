@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.61">
+  <link rel="stylesheet" href="styles.css?v=2.9.62">
 </head>
 <body>
 
@@ -656,8 +656,17 @@
               </div>
             </div>
 
-            <!-- Right Flank: Cakupan Wilayah & Status Lingkungan + Glowing Event Terdekat Button (Image 2) -->
+            <!-- Right Flank: Glowing Event Terdekat Button (Top) + Cakupan Wilayah & Status Lingkungan -->
             <div class="hub-cockpit-flank hub-cockpit-flank-right">
+              <!-- Glowing Event Terdekat Button Docked at Top-Right (Above Cakupan Wilayah) -->
+              <div class="hub-cockpit-event-dock">
+                <button type="button" class="btn-hub-event-trigger" id="btn-reopen-event-popup" title="Buka Pengumuman Event Terdekat">
+                  <span class="event-trigger-dot"></span>
+                  <i class="fa-solid fa-bullhorn"></i>
+                  <span>Event Terdekat</span>
+                </button>
+              </div>
+
               <div class="hub-cockpit-card">
                 <div class="hub-ticker-icon bg-cyan-glow">
                   <i class="fa-solid fa-road text-cyan"></i>
@@ -676,15 +685,6 @@
                   <span class="hub-ticker-label">Status Lingkungan</span>
                   <strong class="hub-ticker-val text-emerald">Aman &bull; Guyub Rukun</strong>
                 </div>
-              </div>
-
-              <!-- Glowing Event Terdekat Button Docked at Bottom-Right -->
-              <div class="hub-cockpit-event-dock">
-                <button type="button" class="btn-hub-event-trigger" id="btn-reopen-event-popup" title="Buka Pengumuman Event Terdekat">
-                  <span class="event-trigger-dot"></span>
-                  <i class="fa-solid fa-bullhorn"></i>
-                  <span>Event Terdekat</span>
-                </button>
               </div>
             </div>
 
@@ -7950,6 +7950,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.61"></script>
+  <script src="app.js?v=2.9.62"></script>
 </body>
 </html>

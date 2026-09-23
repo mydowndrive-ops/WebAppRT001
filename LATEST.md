@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (14:20 WIB)  
-**Versi Rilis Aktif:** `v2.9.61`  
+**Terakhir Diperbarui:** 23 September 2026 (14:30 WIB)  
+**Versi Rilis Aktif:** `v2.9.62`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,20 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🌊 Font Hijau Zamrud Gelap Tanpa Outline & Efek Gerak Gelombang Laut (*Sea Wave*) (Update v2.9.61 - 23 Sept 2026)
+### 1. 📢 Reposisi Tombol "EVENT TERDEKAT" di Atas Kotak "CAKUPAN WILAYAH" (Update v2.9.62 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Untuk posisi tombol menu 'EVENT TERDEKAT' pindahkan diatasnya kotak 'CAKUPAN WILAYAH'."*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Pemindahan Elemen DOM (`index.html`)**:
+     - Memindahkan kontainer tombol `.hub-cockpit-event-dock` (tombol pemicu modal *"Event Terdekat"*) dari posisi bawah kartu sayap kanan ke posisi **paling atas** di sayap kanan (*Right Flank*), tepat di atas kartu informasi *"Cakupan Wilayah"* (5 Ruas Lorong Jalan).
+  2. **Penyesuaian Spacing & Margin (`styles.css`)**:
+     - `.hub-cockpit-event-dock` diubah dari `margin-top: 1.25rem` menjadi `margin-bottom: 0.85rem; margin-top: 0;` sehingga memberikan jarak renggang yang pas ke kartu Cakupan Wilayah di bawahnya.
+     - Penyesuaian responsif layar tablet/ponsel (`@media (max-width: 900px)`) dengan `margin-bottom: 0.45rem; margin-top: 0;`.
+  3. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.62` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.62` dan `app.js?v=2.9.62`.
+
+### 2. 🌊 Font Hijau Zamrud Gelap Tanpa Outline & Efek Gerak Gelombang Laut (*Sea Wave*) (Update v2.9.61 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Ganti warna font WARGA RT.001 RW.013 dengan warna hijau zamrud gelap tanpa outline.Ganti efek tulisan seperti gelaombang laut."*
 - **Hasil Implementasi & Optimalisasi**:
