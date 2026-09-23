@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.72">
+  <link rel="stylesheet" href="styles.css?v=2.9.73">
 </head>
 <body>
 
@@ -4694,43 +4694,62 @@
         <!-- Hero Card Warga -->
         <div class="portal-warga-hero glass-panel mb-4">
           <div class="pw-hero-top">
-            <div class="pw-hero-avatar">
-              <i class="fa-solid fa-house-chimney-user text-cyan"></i>
-            </div>
-            <div class="pw-hero-text">
-              <div class="pw-hero-badge-row">
-                <span class="cyber-badge-tag">
-                  <span class="cyber-indicator-dot"></span>
-                  <i class="fa-solid fa-circle-check text-emerald"></i>
-                  <span>PORTAL WARGA TERVERIFIKASI</span>
-                </span>
-                <span class="split-pill" id="pw-hero-domicile">Warga Tetap</span>
+            <div class="pw-hero-profile-group">
+              <div class="pw-hero-avatar">
+                <i class="fa-solid fa-house text-white"></i>
               </div>
-              <h2 class="pw-hero-name" id="pw-hero-name">Bapak Wageyanto</h2>
-              <p class="pw-hero-address" id="pw-hero-address">
-                <i class="fa-solid fa-location-dot text-gold"></i> <span id="pw-hero-street">Jl. Citarum II</span> <span id="pw-hero-blockno">Blok B6 No. 02</span> &bull; RT.001 / RW.013
-              </p>
-            </div>
-            <div class="pw-hero-creds">
-              <div class="pw-cred-box">
-                <span class="pw-cred-label"><i class="fa-solid fa-user-tag text-emerald"></i> Username:</span>
-                <strong id="pw-hero-username" class="font-mono text-emerald">Wageyanto</strong>
+              <div class="pw-hero-text">
+                <div class="pw-hero-badge-row">
+                  <span class="cyber-badge-tag">
+                    <span class="cyber-indicator-dot"></span>
+                    <i class="fa-solid fa-circle-check text-emerald"></i>
+                    <span>PORTAL WARGA TERVERIFIKASI</span>
+                  </span>
+                  <span class="split-pill" id="pw-hero-domicile">Warga Tetap</span>
+                </div>
+                <h2 class="pw-hero-name" id="pw-hero-name">Wageyanto <span class="pw-hero-wife-wrap"><span class="pw-hero-wife-bullet">●</span><span class="pw-hero-wife-name">[ Sri Wahyuni ]</span></span></h2>
+                <p class="pw-hero-address" id="pw-hero-address">
+                  <i class="fa-solid fa-location-dot text-gold"></i> <span id="pw-hero-street">Jl. Citarum II</span> <span id="pw-hero-blockno">Blok B6 No. 02</span> &bull; RT.001 / RW.013
+                </p>
               </div>
-              <div class="pw-cred-box">
+            </div>
+
+            <!-- Kolom Nama Anggota Keluarga & Hub. Keluarga (ditampilkan otomatis dari data warga) -->
+            <div class="pw-family-columns" id="pw-family-columns" style="display:none;">
+              <div class="pw-family-col pw-family-names" id="pw-family-names-col">
+                <!-- Diisi oleh renderPortalWarga() -->
+              </div>
+              <div class="pw-family-col pw-family-rels" id="pw-family-rels-col">
+                <!-- Diisi oleh renderPortalWarga() -->
+              </div>
+            </div>
+
+            <div class="pw-hero-creds-card">
+              <div class="pw-cred-row">
+                <span class="pw-cred-label"><i class="fa-solid fa-user-group text-emerald"></i> Username:</span>
+                <strong id="pw-hero-username" class="font-mono text-emerald pw-cred-val-emerald">Wageyanto</strong>
+              </div>
+              <div class="pw-cred-row" style="margin-top: 0.35rem;">
                 <span class="pw-cred-label"><i class="fa-solid fa-key text-gold"></i> Password:</span>
-                <strong id="pw-hero-password" class="font-mono text-gold">C2B602</strong>
+                <strong id="pw-hero-password" class="font-mono text-gold pw-cred-val-gold">C2B602</strong>
               </div>
             </div>
           </div>
 
           <div class="pw-hero-stats-bar">
-            <div class="pw-stat-item">
-              <i class="fa-solid fa-users text-purple"></i>
-              <div>
-                <span class="pw-stat-val" id="pw-stat-members">4 Jiwa</span>
-                <span class="pw-stat-lbl">Anggota Keluarga</span>
+            <!-- Box 4 & 5: Jumlah Jiwa + Rincian Jiwa L/P -->
+            <div class="pw-stat-item pw-stat-members-item">
+              <div class="pw-stat-members-left">
+                <i class="fa-solid fa-users text-purple"></i>
+                <span class="pw-stat-val text-white" id="pw-stat-members">4 Jiwa</span>
+              </div>
+              <div class="pw-stat-gender-detail" id="pw-stat-gender-detail" style="display:none;">
+                <span class="pw-gender-line font-mono" id="pw-stat-gender-male">L : 2 jiwa</span>
+                <span class="pw-gender-line font-mono" id="pw-stat-gender-female">P : 2 jiwa</span>
               </div>
             </div>
+
+            <!-- Card 2: WhatsApp -->
             <div class="pw-stat-item">
               <i class="fa-brands fa-whatsapp text-emerald"></i>
               <div>
@@ -4738,17 +4757,21 @@
                 <span class="pw-stat-lbl">Nomor WhatsApp</span>
               </div>
             </div>
+
+            <!-- Card 3: Ronda Rutin -->
             <div class="pw-stat-item">
-              <i class="fa-solid fa-shield-halved text-cyan"></i>
+              <i class="fa-solid fa-shield-halved text-white" style="font-size: 1.45rem;"></i>
               <div>
-                <span class="pw-stat-val" id="pw-stat-ronda-week">Minggu ke-1</span>
+                <span class="pw-stat-val text-white" id="pw-stat-ronda-week">Regu 6</span>
                 <span class="pw-stat-lbl">Jadwal Ronda Rutin</span>
               </div>
             </div>
+
+            <!-- Card 4: Status Iuran Terkini -->
             <div class="pw-stat-item">
               <i class="fa-solid fa-money-bill-wave text-gold"></i>
               <div>
-                <span class="pw-stat-val text-emerald" id="pw-stat-dues-status">Lunas September</span>
+                <span class="pw-stat-val text-rose" id="pw-stat-dues-status">Belum September</span>
                 <span class="pw-stat-lbl">Status Iuran Terkini</span>
               </div>
             </div>
@@ -5849,14 +5872,23 @@
       <form id="form-warga">
         <input type="hidden" id="warga-edit-id">
 
-        <div class="form-group mb-3">
-          <label for="warga-name">Nama Lengkap Kepala Keluarga / Warga:</label>
-          <input type="text" id="warga-name" class="custom-input" placeholder="Contoh: Bpk. Hendra Gunawan" required>
+        <div class="form-row-2 mb-3">
+          <div class="form-group">
+            <label for="warga-name">Nama Kepala Keluarga:</label>
+            <input type="text" id="warga-name" class="custom-input" placeholder="Contoh: Bpk. Hendra Gunawan" required>
+          </div>
+          <div class="form-group">
+            <label for="warga-wife-name">
+              <i class="fa-solid fa-heart text-gold"></i> Nama Istri (Opsional):
+            </label>
+            <input type="text" id="warga-wife-name" class="custom-input" placeholder="Contoh: Ibu Sri Wahyuni">
+            <small class="text-muted" style="font-size: 0.72rem;">Otomatis tampil di samping nama Kepala Keluarga di Dashboard</small>
+          </div>
         </div>
 
         <div class="form-row-2 mb-3">
           <div class="form-group">
-            <label for="warga-block">Blok / Gang:</label>
+            <label for="warga-block">Blok:</label>
             <select id="warga-block" class="custom-select" required>
               <option value="Blok B6">Blok B6</option>
               <option value="Blok B7">Blok B7</option>
@@ -5930,6 +5962,43 @@
                 <i class="fa-solid fa-venus text-rose"></i> Rincian Jiwa Perempuan:
               </label>
               <input type="number" id="warga-members-female" class="custom-input" style="padding: 0.35rem 0.6rem; font-size: 0.82rem;" min="0" value="2">
+            </div>
+          </div>
+        </div>
+
+        <!-- Bagian Data Anggota Keluarga (Kolom Nama + Hub. Keluarga) -->
+        <div style="background: rgba(6, 78, 59, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 10px; padding: 0.95rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <i class="fa-solid fa-people-roof text-emerald"></i>
+              <strong style="color: #fff; font-size: 0.9rem;">Data Anggota Keluarga Lainnya &amp; Statistik Warga</strong>
+            </div>
+            <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #34d399; font-weight: 700;">Tampil di Dashboard Warga</span>
+          </div>
+
+          <!-- Kolom Nama dan Hub. Keluarga (Anak, Saudara, Orangtua, Keponakan) -->
+          <div style="margin-bottom: 0.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+              <label style="font-size: 0.82rem; color: #cbd5e1; margin: 0;">
+                <i class="fa-solid fa-user-group text-purple"></i> Kolom Nama &amp; Hub. Keluarga:
+              </label>
+              <button type="button" id="btn-add-family-row" class="btn btn-sm btn-outline-emerald" style="padding: 3px 10px; font-size: 0.76rem; border-radius: 6px;">
+                <i class="fa-solid fa-plus"></i> Tambah Anggota
+              </button>
+            </div>
+            <small class="text-muted" style="font-size:0.7rem; display:block; margin-bottom:0.6rem;">
+              Kolom Nama dan Hub. Keluarga (Anak, Saudara, Orangtua, Keponakan) akan otomatis tampil tersusun di Dashboard Warga.
+            </small>
+
+            <!-- Header Kolom -->
+            <div style="display: grid; grid-template-columns: 1fr 140px 32px; gap: 0.5rem; font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.35rem; padding: 0 2px;">
+              <span><i class="fa-solid fa-font text-cyan"></i> Kolom Nama:</span>
+              <span><i class="fa-solid fa-people-arrows text-gold"></i> Hub. Keluarga:</span>
+              <span></span>
+            </div>
+
+            <div id="family-rows-container">
+              <!-- Baris anggota keluarga ditambah secara dinamis via JS -->
             </div>
           </div>
         </div>
@@ -8033,6 +8102,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.72"></script>
+  <script src="app.js?v=2.9.73"></script>
 </body>
 </html>

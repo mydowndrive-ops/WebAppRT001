@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (18:40 WIB)  
-**Versi Rilis Aktif:** `v2.9.72`  
+**Terakhir Diperbarui:** 23 September 2026 (23:45 WIB)  
+**Versi Rilis Aktif:** `v2.9.73`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,32 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🗑️ Penghapusan Tabel Catatan Arus Transaksi Kas Terkini dari Pusat Transparansi (Update v2.9.72 - 23 Sept 2026)
+### 1. 👩‍❤️‍👨 Penambahan Kolom Input Nama Istri & Tampil Otomatis di Samping Kepala Keluarga (Update v2.9.73 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"DI bagian ini tambahkan kolom untuk Nama Istri. Nanti didashboard setiap warga nama istri otomatis tampil di samping nama Kepala Keluarga"* (dengan melampirkan screenshot modal *Edit Data & Akun Warga*).
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Penambahan Kolom Input "Nama Istri" pada Form Tambah / Edit Warga (`#modal-warga`)**:
+     - Bagian teratas formulir kini menggunakan layout 2 kolom (`form-row-2 mb-3`) yang serasi:
+       - **Kolom Kiri**: `Nama Kepala Keluarga:` (Wajib diisi — diperbarui dari sebelumnya *Nama Lengkap Kepala Keluarga / Warga*).
+       - **Kolom Kanan**: `Nama Istri (Opsional):` (Contoh: *Ibu Sri Wahyuni*).
+     - Field **Blok / Gang** kini diringkas menjadi **`Blok:`** untuk tampilan yang lebih padat dan bersih.
+     - Menghilangkan field input duplikat dari bagian bawah sehingga formulir rapi, terstruktur, dan langsung terlihat di pandangan pertama tanpa perlu menggulir ke bawah.
+  2. **Tampil Otomatis di Samping Nama Kepala Keluarga di Seluruh Dashboard & Modul**:
+     - **Dashboard Personal Portal Warga (`#pw-hero-name`)**:
+       - Otomatis merender: `[Nama Kepala Keluarga] ● [ [Nama Istri] ]` dengan estetika emas (`.pw-hero-wife-wrap`).
+     - **Tabel Database Warga RT (`#table-warga`)**:
+       - Otomatis menampilkan badge emas estetik `● [ [Nama Istri] ]` tepat di samping nama Kepala Keluarga.
+     - **Tabel Checklist Iuran Wajib (`#table-checklist`)**:
+       - Otomatis menampilkan nama istri di samping nama Kepala Keluarga untuk memudahkan verifikasi saat penarikan/pengecekan iuran.
+     - **Modal Kelola Akun Portal Warga 112 KK (`#modal-resident-accounts`)**:
+       - Nama istri tampil di samping nama KK pada daftar akun.
+     - **Dukungan Pencarian Menyeluruh**:
+       - Fitur pencarian pada tabel Data Warga, Checklist Iuran, dan Akun Warga kini juga dapat menemukan warga berdasarkan kata kunci Nama Istri.
+  3. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.73` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.73` dan `app.js?v=2.9.73`.
+
+### 2. 🗑️ Penghapusan Tabel Catatan Arus Transaksi Kas Terkini dari Pusat Transparansi (Update v2.9.72 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Hapus/hilangkan tampilan kotak ini dari halaman Pusat Transparansi Kas & Keuangan RT.001"*
 - **Hasil Implementasi & Optimalisasi**:

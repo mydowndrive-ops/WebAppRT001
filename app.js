@@ -299,7 +299,16 @@ const INITIAL_RESIDENTS = [
     "houseNo": "No. 02",
     "phone": "081289060002",
     "domicile": "Tetap",
-    "members": 4
+    "gender": "Laki-laki",
+    "age": 39,
+    "members": 4,
+    "membersMale": 2,
+    "membersFemale": 2,
+    "wifeNama": "Sri Wahyuni",
+    "familyMembers": [
+      { "nama": "Ananda Putra", "hub": "Anak" },
+      { "nama": "Dinda Putri", "hub": "Anak" }
+    ]
   },
   {
     "id": "w-2",
@@ -1131,7 +1140,17 @@ const INITIAL_RESIDENTS = [
     "houseNo": "No. 22",
     "phone": "081289030022",
     "domicile": "Tetap",
-    "members": 4
+    "gender": "Laki-laki",
+    "age": 42,
+    "members": 5,
+    "membersMale": 1,
+    "membersFemale": 3,
+    "wifeNama": "nama Istri",
+    "familyMembers": [
+      { "nama": "Nama anak-1", "hub": "Anak" },
+      { "nama": "Nama anak-2", "hub": "Anak" },
+      { "nama": "Nama anak-3", "hub": "Orangtua" }
+    ]
   },
   {
     "id": "w-66",
@@ -1946,6 +1965,31 @@ function loadState() {
             res.membersFemale = m - male;
             demoUpdated = true;
           }
+
+          // Inisialisasi data keluarga dari contoh Gambar 2 jika belum diset
+          if (res.name === 'Yayat Ruhyat-1' && !res.wifeNama) {
+            res.wifeNama = 'nama Istri';
+            res.familyMembers = [
+              { nama: 'Nama anak-1', hub: 'Anak' },
+              { nama: 'Nama anak-2', hub: 'Anak' },
+              { nama: 'Nama anak-3', hub: 'Orangtua' }
+            ];
+            res.members = 5;
+            res.membersMale = 1;
+            res.membersFemale = 3;
+            demoUpdated = true;
+          } else if ((res.id === 'w-1' || (res.name && res.name.toLowerCase().includes('wageyanto'))) && !res.wifeNama) {
+            res.wifeNama = 'Sri Wahyuni';
+            if (!res.familyMembers || res.familyMembers.length === 0) {
+              res.familyMembers = [
+                { nama: 'Ananda Putra', hub: 'Anak' },
+                { nama: 'Dinda Putri', hub: 'Anak' }
+              ];
+            }
+            demoUpdated = true;
+          }
+          if (res.wifeNama === undefined) res.wifeNama = '';
+          if (!res.familyMembers) res.familyMembers = [];
         });
         if (demoUpdated) saveState();
       }
@@ -3097,6 +3141,7 @@ function renderChecklist() {
   (state.residents || []).forEach(resident => {
     // Check match search & filters
     const matchSearch = resident.name.toLowerCase().includes(searchTerm) ||
+                        (resident.wifeNama && resident.wifeNama.toLowerCase().includes(searchTerm)) ||
                         resident.block.toLowerCase().includes(searchTerm) ||
                         resident.houseNo.toLowerCase().includes(searchTerm) ||
                         (resident.street && resident.street.toLowerCase().includes(searchTerm));
@@ -3126,7 +3171,10 @@ function renderChecklist() {
         </div>
       </td>
       <td>
-        <div style="font-weight: 700; color: #fff; font-size: 0.96rem; line-height: 1.3;">${resident.name}</div>
+        <div style="font-weight: 700; color: #fff; font-size: 0.96rem; line-height: 1.3; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+          <span>${escapeHtml(resident.name)}</span>
+          ${resident.wifeNama && resident.wifeNama.trim() ? `<span class="badge-wife"><span class="badge-wife-bullet">●</span> [ ${escapeHtml(resident.wifeNama.trim())} ]</span>` : ''}
+        </div>
         <div style="font-size: 0.78rem; color: var(--emerald-300); margin-top: 3px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
           <i class="fa-solid fa-location-dot" style="font-size: 0.72rem; color: var(--gold-400);"></i>
           <span>${resident.street || 'Jl. Citarum II'} • <strong style="color: #fef08a;">${resident.block} ${resident.houseNo}</strong></span>
@@ -3341,6 +3389,7 @@ function renderResidents() {
   let no = 1;
   state.residents.forEach(res => {
     const matchSearch = res.name.toLowerCase().includes(searchTerm) ||
+                        (res.wifeNama && res.wifeNama.toLowerCase().includes(searchTerm)) ||
                         res.block.toLowerCase().includes(searchTerm) ||
                         res.houseNo.toLowerCase().includes(searchTerm) ||
                         (res.street && res.street.toLowerCase().includes(searchTerm)) ||
@@ -3358,7 +3407,10 @@ function renderResidents() {
     tr.innerHTML = `
       <td>${res.noUrut || no++}</td>
       <td>
-        <div style="font-weight: 700; color: #fff; font-size: 0.96rem; line-height: 1.3;">${res.name}</div>
+        <div style="font-weight: 700; color: #fff; font-size: 0.96rem; line-height: 1.3; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+          <span>${escapeHtml(res.name)}</span>
+          ${res.wifeNama && res.wifeNama.trim() ? `<span class="badge-wife"><span class="badge-wife-bullet">●</span> [ ${escapeHtml(res.wifeNama.trim())} ]</span>` : ''}
+        </div>
         <div style="font-size: 0.78rem; color: var(--emerald-300); margin-top: 4px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap;">
           <i class="fa-solid fa-location-dot" style="font-size: 0.72rem; color: var(--gold-400);"></i>
           <span>${res.street || 'Jl. Citarum II'} • <strong style="color: #fef08a;">${res.block} ${res.houseNo}</strong></span>
@@ -4014,7 +4066,7 @@ function populateBlockFilterOptions() {
   const filterBlock = document.getElementById('filter-block');
   if (filterBlock) {
     const curVal = filterBlock.value;
-    filterBlock.innerHTML = '<option value="ALL">Semua Blok / Gang</option>' +
+    filterBlock.innerHTML = '<option value="ALL">Semua Blok</option>' +
       blocks.map(b => `<option value="${b}">${b}</option>`).join('');
     if (blocks.includes(curVal)) filterBlock.value = curVal;
   }
@@ -4512,6 +4564,33 @@ function navigateToView(viewId) {
   }
 }
 
+// =================== HELPER: FAMILY MEMBER ROWS IN MODAL-WARGA ===================
+function addFamilyRow(nama = '', hub = 'Anak') {
+  const container = document.getElementById('family-rows-container');
+  if (!container) return;
+  const row = document.createElement('div');
+  row.className = 'family-member-row';
+  row.innerHTML = `
+    <input type="text" class="custom-input fm-nama" placeholder="Nama (Anak / Saudara / Orangtua / dll)" value="${escapeHtml(nama)}" style="font-size:0.83rem; padding:0.35rem 0.6rem;">
+    <select class="custom-select fm-hub" style="font-size:0.83rem; padding:0.32rem 0.5rem;">
+      <option value="Anak" ${hub === 'Anak' ? 'selected' : ''}>Anak</option>
+      <option value="Istri" ${hub === 'Istri' ? 'selected' : ''}>Istri</option>
+      <option value="Saudara" ${hub === 'Saudara' ? 'selected' : ''}>Saudara</option>
+      <option value="Orangtua" ${hub === 'Orangtua' ? 'selected' : ''}>Orangtua</option>
+      <option value="Keponakan" ${hub === 'Keponakan' ? 'selected' : ''}>Keponakan</option>
+    </select>
+    <button type="button" class="btn-remove-family" title="Hapus baris ini"><i class="fa-solid fa-trash-can"></i></button>
+  `;
+  row.querySelector('.btn-remove-family').addEventListener('click', () => row.remove());
+  container.appendChild(row);
+}
+
+function clearFamilyRowsContainer() {
+  const container = document.getElementById('family-rows-container');
+  if (container) container.innerHTML = '';
+}
+// =================================================================================
+
 function setupModalEventListeners() {
   // Close buttons
   document.querySelectorAll('.modal-close, [data-close]').forEach(btn => {
@@ -4679,6 +4758,10 @@ function setupModalEventListeners() {
     if (mMale) mMale.value = '2';
     const mFemale = document.getElementById('warga-members-female');
     if (mFemale) mFemale.value = '2';
+    // Reset field anggota keluarga
+    const wifeInput = document.getElementById('warga-wife-name');
+    if (wifeInput) wifeInput.value = '';
+    clearFamilyRowsContainer();
     document.getElementById('modal-warga')?.classList.add('active');
   });
 
@@ -4694,6 +4777,11 @@ function setupModalEventListeners() {
     const female = Number(document.getElementById('warga-members-female')?.value) || 0;
     const tot = document.getElementById('warga-family-members');
     if (tot) tot.value = male + female;
+  });
+
+  // Tombol Tambah Baris Anggota Keluarga
+  document.getElementById('btn-add-family-row')?.addEventListener('click', () => {
+    addFamilyRow();
   });
 
   // Tombol Auto Generate Password Sandi Warga Standar
@@ -4725,8 +4813,19 @@ function setupModalEventListeners() {
     const membersMale = parseInt(document.getElementById('warga-members-male')?.value, 10) || Math.ceil(members / 2);
     const membersFemale = parseInt(document.getElementById('warga-members-female')?.value, 10) || (members - membersMale);
     const username = (document.getElementById('warga-username')?.value || '').trim() || name;
-    
-    // Default password generator if blank
+    // Nama Istri
+    const wifeNama = (document.getElementById('warga-wife-name')?.value || '').trim();
+    // Anggota keluarga lain (array of {nama, hub})
+    const familyMemberRows = document.querySelectorAll('#family-rows-container .family-member-row');
+    const familyMembers = [];
+    familyMemberRows.forEach(row => {
+      const namaInput = row.querySelector('.fm-nama');
+      const hubSelect = row.querySelector('.fm-hub');
+      const namaVal = (namaInput ? namaInput.value.trim() : '');
+      const hubVal = (hubSelect ? hubSelect.value : 'Anak');
+      if (namaVal) familyMembers.push({ nama: namaVal, hub: hubVal });
+    });
+
     const cleanBlock = block.replace(/[^bB0-9]/g, '').toUpperCase();
     const cleanNo = (houseNo.replace(/\D/g, '') || '01').padStart(2, '0');
     const defaultGeneratedPass = `C2${cleanBlock}${cleanNo}`;
@@ -4748,6 +4847,8 @@ function setupModalEventListeners() {
         res.members = members;
         res.membersMale = membersMale;
         res.membersFemale = membersFemale;
+        res.wifeNama = wifeNama;
+        res.familyMembers = familyMembers;
 
         // Jika warga yang diedit adalah yang sedang login, update sesi verified
         if (state.currentVerifiedResident && state.currentVerifiedResident.id === res.id) {
@@ -4775,7 +4876,9 @@ function setupModalEventListeners() {
         age: age,
         members: members,
         membersMale: membersMale,
-        membersFemale: membersFemale
+        membersFemale: membersFemale,
+        wifeNama: wifeNama,
+        familyMembers: familyMembers
       };
       state.residents.push(newWarga);
       showToast('Warga baru beserta akun portal berhasil ditambahkan!', 'success');
@@ -4992,6 +5095,12 @@ function setupDelegatedEvents() {
         const pInput = document.getElementById('warga-password');
         if (uInput) uInput.value = res.username || res.name;
         if (pInput) pInput.value = res.password || '';
+
+        // Isi data anggota keluarga
+        const wifeInput = document.getElementById('warga-wife-name');
+        if (wifeInput) wifeInput.value = res.wifeNama || '';
+        clearFamilyRowsContainer();
+        (res.familyMembers || []).forEach(fm => addFamilyRow(fm.nama, fm.hub));
 
         document.getElementById('modal-warga')?.classList.add('active');
       }
@@ -5309,10 +5418,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.72';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.73';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.72')
+      navigator.serviceWorker.register('sw.js?v=2.9.73')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -11566,6 +11675,7 @@ function renderResidentAccountsModal() {
     const matchBlock = filterBlock === 'ALL' || r.block === filterBlock;
     const matchSearch = !searchVal ||
       r.name.toLowerCase().includes(searchVal) ||
+      (r.wifeNama && r.wifeNama.toLowerCase().includes(searchVal)) ||
       (r.username && r.username.toLowerCase().includes(searchVal)) ||
       (r.password && r.password.toLowerCase().includes(searchVal)) ||
       r.houseNo.toLowerCase().includes(searchVal) ||
@@ -11586,7 +11696,10 @@ function renderResidentAccountsModal() {
       <tr>
         <td style="font-weight: 600; color: #94a3b8;">${r.noUrut || '-'}</td>
         <td>
-          <strong style="color: #fff; font-size: 0.92rem;">${r.name}</strong>
+          <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+            <strong style="color: #fff; font-size: 0.92rem;">${escapeHtml(r.name)}</strong>
+            ${r.wifeNama && r.wifeNama.trim() ? `<span class="badge-wife" style="font-size: 0.76rem;"><span class="badge-wife-bullet">●</span> [ ${escapeHtml(r.wifeNama.trim())} ]</span>` : ''}
+          </div>
           <div style="font-size: 0.75rem; color: #34d399;"><i class="fa-brands fa-whatsapp"></i> ${r.phone || '-'}</div>
         </td>
         <td>
@@ -11649,10 +11762,25 @@ function setupResidentAccountsEvents() {
         document.getElementById('warga-domicile').value = res.domicile;
         document.getElementById('warga-family-members').value = res.members;
 
+        const gSelectM = document.getElementById('warga-gender');
+        if (gSelectM) gSelectM.value = res.gender || 'Laki-laki';
+        const aInputM = document.getElementById('warga-age');
+        if (aInputM) aInputM.value = res.age || 40;
+        const mMaleM = document.getElementById('warga-members-male');
+        if (mMaleM) mMaleM.value = (res.membersMale !== undefined) ? res.membersMale : Math.ceil((res.members || 4) / 2);
+        const mFemaleM = document.getElementById('warga-members-female');
+        if (mFemaleM) mFemaleM.value = (res.membersFemale !== undefined) ? res.membersFemale : Math.floor((res.members || 4) / 2);
+
         const uInput = document.getElementById('warga-username');
         const pInput = document.getElementById('warga-password');
         if (uInput) uInput.value = res.username || res.name;
         if (pInput) pInput.value = res.password || '';
+
+        // Isi data anggota keluarga
+        const wifeInputM = document.getElementById('warga-wife-name');
+        if (wifeInputM) wifeInputM.value = res.wifeNama || '';
+        clearFamilyRowsContainer();
+        (res.familyMembers || []).forEach(fm => addFamilyRow(fm.nama, fm.hub));
 
         document.getElementById('modal-warga')?.classList.add('active');
       }
@@ -11712,10 +11840,14 @@ function renderPortalWarga() {
   const resident = state.currentVerifiedResident || (state.residents && state.residents[0]);
   if (!resident) return;
 
-  // Pastikan judul halaman portal warga selalu ter-update
+  // Pastikan judul & subjudul halaman portal warga selalu ter-update sesuai Gambar 2
   const pTitle = document.getElementById('page-title');
   if (pTitle) {
     pTitle.textContent = 'Selamat datang di WebApp RT.001/013';
+  }
+  const pSub = document.getElementById('page-subtitle');
+  if (pSub) {
+    pSub.textContent = 'Layanan Mandiri, Rekapitulasi Iuran Pribadi & Jadwal Ronda Lingkungan';
   }
 
   // 1. Hero Card Info
@@ -11730,18 +11862,70 @@ function renderPortalWarga() {
   const statRondaWeek = document.getElementById('pw-stat-ronda-week');
   const statDuesStatus = document.getElementById('pw-stat-dues-status');
 
-  if (heroName) heroName.textContent = resident.name;
   if (heroStreet) heroStreet.textContent = resident.street || 'Jl. Citarum II';
   if (heroBlockNo) heroBlockNo.textContent = `${resident.block} ${resident.houseNo}`;
   if (heroDomicile) heroDomicile.textContent = resident.domicile ? `Warga ${resident.domicile}` : 'Warga Tetap';
   if (heroUsername) heroUsername.textContent = resident.username || resident.name;
   if (heroPassword) heroPassword.textContent = resident.password || '-';
-  if (statMembers) statMembers.textContent = `${resident.members || 4} Jiwa`;
   if (statPhone) statPhone.textContent = resident.phone || '-';
+
+  // Tampilkan Nama KK + Nama Istri di samping (sesuai referensi Gambar 2: Nama KK ● [ nama Istri ] warna emas)
+  if (heroName) {
+    if (resident.wifeNama && resident.wifeNama.trim()) {
+      heroName.innerHTML = `${escapeHtml(resident.name)} <span class="pw-hero-wife-wrap"><span class="pw-hero-wife-bullet">●</span><span class="pw-hero-wife-name">[ ${escapeHtml(resident.wifeNama.trim())} ]</span></span>`;
+    } else {
+      heroName.textContent = resident.name;
+    }
+  }
+
+  // Populate kolom Nama Anggota Keluarga & Hub. Keluarga (Box 1 & Box 2 di Gambar 2)
+  const familyColumnsWrap = document.getElementById('pw-family-columns');
+  const familyNamesCol = document.getElementById('pw-family-names-col');
+  const familyRelsCol = document.getElementById('pw-family-rels-col');
+  const members = resident.familyMembers || [];
+
+  if (members.length > 0 && familyColumnsWrap) {
+    familyColumnsWrap.style.display = 'flex';
+    if (familyNamesCol) {
+      familyNamesCol.innerHTML = `
+        <div class="pw-family-header-row"><span class="pw-family-header-spacer"></span></div>
+        ${members.map(m => `<span class="pw-family-name-item">${escapeHtml(m.nama)}</span>`).join('')}
+      `;
+    }
+    if (familyRelsCol) {
+      familyRelsCol.innerHTML = `
+        <div class="pw-family-header-row"><span class="pw-family-col-header">Hub. Keluarga</span></div>
+        ${members.map(m => {
+          let col = '#34d399'; // Default hijau emerald sesuai Gambar 2
+          if (m.hub === 'Istri') col = '#facc15';
+          return `<span class="pw-family-rel-item" style="color:${col};">${escapeHtml(m.hub)}</span>`;
+        }).join('')}
+      `;
+    }
+  } else if (familyColumnsWrap) {
+    familyColumnsWrap.style.display = 'none';
+  }
+
+  // Box 4 & Box 5: Tampilkan Jumlah Jiwa + Rincian Jiwa L/P (kuning emas)
+  const totalJiwa = resident.members || ((resident.membersMale || 0) + (resident.membersFemale || 0)) || 4;
+  if (statMembers) statMembers.textContent = `${totalJiwa} Jiwa`;
+
+  const genderDetailWrap = document.getElementById('pw-stat-gender-detail');
+  const genderMaleEl = document.getElementById('pw-stat-gender-male');
+  const genderFemaleEl = document.getElementById('pw-stat-gender-female');
+  const ml = resident.membersMale;
+  const fp = resident.membersFemale;
+  if ((ml !== undefined || fp !== undefined) && genderDetailWrap) {
+    genderDetailWrap.style.display = 'flex';
+    if (genderMaleEl) genderMaleEl.textContent = `L : ${ml !== undefined ? ml : 0} jiwa`;
+    if (genderFemaleEl) genderFemaleEl.textContent = `P : ${fp !== undefined ? fp : 0} jiwa`;
+  } else if (genderDetailWrap) {
+    genderDetailWrap.style.display = 'none';
+  }
 
   // 2. Tentukan Kelompok Ronda Warga (Rotasi 8 Regu)
   let assignedWeek = (resident.noUrut ? ((resident.noUrut - 1) % 8) + 1 : 1);
-  const foundInGroup = (state.rondaGroups || []).find(g => 
+  const foundInGroup = (state.rondaGroups || []).find(g =>
     (g.leader && g.leader.name.toLowerCase() === resident.name.toLowerCase()) ||
     (g.members && g.members.some(m => m.name.toLowerCase() === resident.name.toLowerCase()))
   );

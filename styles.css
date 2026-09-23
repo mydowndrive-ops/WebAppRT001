@@ -13069,6 +13069,26 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.5px;
 }
 
+.badge-wife {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(245, 158, 11, 0.12);
+  color: #facc15;
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  padding: 1px 7px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  vertical-align: middle;
+}
+
+.badge-wife-bullet {
+  color: #f59e0b;
+  font-size: 0.7rem;
+}
+
 .btn-copy-cred {
   display: inline-flex;
   align-items: center;
@@ -13134,28 +13154,36 @@ h1, h2, h3, h4, h5, h6 {
 .pw-hero-top {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1.25rem;
   flex-wrap: wrap;
   margin-bottom: 1.35rem;
 }
 
+.pw-hero-profile-group {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  flex: 1 1 280px;
+}
+
 .pw-hero-avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(16, 185, 129, 0.25));
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  background: rgba(6, 182, 212, 0.2);
   border: 2px solid rgba(6, 182, 212, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.85rem;
+  font-size: 1.65rem;
   flex-shrink: 0;
   box-shadow: 0 4px 15px rgba(6, 182, 212, 0.25);
 }
 
 .pw-hero-text {
   flex: 1;
-  min-width: 240px;
+  min-width: 200px;
 }
 
 .pw-hero-badge-row {
@@ -13167,73 +13195,252 @@ h1, h2, h3, h4, h5, h6 {
 
 .pw-hero-name {
   font-family: var(--font-heading);
-  font-size: 1.65rem;
+  font-size: 1.55rem;
   font-weight: 800;
   color: #ffffff;
   margin: 0 0 0.25rem 0;
   letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pw-hero-wife-wrap {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.pw-hero-wife-bullet {
+  color: #facc15;
+  margin: 0 8px;
+  font-size: 0.95rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.pw-hero-wife-name {
+  color: #facc15;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .pw-hero-address {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: #cbd5e1;
   margin: 0;
 }
 
-.pw-hero-creds {
+/* Middle Container: Family Columns (Box 1 & Box 2) */
+.pw-family-columns {
   display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-start;
+  background: rgba(10, 20, 25, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.6rem 1.15rem;
+  min-height: 72px;
 }
 
-.pw-cred-box {
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  padding: 0.5rem 0.85rem;
+.pw-family-col {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 2px;
+}
+
+.pw-family-header-row {
+  height: 18px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.pw-family-col-header {
+  font-size: 0.75rem;
+  color: #ef4444; /* Merah tegas sesuai Gambar 2 */
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.pw-family-name-item {
+  font-size: 0.88rem;
+  color: #fb923c; /* Orange/peach sesuai Gambar 2 Box 1 */
+  font-weight: 500;
+  line-height: 1.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.pw-family-rel-item {
+  font-size: 0.88rem;
+  color: #34d399; /* Hijau emerald sesuai Gambar 2 Box 2 */
+  font-weight: 600;
+  line-height: 1.45;
+  white-space: nowrap;
+}
+
+/* Right Container: Username & Password Single Card (Box 3) */
+.pw-hero-creds-card {
+  background: rgba(10, 20, 25, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.pw-cred-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .pw-cred-label {
   font-size: 0.72rem;
-  color: var(--text-secondary);
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
+.pw-cred-val-emerald {
+  color: #34d399 !important;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.pw-cred-val-gold {
+  color: #facc15 !important;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Bottom 4-Card Stats Bar (Box 4 & 5, WA, Ronda, Iuran) */
 .pw-hero-stats-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-  padding-top: 1.15rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 992px) {
+  .pw-hero-stats-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .pw-hero-stats-bar {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pw-stat-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  background: rgba(15, 23, 42, 0.45);
-  padding: 0.65rem 0.85rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 0.85rem;
+  background: rgba(10, 20, 25, 0.65);
+  padding: 0.85rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.25s ease;
+}
+
+.pw-stat-item:hover {
+  background: rgba(15, 28, 35, 0.85);
+  border-color: rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px);
 }
 
 .pw-stat-item i {
-  font-size: 1.35rem;
+  font-size: 1.5rem;
+  flex-shrink: 0;
 }
 
 .pw-stat-val {
   display: block;
+  font-family: var(--font-heading, sans-serif);
   font-weight: 700;
-  font-size: 0.98rem;
+  font-size: 1.1rem;
   color: #ffffff;
+  line-height: 1.2;
 }
 
 .pw-stat-lbl {
   display: block;
-  font-size: 0.74rem;
-  color: var(--text-secondary);
+  font-size: 0.76rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* Card 1: Jumlah Jiwa (Box 4) + Rincian L/P (Box 5) */
+.pw-stat-members-item {
+  justify-content: space-between;
+}
+
+.pw-stat-members-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pw-stat-gender-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.pw-gender-line {
+  color: #facc15;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+/* Family-row item in edit modal */
+.family-member-row {
+  display: grid;
+  grid-template-columns: 1fr 140px 32px;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.family-member-row select {
+  min-width: 130px;
+  max-width: 150px;
+}
+
+.family-member-row .btn-remove-family {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.82rem;
+  transition: all 0.2s;
+}
+
+.family-member-row .btn-remove-family:hover {
+  background: rgba(239, 68, 68, 0.35);
+  color: #ffffff;
 }
 
 /* 2-Column Grid (Kartu Iuran & Pemasukan Non Iuran Berdampingan Rapi) */
