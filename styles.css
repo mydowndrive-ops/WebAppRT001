@@ -9003,23 +9003,28 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 0.65rem;
   padding: 0.6rem 1.15rem;
-  background: rgba(16, 185, 129, 0.12);
-  color: #34d399;
-  border: 1.5px solid rgba(16, 185, 129, 0.35);
+  background: linear-gradient(135deg, #008744 0%, #006837 100%); /* Hijau NU Khas & Berwibawa */
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
   border-radius: 9999px;
   font-size: 0.88rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25), 0 0 10px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), 0 0 16px rgba(0, 135, 68, 0.5);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.btn-drawer-trigger i,
+.btn-drawer-trigger .drawer-trigger-text {
+  color: #ffffff !important;
+}
+
 .btn-drawer-trigger:hover {
-  background: rgba(16, 185, 129, 0.25);
-  border-color: #34d399;
+  background: linear-gradient(135deg, #009e4f 0%, #00783f 100%);
+  border-color: #ffffff;
   color: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.55), 0 0 24px rgba(0, 158, 79, 0.7);
 }
 
 .drawer-trigger-badge {
@@ -9029,11 +9034,11 @@ h1, h2, h3, h4, h5, h6 {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #04140e;
+  background: #ffffff;
+  color: #006837;
   font-size: 0.72rem;
   font-weight: 800;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
 }
 
 /* ---- Drawer Backdrop ---- */

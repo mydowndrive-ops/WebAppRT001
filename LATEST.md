@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 23 September 2026 (13:35 WIB)  
-**Versi Rilis Aktif:** `v2.9.57`  
+**Terakhir Diperbarui:** 23 September 2026 (13:55 WIB)  
+**Versi Rilis Aktif:** `v2.9.58`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,23 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🇮🇩 Presisi Dead-Center Judul Navbar, Pencerahan Bendera Merah Putih & Outline Hijau Zamrud (Update v2.9.57 - 23 Sept 2026)
+### 1. 🟢 Penyesuaian Kotak Kapsul Menu Layanan: Background Hijau NU & Font Putih Solid (Update v2.9.58 - 23 Sept 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Agar terlihat oleh warga, untuk kotak kapsul menu layanan berikan background hijau NU dengan font warna putih."*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Background Hijau NU Solid & Berwibawa**:
+     - Tombol kapsul Menu Layanan (`.btn-drawer-trigger`) di navbar atas kini menggunakan background solid bernuansa **Hijau NU** (`linear-gradient(135deg, #008744 0%, #006837 100%)`).
+     - Dilengkapi garis tepi kontras halus `border: 1.5px solid rgba(255, 255, 255, 0.45)` serta bayangan bercahaya hijau ambien (`box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), 0 0 16px rgba(0, 135, 68, 0.5)`).
+     - State hover menggunakan warna hijau segar menyala (`#009e4f` ke `#00783f`) dengan border putih bersih.
+  2. **Tipografi & Ikon Putih Bersih (*Pure White*) Kontras Tinggi**:
+     - Teks *"Menu Layanan"* dan ikon batang burger (`fa-bars-staggered`) kini berwarna **putih solid (`#ffffff !important`)**, sangat tegas dan mencolok di atas latar belakang bendera maupun bar navigasi.
+  3. **Badge Indikator Menu Layanan Rapi & Jelas**:
+     - Lingkaran badge angka `6` (`.drawer-trigger-badge`) disesuaikan menggunakan latar belakang putih bersih (`#ffffff`) dengan angka tebal warna Hijau NU (`#006837`), serasi dengan estetika bendera dan logo NU.
+  4. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.58` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.58` dan `app.js?v=2.9.58`.
+
+### 2. 🇮🇩 Presisi Dead-Center Judul Navbar, Pencerahan Bendera Merah Putih & Outline Hijau Zamrud (Update v2.9.57 - 23 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Saya melihat posisi judul ' WEB APLIKASI RESMI  WARGA RT.001 RW.013'. Bendera terlihat kurang terang seperti sebelumnya. Tolong outline font 'WARGA RT.001 RW.013' diganti dengan warna hijau zamrud. Tolong diperbaiki jika sudah selesai update file LATEST.md dan segera lakukan sinkronisasi deng git agar bisa segera saya uji hasilnya."*
 - **Hasil Implementasi & Optimalisasi**:
