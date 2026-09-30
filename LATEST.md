@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (02:10 WIB)  
-**Versi Rilis Aktif:** `v2.9.83`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (02:16 WIB)  
+**Versi Rilis Aktif:** `v2.9.84`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -18,7 +18,20 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. ✨ Penyempurnaan Tampilan Splash Screen (Update v2.9.83 - 1 Okt 2026)
+### 1. 🏷️ Penyesuaian Nomenklatur Jalur Jalan (Update v2.9.84 - 1 Okt 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Ganti teks '5 RUAS LORONG JALAN' menjadi 5 RUAS JALAN'"*
+- **Hasil Implementasi**:
+  1. **Pembaruan Kartu Indikator Hub Cockpit**:
+     - Mengubah teks pada kartu informasi *Cakupan Wilayah* di halaman depan (sayap kanan header) dari **"5 Ruas Lorong Jalan"** menjadi **"5 Ruas Jalan"**.
+  2. **Harmonisasi Struktur Organisasi & KPI Warga**:
+     - Memperbarui label pada bagan struktur organisasi dari *"Wilayah Lorong Jalan"* menjadi *"Wilayah Ruas Jalan"*.
+     - Menyelaraskan angka warga terayomi menjadi **112 KK** (sebelumnya tercatat 71 KK) sesuai database master kependudukan Supabase.
+  3. **Pembaruan PWA Cache & Auto-Sync**:
+     - Service worker cache di-bump ke `v2.9.84` (`rt-finsmart-cache-v2.9.84`).
+     - Query string versi di `index.html` diperbarui menjadi `styles.css?v=2.9.84` dan `app.js?v=2.9.84`.
+
+### 2. ✨ Penyempurnaan Tampilan Splash Screen (Update v2.9.83 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Hilangkan kotak kapsul dengan teks 'Memuat Tampilan'"*
 - **Hasil Implementasi**:
