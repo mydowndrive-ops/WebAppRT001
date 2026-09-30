@@ -3473,86 +3473,8 @@ function renderResidents() {
   });
 }
 
-/**
- * Live Sync Residents from Google Sheets published CSV URL
- */
-async function syncResidentsFromGoogleSheet() {
-  const btn = document.getElementById('btn-sync-warga-sheet');
-  const origHtml = btn ? btn.innerHTML : '';
-  try {
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghubungkan Google Sheets...';
-    }
+// Note: syncResidentsFromGoogleSheet is canonicalized in MODAL HELPERS & POPULATION section
 
-    const response = await fetch(GOOGLE_SHEET_CSV_URL);
-    if (!response.ok) throw new Error('Status respons: ' + response.status);
-    const csvText = await response.text();
-    const lines = csvText.split(/\r?\n/).filter(l => l.trim().length > 0);
-    if (lines.length <= 1) throw new Error('Data CSV dari Google Sheets kosong');
-
-    const syncedList = [];
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i];
-      // Robust CSV line parser handling quotes
-      const cols = [];
-      let cur = '';
-      let inQuotes = false;
-      for (let c = 0; c < line.length; c++) {
-        const char = line[c];
-        if (char === '"') inQuotes = !inQuotes;
-        else if (char === ',' && !inQuotes) {
-          cols.push(cur.trim());
-          cur = '';
-        } else cur += char;
-      }
-      cols.push(cur.trim());
-
-      if (cols.length < 5 || !cols[1]) continue;
-      const noUrut = parseInt(cols[0], 10) || i;
-      const name = cols[1];
-      let rawStreet = cols[2];
-      let street = rawStreet.toLowerCase().startsWith('jl.') ? rawStreet : 'Jl. ' + rawStreet;
-      if (street.toUpperCase() === 'JL. CITARUM IVA') street = 'Jl. Citarum IVA';
-
-      let rawBlock = cols[3];
-      let block = rawBlock.toLowerCase().startsWith('blok') ? rawBlock : 'Blok ' + rawBlock;
-
-      let rawNo = cols[4];
-      let houseNo = rawNo.toLowerCase().startsWith('no.') ? rawNo : (rawNo.startsWith('K') ? rawNo : 'No. ' + rawNo);
-
-      const existing = state.residents.find(r => r.name.toLowerCase() === name.toLowerCase() && r.block === block);
-      syncedList.push({
-        id: existing ? existing.id : `w-${i}`,
-        noUrut: noUrut,
-        name: name,
-        street: street,
-        block: block,
-        houseNo: houseNo,
-        phone: existing ? existing.phone : `081289${(rawBlock.replace(/\D/g, '') || '0').padStart(2, '0')}${(rawNo.replace(/\D/g, '') || String(i)).padStart(4, '0').slice(-4)}`,
-        domicile: existing ? existing.domicile : (name.toUpperCase().includes('KOST') ? 'Kontrak' : 'Tetap'),
-        members: existing ? existing.members : (name.toUpperCase().includes('KOST') ? 1 : 4)
-      });
-    }
-
-    if (syncedList.length > 0) {
-      state.residents = syncedList;
-      saveState();
-      renderResidents();
-      renderChecklist();
-      renderDashboard();
-      showToast(`✅ Sukses! ${syncedList.length} data warga berhasil disinkronkan dari Google Sheets.`, 'success');
-    }
-  } catch (err) {
-    console.error('Google Sheet Sync Error:', err);
-    showToast('Gagal sinkronisasi Google Sheets: ' + err.message, 'error');
-  } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = origHtml;
-    }
-  }
-}
 
 /**
  * Renders Accounting & Financial Report Area
@@ -4090,7 +4012,20 @@ function parseGoogleSheetCSV(csvText) {
   const results = [];
   // Expected headers: NO, NAMA, JALAN, BLOK, NO
   for (let i = 1; i < lines.length; i++) {
-    const cols = lines[i].split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
+    const line = lines[i];
+    const cols = [];
+    let cur = '';
+    let inQuotes = false;
+    for (let c = 0; c < line.length; c++) {
+      const char = line[c];
+      if (char === '"') inQuotes = !inQuotes;
+      else if (char === ',' && !inQuotes) {
+        cols.push(cur.trim().replace(/^["']|["']$/g, ''));
+        cur = '';
+      } else cur += char;
+    }
+    cols.push(cur.trim().replace(/^["']|["']$/g, ''));
+
     if (cols.length >= 4 && cols[1]) {
       const noUrut = Number(cols[0]) || i;
       const name = cols[1];
@@ -4098,7 +4033,7 @@ function parseGoogleSheetCSV(csvText) {
       const rawBlock = cols[3] || 'B6';
       const block = rawBlock.startsWith('Blok') ? rawBlock : `Blok ${rawBlock}`;
       const rawNo = cols[4] || cols[0];
-      const houseNo = rawNo.startsWith('No') ? rawNo : `No. ${rawNo}`;
+      const houseNo = rawNo.startsWith('No') ? rawNo : (rawNo.startsWith('K') ? rawNo : `No. ${rawNo}`);
       
       const cleanDigits = rawNo.replace(/\D/g, '').padStart(3, '0');
       const blockDigits = (rawBlock.replace(/\D/g, '') || '06').padStart(2, '0');
@@ -4112,8 +4047,8 @@ function parseGoogleSheetCSV(csvText) {
         block: block,
         houseNo: houseNo,
         phone: phone,
-        domicile: 'Tetap',
-        members: 4
+        domicile: name.toUpperCase().includes('KOST') ? 'Kontrak' : 'Tetap',
+        members: name.toUpperCase().includes('KOST') ? 1 : 4
       });
     }
   }
@@ -4121,7 +4056,13 @@ function parseGoogleSheetCSV(csvText) {
 }
 
 async function syncResidentsFromGoogleSheet(notify = true) {
+  const btn = document.getElementById('btn-sync-warga-sheet');
+  const origHtml = btn ? btn.innerHTML : '';
   try {
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghubungkan Google Sheets...';
+    }
     if (notify) showToast('Menghubungi Google Sheets RT.001 RW.013...', 'info');
     const response = await fetch(GOOGLE_SHEET_CSV_URL);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -4132,16 +4073,20 @@ async function syncResidentsFromGoogleSheet(notify = true) {
       throw new Error('Data CSV kosong atau format tidak sesuai');
     }
 
-    // Preserve custom edits (phone, domicile, members) if already modified
+    // Preserve existing custom edits (wifeNama, familyMembers, demografi, phone, domicile, members, password, dll.)
     const merged = freshResidents.map(fresh => {
-      const existing = state.residents.find(r => 
-        (r.name && r.name.toLowerCase() === fresh.name.toLowerCase()) ||
+      const existing = (state.residents || []).find(r => 
+        (r.name && r.name.trim().toLowerCase() === fresh.name.trim().toLowerCase()) ||
         (r.block === fresh.block && r.houseNo === fresh.houseNo)
       );
       if (existing) {
         return {
-          ...fresh,
-          id: existing.id,
+          ...existing,
+          noUrut: fresh.noUrut || existing.noUrut,
+          name: fresh.name || existing.name,
+          street: fresh.street || existing.street,
+          block: fresh.block || existing.block,
+          houseNo: fresh.houseNo || existing.houseNo,
           phone: existing.phone || fresh.phone,
           domicile: existing.domicile || fresh.domicile,
           members: existing.members || fresh.members
@@ -4157,14 +4102,25 @@ async function syncResidentsFromGoogleSheet(notify = true) {
     renderChecklist();
     renderResidents();
     renderDashboard();
+    if (typeof syncDemografiFromResidents === 'function') {
+      syncDemografiFromResidents();
+    }
+    if (typeof renderResidentAccountsModal === 'function') {
+      renderResidentAccountsModal();
+    }
 
     if (notify) {
-      showToast(`Sukses! ${merged.length} data warga resmi berhasil disinkronkan dari Google Sheets.`, 'success');
+      showToast(`✅ Sukses! ${merged.length} data warga resmi berhasil disinkronkan dari Google Sheets.`, 'success');
     }
   } catch (err) {
     console.error('Error syncing Google Sheets:', err);
     if (notify) {
       showToast(`Gagal sinkron Google Sheets: ${err.message}. Memastikan data offline tetap aktif.`, 'error');
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = origHtml;
     }
   }
 }
@@ -5158,7 +5114,6 @@ function setupDelegatedEvents() {
   document.getElementById('warga-search')?.addEventListener('input', renderResidents);
   document.getElementById('filter-warga-status')?.addEventListener('change', renderResidents);
   document.getElementById('filter-warga-block')?.addEventListener('change', renderResidents);
-  document.getElementById('btn-sync-warga-sheet')?.addEventListener('click', syncResidentsFromGoogleSheet);
 
   // Batch mark all displayed as paid
   document.getElementById('btn-batch-pay-all')?.addEventListener('click', () => {
@@ -5429,10 +5384,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.79';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.80';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.79')
+      navigator.serviceWorker.register('sw.js?v=2.9.80')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {

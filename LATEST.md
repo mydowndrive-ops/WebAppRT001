@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 24 September 2026 (00:45 WIB)  
-**Versi Rilis Aktif:** `v2.9.79`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (00:33 WIB)  
+**Versi Rilis Aktif:** `v2.9.80`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,25 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🛡️ Pembaruan Tata Kelola Ronda: Kapsul 2-Baris (SIKLUS / KE x & BERTUGAS / PEKAN INI) & Banner Peringatan Tugas Aktif (Update v2.9.79 - 24 Sept 2026)
+### 1. 🔄 Sinkronisasi Google Sheets Folder Baru & Penguatan Engine Parser Warga (Update v2.9.80 - 1 Okt 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"filenya sudah ketemu dan sudah saya pindah kan ke folder yang lain dengan linknya ini : https://docs.google.com/spreadsheets/d/1zwrXck7x2HzVV6KhFgb3DgdAw5SrIUXm64a2M1mbclo/edit?usp=drive_link Tolong disinkronkan lagi"*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Verifikasi Konektivitas & Akses Spreadsheet**:
+     - Memverifikasi endpoint CSV ekspor Google Sheets `https://docs.google.com/spreadsheets/d/1zwrXck7x2HzVV6KhFgb3DgdAw5SrIUXm64a2M1mbclo/export?format=csv` setelah file dipindahkan ke folder baru oleh pengguna.
+     - Pengujian live fetch berhasil 100% (HTTP 200 OK) menarik 112 data warga aktif secara instan.
+  2. **Penguatan Engine CSV Parser & Preservasi Data Kustom Warga**:
+     - Parser CSV ditingkatkan agar *quote-aware* (aman terhadap tanda kutip dan tanda koma pada nama warga).
+     - Logika *merging* disempurnakan: data kustom warga yang telah diinput di aplikasi (seperti **Nama Istri**, **Daftar Anggota Keluarga/Anak**, **Usia**, **Demografi Gender**, dan **Kredensial Akun**) tetap terjaga 100% dan tidak terhapus saat admin menekan tombol *Sinkron Google Sheets*.
+     - Ditambahkan indikator visual interaktif saat sinkronisasi berlangsung (tombol otomatis menampilkan ikon spinner berputar *Menghubungkan Google Sheets...* dan berstatus disabled untuk mencegah multi-klik).
+  3. **Pembersihan Deklarasi & Event Listener Ganda**:
+     - Menghapus deklarasi ganda `syncResidentsFromGoogleSheet` lama dan menyatukannya ke satu fungsi kanonikal di `app.js`.
+     - Menghilangkan duplikasi pendaftaran event listener tombol pada `setupDelegatedEvents()`.
+  4. **Pembaruan Cache PWA & Cache Busting**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.80` di `sw.js` dan `app.js`.
+     - Parameter asset di `index.html` diperbarui ke `styles.css?v=2.9.80` dan `app.js?v=2.9.80`.
+
+### 2. 🛡️ Pembaruan Tata Kelola Ronda: Kapsul 2-Baris (SIKLUS / KE x & BERTUGAS / PEKAN INI) & Banner Peringatan Tugas Aktif (Update v2.9.79 - 24 Sept 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Dibagian ini edit :*
     *1. Teks dalam kotak kapsul jadikan 2 baris (atas=SIKLUS, bawahnya=KE x)*
