@@ -1,0 +1,57 @@
+[
+  {
+    "id": "jimp-in-1",
+    "tanggal": "2026-09-05",
+    "pekan": 1,
+    "jenis": "penerimaan",
+    "regu": "Regu 1 (Wageyanto)",
+    "nominal": 142000,
+    "keterangan": "Penarikan Koin Jimpitan Malam Minggu Pekan 1",
+    "pencatat": "Bendahara 2",
+    "created_at": "2026-09-30T18:04:11.849849+00:00"
+  },
+  {
+    "id": "jimp-ex-1",
+    "tanggal": "2026-09-10",
+    "pekan": 2,
+    "jenis": "pengeluaran",
+    "regu": "Kas Ronda",
+    "nominal": 75000,
+    "keterangan": "Pembelian Kopi, Gula, Teh & Snack Pos Kamling",
+    "pencatat": "Bendahara 2",
+    "created_at": "2026-09-30T18:04:11.849849+00:00"
+  },
+  {
+    "id": "jimp-in-2",
+    "tanggal": "2026-09-12",
+    "pekan": 2,
+    "jenis": "penerimaan",
+    "regu": "Regu 2 (Agus Nursanto)",
+    "nominal": 156000,
+    "keterangan": "Penarikan Koin Jimpitan Malam Minggu Pekan 2",
+    "pencatat": "Bendahara 2",
+    "created_at": "2026-09-30T18:04:11.849849+00:00"
+  },
+  {
+    "id": "jimp-in-3",
+    "tanggal": "2026-09-19",
+    "pekan": 3,
+    "jenis": "penerimaan",
+    "regu": "Regu 3 (Bambang)",
+    "nominal": 148000,
+    "keterangan": "Penarikan Koin Jimpitan Malam Minggu Pekan 3",
+    "pencatat": "Bendahara 2",
+    "created_at": "2026-09-30T18:04:11.849849+00:00"
+  },
+  {
+    "id": "jimp-in-4",
+    "tanggal": "2026-09-26",
+    "pekan": 4,
+    "jenis": "penerimaan",
+    "regu": "Regu 4 (Kusnadi)",
+    "nominal": 160000,
+    "keterangan": "Penarikan Koin Jimpitan Malam Minggu Pekan 4",
+    "pencatat": "Bendahara 2",
+    "created_at": "2026-09-30T18:04:11.849849+00:00"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "judul": "Kerja Bakti Gotong Royong & Fogging DBD Antisipasi Musim Hujan",
+    "kategori": "Kerja Bakti & Lingkungan",
+    "tanggal": "2026-09-20",
+    "waktu": "07:00 – 10:30 WIB",
+    "lokasi": "Titik Kumpul: Depan Blok B6 & Pos Kamling",
+    "fasilitas": "Konsumsi, Kopi Pagi & Obat Fogging Disediakan Pengurus",
+    "keterangan": "Pembersihan saluran drainase serentak dan fogging nyamuk DBD.",
+    "is_active": true,
+    "created_at": "2026-09-30T18:04:11.925668+00:00"
+  },
+  {
+    "id": 2,
+    "judul": "Ronda Malam & Penarikan Jimpitan Warga RT.001",
+    "kategori": "Ronda & Jimpitan Warga",
+    "tanggal": "2026-09-19",
+    "waktu": "21:00 – 03:00 WIB",
+    "lokasi": "Pos Ronda Kamling Utama RT.001",
+    "fasilitas": "Kopi, Teh Hangat & Kudapan Ronda Disediakan",
+    "keterangan": "Patroli keliling malam terpadu dan penarikan koin jimpitan warga.",
+    "is_active": true,
+    "created_at": "2026-09-30T18:04:11.925668+00:00"
+  },
+  {
+    "id": 3,
+    "judul": "Peringatan Maulid Nabi Muhammad SAW 1448 H & Santunan Yatim",
+    "kategori": "Kerohanian & PHBI",
+    "tanggal": "2026-09-28",
+    "waktu": "19:30 – 22:00 WIB",
+    "lokasi": "Balai Warga / Masjid Graha Asri",
+    "fasilitas": "Tausiyah, Doa Bersama & Santunan Anak Yatim",
+    "keterangan": "Tabligh akbar dan santunan anak yatim dari kas PHBI.",
+    "is_active": true,
+    "created_at": "2026-09-30T18:04:11.925668+00:00"
+  }
+]

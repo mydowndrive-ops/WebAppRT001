@@ -1765,6 +1765,137 @@ const INITIAL_RESIDENTS = [
   }
 ];
 
+// ==================== SUPABASE CLOUD DATABASE CONFIGURATION ====================
+const SUPABASE_CONFIG = {
+  url: 'https://wmbguanfpgkcnfeagkcp.supabase.co',
+  anonKey: 'sb_publishable_fWwXiUsv8CfYkCDLQfb1gg_HWl1dI5m'
+};
+
+function supabaseToResident(row) {
+  return {
+    id: row.id,
+    noUrut: row.no_urut,
+    name: row.nama,
+    wifeNama: row.nama_istri || '',
+    street: row.jalan,
+    block: row.blok,
+    houseNo: row.no_rumah,
+    phone: row.phone || '',
+    domicile: row.domisili || 'Tetap',
+    members: row.jumlah_jiwa || 4,
+    gender: row.gender || 'Laki-laki',
+    age: row.usia || 40,
+    username: row.username || row.nama,
+    password: row.password || '',
+    familyMembers: Array.isArray(row.anggota_keluarga) ? row.anggota_keluarga : []
+  };
+}
+
+function residentToSupabase(res) {
+  return {
+    id: res.id,
+    no_urut: res.noUrut || null,
+    nama: res.name,
+    nama_istri: res.wifeNama || '',
+    jalan: res.street,
+    blok: res.block,
+    no_rumah: res.houseNo,
+    phone: res.phone || '',
+    domisili: res.domicile || 'Tetap',
+    jumlah_jiwa: res.members || 4,
+    gender: res.gender || 'Laki-laki',
+    usia: res.age || null,
+    username: res.username || res.name,
+    password: res.password || '',
+    anggota_keluarga: res.familyMembers || []
+  };
+}
+
+// Background sync push for single resident
+async function pushResidentToSupabase(res) {
+  if (!res) return;
+  try {
+    const payload = residentToSupabase(res);
+    await fetch(`${SUPABASE_CONFIG.url}/rest/v1/warga?on_conflict=id`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_CONFIG.anonKey,
+        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal'
+      },
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    console.warn('Background Supabase resident push warning:', err);
+  }
+}
+
+// Background sync delete for resident
+async function deleteResidentFromSupabase(residentId) {
+  if (!residentId) return;
+  try {
+    await fetch(`${SUPABASE_CONFIG.url}/rest/v1/warga?id=eq.${encodeURIComponent(residentId)}`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_CONFIG.anonKey,
+        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+      }
+    });
+  } catch (err) {
+    console.warn('Background Supabase resident delete warning:', err);
+  }
+}
+
+// Background sync push for single asset
+async function pushAsetToSupabase(item) {
+  if (!item) return;
+  try {
+    const payload = {
+      id: Number(item.id),
+      nama: item.nama,
+      kategori: item.kategori,
+      qty: Number(item.qty) || 1,
+      satuan: item.satuan || 'unit',
+      tgl_beli: item.tgl_beli || '-',
+      harga: Number(item.harga) || 0,
+      kondisi: item.kondisi || 'ok',
+      sumber: item.sumber || 'Kas RT',
+      keterangan: item.keterangan || '',
+      icon: item.icon || 'fa-box'
+    };
+    await fetch(`${SUPABASE_CONFIG.url}/rest/v1/aset_rt?on_conflict=id`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_CONFIG.anonKey,
+        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal'
+      },
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    console.warn('Background Supabase asset push warning:', err);
+  }
+}
+
+// Background sync delete for asset
+async function deleteAsetFromSupabase(id) {
+  if (!id) return;
+  try {
+    await fetch(`${SUPABASE_CONFIG.url}/rest/v1/aset_rt?id=eq.${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_CONFIG.anonKey,
+        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+      }
+    });
+  } catch (err) {
+    console.warn('Background Supabase asset delete warning:', err);
+  }
+}
+
+// Fallback legacy constant
 const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1zwrXck7x2HzVV6KhFgb3DgdAw5SrIUXm64a2M1mbclo/export?format=csv';
 
 const DEFAULT_NON_DUES_INCOMES = [
@@ -4055,47 +4186,33 @@ function parseGoogleSheetCSV(csvText) {
   return results;
 }
 
-async function syncResidentsFromGoogleSheet(notify = true) {
+/**
+ * Live Sync Residents directly from Supabase Cloud Database (with offline fallback)
+ */
+async function syncResidentsFromSupabase(notify = true) {
   const btn = document.getElementById('btn-sync-warga-sheet');
   const origHtml = btn ? btn.innerHTML : '';
   try {
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghubungkan Google Sheets...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghubungkan Supabase...';
     }
-    if (notify) showToast('Menghubungi Google Sheets RT.001 RW.013...', 'info');
-    const response = await fetch(GOOGLE_SHEET_CSV_URL);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const csvText = await response.text();
-    const freshResidents = parseGoogleSheetCSV(csvText);
+    if (notify) showToast('Menghubungi Supabase Cloud RT.001 RW.013...', 'info');
 
-    if (!freshResidents || freshResidents.length === 0) {
-      throw new Error('Data CSV kosong atau format tidak sesuai');
-    }
-
-    // Preserve existing custom edits (wifeNama, familyMembers, demografi, phone, domicile, members, password, dll.)
-    const merged = freshResidents.map(fresh => {
-      const existing = (state.residents || []).find(r => 
-        (r.name && r.name.trim().toLowerCase() === fresh.name.trim().toLowerCase()) ||
-        (r.block === fresh.block && r.houseNo === fresh.houseNo)
-      );
-      if (existing) {
-        return {
-          ...existing,
-          noUrut: fresh.noUrut || existing.noUrut,
-          name: fresh.name || existing.name,
-          street: fresh.street || existing.street,
-          block: fresh.block || existing.block,
-          houseNo: fresh.houseNo || existing.houseNo,
-          phone: existing.phone || fresh.phone,
-          domicile: existing.domicile || fresh.domicile,
-          members: existing.members || fresh.members
-        };
+    const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/warga?select=*&order=no_urut.asc`, {
+      headers: {
+        'apikey': SUPABASE_CONFIG.anonKey,
+        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
       }
-      return fresh;
     });
 
-    state.residents = merged;
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const rows = await response.json();
+    if (!rows || rows.length === 0) throw new Error('Data Warga di Supabase kosong');
+
+    const freshResidents = rows.map(supabaseToResident);
+
+    state.residents = freshResidents;
     saveState();
     populateBlockFilterOptions();
     populateResidentSelects();
@@ -4110,13 +4227,56 @@ async function syncResidentsFromGoogleSheet(notify = true) {
     }
 
     if (notify) {
-      showToast(`✅ Sukses! ${merged.length} data warga resmi berhasil disinkronkan dari Google Sheets.`, 'success');
+      showToast(`✅ Sukses! ${freshResidents.length} data warga resmi berhasil disinkronkan dari Supabase Cloud.`, 'success');
     }
   } catch (err) {
-    console.error('Error syncing Google Sheets:', err);
+    console.error('Error syncing Supabase:', err);
     if (notify) {
-      showToast(`Gagal sinkron Google Sheets: ${err.message}. Memastikan data offline tetap aktif.`, 'error');
+      showToast(`Gagal sinkron Supabase: ${err.message}. Memastikan data offline tetap aktif.`, 'error');
     }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = origHtml;
+    }
+  }
+}
+
+// Alias untuk kompatibilitas
+const syncResidentsFromGoogleSheet = syncResidentsFromSupabase;
+
+/**
+ * Live Sync Assets directly from Supabase Cloud Database
+ */
+async function syncAsetFromSupabase(notify = true) {
+  const btn = document.getElementById('btn-sync-aset-supabase');
+  const origHtml = btn ? btn.innerHTML : '';
+  try {
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghubungkan Supabase...';
+    }
+    if (notify) showToast('Menghubungkan Database Aset Supabase...', 'info');
+
+    const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/aset_rt?select=*&order=id.asc`, {
+      headers: {
+        'apikey': SUPABASE_CONFIG.anonKey,
+        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+      }
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const rows = await response.json();
+    if (rows && rows.length > 0) {
+      saveAsetList(rows, false);
+      renderAsetRt();
+      if (notify) {
+        showToast(`✅ Sukses! ${rows.length} data inventaris berhasil sinkron dari Supabase Cloud.`, 'success');
+      }
+    }
+  } catch (err) {
+    console.error('Error syncing aset Supabase:', err);
+    if (notify) showToast(`Gagal sinkron aset Supabase: ${err.message}`, 'error');
   } finally {
     if (btn) {
       btn.disabled = false;
@@ -4821,6 +4981,7 @@ function setupModalEventListeners() {
         if (state.currentVerifiedResident && state.currentVerifiedResident.id === res.id) {
           state.currentVerifiedResident = Object.assign(state.currentVerifiedResident, res);
         }
+        pushResidentToSupabase(res);
       }
       showToast('Data & Kredensial akun warga berhasil diperbarui!', 'success');
     } else {
@@ -4848,6 +5009,7 @@ function setupModalEventListeners() {
         familyMembers: familyMembers
       };
       state.residents.push(newWarga);
+      pushResidentToSupabase(newWarga);
       showToast('Warga baru beserta akun portal berhasil ditambahkan!', 'success');
     }
 
@@ -5076,6 +5238,7 @@ function setupDelegatedEvents() {
       if (confirm('Yakin ingin menghapus warga ini dari database?')) {
         state.residents = state.residents.filter(r => r.id !== wargaId);
         saveState();
+        deleteResidentFromSupabase(wargaId);
         if (typeof syncDemografiFromResidents === 'function') {
           syncDemografiFromResidents();
         }
@@ -5086,9 +5249,14 @@ function setupDelegatedEvents() {
     }
   });
 
-  // Sync Google Sheets button
+  // Sync Supabase button (Warga)
   document.getElementById('btn-sync-warga-sheet')?.addEventListener('click', () => {
-    syncResidentsFromGoogleSheet(true);
+    syncResidentsFromSupabase(true);
+  });
+
+  // Sync Supabase button (Aset RT)
+  document.getElementById('btn-sync-aset-supabase')?.addEventListener('click', () => {
+    syncAsetFromSupabase(true);
   });
 
   // Checklist search and filter inputs
@@ -5384,10 +5552,10 @@ function setupAccountManagementEvents() {
 // ==================== PWA SERVICE WORKER REGISTRATION ====================
 
 function registerServiceWorker() {
-  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.80';
+  const CURRENT_CACHE_NAME = 'rt-finsmart-cache-v2.9.81';
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js?v=2.9.80')
+      navigator.serviceWorker.register('sw.js?v=2.9.81')
         .then(reg => {
           console.log('RT-FinSmart ServiceWorker registered', reg.scope);
           if (reg.update) {
@@ -8253,6 +8421,14 @@ document.addEventListener('DOMContentLoaded', () => {
   setupAsetRtModule();
   setupAppHistoryNavigation();
   checkUrlForSuratVerification();
+
+  // Background Silent Sync with Supabase Cloud Database (online-first, graceful offline fallback)
+  if (typeof navigator !== 'undefined' && navigator.onLine) {
+    setTimeout(() => {
+      syncResidentsFromSupabase(false);
+      syncAsetFromSupabase(false);
+    }, 1200);
+  }
 
   // Safety Observer: cegah teks lama muncul kembali pada judul portal warga
   const pTitleEl = document.getElementById('page-title');
@@ -16793,6 +16969,7 @@ function deleteAsetItem(id) {
 
   const updated = list.filter(it => it.id !== Number(id));
   saveAsetList(updated);
+  deleteAsetFromSupabase(Number(id));
   showToast(`Aset "${item.nama}" berhasil dihapus.`, 'info');
   renderAsetRt();
   renderDashboard();
@@ -17024,6 +17201,7 @@ function setupAsetRtModule() {
             sumber: sumberVal,
             keterangan: ketVal
           };
+          pushAsetToSupabase(list[idx]);
           showToast(`Aset "${namaVal}" berhasil diperbarui.`, 'success');
         }
       } else {
@@ -17043,6 +17221,7 @@ function setupAsetRtModule() {
           icon: getCategoryMeta(catVal).icon
         };
         list.unshift(newItem);
+        pushAsetToSupabase(newItem);
         showToast(`Aset baru "${namaVal}" berhasil dicatat!`, 'success');
       }
 
@@ -17076,6 +17255,14 @@ function setupAsetRtModule() {
   if (btnDashOpen) {
     btnDashOpen.addEventListener('click', () => {
       navigateToView('aset-rt');
+    });
+  }
+
+  // 11. Sync Supabase Button
+  const btnSyncAset = document.getElementById('btn-sync-aset-supabase');
+  if (btnSyncAset) {
+    btnSyncAset.addEventListener('click', () => {
+      syncAsetFromSupabase(true);
     });
   }
 }

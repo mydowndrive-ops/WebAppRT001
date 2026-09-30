@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (00:33 WIB)  
-**Versi Rilis Aktif:** `v2.9.80`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (01:15 WIB)  
+**Versi Rilis Aktif:** `v2.9.81`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,7 +17,44 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🔄 Sinkronisasi Google Sheets Folder Baru & Penguatan Engine Parser Warga (Update v2.9.80 - 1 Okt 2026)
+### 1. ☁️ Migrasi Penuh ke Supabase Cloud Database & Decoupling Google Drive (Update v2.9.81 - 1 Okt 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Ya. Sinkronkan semua data yang ada diweb dengan data di supabase juga folder lokal karena data yang ada di google drive akan saya hapus"*
+- **Hasil Implementasi & Optimalisasi**:
+  1. **Konfigurasi Proyek Supabase Cloud**:
+     - Project ID: `wmbguanfpgkcnfeagkcp` (Region: `ap-southeast-1`, URL: `https://wmbguanfpgkcnfeagkcp.supabase.co`).
+     - Autentikasi: PostgREST REST API dengan `apikey` & Bearer token publik.
+     - Keamanan: Row Level Security (RLS) diaktifkan penuh dengan kebijakan akses aman untuk semua tabel operasional RT.
+  2. **Migrasi Data ke 5 Tabel Supabase**:
+     - `warga` (112 KK): Seluruh data master warga (No Urut, Nama, Nama Istri, Jalan, Blok, No Rumah, HP, Domisili, Jumlah Jiwa, Gender, Usia, Kredensial Akun Login Portal, dan JSONB Anggota Keluarga/Anak).
+     - `aset_rt` (33 Item): Seluruh inventaris sarpras & aset RT (Tenda, Kursi, Mesin Rumput, Sound System, dll.) dengan kategori, qty, satuan, harga, kondisi, sumber dana, dan ikon.
+     - `iuran_warga` (12 Catatan): Rekam jejak pembayaran iuran warga per pos dan periode.
+     - `uang_jimpitan` (5 Catatan): Pembukuan kas koin jimpitan malam minggu 4 regu ronda dan pengeluaran operasional.
+     - `agenda_event` (3 Agenda): Jadwal kegiatan warga, kerja bakti & fogging DBD, ronda malam, dan tabligh akbar PHBI.
+  3. **Folder Backup Master Lokal (`data/`)**:
+     - Telah dibuat folder lokal permanen `data/` yang menampung snapshot lengkap data master dalam format JSON:
+       - `data/warga_master.json` (112 KK, 48.685 bytes)
+       - `data/aset_master.json` (33 Item, 12.700 bytes)
+       - `data/iuran_master.json` (12 records, 3.534 bytes)
+       - `data/jimpitan_master.json` (5 records, 1.549 bytes)
+       - `data/agenda_master.json` (3 events, 1.434 bytes)
+       - `data/supabase_config.json` (Kredensial & URL endpoint Supabase)
+  4. **Sinkronisasi Dua Arah (*Two-Way Live Sync*) & Arsitektur Dual-Layer**:
+     - **Layer 1 (LocalStorage)**: Menjamin aplikasi tetap instan (*zero flicker*) dan berfungsi 100% saat pengguna offline tanpa kuota internet.
+     - **Layer 2 (Supabase Cloud REST API)**:
+       - `syncResidentsFromSupabase()`: Mengambil data warga langsung dari Supabase.
+       - `syncAsetFromSupabase()`: Mengambil data aset sarpras langsung dari Supabase.
+       - `pushResidentToSupabase(res)` & `deleteResidentFromSupabase(id)`: Terpaut otomatis saat admin menambah, mengedit, atau menghapus data warga.
+       - `pushAsetToSupabase(item)` & `deleteAsetFromSupabase(id)`: Terpaut otomatis saat admin menambah, mengedit, atau menghapus inventaris aset.
+       - **Background Silent Sync**: Pada inisialisasi aplikasi (`DOMContentLoaded`), sistem otomatis menyinkronkan data di latar belakang jika perangkat online.
+  5. **Penghapusan Ketergantungan Google Drive / Google Sheets**:
+     - Seluruh tombol sinkronisasi warga dan aset di UI kini berlabel **"Sinkron Supabase"** dengan ikon Cloud.
+     - Aplikasi web sudah tidak bergantung pada file spreadsheet di Google Drive, sehingga file di Google Drive aman untuk dihapus permanen oleh pengguna.
+  6. **Pembaruan Cache PWA**:
+     - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.81` di `sw.js` dan `app.js`.
+     - Asset query string di `index.html` diperbarui menjadi `styles.css?v=2.9.81` dan `app.js?v=2.9.81`.
+
+### 2. 🔄 Sinkronisasi Google Sheets Folder Baru & Penguatan Engine Parser Warga (Update v2.9.80 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"filenya sudah ketemu dan sudah saya pindah kan ke folder yang lain dengan linknya ini : https://docs.google.com/spreadsheets/d/1zwrXck7x2HzVV6KhFgb3DgdAw5SrIUXm64a2M1mbclo/edit?usp=drive_link Tolong disinkronkan lagi"*
 - **Hasil Implementasi & Optimalisasi**:

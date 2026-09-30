@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.80">
+  <link rel="stylesheet" href="styles.css?v=2.9.81">
 </head>
 <body>
 
@@ -3386,8 +3386,8 @@
             <button class="btn btn-outline-gold" id="btn-open-modal-accounts" title="Lihat, Salin Format WA, & Kelola Kredensial Login 112 Warga">
               <i class="fa-solid fa-key text-gold"></i> Akun Portal Warga (112 KK)
             </button>
-            <button class="btn btn-gold" id="btn-sync-warga-sheet" title="Tarik pembaruan data langsung dari Google Sheets">
-              <i class="fa-solid fa-arrows-rotate"></i> Sinkron Google Sheets
+            <button class="btn btn-gold" id="btn-sync-warga-sheet" title="Sinkronkan data warga langsung dengan Supabase Cloud Database">
+              <i class="fa-solid fa-cloud-arrow-down"></i> Sinkron Supabase
             </button>
             <button class="btn btn-emerald" id="btn-add-warga">
               <i class="fa-solid fa-user-plus"></i> Tambah Warga Baru
@@ -4521,9 +4521,9 @@
             <p>Pencatatan resmi barang modal, sarana prasarana, fasilitas olahraga &amp; inventaris lingkungan Graha Asri berdasarkan dokumen resmi per Juli 2023.</p>
           </div>
           <div class="banner-actions">
-            <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSlxGLncE-il_V31ysA74I9C94MF5KtZCcOtRFrVIe28mPz47adb01maR9-jyY2oQ/pubhtml" target="_blank" rel="noopener noreferrer" class="btn btn-outline-emerald" title="Buka Spreadsheet Asli di Google Sheets">
-              <i class="fa-solid fa-table"></i> Google Sheets Asli
-            </a>
+            <button type="button" class="btn btn-outline-emerald" id="btn-sync-aset-supabase" title="Sinkronkan data inventaris dengan Supabase Cloud Database">
+              <i class="fa-solid fa-cloud-arrow-down"></i> Sinkron Supabase
+            </button>
             <button type="button" class="btn btn-outline-gold" id="btn-print-aset-report" title="Cetak Berita Acara / Laporan Aset RT">
               <i class="fa-solid fa-print"></i> Cetak Laporan
             </button>
@@ -8104,6 +8104,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.80"></script>
+  <script src="app.js?v=2.9.81"></script>
 </body>
 </html>
