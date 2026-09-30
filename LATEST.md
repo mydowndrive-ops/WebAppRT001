@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (02:05 WIB)  
-**Versi Rilis Aktif:** `v2.9.82`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (02:10 WIB)  
+**Versi Rilis Aktif:** `v2.9.83`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -18,7 +18,19 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🗺️ Transformasi World-Class: Peta Interaktif Digital Lingkungan RT (Prioritas 1 - Update v2.9.82 - 1 Okt 2026)
+### 1. ✨ Penyempurnaan Tampilan Splash Screen (Update v2.9.83 - 1 Okt 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Hilangkan kotak kapsul dengan teks 'Memuat Tampilan'"*
+- **Hasil Implementasi**:
+  1. **Penghapusan Kotak Kapsul `.splash-status-pill`**:
+     - Elemen kotak kapsul lonjong dengan titik kuning/emas berkedip dan teks *"MEMUAT TAMPILAN..."* telah dihapus dari `index.html`.
+  2. **Optimalisasi Tata Letak & Spasi Visual**:
+     - Mengatur ulang margin bawah pada judul brand (`.splash-brand-info`) agar tampilan pembuka (*splash loading screen*) lebih minimalis, bersih, simetris, dan memberikan fokus penuh pada lingkaran logo resmi RT dengan animasi cahaya orbital berputar serta motto *"Cipta Karya Bersama"*.
+  3. **Pembaruan Versi & PWA Cache**:
+     - Cache Service Worker di-bump ke `v2.9.83` (`rt-finsmart-cache-v2.9.83`).
+     - Query string versi di `index.html` diperbarui menjadi `styles.css?v=2.9.83` dan `app.js?v=2.9.83`.
+
+### 2. 🗺️ Transformasi World-Class: Peta Interaktif Digital Lingkungan RT (Prioritas 1 - Update v2.9.82 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Saya ingin membuat web aplikasi ini tampil berkelas, elegan, canggih, interaktif dan profesional seperti web-web kelas dunia. Menurut anda fitur-fitur apa saja yang perlu dan relevan yang perlu ditambahkan di web aplikasi ini. Sesuai urutan saja dari Prioritas 1 dulu"*
 - **Hasil Implementasi & Optimalisasi Kelas Dunia**:
