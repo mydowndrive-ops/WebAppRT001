@@ -53,6 +53,10 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
   6. **Pembaruan Cache PWA**:
      - Service Worker cache di-bump menjadi `rt-finsmart-cache-v2.9.81` di `sw.js` dan `app.js`.
      - Asset query string di `index.html` diperbarui menjadi `styles.css?v=2.9.81` dan `app.js?v=2.9.81`.
+  7. **Pembakuan SOP Otomatis (*Permanent Automated Sync SOP*)**:
+     - Ditambahkan aturan kerja permanen pada `AGENTS.md` dan `.agents/rules/auto_git_sync.md`.
+     - Setiap perubahan data warga/aset/keuangan atau modifikasi kode akan **SEGERA** disinkronkan ke Supabase, cadangan lokal `data/`, diperbarui di `LATEST.md`, dan langsung di-commit & di-push ke GitHub `origin/main` secara otomatis tanpa menunggu perintah pengguna.
+     - Tujuan: Menjamin pengguna dapat langsung melanjutkan proyek di perangkat/laptop/PC mana pun kapan saja via `git clone` / `git pull` tanpa harus login ke Google Drive.
 
 ### 2. 🔄 Sinkronisasi Google Sheets Folder Baru & Penguatan Engine Parser Warga (Update v2.9.80 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:
