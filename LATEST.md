@@ -57,6 +57,9 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
      - Ditambahkan aturan kerja permanen pada `AGENTS.md` dan `.agents/rules/auto_git_sync.md`.
      - Setiap perubahan data warga/aset/keuangan atau modifikasi kode akan **SEGERA** disinkronkan ke Supabase, cadangan lokal `data/`, diperbarui di `LATEST.md`, dan langsung di-commit & di-push ke GitHub `origin/main` secara otomatis tanpa menunggu perintah pengguna.
      - Tujuan: Menjamin pengguna dapat langsung melanjutkan proyek di perangkat/laptop/PC mana pun kapan saja via `git clone` / `git pull` tanpa harus login ke Google Drive.
+  8. **Dokumen Panduan Tersendiri: `BEDA PC.pdf` & `BEDA PC.md`**:
+     - Dibuatkan dokumen panduan khusus terpisah di root workspace: `BEDA PC.pdf` dan `BEDA PC.md`.
+     - Memuat panduan langkah demi langkah cara meng-clone di PC baru, menarik update (`git pull`), alur simpan data, serta kredensial cepat agar pengguna tidak perlu mencari di riwayat chat yang menumpuk.
 
 ### 2. 🔄 Sinkronisasi Google Sheets Folder Baru & Penguatan Engine Parser Warga (Update v2.9.80 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:
