@@ -8,9 +8,10 @@ Setiap kali asisten melakukan perubahan data, penambahan fitur, perbaikan bug, a
   - Perbarui/sinkronkan snapshot file JSON di folder `data/` (`warga_master.json`, `aset_master.json`, `iuran_master.json`, `jimpitan_master.json`, `agenda_master.json`).
   - Aplikasi web dan alur kerja harus 100% mandiri tanpa ketergantungan pada Google Drive / Google Sheets.
 
-## 2. Pembaruan Wajib `LATEST.md`
+## 2. Pembaruan Wajib `LATEST.md` (Hanya LATEST.md, Bukan BEDA PC)
 - Selalu perbarui stempel waktu terkini (Tanggal & Jam WIB) serta versi rilis aktif (`v2.9.xx`).
 - Tambahkan entri riwayat rilis / changelog yang jelas, rapi, dan terstruktur mengenai perubahan yang baru saja dilakukan.
+- **PENTING**: Dokumen panduan `BEDA PC.md` / `BEDA PC.pdf` adalah berkas referensi statis dan **TIDAK PERLU DIUPDATE** setiap kali ada perubahan. Berkas dokumentasi yang wajib diupdate secara rutin **HANYA `LATEST.md`** saja.
 
 ## 3. Otomatis Commit & Push ke GitHub (`origin/main`) Tanpa Menunggu Perintah
 - Segera jalankan alur Git secara otomatis:

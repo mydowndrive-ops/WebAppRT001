@@ -61,6 +61,7 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
   8. **Dokumen Panduan Tersendiri: `BEDA PC.pdf` & `BEDA PC.md`**:
      - Dibuatkan dokumen panduan khusus terpisah di root workspace: `BEDA PC.pdf` dan `BEDA PC.md`.
      - Memuat panduan langkah demi langkah cara meng-clone di PC baru, menarik update (`git pull`), alur simpan data, serta kredensial cepat agar pengguna tidak perlu mencari di riwayat chat yang menumpuk.
+     - **Aturan Permanen**: Dokumen `BEDA PC` bersifat statis dan **tidak akan diubah/diupdate lagi** pada setiap pengembangan; dokumen log perubahan yang terus diperbarui secara berkala **hanya `LATEST.md`** saja.
 
 ### 2. 🔄 Sinkronisasi Google Sheets Folder Baru & Penguatan Engine Parser Warga (Update v2.9.80 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:
