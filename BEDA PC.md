@@ -4,6 +4,7 @@
 **Versi:** `v2.9.81`  
 **Repositori GitHub:** `https://github.com/mydowndrive-ops/WebAppRT001.git`  
 **Database Cloud:** Supabase Cloud (`https://wmbguanfpgkcnfeagkcp.supabase.co`)  
+**Live Production URL (Cloudflare Pages):** `https://rt001rw013grahaasri.pages.dev`  
 **Format PDF Resmi:** Tersedia di file [BEDA PC.pdf](file:///c:/Users/anthu/Documents/%E3%80%90Project%20RT%E3%80%91/WORKSPACE%20RT/BEDA%20PC.pdf)
 
 ---

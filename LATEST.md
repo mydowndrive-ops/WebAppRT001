@@ -5,7 +5,8 @@
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
-**Repositori GitHub:** `https://github.com/mydowndrive-ops/WebAppRT001.git`
+**Repositori GitHub:** `https://github.com/mydowndrive-ops/WebAppRT001.git`  
+**Live Production URL (Cloudflare Pages):** `https://rt001rw013grahaasri.pages.dev`
 
 ---
 
