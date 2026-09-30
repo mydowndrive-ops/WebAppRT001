@@ -2256,6 +2256,10 @@ function saveState() {
     if (document.getElementById('chartWargaAnnualDues')) {
       renderWargaAnnualDuesChart();
     }
+    // Realtime update peta cerdas RT.001
+    if (typeof renderSmartClusterMapParcels === 'function' && document.getElementById('svg-parcels-group')) {
+      renderSmartClusterMapParcels();
+    }
   } catch (err) {
     console.error('Error saving state', err);
   }
@@ -10339,16 +10343,519 @@ function initDemografi() {
     }
   });
 
-  // Modal Preview Peta Wilayah HD
-  const openPetaModal = () => {
-    document.getElementById('modal-peta-wilayah')?.classList.add('active');
-  };
-  document.getElementById('map-preview-trigger')?.addEventListener('click', openPetaModal);
-  document.getElementById('btn-zoom-peta')?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    openPetaModal();
+  // Inisialisasi Peta Cerdas RT.001
+  initSmartClusterMap();
+}
+
+// ==========================================================================
+// PRIORITAS 1: PETA INTERAKTIF DIGITAL LINGKUNGAN RT (SMART CLUSTER GIS MAP)
+// RT.001 / RW.013 Graha Asri - 112 Kavling, 4 Blok, 5 Jalan Resmi
+// ==========================================================================
+
+let smartMapZoomLevel = 1.0;
+let smartMapCurrentFilter = 'all';
+let smartMapSearchQuery = '';
+let smartMapActiveMode = 'vector'; // 'vector' | 'satellite'
+
+function getResidentRondaGroup(resName) {
+  if (!state.rondaGroups || !Array.isArray(state.rondaGroups)) return 'Regu 1 (Wageyanto)';
+  const cleanName = (resName || '').toLowerCase().trim();
+  for (const g of state.rondaGroups) {
+    if (g.leader && g.leader.name && g.leader.name.toLowerCase().trim() === cleanName) {
+      return g.weekName ? `${g.weekName} (${g.leader.name})` : `Regu ${g.week} (${g.leader.name})`;
+    }
+    if (g.members && Array.isArray(g.members)) {
+      if (g.members.some(m => m.name && m.name.toLowerCase().trim() === cleanName)) {
+        return g.weekName ? `${g.weekName} (${g.leader?.name || ''})` : `Regu ${g.week}`;
+      }
+    }
+  }
+  return 'Regu 1 (Wageyanto)';
+}
+
+function checkResidentDuesPaid(resId, targetMonth, targetYear) {
+  const m = targetMonth !== undefined ? Number(targetMonth) : (state.selectedMonth || new Date().getMonth() + 1);
+  const y = targetYear !== undefined ? Number(targetYear) : (state.selectedYear || new Date().getFullYear());
+  if (!state.payments || !Array.isArray(state.payments)) return false;
+  return state.payments.some(p => 
+    (!p.category || p.category === 'Wajib') && 
+    p.residentId === resId && 
+    Number(p.month) === m && 
+    Number(p.year) === y
+  );
+}
+
+function buildClusterMapParcelsData() {
+  const residents = (state.residents && state.residents.length) ? state.residents : INITIAL_RESIDENTS;
+  
+  const norm = residents.map(w => ({
+    id: w.id,
+    noUrut: w.noUrut || w.no_urut || 0,
+    name: w.name || w.nama || '',
+    wifeNama: w.wifeNama || w.nama_istri || '',
+    block: (w.block || w.blok || '').trim(),
+    houseNo: (w.houseNo || w.no_rumah || '').trim(),
+    street: (w.street || w.jalan || '').trim(),
+    phone: w.phone || w.telepon || '',
+    domicile: w.domicile || w.domisili || 'Tetap',
+    members: Number(w.members || w.jumlah_jiwa || 4),
+    familyMembers: w.familyMembers || w.anggota_keluarga || []
+  }));
+
+  const g1 = norm.filter(w => w.block === 'Blok B6' && w.street === 'Jl. Citarum II');
+  const g2 = norm.filter(w => w.block === 'Blok B7' && w.street === 'Jl. Citarum II');
+  const g3 = norm.filter(w => w.street === 'Jl. Citarum IVA');
+  const g4 = norm.filter(w => w.block === 'Blok B3' && w.street === 'Jl. Citarum VIIIB');
+  const g5 = norm.filter(w => (w.block === 'Blok B3' || w.block === 'Blok B6') && w.street === 'Jl. Citarum VIIIC');
+  const g6 = norm.filter(w => w.block === 'Blok B4' && w.street === 'Jl. Citarum VIIIC');
+  const g7 = norm.filter(w => w.block === 'Blok B4' && w.street === 'Jl. Citarum IX');
+
+  const parcels = [];
+  // G1: Blok B6 - Jl. Citarum II (North side, 17 houses)
+  g1.forEach((w, i) => parcels.push({ ...w, x: 122 + i * 44, y: 70, w: 41, h: 70, group: 'b6' }));
+  // G2: Blok B7 - Jl. Citarum II (South side, 18 houses)
+  g2.forEach((w, i) => parcels.push({ ...w, x: 122 + i * 41.5, y: 195, w: 38, h: 58, group: 'b7' }));
+  // G3: Jl. Citarum IVA (19 houses)
+  g3.forEach((w, i) => parcels.push({ ...w, x: 122 + i * 39.5, y: 295, w: 36, h: 58, group: w.block.toLowerCase().includes('b7') ? 'b7' : 'b6' }));
+  // G4: Blok B3 - Jl. Citarum VIIIB (West side, 15 houses)
+  g4.forEach((w, i) => parcels.push({ ...w, x: 35, y: 400 + i * 27.5, w: 75, h: 24, group: 'b3' }));
+  // G5: Blok B3/B6 - Jl. Citarum VIIIC (West side, 15 houses)
+  g5.forEach((w, i) => parcels.push({ ...w, x: 370, y: 400 + i * 27.5, w: 75, h: 24, group: w.block.toLowerCase().includes('b3') ? 'b3' : 'b6' }));
+  // G6: Blok B4 - Jl. Citarum VIIIC (East side, 15 houses)
+  g6.forEach((w, i) => parcels.push({ ...w, x: 525, y: 400 + i * 27.5, w: 75, h: 24, group: 'b4' }));
+  // G7: Blok B4 - Jl. Citarum IX (East side, 13 houses)
+  g7.forEach((w, i) => parcels.push({ ...w, x: 775, y: 405 + i * 31.5, w: 75, h: 27, group: 'b4' }));
+
+  return parcels;
+}
+
+function renderSmartClusterMapParcels() {
+  const container = document.getElementById('svg-parcels-group');
+  if (!container) return;
+
+  const parcels = buildClusterMapParcelsData();
+  const currentMonth = state.selectedMonth || new Date().getMonth() + 1;
+  const currentYear = state.selectedYear || new Date().getFullYear();
+
+  let paidCount = 0;
+  let unpaidCount = 0;
+  let matchCount = 0;
+
+  let html = '';
+  parcels.forEach(p => {
+    const isPaid = checkResidentDuesPaid(p.id, currentMonth, currentYear);
+    if (isPaid) paidCount++; else unpaidCount++;
+
+    // Cek Filter & Search
+    let isMatch = true;
+    let isDimmed = false;
+
+    // Filter Chips
+    if (smartMapCurrentFilter === 'b6' && p.group !== 'b6' && !p.block.includes('B6')) isDimmed = true;
+    else if (smartMapCurrentFilter === 'b7' && p.group !== 'b7' && !p.block.includes('B7')) isDimmed = true;
+    else if (smartMapCurrentFilter === 'b3' && p.group !== 'b3' && !p.block.includes('B3')) isDimmed = true;
+    else if (smartMapCurrentFilter === 'b4' && p.group !== 'b4' && !p.block.includes('B4')) isDimmed = true;
+    else if (smartMapCurrentFilter === 'paid' && !isPaid) isDimmed = true;
+    else if (smartMapCurrentFilter === 'unpaid' && isPaid) isDimmed = true;
+
+    // Search Query
+    if (smartMapSearchQuery) {
+      const q = smartMapSearchQuery.toLowerCase();
+      const matchName = (p.name || '').toLowerCase().includes(q);
+      const matchWife = (p.wifeNama || '').toLowerCase().includes(q);
+      const matchBlock = (p.block || '').toLowerCase().includes(q);
+      const matchHouse = (p.houseNo || '').toLowerCase().includes(q);
+      const matchStreet = (p.street || '').toLowerCase().includes(q);
+      const matchCombo = `${p.block} ${p.houseNo}`.toLowerCase().includes(q);
+
+      if (matchName || matchWife || matchBlock || matchHouse || matchStreet || matchCombo) {
+        isMatch = true;
+        matchCount++;
+      } else {
+        isMatch = false;
+        isDimmed = true;
+      }
+    }
+
+    // Label nomor rumah bersih (misal "02", "37A", "K1")
+    let shortNo = p.houseNo.replace(/^No\.\s*/i, '');
+    if (shortNo.length > 5) shortNo = shortNo.substring(0, 5);
+
+    // Styling Warna sesuai Status & Mode
+    let fill = isPaid ? '#065f46' : '#78350f';
+    let stroke = isPaid ? '#10b981' : '#f59e0b';
+    let fillOpacity = '0.9';
+
+    if (smartMapActiveMode === 'satellite') {
+      fill = isPaid ? '#10b981' : '#f59e0b';
+      stroke = isPaid ? '#34d399' : '#fbbf24';
+      fillOpacity = '0.38';
+    }
+
+    const classes = [
+      'map-parcel',
+      isDimmed ? 'dimmed' : '',
+      (smartMapSearchQuery && isMatch) ? 'search-match' : ''
+    ].filter(Boolean).join(' ');
+
+    const isVerifiedHome = state.currentVerifiedResident && (state.currentVerifiedResident.id === p.id || state.currentVerifiedResident.name === p.name);
+
+    html += `
+      <g class="${classes}" data-id="${p.id}" data-block="${p.block}" data-house="${p.houseNo}" style="transform-origin: ${p.x + p.w/2}px ${p.y + p.h/2}px;">
+        <rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="4" ry="4" fill="${fill}" fill-opacity="${fillOpacity}" stroke="${stroke}" stroke-width="1.6" />
+        <text x="${p.x + p.w / 2}" y="${p.y + p.h / 2}">${shortNo}</text>
+        ${isVerifiedHome ? `
+          <circle cx="${p.x + p.w / 2}" cy="${p.y + p.h / 2}" r="8" fill="none" stroke="#c084fc" stroke-width="2">
+            <animate attributeName="r" values="6;16" dur="1.8s" repeatCount="indefinite" />
+            <animate attributeName="opacity" values="1;0" dur="1.8s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="${p.x + p.w / 2}" cy="${p.y + p.h / 2}" r="3.5" fill="#a855f7" />
+        ` : ''}
+      </g>
+    `;
+  });
+
+  container.innerHTML = html;
+
+  // Update KPIs
+  const kpiTotal = document.getElementById('map-kpi-total');
+  const kpiPaid = document.getElementById('map-kpi-paid');
+  const kpiUnpaid = document.getElementById('map-kpi-unpaid');
+  const modalKpiPaid = document.getElementById('modal-map-kpi-paid');
+  if (kpiTotal) kpiTotal.textContent = parcels.length;
+  if (kpiPaid) kpiPaid.textContent = paidCount;
+  if (kpiUnpaid) kpiUnpaid.textContent = unpaidCount;
+  if (modalKpiPaid) modalKpiPaid.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${paidCount} Lunas`;
+
+  // Update Match Badge
+  const matchBadge = document.getElementById('smart-map-match-badge');
+  const matchBadgeCount = document.getElementById('smart-map-match-count');
+  if (matchBadge && matchBadgeCount) {
+    if (smartMapSearchQuery) {
+      matchBadge.style.display = 'inline-flex';
+      matchBadgeCount.textContent = matchCount;
+    } else {
+      matchBadge.style.display = 'none';
+    }
+  }
+
+  // Bind Events on Parcels
+  bindParcelEvents(parcels, currentMonth, currentYear);
+}
+
+function bindParcelEvents(parcels, currentMonth, currentYear) {
+  const parcelEls = document.querySelectorAll('.map-parcel');
+  const parcelMap = new Map();
+  parcels.forEach(p => parcelMap.set(p.id, p));
+
+  parcelEls.forEach(el => {
+    const id = el.getAttribute('data-id');
+    const parcel = parcelMap.get(id);
+    if (!parcel) return;
+
+    const isPaid = checkResidentDuesPaid(parcel.id, currentMonth, currentYear);
+
+    // Hover Tooltip
+    el.addEventListener('mouseenter', (e) => showMapFloatingHud(parcel, isPaid, e));
+    el.addEventListener('mousemove', (e) => updateMapFloatingHudPosition(e));
+    el.addEventListener('mouseleave', () => hideMapFloatingHud());
+
+    // Click Modal
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openMapResidentDetailModal(parcel, isPaid);
+    });
+
+    // Touch Support for Mobile
+    el.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      if (touch) {
+        showMapFloatingHud(parcel, isPaid, touch);
+      }
+    }, { passive: true });
   });
 }
+
+function showMapFloatingHud(parcel, isPaid, e) {
+  const hud = document.getElementById('smart-map-floating-hud');
+  if (!hud) return;
+
+  const bBlock = document.getElementById('hud-badge-block');
+  const bDues = document.getElementById('hud-badge-dues');
+  const rName = document.getElementById('hud-resident-name');
+  const rWife = document.getElementById('hud-resident-wife');
+  const sStreet = document.getElementById('hud-street-name');
+  const mMembers = document.getElementById('hud-members-count');
+
+  if (bBlock) bBlock.innerHTML = `<i class="fa-solid fa-house-chimney"></i> ${parcel.block} ${parcel.houseNo}`;
+  if (bDues) {
+    bDues.className = `smart-map-hud-dues ${isPaid ? 'lunas' : 'belum'}`;
+    bDues.innerHTML = isPaid ? '<i class="fa-solid fa-circle-check"></i> LUNAS' : '<i class="fa-solid fa-clock"></i> BELUM BAYAR';
+  }
+  if (rName) rName.textContent = `Bpk. ${parcel.name}`;
+  if (rWife) {
+    if (parcel.wifeNama) {
+      rWife.style.display = 'flex';
+      rWife.innerHTML = `<i class="fa-solid fa-heart text-pink"></i> Ny. ${parcel.wifeNama}`;
+    } else {
+      rWife.style.display = 'none';
+    }
+  }
+  if (sStreet) sStreet.innerHTML = `<i class="fa-solid fa-road text-slate"></i> ${parcel.street}`;
+  if (mMembers) mMembers.innerHTML = `<i class="fa-solid fa-users text-cyan"></i> ${parcel.members} Jiwa (${parcel.domicile})`;
+
+  updateMapFloatingHudPosition(e);
+  hud.classList.add('active');
+}
+
+function updateMapFloatingHudPosition(e) {
+  const hud = document.getElementById('smart-map-floating-hud');
+  const viewport = document.getElementById('smart-map-viewport');
+  if (!hud || !viewport) return;
+
+  const rect = viewport.getBoundingClientRect();
+  const clientX = e.clientX || (e.touches && e.touches[0]?.clientX) || 0;
+  const clientY = e.clientY || (e.touches && e.touches[0]?.clientY) || 0;
+
+  let x = clientX - rect.left;
+  let y = clientY - rect.top;
+
+  // Clamp within viewport
+  const hudWidth = 280;
+  if (x < hudWidth / 2 + 10) x = hudWidth / 2 + 10;
+  if (x > rect.width - hudWidth / 2 - 10) x = rect.width - hudWidth / 2 - 10;
+  if (y < 120) y = 120;
+
+  hud.style.left = `${x}px`;
+  hud.style.top = `${y}px`;
+}
+
+function hideMapFloatingHud() {
+  const hud = document.getElementById('smart-map-floating-hud');
+  if (hud) hud.classList.remove('active');
+}
+
+function openMapResidentDetailModal(parcel, isPaid) {
+  hideMapFloatingHud();
+
+  const modal = document.getElementById('modal-map-resident-detail');
+  if (!modal) return;
+
+  // Set avatar initials
+  const initials = (parcel.name || 'W').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  const avatar = document.getElementById('resmodal-avatar');
+  if (avatar) avatar.textContent = initials;
+
+  // Info
+  const rName = document.getElementById('resmodal-name');
+  const rWife = document.getElementById('resmodal-wife');
+  const rAddr = document.getElementById('resmodal-address');
+  const rDues = document.getElementById('resmodal-dues-status');
+  const rMemb = document.getElementById('resmodal-members');
+  const rRonda = document.getElementById('resmodal-ronda');
+  const rList = document.getElementById('resmodal-family-list');
+  const rBtnWa = document.getElementById('resmodal-btn-wa');
+
+  if (rName) rName.textContent = `Bapak ${parcel.name}`;
+  if (rWife) {
+    if (parcel.wifeNama) {
+      rWife.style.display = 'inline-flex';
+      rWife.innerHTML = `<i class="fa-solid fa-heart text-pink"></i> <span>Istri: Ny. ${parcel.wifeNama}</span>`;
+    } else {
+      rWife.style.display = 'none';
+    }
+  }
+  if (rAddr) rAddr.textContent = `${parcel.street}, ${parcel.block} ${parcel.houseNo}`;
+  if (rDues) {
+    rDues.className = `resident-map-stat-val ${isPaid ? 'text-emerald' : 'text-amber'}`;
+    rDues.textContent = isPaid ? 'LUNAS (Bulan Ini)' : 'BELUM BAYAR';
+  }
+  if (rMemb) rMemb.textContent = `${parcel.members} Jiwa (${parcel.domicile})`;
+  if (rRonda) rRonda.textContent = getResidentRondaGroup(parcel.name);
+
+  // Anggota keluarga
+  if (rList) {
+    if (parcel.familyMembers && Array.isArray(parcel.familyMembers) && parcel.familyMembers.length > 0) {
+      rList.innerHTML = parcel.familyMembers.map(m => `
+        <span class="resident-map-family-chip">
+          <i class="fa-solid fa-user text-cyan"></i> ${m.nama || m.name} (${m.hub || m.relationship || 'Keluarga'})
+        </span>
+      `).join('');
+    } else {
+      rList.innerHTML = `
+        <span class="resident-map-family-chip"><i class="fa-solid fa-users text-slate"></i> Data detail keluarga tersimpan di arsip RT</span>
+      `;
+    }
+  }
+
+  // Tombol WhatsApp
+  if (rBtnWa) {
+    let cleanPhone = (parcel.phone || '').replace(/\D/g, '');
+    if (cleanPhone.startsWith('0')) cleanPhone = '62' + cleanPhone.substring(1);
+    if (cleanPhone) {
+      const msg = encodeURIComponent(`Halo Bapak ${parcel.name} (${parcel.block} ${parcel.houseNo}), kami dari Pengurus RT.001 / RW.013 Graha Asri.`);
+      rBtnWa.href = `https://wa.me/${cleanPhone}?text=${msg}`;
+      rBtnWa.style.display = 'inline-flex';
+    } else {
+      rBtnWa.style.display = 'none';
+    }
+  }
+
+  modal.classList.add('active');
+}
+
+function applySmartMapZoom() {
+  const wrap = document.getElementById('smart-map-svg-wrap');
+  if (wrap) {
+    wrap.style.transform = `scale(${smartMapZoomLevel})`;
+  }
+  const modalWrap = document.getElementById('modal-map-svg-wrap');
+  if (modalWrap) {
+    modalWrap.style.transform = `scale(${smartMapZoomLevel})`;
+  }
+}
+
+function syncSmartMapToFullscreenModal() {
+  const modalWrap = document.getElementById('modal-map-svg-wrap');
+  const mainSvg = document.getElementById('svg-cluster-map');
+  if (!modalWrap || !mainSvg) return;
+
+  modalWrap.innerHTML = '';
+  const clone = mainSvg.cloneNode(true);
+  clone.id = 'svg-cluster-map-modal';
+  modalWrap.appendChild(clone);
+
+  // Rebind events on cloned parcels
+  const currentMonth = state.selectedMonth || new Date().getMonth() + 1;
+  const currentYear = state.selectedYear || new Date().getFullYear();
+  const parcels = buildClusterMapParcelsData();
+  const parcelMap = new Map();
+  parcels.forEach(p => parcelMap.set(p.id, p));
+
+  clone.querySelectorAll('.map-parcel').forEach(el => {
+    const id = el.getAttribute('data-id');
+    const parcel = parcelMap.get(id);
+    if (!parcel) return;
+    const isPaid = checkResidentDuesPaid(parcel.id, currentMonth, currentYear);
+
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openMapResidentDetailModal(parcel, isPaid);
+    });
+  });
+}
+
+function setSmartMapMode(mode) {
+  smartMapActiveMode = mode;
+  const btnVec = document.getElementById('btn-mode-vector');
+  const btnSat = document.getElementById('btn-mode-satellite');
+  const satImg = document.getElementById('svg-map-satellite-img');
+  const roadsLayer = document.getElementById('svg-roads-layer');
+
+  if (mode === 'satellite') {
+    btnSat?.classList.add('active');
+    btnVec?.classList.remove('active');
+    if (satImg) satImg.style.display = 'block';
+    if (roadsLayer) roadsLayer.style.opacity = '0.35';
+  } else {
+    btnVec?.classList.add('active');
+    btnSat?.classList.remove('active');
+    if (satImg) satImg.style.display = 'none';
+    if (roadsLayer) roadsLayer.style.opacity = '1';
+  }
+
+  renderSmartClusterMapParcels();
+  syncSmartMapToFullscreenModal();
+}
+
+function initSmartClusterMap() {
+  // 1. Initial Render Parcels
+  renderSmartClusterMapParcels();
+
+  // 2. Dual Mode Switcher
+  document.getElementById('btn-mode-vector')?.addEventListener('click', () => setSmartMapMode('vector'));
+  document.getElementById('btn-mode-satellite')?.addEventListener('click', () => setSmartMapMode('satellite'));
+  document.getElementById('btn-modal-map-toggle-mode')?.addEventListener('click', () => {
+    setSmartMapMode(smartMapActiveMode === 'vector' ? 'satellite' : 'vector');
+  });
+
+  // 3. Search Bar
+  const searchInput = document.getElementById('smart-map-search-input');
+  const clearBtn = document.getElementById('btn-map-search-clear');
+  const handleSearch = (val) => {
+    smartMapSearchQuery = (val || '').trim();
+    if (clearBtn) clearBtn.style.display = smartMapSearchQuery ? 'block' : 'none';
+    renderSmartClusterMapParcels();
+  };
+
+  searchInput?.addEventListener('input', (e) => handleSearch(e.target.value));
+  clearBtn?.addEventListener('click', () => {
+    if (searchInput) searchInput.value = '';
+    handleSearch('');
+  });
+
+  // Modal Search
+  const modalSearchInput = document.getElementById('modal-map-search-input');
+  modalSearchInput?.addEventListener('input', (e) => {
+    if (searchInput) searchInput.value = e.target.value;
+    handleSearch(e.target.value);
+    syncSmartMapToFullscreenModal();
+  });
+
+  // 4. Filter Chips
+  document.querySelectorAll('.smart-map-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.smart-map-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      smartMapCurrentFilter = chip.getAttribute('data-filter') || 'all';
+      renderSmartClusterMapParcels();
+      syncSmartMapToFullscreenModal();
+    });
+  });
+
+  // 5. Zoom & Pan Controls
+  document.getElementById('btn-smart-map-zoom-in')?.addEventListener('click', () => {
+    smartMapZoomLevel = Math.min(3.0, smartMapZoomLevel + 0.25);
+    applySmartMapZoom();
+  });
+  document.getElementById('btn-smart-map-zoom-out')?.addEventListener('click', () => {
+    smartMapZoomLevel = Math.max(0.7, smartMapZoomLevel - 0.25);
+    applySmartMapZoom();
+  });
+  document.getElementById('btn-smart-map-zoom-reset')?.addEventListener('click', () => {
+    smartMapZoomLevel = 1.0;
+    applySmartMapZoom();
+  });
+
+  // Modal Zoom
+  document.getElementById('btn-modal-map-zoom-in')?.addEventListener('click', () => {
+    smartMapZoomLevel = Math.min(3.5, smartMapZoomLevel + 0.25);
+    applySmartMapZoom();
+  });
+  document.getElementById('btn-modal-map-zoom-out')?.addEventListener('click', () => {
+    smartMapZoomLevel = Math.max(0.7, smartMapZoomLevel - 0.25);
+    applySmartMapZoom();
+  });
+  document.getElementById('btn-modal-map-zoom-reset')?.addEventListener('click', () => {
+    smartMapZoomLevel = 1.0;
+    applySmartMapZoom();
+  });
+
+  // 6. Fullscreen Modal Opener
+  const openPetaFullscreen = () => {
+    syncSmartMapToFullscreenModal();
+    document.getElementById('modal-peta-wilayah')?.classList.add('active');
+  };
+
+  document.getElementById('btn-smart-map-fullscreen')?.addEventListener('click', openPetaFullscreen);
+  document.getElementById('map-preview-trigger')?.addEventListener('click', openPetaFullscreen);
+  document.getElementById('btn-zoom-peta')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openPetaFullscreen();
+  });
+}
+window.initSmartClusterMap = initSmartClusterMap;
+window.renderSmartClusterMapParcels = renderSmartClusterMapParcels;
 
 // ==========================================================================
 // MODUL LAYANAN PENGAJUAN DANA / PERBAIKAN FASILITAS WARGA RT.001
@@ -17432,4 +17939,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Jalankan Navigasi Orbital Hub
   initHubOrbitalNavigation();
+
+  // Jalankan Peta Digital Cerdas RT.001 (Prioritas 1)
+  if (typeof initSmartClusterMap === 'function') {
+    initSmartClusterMap();
+  }
 });
+

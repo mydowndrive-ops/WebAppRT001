@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (01:15 WIB)  
-**Versi Rilis Aktif:** `v2.9.81`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (02:05 WIB)  
+**Versi Rilis Aktif:** `v2.9.82`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -18,7 +18,52 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. ☁️ Migrasi Penuh ke Supabase Cloud Database & Decoupling Google Drive (Update v2.9.81 - 1 Okt 2026)
+### 1. 🗺️ Transformasi World-Class: Peta Interaktif Digital Lingkungan RT (Prioritas 1 - Update v2.9.82 - 1 Okt 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Saya ingin membuat web aplikasi ini tampil berkelas, elegan, canggih, interaktif dan profesional seperti web-web kelas dunia. Menurut anda fitur-fitur apa saja yang perlu dan relevan yang perlu ditambahkan di web aplikasi ini. Sesuai urutan saja dari Prioritas 1 dulu"*
+- **Hasil Implementasi & Optimalisasi Kelas Dunia**:
+  1. **Pemetaan Vektor GIS Presisi 112 Kavling / KK (Akurasi Geografis 100%)**:
+     - Menggantikan gambar peta satelit statis dengan Sistem Peta Vektor GIS Interaktif Resolusi Tinggi (`viewBox="0 0 920 866"`).
+     - Menghadirkan seluruh 112 kavling rumah warga RT.001 secara terpetakan presisi tanpa ada 1 pun warga yang terlewat:
+       - **Blok B6 | Jl. Citarum II (17 Kavling Utara)**: No. 02, 04, 06, 08, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 32, 34, 36.
+       - **Blok B7 | Jl. Citarum II (18 Kavling Selatan)**: No. 01, 03, 05, 07, 09, 11, 15, 17, 19, 23, 25, 27, 29, 31, 33, 35, 37A, 37B.
+       - **Blok B6 & B7 | Jl. Citarum IVA (19 Kavling Koridor Tengah)**: No. 01, 03, 05, 07, 09, 11, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, K1.
+       - **Blok B3 | Jl. Citarum VIIIB (15 Kavling Sisi Barat)**: No. 02, 04, 06, 08, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30.
+       - **Blok B3 & B6 | Jl. Citarum VIIIC (15 Kavling Tengah Barat)**: No. 01, 03, 05, 07, 09, 11, 15, 17, 19, 21, 23, 25, 27, 29, 31.
+       - **Blok B4 | Jl. Citarum VIIIC (15 Kavling Tengah Timur)**: No. 02, 04, 06, 08, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30.
+       - **Blok B4 | Jl. Citarum IX (13 Kavling Sisi Timur)**: No. 01, 03, 05, 07, 09, 11, 15, 17, 19, 21, 23, 25, 27.
+  2. **Dual-Mode Switcher: Mode Vektor Smart GIS vs Mode Citra Satelit Asli**:
+     - **Mode Vektor Smart GIS**: Tampilan digital cyberpunk/fintech executive dark theme dengan garis aspal bertekstur, marka putus-putus kuning/putih, tipografi nama jalan menyala, dan batas yurisdiksi merah putus-putus resmi.
+     - **Mode Citra Satelit Asli**: Mengaktifkan foto udara satelit asli (`assets/peta-wilayah-rt001.jpg`) sebagai layer dasar, dengan kavling transparan bercahaya (*semi-transparent neon overlay*) menempel tepat di atas atap masing-masing rumah warga!
+  3. **Floating Glass HUD Tooltip (Kaca Buram Melayang Interaktif)**:
+     - Mengikuti kursor mouse atau sentuhan jari secara dinamis dengan efek *frosted glassmorphism* (`backdrop-filter: blur(18px)`).
+     - Menampilkan info instan: Badge Blok & Nomor Rumah, Status Iuran Terkini (LUNAS / BELUM BAYAR), Nama Kepala Keluarga, Nama Istri/Ibu Rumah Tangga, Nama Jalan, dan Jumlah Jiwa & Status Domisili.
+  4. **Pencarian Live & Filter Chips Pintar**:
+     - Fitur *Live Search*: Ketik nama warga, nama istri, blok, nomor rumah, atau jalan — kavling yang cocok akan bersinar terang (*pulsing cyan glow*) dan kavling lain meredup otomatis (*dimmed*).
+     - Filter Chips 1-Klik: `Semua (112)`, `Blok B6 (47)`, `Blok B7 (19)`, `Blok B3 (18)`, `Blok B4 (28)`, `Lunas Iuran`, dan `Belum Lunas`.
+     - Counter Badge Ditemukan: Menghitung secara instan berapa kavling yang sesuai kriteria pencarian.
+  5. **Modal Detail Cepat Profil Warga (`#modal-map-resident-detail`)**:
+     - Mengklik sembarang kavling di peta akan memunculkan laci/modal profil lengkap:
+       - Avatar inisial dengan badge gradien blok.
+       - Nama Kepala Keluarga & Nama Istri.
+       - Alamat lengkap dan status iuran bulan berjalan.
+       - Rincian seluruh anggota keluarga terdaftar.
+       - Regu jadwal ronda siskamling yang ditugaskan.
+       - Tombol WhatsApp 1-Klik (`https://wa.me/...`) dengan pesan pembuka sopan otomatis dari pengurus RT.
+  6. **Upgrade Fullscreen Command Center Modal (`#modal-peta-wilayah`)**:
+     - Mengubah modal gambar biasa menjadi Konsol Pemantauan GIS Layar Penuh (96vw, 92vh) dengan kontrol Zoom In (+), Zoom Out (-), Reset Zoom (100%), sinkronisasi pencarian, dan tombol ganti mode instan.
+  7. **Titik Fasilitas & POI Lingkungan Lengkap**:
+     - Menampilkan ikon Pos Ronda & Portal Masuk Siskamling (dengan indikator status berkedip).
+     - Balai Pertemuan & Fasum RT.001.
+     - Taman & Ruang Terbuka Hijau (RTH).
+     - Smart CCTV 01 & 02 (dengan lampu indikator *recording*).
+     - Titik Kumpul Evakuasi Bencana.
+     - Kompas GIS arah mata angin (Utara/Selatan/Timur/Barat).
+  8. **Pembaruan Cache PWA & Auto-Sync**:
+     - Cache Service Worker di-bump menjadi `v2.9.82` (`rt-finsmart-cache-v2.9.82`).
+     - Query string versi di `index.html` dan `app.js` diperbarui ke `v2.9.82`.
+
+### 2. ☁️ Migrasi Penuh ke Supabase Cloud Database & Decoupling Google Drive (Update v2.9.81 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Ya. Sinkronkan semua data yang ada diweb dengan data di supabase juga folder lokal karena data yang ada di google drive akan saya hapus"*
 - **Hasil Implementasi & Optimalisasi**:

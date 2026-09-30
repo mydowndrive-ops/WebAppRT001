@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.81">
+  <link rel="stylesheet" href="styles.css?v=2.9.82">
 </head>
 <body>
 
@@ -846,27 +846,302 @@
 
           <div class="public-grid-2 public-tentang-grid">
             <!-- PETA DENAH CAKUPAN WILAYAH RT.001 (KOLOM KIRI) -->
-            <div class="public-map-card">
-              <div class="public-map-header">
-                <div class="public-map-title">
-                  <i class="fa-solid fa-map-location-dot text-emerald"></i>
-                  <span>Peta Cakupan Wilayah RT.001</span>
+            <!-- GIS PETA DIGITAL CERDAS LINGKUNGAN RT.001 (112 KAVLING, DUAL MODE) -->
+            <div class="smart-map-card" id="smart-map-card-main">
+              <!-- Header Card -->
+              <div class="smart-map-header">
+                <div class="smart-map-title-wrap">
+                  <div class="smart-map-icon-radar">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                  </div>
+                  <div class="smart-map-title-text">
+                    <h3>Peta Interaktif Digital RT.001 <span class="badge-emerald" style="font-size:0.7rem; padding:2px 8px; border-radius:99px;"><i class="fa-solid fa-circle-check"></i> LIVE GIS</span></h3>
+                    <p>Sistem Pemetaan Kawasan Cerdas RT.001 / RW.013 Perumahan Graha Asri</p>
+                  </div>
                 </div>
-                <span class="public-map-badge"><i class="fa-solid fa-draw-polygon"></i> Garis Putus Merah</span>
-              </div>
-              <div class="public-map-wrapper" id="map-preview-trigger" title="Klik untuk memperbesar peta">
-                <img src="assets/peta-wilayah-rt001.jpg" alt="Peta Satelit Cakupan Wilayah RT.001 RW.013" class="public-map-img" id="img-peta-wilayah">
-                <div class="public-map-overlay-badge">
-                  <i class="fa-solid fa-circle-dot text-rose"></i> Area RT.001 (71 KK)
+
+                <div class="smart-map-kpis">
+                  <div class="smart-map-kpi-badge kpi-total">
+                    <i class="fa-solid fa-house-chimney"></i> <strong id="map-kpi-total">112</strong> KK / Kavling
+                  </div>
+                  <div class="smart-map-kpi-badge kpi-paid">
+                    <i class="fa-solid fa-circle-check"></i> <strong id="map-kpi-paid">0</strong> Lunas (Bulan Ini)
+                  </div>
+                  <div class="smart-map-kpi-badge kpi-unpaid">
+                    <i class="fa-solid fa-clock"></i> <strong id="map-kpi-unpaid">0</strong> Menunggu
+                  </div>
+                  
+                  <!-- Dual Mode Toggle Button -->
+                  <div class="smart-map-mode-toggle">
+                    <button type="button" class="smart-map-mode-btn active" id="btn-mode-vector" title="Tampilan Peta Digital Vektor Smart GIS">
+                      <i class="fa-solid fa-layer-group"></i> Smart GIS
+                    </button>
+                    <button type="button" class="smart-map-mode-btn" id="btn-mode-satellite" title="Tampilan Citra Satelit Asli Lingkungan RT">
+                      <i class="fa-solid fa-satellite"></i> Citra Satelit
+                    </button>
+                  </div>
                 </div>
-                <button type="button" class="public-map-zoom-btn" id="btn-zoom-peta">
-                  <i class="fa-solid fa-up-right-and-down-left-from-center"></i> Perbesar Peta
-                </button>
               </div>
-              <div class="public-map-footer">
-                <div class="public-map-legend">
-                  <span class="legend-dot border-rose-dashed"></span>
-                  <span><strong>Cakupan Resmi:</strong> Wilayah hukum RT.001 berada di dalam batas garis putus-putus merah (Jl. Citarum II, IVA, VIIIB, VIIIC, &amp; IX).</span>
+
+              <!-- Toolbar: Search, Filters & Controls -->
+              <div class="smart-map-toolbar">
+                <div class="smart-map-search-row">
+                  <div class="smart-map-search-box">
+                    <i class="fa-solid fa-magnifying-glass smart-map-search-icon"></i>
+                    <input type="text" class="smart-map-search-input" id="smart-map-search-input" placeholder="Cari warga, nomor rumah, atau jalan (contoh: Wageyanto, B6 No. 02)..." autocomplete="off">
+                    <button type="button" class="smart-map-search-clear" id="btn-map-search-clear" title="Bersihkan pencarian">&times;</button>
+                  </div>
+
+                  <div class="smart-map-zoom-actions">
+                    <span id="smart-map-match-badge" class="badge-cyan" style="display:none; font-size:0.75rem; padding:4px 10px; border-radius:8px;">
+                      <i class="fa-solid fa-bullseye"></i> <span id="smart-map-match-count">0</span> Ditemukan
+                    </span>
+                    <button type="button" class="smart-map-action-btn" id="btn-smart-map-zoom-in" title="Perbesar (Zoom In)">
+                      <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <button type="button" class="smart-map-action-btn" id="btn-smart-map-zoom-out" title="Perkecil (Zoom Out)">
+                      <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <button type="button" class="smart-map-action-btn" id="btn-smart-map-zoom-reset" title="Reset Tampilan (100%)">
+                      <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                    <button type="button" class="smart-map-action-btn btn-fullscreen" id="btn-smart-map-fullscreen" title="Buka Layar Penuh">
+                      <i class="fa-solid fa-expand"></i> Layar Penuh
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Quick Filter Chips -->
+                <div class="smart-map-chips-row">
+                  <span class="smart-map-chip active" data-filter="all"><i class="fa-solid fa-globe"></i> Semua (112)</span>
+                  <span class="smart-map-chip" data-filter="b6"><i class="fa-solid fa-map-pin text-cyan"></i> Blok B6 (47)</span>
+                  <span class="smart-map-chip" data-filter="b7"><i class="fa-solid fa-map-pin text-emerald"></i> Blok B7 (19)</span>
+                  <span class="smart-map-chip" data-filter="b3"><i class="fa-solid fa-map-pin text-amber"></i> Blok B3 (18)</span>
+                  <span class="smart-map-chip" data-filter="b4"><i class="fa-solid fa-map-pin text-purple"></i> Blok B4 (28)</span>
+                  <span class="smart-map-chip" data-filter="paid"><i class="fa-solid fa-circle-check text-emerald"></i> Lunas Iuran</span>
+                  <span class="smart-map-chip" data-filter="unpaid"><i class="fa-solid fa-circle-exclamation text-amber"></i> Belum Lunas</span>
+                </div>
+              </div>
+
+              <!-- Interactive Viewport with SVG Map -->
+              <div class="smart-map-viewport" id="smart-map-viewport">
+                <!-- Floating Glass HUD Tooltip -->
+                <div class="smart-map-hud" id="smart-map-floating-hud">
+                  <div class="smart-map-hud-header">
+                    <span class="smart-map-hud-badge" id="hud-badge-block"><i class="fa-solid fa-house-chimney"></i> Blok B6 No. 02</span>
+                    <span class="smart-map-hud-dues lunas" id="hud-badge-dues">LUNAS</span>
+                  </div>
+                  <h4 class="smart-map-hud-name" id="hud-resident-name">Wageyanto</h4>
+                  <div class="smart-map-hud-wife" id="hud-resident-wife"><i class="fa-solid fa-heart text-pink"></i> Ny. Sri Wahyuni</div>
+                  <div class="smart-map-hud-meta">
+                    <span id="hud-street-name"><i class="fa-solid fa-road text-slate"></i> Jl. Citarum II</span>
+                    <span id="hud-members-count"><i class="fa-solid fa-users text-cyan"></i> 4 Jiwa (Tetap)</span>
+                  </div>
+                  <div class="smart-map-hud-hint">
+                    <i class="fa-solid fa-arrow-pointer"></i> Klik kavling untuk detail &amp; kontak
+                  </div>
+                </div>
+
+                <!-- SVG Container -->
+                <div class="smart-map-svg-wrap" id="smart-map-svg-wrap">
+                  <svg id="svg-cluster-map" class="smart-map-svg" viewBox="0 0 920 866" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <!-- Filter Glow for Boundary -->
+                      <filter id="glow-boundary" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feMerge>
+                          <feMergeNode in="blur" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+
+                      <!-- Neon Glow for Roads -->
+                      <filter id="glow-road" x="-10%" y="-10%" width="120%" height="120%">
+                        <feGaussianBlur stdDeviation="2" result="blur" />
+                        <feMerge>
+                          <feMergeNode in="blur" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+
+                      <!-- Radial Gradients for POIs -->
+                      <radialGradient id="grad-poi-pos" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9" />
+                        <stop offset="100%" stop-color="#0284c7" stop-opacity="0.6" />
+                      </radialGradient>
+                      <radialGradient id="grad-poi-balai" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#a855f7" stop-opacity="0.9" />
+                        <stop offset="100%" stop-color="#7e22ce" stop-opacity="0.6" />
+                      </radialGradient>
+                      <radialGradient id="grad-poi-taman" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#34d399" stop-opacity="0.9" />
+                        <stop offset="100%" stop-color="#059669" stop-opacity="0.6" />
+                      </radialGradient>
+                    </defs>
+
+                    <!-- Layer 1: Background & Tech Grid -->
+                    <rect width="920" height="866" fill="#030712" />
+                    <!-- Subtle Isometric Cyber Grid Lines -->
+                    <g opacity="0.08" stroke="#38bdf8" stroke-width="0.75">
+                      <line x1="0" y1="100" x2="920" y2="100" />
+                      <line x1="0" y1="200" x2="920" y2="200" />
+                      <line x1="0" y1="300" x2="920" y2="300" />
+                      <line x1="0" y1="400" x2="920" y2="400" />
+                      <line x1="0" y1="500" x2="920" y2="500" />
+                      <line x1="0" y1="600" x2="920" y2="600" />
+                      <line x1="0" y1="700" x2="920" y2="700" />
+                      <line x1="0" y1="800" x2="920" y2="800" />
+                      <line x1="100" y1="0" x2="100" y2="866" />
+                      <line x1="200" y1="0" x2="200" y2="866" />
+                      <line x1="300" y1="0" x2="300" y2="866" />
+                      <line x1="400" y1="0" x2="400" y2="866" />
+                      <line x1="500" y1="0" x2="500" y2="866" />
+                      <line x1="600" y1="0" x2="600" y2="866" />
+                      <line x1="700" y1="0" x2="700" y2="866" />
+                      <line x1="800" y1="0" x2="800" y2="866" />
+                    </g>
+
+                    <!-- Layer 2: Satellite Image Layer (Toggled via JS) -->
+                    <image id="svg-map-satellite-img" href="assets/peta-wilayah-rt001.jpg" width="920" height="866" x="0" y="0" preserveAspectRatio="none" style="display:none; opacity:0.85;" />
+
+                    <!-- Layer 3: Vector Roads & Asphalt Corridors -->
+                    <g id="svg-roads-layer">
+                      <!-- Jl. Citarum II (Horizontal Atas) -->
+                      <rect x="40" y="144" width="845" height="48" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" />
+                      <line x1="45" y1="168" x2="880" y2="168" stroke="#fbbf24" stroke-width="1.8" stroke-dasharray="14,10" opacity="0.65" />
+                      
+                      <!-- Jl. Citarum IVA (Horizontal Tengah) -->
+                      <rect x="40" y="256" width="845" height="36" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" />
+                      <line x1="45" y1="274" x2="880" y2="274" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="10,8" opacity="0.5" />
+
+                      <!-- Connector West Avenues -->
+                      <rect x="25" y="144" width="90" height="250" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" />
+
+                      <!-- Jl. Citarum VIIIB (Vertikal Kiri) -->
+                      <rect x="114" y="356" width="46" height="475" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" />
+                      <line x1="137" y1="360" x2="137" y2="825" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="10,8" opacity="0.5" />
+
+                      <!-- Jl. Citarum VIIIC (Vertikal Tengah) -->
+                      <rect x="449" y="356" width="72" height="475" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" />
+                      <line x1="485" y1="360" x2="485" y2="825" stroke="#fbbf24" stroke-width="1.8" stroke-dasharray="14,10" opacity="0.65" />
+
+                      <!-- Jl. Citarum IX (Vertikal Kanan) -->
+                      <rect x="724" y="356" width="48" height="475" rx="6" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" />
+                      <line x1="748" y1="360" x2="748" y2="825" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="10,8" opacity="0.5" />
+
+                      <!-- Road Typography & Street Name Banners -->
+                      <g font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="12" fill="#38bdf8" text-anchor="middle">
+                        <text x="500" y="172" letter-spacing="1.5">JL. CITARUM II (KORIDOR UTARA)</text>
+                        <text x="500" y="278" font-size="10.5" letter-spacing="1" fill="#94a3b8">JL. CITARUM IVA</text>
+                        
+                        <!-- Rotated Street Labels -->
+                        <text x="137" y="590" transform="rotate(-90, 137, 590)" font-size="11" letter-spacing="1">JL. CITARUM VIIIB</text>
+                        <text x="485" y="590" transform="rotate(-90, 485, 590)" font-size="12" letter-spacing="1.5">JL. CITARUM VIIIC (AKSES UTAMA)</text>
+                        <text x="748" y="590" transform="rotate(-90, 748, 590)" font-size="11" letter-spacing="1">JL. CITARUM IX</text>
+                      </g>
+                    </g>
+
+                    <!-- Layer 4: Facilities & POI (Points of Interest) -->
+                    <g id="svg-poi-layer">
+                      <!-- Pos Ronda & Portal Gerbang Siskamling (Main Entrance Barat) -->
+                      <g class="poi-item" style="cursor:pointer;" title="Pos Ronda Siskamling Utama">
+                        <rect x="30" y="112" width="70" height="28" rx="8" fill="url(#grad-poi-pos)" stroke="#38bdf8" stroke-width="1.5" />
+                        <circle cx="42" cy="126" r="4" fill="#ef4444">
+                          <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" repeatCount="indefinite" />
+                        </circle>
+                        <text x="68" y="129" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" font-weight="800" fill="#ffffff" text-anchor="middle">POS RONDA</text>
+                      </g>
+
+                      <!-- Balai Warga & Fasum RT (Tengah) -->
+                      <g class="poi-item" style="cursor:pointer;" title="Balai Pertemuan & Fasum RT.001">
+                        <rect x="200" y="530" width="135" height="75" rx="10" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.5" />
+                        <rect x="208" y="538" width="119" height="59" rx="6" fill="url(#grad-poi-balai)" opacity="0.4" />
+                        <text x="267" y="562" font-family="'Plus Jakarta Sans', sans-serif" font-size="10.5" font-weight="800" fill="#ffffff" text-anchor="middle">BALAI RT.001</text>
+                        <text x="267" y="578" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="600" fill="#c7d2fe" text-anchor="middle">Fasum &amp; Pertemuan</text>
+                      </g>
+
+                      <!-- Ruang Terbuka Hijau / Taman RT -->
+                      <g class="poi-item" style="cursor:pointer;" title="Taman Hijau & Ruang Terbuka Hijau">
+                        <rect x="200" y="420" width="135" height="90" rx="10" fill="#064e3b" stroke="#10b981" stroke-width="1.5" />
+                        <rect x="208" y="428" width="119" height="74" rx="6" fill="url(#grad-poi-taman)" opacity="0.35" />
+                        <text x="267" y="462" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" fill="#6ee7b7" text-anchor="middle">TAMAN RTH RT</text>
+                        <text x="267" y="478" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" font-weight="600" fill="#a7f3d0" text-anchor="middle">Area Hijau &amp; Santai</text>
+                      </g>
+
+                      <!-- CCTV Monitoring Smart Nodes -->
+                      <g title="CCTV Pantau 01 - Gerbang Portal Masuk">
+                        <circle cx="104" cy="138" r="5" fill="#10b981" />
+                        <circle cx="104" cy="138" r="10" fill="none" stroke="#10b981" stroke-width="1" opacity="0.5">
+                          <animate attributeName="r" values="5;14" dur="2s" repeatCount="indefinite" />
+                          <animate attributeName="opacity" values="0.8;0" dur="2s" repeatCount="indefinite" />
+                        </circle>
+                      </g>
+                      <g title="CCTV Pantau 02 - Pertigaan Citarum VIIIC">
+                        <circle cx="485" cy="340" r="5" fill="#10b981" />
+                        <circle cx="485" cy="340" r="10" fill="none" stroke="#10b981" stroke-width="1" opacity="0.5">
+                          <animate attributeName="r" values="5;14" dur="2s" repeatCount="indefinite" />
+                          <animate attributeName="opacity" values="0.8;0" dur="2s" repeatCount="indefinite" />
+                        </circle>
+                      </g>
+
+                      <!-- Assembly Point / Titik Kumpul Evakuasi -->
+                      <g title="Titik Kumpul Evakuasi Bencana">
+                        <circle cx="267" cy="650" r="22" fill="#047857" stroke="#34d399" stroke-width="2" />
+                        <text x="267" y="654" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="900" fill="#ffffff" text-anchor="middle">▲</text>
+                        <text x="267" y="684" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" font-weight="700" fill="#6ee7b7" text-anchor="middle">TITIK KUMPUL</text>
+                      </g>
+                    </g>
+
+                    <!-- Layer 5: Official Legal RT Border (Red dashed outline) -->
+                    <polygon id="svg-legal-boundary" points="20,40 895,40 895,845 20,845" fill="none" stroke="#f43f5e" stroke-width="3" stroke-dasharray="12,8" filter="url(#glow-boundary)" />
+
+                    <!-- Boundary Label Banner -->
+                    <g font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="11" fill="#f43f5e">
+                      <rect x="35" y="44" width="260" height="20" rx="5" fill="#881337" opacity="0.85" />
+                      <text x="165" y="58" text-anchor="middle" fill="#fecdd3"><i class="fa-solid fa-shield"></i> BATAS WILAYAH HUKUM RT.001 / RW.013</text>
+                    </g>
+
+                    <!-- Layer 6: Dynamic 112 Parcels / Lots (Generated via JS) -->
+                    <g id="svg-parcels-group" class="smart-map-parcels">
+                      <!-- 112 Smart SVG Parcels injected here by initSmartClusterMap() -->
+                    </g>
+
+                    <!-- Layer 7: Compass Rose Indicator (Pojok Kanan Atas) -->
+                    <g transform="translate(865, 80)">
+                      <circle cx="0" cy="0" r="22" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" />
+                      <polygon points="0,-16 5,0 -5,0" fill="#ef4444" />
+                      <polygon points="0,16 5,0 -5,0" fill="#64748b" />
+                      <text x="0" y="-19" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="900" fill="#ef4444" text-anchor="middle">U</text>
+                      <text x="0" y="27" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#94a3b8" text-anchor="middle">S</text>
+                      <text x="26" y="3" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#94a3b8" text-anchor="middle">T</text>
+                      <text x="-26" y="3" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#94a3b8" text-anchor="middle">B</text>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Footer & Legend -->
+              <div class="smart-map-footer">
+                <div class="smart-map-legend-items">
+                  <span class="smart-map-legend-item">
+                    <span class="legend-swatch swatch-lunas"></span>
+                    <span>Lunas Iuran Bulan Ini</span>
+                  </span>
+                  <span class="smart-map-legend-item">
+                    <span class="legend-swatch swatch-belum"></span>
+                    <span>Belum Bayar Iuran</span>
+                  </span>
+                  <span class="smart-map-legend-item">
+                    <span class="legend-swatch swatch-match"></span>
+                    <span>Sorotan Pencarian / Filter</span>
+                  </span>
+                  <span class="smart-map-legend-item">
+                    <span class="legend-swatch swatch-boundary"></span>
+                    <span>Batas Yuridiksi Resmi RT.001 (112 KK)</span>
+                  </span>
+                </div>
+                <div style="font-size:0.75rem; color:#64748b;">
+                  <i class="fa-solid fa-hand-pointer text-cyan"></i> Arahkan / Ketuk pada kavling rumah untuk info lengkap warga
                 </div>
               </div>
             </div>
@@ -898,7 +1173,7 @@
                 </div>
                 <div class="public-feature-body">
                   <h4>Manajemen Kas &amp; Pembukuan Digital</h4>
-                  <p>Pengelolaan iuran 71 KK dengan auto-split 6 pos anggaran, pencatatan jimpitan ronda, dan laporan akuntansi yang terverifikasi.</p>
+                  <p>Pengelolaan iuran 112 KK dengan auto-split 6 pos anggaran, pencatatan jimpitan ronda, dan laporan akuntansi yang terverifikasi.</p>
                 </div>
               </div>
 
@@ -910,7 +1185,7 @@
                     <span>5 Jalur Jalan Wilayah RT.001</span>
                   </div>
                   <span class="roads-overview-badge">
-                    <i class="fa-solid fa-house-chimney text-emerald"></i> 71 KK Aktif
+                    <i class="fa-solid fa-house-chimney text-emerald"></i> 112 KK Aktif
                   </span>
                 </div>
 
@@ -7481,21 +7756,119 @@
     </div>
   </div>
 
-  <!-- Modal: Preview Peta Wilayah HD -->
+  <!-- Modal: Fullscreen GIS Command Center Peta Wilayah RT.001 -->
   <div class="modal-backdrop" id="modal-peta-wilayah">
-    <div class="modal-content glass-panel luxury-modal" style="max-width: 900px; padding: 1.5rem;">
-      <div class="modal-header" style="margin-bottom: 0.85rem;">
-        <h3><i class="fa-solid fa-map-location-dot text-emerald"></i> Peta Satelit Cakupan Wilayah RT.001 / RW.013</h3>
-        <button class="modal-close" data-close="modal-peta-wilayah">&times;</button>
+    <div class="modal-content glass-panel luxury-modal" style="width: 96vw; max-width: 1440px; height: 92vh; display: flex; flex-direction: column; padding: 1.25rem;">
+      <div class="modal-header" style="margin-bottom: 0.75rem; flex-shrink: 0;">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <span class="badge-emerald" style="padding:4px 10px; border-radius:8px;"><i class="fa-solid fa-satellite-dish"></i> COMMAND CENTER GIS</span>
+          <h3 style="margin:0;"><i class="fa-solid fa-map-location-dot text-emerald"></i> GIS Peta Digital &amp; Denah Cerdas RT.001 / RW.013</h3>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <button type="button" class="btn btn-sm btn-outline" id="btn-modal-map-toggle-mode">
+            <i class="fa-solid fa-layer-group"></i> Ganti Mode (Vektor / Satelit)
+          </button>
+          <button class="modal-close" data-close="modal-peta-wilayah">&times;</button>
+        </div>
       </div>
-      <div class="peta-lightbox-wrap" style="text-align: center; overflow: hidden; border-radius: 12px; border: 2px solid rgba(16, 185, 129, 0.3); background: #000;">
-        <img src="assets/peta-wilayah-rt001.jpg" alt="Denah Satelit RT.001" style="width: 100%; height: auto; max-height: 72vh; object-fit: contain; display: block; margin: 0 auto;">
+
+      <div class="peta-fullscreen-body" style="flex:1; display:flex; flex-direction:column; position:relative; overflow:hidden; border-radius:14px; border:1px solid rgba(16, 185, 129, 0.35); background:#020617;">
+        <!-- Modal Toolbar -->
+        <div style="padding: 0.6rem 1rem; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; z-index: 10;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; max-width: 450px;">
+            <input type="text" id="modal-map-search-input" class="smart-map-search-input" placeholder="Cari nama warga, nomor rumah, atau jalan..." style="padding: 0.4rem 1rem;">
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span class="smart-map-kpi-badge kpi-total"><i class="fa-solid fa-house"></i> 112 KK</span>
+            <span class="smart-map-kpi-badge kpi-paid" id="modal-map-kpi-paid"><i class="fa-solid fa-circle-check"></i> Lunas</span>
+            <button type="button" class="smart-map-action-btn" id="btn-modal-map-zoom-in" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+            <button type="button" class="smart-map-action-btn" id="btn-modal-map-zoom-out" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+            <button type="button" class="smart-map-action-btn" id="btn-modal-map-zoom-reset" title="Reset Zoom"><i class="fa-solid fa-arrows-rotate"></i></button>
+          </div>
+        </div>
+
+        <!-- Fullscreen SVG Viewport Container -->
+        <div class="peta-fullscreen-viewport" id="modal-map-viewport" style="flex:1; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+          <div id="modal-map-svg-wrap" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; transform-origin:center center; transition:transform 0.2s ease;">
+            <!-- Svg injected or dynamically linked -->
+          </div>
+        </div>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; flex-wrap: wrap; gap: 0.75rem; flex-shrink: 0;">
         <span style="font-size: 0.85rem; color: #cbd5e1;">
-          <i class="fa-solid fa-circle-info text-gold"></i> Wilayah hukum RT.001 berada di dalam batas garis merah putus-putus.
+          <i class="fa-solid fa-circle-info text-emerald"></i> Klik pada sembarang kavling rumah untuk membuka rincian kartu keluarga &amp; kontak WhatsApp langsung.
         </span>
-        <button type="button" class="btn btn-outline" data-close="modal-peta-wilayah">Tutup Peta</button>
+        <button type="button" class="btn btn-outline" data-close="modal-peta-wilayah">Tutup Layar Penuh</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Detail Cepat Profil Warga dari Peta (Resident Map Quick-Detail) -->
+  <div class="modal-backdrop" id="modal-map-resident-detail">
+    <div class="modal-content glass-panel luxury-modal" style="max-width: 580px; padding: 1.5rem;">
+      <div class="modal-header" style="margin-bottom: 0.85rem;">
+        <div>
+          <span class="modal-pre-tag text-emerald"><i class="fa-solid fa-house-chimney-user"></i> DETAIL KAVLING RT.001</span>
+          <h3 id="resmodal-title" style="margin:0;"><i class="fa-solid fa-id-card text-cyan"></i> Profil Keluarga &amp; Rumah</h3>
+        </div>
+        <button class="modal-close" data-close="modal-map-resident-detail">&times;</button>
+      </div>
+
+      <div class="resident-map-modal-card">
+        <!-- Header Info -->
+        <div class="resident-map-modal-header">
+          <div class="resident-map-avatar" id="resmodal-avatar">
+            WG
+          </div>
+          <div class="resident-map-header-info">
+            <h3 id="resmodal-name">Wageyanto</h3>
+            <div class="resident-map-wife-badge" id="resmodal-wife">
+              <i class="fa-solid fa-heart text-pink"></i> <span>Istri: Ny. Sri Wahyuni</span>
+            </div>
+            <div class="resident-map-address">
+              <i class="fa-solid fa-map-location-dot text-emerald"></i>
+              <span id="resmodal-address">Jl. Citarum II, Blok B6 No. 02</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Stats Quick Grid -->
+        <div class="resident-map-stats-grid">
+          <div class="resident-map-stat-card">
+            <div class="resident-map-stat-label">Status Iuran</div>
+            <div class="resident-map-stat-val text-emerald" id="resmodal-dues-status">LUNAS</div>
+          </div>
+          <div class="resident-map-stat-card">
+            <div class="resident-map-stat-label">Jumlah Jiwa</div>
+            <div class="resident-map-stat-val" id="resmodal-members">4 Jiwa</div>
+          </div>
+          <div class="resident-map-stat-card">
+            <div class="resident-map-stat-label">Jadwal Ronda</div>
+            <div class="resident-map-stat-val text-gold" id="resmodal-ronda">Regu 1</div>
+          </div>
+        </div>
+
+        <!-- Demographic Details -->
+        <div>
+          <div class="resident-map-section-title">
+            <i class="fa-solid fa-users text-cyan"></i> Anggota Keluarga Terdaftar:
+          </div>
+          <div class="resident-map-family-list" id="resmodal-family-list">
+            <span class="resident-map-family-chip"><i class="fa-solid fa-user"></i> Ananda Putra (Anak)</span>
+            <span class="resident-map-family-chip"><i class="fa-solid fa-user"></i> Dinda Putri (Anak)</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="resident-map-actions">
+          <a href="#" target="_blank" class="btn-whatsapp-resident" id="resmodal-btn-wa">
+            <i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> Hubungi via WhatsApp
+          </a>
+          <button type="button" class="btn btn-outline" data-close="modal-map-resident-detail">
+            Tutup
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -8104,6 +8477,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.81"></script>
+  <script src="app.js?v=2.9.82"></script>
 </body>
 </html>
