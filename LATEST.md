@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (08:50 WIB)  
-**Versi Rilis Aktif:** `v2.9.86`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (09:25 WIB)  
+**Versi Rilis Aktif:** `v2.9.87`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -18,7 +18,42 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 💎 Kartu Warga Digital Holografis 3D (*Digital Resident Smart Card*) (Prioritas 3 - Update v2.9.86 - 1 Okt 2026)
+### 1. 🤖 Asisten Pintar RT Berbasis AI (*AI Smart Community Assistant / RT-Smart AI Agent*) (Prioritas 4 - Update v2.9.87 - 1 Okt 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Lanjutkan ke Prioritas 4"*
+  - Menghadirkan asisten kecerdasan buatan lingkungan (*civic AI smart agent*) 24 jam penuh yang cerdas, ramah, santun, dan terintegrasi langsung dengan database real-time RT.001 (112 KK Warga, 33 Aset, 8 Regu Ronda, Keuangan Kas RT, e-Surat Pengantar Mandiri & Peta Klaster GIS).
+- **Hasil Implementasi & Fitur Unggulan**:
+  1. **Floating Action Widget & Ambient Greeting Popover**:
+     - **FAB Melayang Futuristik (`#btn-floating-rt-ai`)**: Terletak di pojok kanan bawah layar dengan efek glowing cyber ring berputar, transisi ikon tongkat sihir & robot berputar saat di-hover, teks *"Tanya RT-AI"*, dan indikator denyut hijau *"Online 24 Jam"*.
+     - **Balon Sapaan Cerdas Otomatis (`#rt-ai-greeting-bubble`)**: Muncul dengan animasi halus setelah 4 detik pembukaan web menyapa warga: *"Halo Warga RT.001! 👋 Ada yang bisa dibantu? Tanya iuran, jadwal ronda, atau e-surat!"* (dapat ditutup dan status tersimpan di session).
+     - **Penataan Rapi Tombol Melayang**: Tombol scroll-to-top (`#btn-scroll-top`) diposisikan secara simetris tepat di atas widget AI tanpa saling menimpa.
+  2. **Jendela Interaksi Glassmorphism Eksklusif (`#modal-rt-ai-assistant`)**:
+     - **Header Berkelas**: Profil Asisten Pintar RT.001 dengan cincin aurora orbital berputar, status aktif terhubung Supabase Cloud, tombol toggle audio/suara, tombol reset/clear history, dan tombol tutup.
+     - **Suggestion Chips Carousel**: Bilah pertanyaan rekomendasi 1-klik yang dapat digulir horizontal (Bayar Iuran QRIS, Jadwal Ronda Malam, Syarat e-Surat, Pinjam Tenda/Kursi, Transparansi Kas, KTA Digital 3D, Peta Klaster GIS, dan Kontak Darurat/Pengurus).
+     - **Message Stream & Typing Indicator**: Percakapan terstruktur rapi dengan bubble pengguna gradien cyan-emerald dan respon AI bertekstur kaca gelap dengan 3 titik animasi ketik saat AI memproses jawaban.
+  3. **Otak Kecerdasan Terintegrasi Data Real-Time (*Data-Grounded Intelligence Engine*)**:
+     - **Iuran Warga & QRIS Online**: Menjelaskan struktur iuran bulanan dan alur bayar instan via gerbang QRIS Pakasir 24 jam dengan tombol aksi langsung `[💳 Bayar via QRIS Pakasir]`.
+     - **Ronda Siskamling 8 Regu**: Menghitung secara dinamis hari & tanggal aktif (misal: Kamis, 1 Oktober 2026), giliran piket 8 regu, tata tertib jam 22.00–04.00 WIB, koin jimpitan koin, dengan tombol aksi langsung `[🛡️ Buka Jadwal 8 Regu Ronda]`.
+     - **e-Surat Pengantar RT Mandiri**: Memandu persyaratan dan alur pengajuan 8 kategori surat pengantar resmi tanpa harus bertamu, dilengkapi tombol aksi `[📄 Buat Surat Pengantar Sekarang]`.
+     - **Peminjaman 33 Aset & Sarpras**: Menjelaskan inventaris RT (Tenda Terop 4x6m, 100 Kursi Lipat Chitose, Sound System Wireless, Mesin Rumput, Mesin Fogging DBD, Meja Tenis Meja) yang gratis untuk warga dengan tombol aksi `[📦 Formulir Peminjaman Fasum]`.
+     - **Pencarian Cerdas 112 KK Warga & Lokasi Rumah**: Jika warga bertanya tentang nama warga (misal *"Rumah Pak Wageyanto di mana?"*, *"Kavling B6 No 02 siapa?"*, *"Pak Hendra jalan apa?"*), AI mendeteksi data master 112 KK warga, menampilkan rincian keluarga, dan menyertakan tombol aksi `[📍 Sorot Rumah di Peta GIS]` yang langsung mengarahkan kamera peta ke rumah bersangkutan!
+     - **KTA Digital Warga 3D**: Menjelaskan fitur smart card holografis ber-chip EMV dan barcode dengan tombol aksi `[💎 Buka KTA Digital Warga 3D]`.
+     - **Kontak Darurat & Hotline Pengurus**: Menyajikan nomor darurat nasional (112, Damkar 113, Polsek 110, Ambulans 119) serta tautan WhatsApp 1-klik ke nomor Ketua RT (0812-8906-0002).
+  4. **Fitur Audio Canggih (Chime Synthesizer & Speech Recognition)**:
+     - **Web Audio API Melodic Chime**: Menghasilkan suara denting 2 nada merdu (D5 - A5) saat balasan AI diterima tanpa butuh file audio eksternal.
+     - **Text-To-Speech (TTS) Bahasa Indonesia**: Menggunakan Web Speech Synthesis untuk membaca intisari jawaban secara natural.
+     - **Voice Input Mikrofon (`#btn-ai-voice`)**: Pengguna dapat berbicara langsung dalam Bahasa Indonesia via Speech Recognition dengan indikator visual berdenyut merah.
+  5. **Integrasi Ekosistem Multi-Akses**:
+     - **Navbar Sticky**: Tombol glassmorphism `#btn-navbar-ai-assistant` dengan ikon sihir cyan dan badge *"24 Jam"*.
+     - **Drawer Navigasi Mobile**: Ditambahkan **Menu 8: Asisten Pintar RT (AI)** dan counter badge diperbarui menjadi `8`.
+     - **Portal Mandiri Warga**: Ditambahkan kartu akses cepat `#btn-pw-open-ai` di samping tombol KTA.
+     - **Universal Command Palette (`Ctrl + K`)**: Ditambahkan opsi aksi cepat *"🤖 Tanya Asisten Pintar RT.001 (AI 24 Jam)"*.
+     - **Keyboard Shortcut**: Tekan `Alt + A` kapan saja untuk membuka/menutup asisten AI seketika.
+  6. **Pembaruan Service Worker & Versi PWA**:
+     - Service worker cache di-bump ke `v2.9.87` (`rt-finsmart-cache-v2.9.87`).
+     - Query string versi aset di `index.html` diperbarui ke `styles.css?v=2.9.87` dan `app.js?v=2.9.87`.
+
+### 2. 💎 Kartu Warga Digital Holografis 3D (*Digital Resident Smart Card*) (Prioritas 3 - Update v2.9.86 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Jika sudah selesai, lanjutkan ke Prioritas 3"*
   - Mewujudkan identitas digital warga yang prestisius (*smart card*) dengan efek visual 3D giroskopik dan kemudahan verifikasi digital untuk seluruh 112 KK warga RT.001.

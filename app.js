@@ -18102,6 +18102,19 @@ function buildCommandPaletteIndex() {
       }
     },
     {
+      id: 'act-ai-assistant',
+      title: '🤖 Tanya Asisten Pintar RT.001 (AI 24 Jam)',
+      subtitle: 'Tanya jawab instan seputar iuran, jadwal ronda, syarat e-surat, aset & peta GIS',
+      icon: 'fa-solid fa-wand-magic-sparkles',
+      iconClass: 'command-icon-action',
+      badge: { text: 'AI Cerdas', class: 'pill-cyan' },
+      search: 'ai asisten pintar bot tanya robot kecerdasan buatan chatbot bantuan help 24 jam',
+      action: () => {
+        closeCommandPalette();
+        openRTAIAssistantModal();
+      }
+    },
+    {
       id: 'act-kta-3d',
       title: '💎 Kartu Warga Digital Holografis 3D (KTA)',
       subtitle: 'Smart Card resmi warga RT.001 dengan efek 3D tilt, chip EMV, QR code & unduh PNG',
@@ -19341,6 +19354,687 @@ window.changeSmartCardResident = changeSmartCardResident;
 window.downloadResidentSmartCardPNG = downloadResidentSmartCardPNG;
 window.printResidentSmartCard = printResidentSmartCard;
 
+/* ==========================================================================
+   PRIORITAS 4: ASISTEN PINTAR RT BERBASIS AI (RT-SMART AI AGENT)
+   Kecerdasan Buatan Pelayanan Warga Lingkungan 24 Jam
+   ========================================================================== */
+
+let rtAiSoundMuted = false;
+let rtAiVoiceRecognition = null;
+let isRTAIVoiceListening = false;
+
+// 1. Inisialisasi Audio Chime (Web Audio API Synthesizer - Melodic 2-Tone)
+function playRTAIChime() {
+  if (rtAiSoundMuted) return;
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08); // A5
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.36);
+  } catch(e) {}
+}
+
+// 2. Text-To-Speech (Bahasa Indonesia)
+function speakRTAIResponse(rawText) {
+  if (rtAiSoundMuted || !('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    const cleanText = rawText.replace(/<[^>]*>?/gm, '').replace(/[*_#`]/g, '').substring(0, 180);
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.lang = 'id-ID';
+    utterance.rate = 1.05;
+    window.speechSynthesis.speak(utterance);
+  } catch(e) {}
+}
+
+// 3. Toggle Sound Setting
+function toggleRTAISound() {
+  rtAiSoundMuted = !rtAiSoundMuted;
+  localStorage.setItem('rt_ai_sound_muted', rtAiSoundMuted ? '1' : '0');
+  const icon = document.getElementById('ai-sound-icon');
+  if (icon) {
+    icon.className = rtAiSoundMuted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+  }
+  if (typeof showToast === 'function') {
+    showToast(rtAiSoundMuted ? 'Suara Asisten AI Dinonaktifkan' : 'Suara Asisten AI Diaktifkan');
+  }
+}
+
+// 4. Modal Open/Close & Sapaan
+function openRTAIAssistantModal(initialQuery = null) {
+  const modal = document.getElementById('modal-rt-ai-assistant');
+  if (!modal) return;
+  
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('ai-modal-open');
+
+  dismissRTAIGreeting();
+
+  const input = document.getElementById('ai-chat-input');
+  if (input) {
+    if (initialQuery) {
+      input.value = initialQuery;
+      submitRTAIQuery();
+    } else {
+      setTimeout(() => input.focus(), 300);
+    }
+  }
+
+  // Scroll to bottom
+  const body = document.getElementById('ai-chat-body');
+  if (body) {
+    body.scrollTop = body.scrollHeight;
+  }
+}
+
+function closeRTAIAssistantModal() {
+  const modal = document.getElementById('modal-rt-ai-assistant');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('ai-modal-open');
+}
+
+function dismissRTAIGreeting() {
+  const bubble = document.getElementById('rt-ai-greeting-bubble');
+  if (bubble) {
+    bubble.style.display = 'none';
+  }
+  sessionStorage.setItem('rt_ai_greeting_dismissed', 'true');
+}
+
+// 5. Voice Input (Speech Recognition)
+function toggleRTAIVoiceInput() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    if (typeof showToast === 'function') {
+      showToast('Browser Anda belum mendukung input suara. Silakan ketik pertanyaan.');
+    }
+    return;
+  }
+
+  const btn = document.getElementById('btn-ai-voice');
+  const icon = document.getElementById('ai-voice-icon');
+
+  if (isRTAIVoiceListening && rtAiVoiceRecognition) {
+    rtAiVoiceRecognition.stop();
+    isRTAIVoiceListening = false;
+    if (btn) btn.classList.remove('listening');
+    if (icon) icon.className = 'fa-solid fa-microphone';
+    return;
+  }
+
+  try {
+    rtAiVoiceRecognition = new SpeechRec();
+    rtAiVoiceRecognition.lang = 'id-ID';
+    rtAiVoiceRecognition.continuous = false;
+    rtAiVoiceRecognition.interimResults = false;
+
+    rtAiVoiceRecognition.onstart = () => {
+      isRTAIVoiceListening = true;
+      if (btn) btn.classList.add('listening');
+      if (icon) icon.className = 'fa-solid fa-microphone-lines';
+      if (typeof showToast === 'function') {
+        showToast('Mendengarkan... Silakan bicara');
+      }
+    };
+
+    rtAiVoiceRecognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      const input = document.getElementById('ai-chat-input');
+      if (input) {
+        input.value = transcript;
+        submitRTAIQuery();
+      }
+    };
+
+    rtAiVoiceRecognition.onerror = (e) => {
+      console.warn('Voice recognition error:', e);
+      isRTAIVoiceListening = false;
+      if (btn) btn.classList.remove('listening');
+      if (icon) icon.className = 'fa-solid fa-microphone';
+    };
+
+    rtAiVoiceRecognition.onend = () => {
+      isRTAIVoiceListening = false;
+      if (btn) btn.classList.remove('listening');
+      if (icon) icon.className = 'fa-solid fa-microphone';
+    };
+
+    rtAiVoiceRecognition.start();
+  } catch (err) {
+    console.error('Speech recognition exception:', err);
+  }
+}
+
+// 6. Chip Click Handler
+function askRTAIFromChip(question) {
+  const input = document.getElementById('ai-chat-input');
+  if (input) {
+    input.value = question;
+    submitRTAIQuery();
+  }
+}
+
+// 7. Clear History
+function clearRTAIChatHistory() {
+  const list = document.getElementById('ai-messages-list');
+  if (!list) return;
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+  list.innerHTML = `
+    <div class="ai-msg ai-msg-bot">
+      <div class="ai-msg-avatar">
+        <i class="fa-solid fa-robot"></i>
+      </div>
+      <div class="ai-msg-content">
+        <div class="ai-msg-sender">Asisten Pintar RT.001 <span class="ai-msg-time">${timeStr}</span></div>
+        <div class="ai-msg-text">
+          <p>Percakapan telah direset. Silakan klik opsi pertanyaan di atas atau tanyakan hal lain seputar RT.001!</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (typeof showToast === 'function') {
+    showToast('Percakapan telah dibersihkan');
+  }
+}
+
+// 8. RT-Smart AI Natural Language Knowledge Engine
+const RTCommunityAIEngine = {
+  getLiveContext() {
+    let residents = [];
+    if (typeof buildClusterMapParcelsData === 'function') {
+      residents = buildClusterMapParcelsData();
+    } else if (typeof state !== 'undefined' && state.residents && Array.isArray(state.residents)) {
+      residents = state.residents;
+    }
+
+    const assets = typeof getAsetList === 'function' ? getAsetList() : [];
+
+    // Ronda context
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const now = new Date();
+    const todayName = days[now.getDay()];
+    const dateFormatted = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    return {
+      residents,
+      assets,
+      todayName,
+      dateFormatted,
+      totalKK: residents.length || 112,
+      totalAssets: assets.length || 33
+    };
+  },
+
+  findCitizenInContext(query, residents) {
+    if (!residents || !residents.length) return null;
+    const cleanStr = (query || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ');
+    const qWords = cleanStr.split(/\s+/).filter(w => w.length >= 3);
+
+    // 1. Cek Blok & Nomor Rumah (misal: "b6 02", "b6 no 02", "blok b7 nomor 05")
+    const blockMatch = cleanStr.match(/\b(b\s*[0-9]+)\s*(?:no|nomor)?\s*([0-9]+[a-z]?)\b/);
+    if (blockMatch) {
+      const b = blockMatch[1].replace(/\s+/g, '').toUpperCase();
+      const h = blockMatch[2].padStart(2, '0');
+      const matched = residents.find(r => 
+        (r.block || '').toUpperCase() === b && 
+        (r.houseNo || '').padStart(2, '0') === h
+      );
+      if (matched) return matched;
+    }
+
+    // 2. Cek Nama atau Panggilan
+    for (const r of residents) {
+      const fullName = (r.name || '').toLowerCase();
+      const wifeName = (r.wifeNama || r.nama_istri || '').toLowerCase();
+      
+      // Substring match
+      if (fullName && cleanStr.includes(fullName)) return r;
+      if (wifeName && cleanStr.includes(wifeName)) return r;
+
+      // Tokens
+      const nameTokens = fullName.split(/\s+/).filter(t => t.length >= 3 && !['bapak', 'pak', 'haji', 'raden'].includes(t));
+      for (const t of nameTokens) {
+        if (qWords.includes(t)) return r;
+      }
+
+      const wifeTokens = wifeName.split(/\s+/).filter(t => t.length >= 3 && !['ibu', 'ny', 'nyonya'].includes(t));
+      for (const t of wifeTokens) {
+        if (qWords.includes(t)) return r;
+      }
+    }
+
+    return null;
+  },
+
+  process(query) {
+    const rawQ = query || '';
+    const q = rawQ.toLowerCase().trim();
+    const ctx = this.getLiveContext();
+
+    // PRIORITAS KHUSUS: Cek apakah mencari warga / rumah / kavling tertentu
+    const isAskingCitizen = q.includes('rumah') || q.includes('kavling') || q.includes('blok') || 
+                           q.includes('tinggal') || q.includes('dimana') || q.includes('di mana') || 
+                           q.includes('siapa') || q.includes('istri') || q.includes('keluarga');
+    
+    const matchedCitizen = this.findCitizenInContext(rawQ, ctx.residents);
+    if (matchedCitizen && (isAskingCitizen || !q.includes('pengurus'))) {
+      const wife = matchedCitizen.wifeNama || matchedCitizen.nama_istri || '';
+      const block = matchedCitizen.block || matchedCitizen.blok || '';
+      const houseNo = matchedCitizen.houseNo || matchedCitizen.no_rumah || '';
+      const street = matchedCitizen.street || matchedCitizen.jalan || '';
+      const phone = matchedCitizen.phone || matchedCitizen.telepon || '';
+      const jiwa = matchedCitizen.totalJiwa || matchedCitizen.jiwa || 4;
+
+      return {
+        text: `
+          <p><strong>Informasi Warga Ditemukan:</strong></p>
+          <ul>
+            <li>👤 <strong>Kepala Keluarga</strong>: Bapak ${matchedCitizen.name}</li>
+            ${wife ? `<li>👩 <strong>Istri</strong>: Ny. ${wife}</li>` : ''}
+            <li>🏠 <strong>Alamat</strong>: Kavling <strong>${block} No. ${houseNo}</strong> (${street})</li>
+            <li>👨‍👩‍👧‍👦 <strong>Jumlah Jiwa</strong>: ${jiwa} Jiwa</li>
+            <li>📱 <strong>Kontak</strong>: ${phone ? phone : 'Tersedia di Buku Induk'}</li>
+          </ul>
+          <p>Anda dapat langsung menyorot posisi rumah warga ini di Peta Klaster GIS atau melihat Kartu Warga Digitalnya:</p>
+        `,
+        actions: [
+          { label: '📍 Sorot Rumah di Peta GIS', icon: 'fa-solid fa-location-crosshairs', onclick: `closeRTAIAssistantModal(); if(typeof focusCitizenOnMap===\"function\") focusCitizenOnMap(${matchedCitizen.id});`, type: 'cyan' },
+          { label: '💎 Buka KTA Digital Warga', icon: 'fa-solid fa-id-card-clip', onclick: `closeRTAIAssistantModal(); if(typeof openResidentSmartCardModal===\"function\") openResidentSmartCardModal(${JSON.stringify(matchedCitizen).replace(/"/g, '&quot;')});`, type: 'gold' }
+        ]
+      };
+    }
+
+    // 1. IURAN / QRIS / PAKASIR / PEMBAYARAN
+    if (q.includes('iuran') || q.includes('qris') || q.includes('bayar') || q.includes('pakasir') || q.includes('tagihan') || q.includes('tarif') || q.includes('kuitansi') || q.includes('ipl')) {
+      return {
+        text: `
+          <p><strong>Pembayaran Iuran RT.001 / RW.013 Graha Asri:</strong></p>
+          <p>Iuran pengelolaan lingkungan (kebersihan, sampah, keamanan siskamling &amp; sosial) dapat dibayarkan secara <strong>online 24 jam</strong> melalui gerbang <strong>QRIS Pakasir</strong>.</p>
+          <ul>
+            <li>✅ <strong>Metode Fleksibel</strong>: GoPay, OVO, Dana, ShopeePay, BCA, Mandiri, BRI, BNI &amp; seluruh bank mobile banking.</li>
+            <li>⚡ <strong>Verifikasi Instan</strong>: Status pembayaran otomatis berubah jadi <em>Lunas</em> dalam hitungan detik.</li>
+            <li>🧾 <strong>Kuitansi Digital Sah</strong>: Dilengkapi nomor referensi unik, cap stempel digital resmi, dan QR Code verifikasi.</li>
+          </ul>
+          <p>Silakan klik tombol di bawah untuk membuka form pembayaran QRIS:</p>
+        `,
+        actions: [
+          { label: '💳 Bayar via QRIS Pakasir', icon: 'fa-solid fa-qrcode', onclick: 'closeRTAIAssistantModal(); if(typeof openPakasirPaymentModal===\"function\") openPakasirPaymentModal();', type: 'cyan' },
+          { label: '📊 Cek Transparansi Kas', icon: 'fa-solid fa-vault', onclick: 'closeRTAIAssistantModal(); const btn=document.querySelector(\"[data-subview=\\\"layanan\\\"]\"); if(btn) btn.click();', type: 'gold' }
+        ]
+      };
+    }
+
+    // 2. RONDA SISKAMLING / JADWAL RONDA
+    if (q.includes('ronda') || q.includes('siskamling') || q.includes('jaga malam') || q.includes('regu') || q.includes('patroli') || q.includes('pos ronda') || q.includes('jimpitan')) {
+      return {
+        text: `
+          <p><strong>Jadwal &amp; Tata Tertib Ronda Siskamling RT.001:</strong></p>
+          <p>Hari ini: <strong>${ctx.todayName}, ${ctx.dateFormatted}</strong>.</p>
+          <ul>
+            <li>🛡️ <strong>Sistem 8 Regu Bergilir</strong>: Dibagi menjadi 8 Regu Ronda (Regu 1 s/d Regu 8) bertugas setiap malam secara bergantian.</li>
+            <li>⏰ <strong>Jam Operasional</strong>: Pukul <strong>22.00 WIB s/d 04.00 WIB</strong> di Pos Ronda Utama Jl. Citarum II.</li>
+            <li>🪙 <strong>Uang Jimpitan</strong>: Petugas ronda berkeliling mengambil koin jimpitan di wadah depan rumah warga untuk kas sosial &amp; santunan.</li>
+            <li>🔄 <strong>Tukar Jadwal / Izin</strong>: Warga yang berhalangan hadir wajib mengabari Komandan Regu atau bertukar dengan rekan satu regu.</li>
+          </ul>
+          <p>Untuk melihat daftar nama komandan dan anggota 8 regu lengkap:</p>
+        `,
+        actions: [
+          { label: '🛡️ Buka Jadwal 8 Regu Ronda', icon: 'fa-solid fa-shield-halved', onclick: 'closeRTAIAssistantModal(); if(typeof openAllRondaPortalModal===\"function\") openAllRondaPortalModal();', type: 'emerald' },
+          { label: '📍 Lokasi Pos Ronda di Peta GIS', icon: 'fa-solid fa-map-pin', onclick: 'closeRTAIAssistantModal(); if(typeof openPetaWilayahModal===\"function\") openPetaWilayahModal();', type: 'cyan' }
+        ]
+      };
+    }
+
+    // 3. E-SURAT PENGANTAR MANDIRI
+    if (q.includes('surat') || q.includes('pengantar') || q.includes('skck') || q.includes('ktp') || q.includes('domisili') || q.includes('pindah') || q.includes('kematian') || q.includes('nikah') || q.includes('izin')) {
+      return {
+        text: `
+          <p><strong>Layanan e-Surat Pengantar RT Mandiri:</strong></p>
+          <p>Warga RT.001 kini dapat membuat surat pengantar resmi tanpa harus menunggu lama atau bertamu ke rumah Ketua RT:</p>
+          <ul>
+            <li>📄 <strong>8 Jenis Surat Tersedia</strong>: Surat Keterangan Domisili, Pengantar KTP/KK, SKCK Polsek, Izin Keramaian/Hajatan, Keterangan Usaha, Keterangan Belum Menikah, Surat Pengantar Nikah (NA), dan Surat Keterangan Kematian.</li>
+            <li>🔒 <strong>Keaslian Terjamin</strong>: Dilengkapi nomor surat otomatis, tanda tangan digital SHA-256, dan QR Code verifikasi.</li>
+            <li>⏱️ <strong>Instan &amp; Siap Cetak/Kirim</strong>: Dapat langsung diunduh PDF, dicetak, atau dibagikan via WhatsApp ke kelurahan.</li>
+          </ul>
+        `,
+        actions: [
+          { label: '📄 Buat Surat Pengantar Sekarang', icon: 'fa-solid fa-file-pen', onclick: 'closeRTAIAssistantModal(); const btn=document.querySelector(\"[data-view=\\\"view-surat\\\"]\"); if(btn) btn.click();', type: 'cyan' },
+          { label: '📚 Cek Buku Register Surat', icon: 'fa-solid fa-book-bookmark', onclick: 'closeRTAIAssistantModal(); if(typeof renderBukuRegisterSurat===\"function\") renderBukuRegisterSurat();', type: 'gold' }
+        ]
+      };
+    }
+
+    // 4. PEMINJAMAN ASET / SARPRAS / TENDA / KURSI
+    if (q.includes('pinjam') || q.includes('sewa') || q.includes('tenda') || q.includes('kursi') || q.includes('sound') || q.includes('mesin rumput') || q.includes('fogging') || q.includes('tenis') || q.includes('fasum') || q.includes('aset') || q.includes('barang')) {
+      return {
+        text: `
+          <p><strong>Peminjaman Sarana &amp; Aset RT.001 (Total ${ctx.totalAssets} Item):</strong></p>
+          <p>Pengurus RT menyediakan fasilitas penunjang kegiatan warga yang dapat dipinjam secara <strong>GRATIS</strong> untuk keperluan hajatan, kerja bakti, pengajian, atau olahraga:</p>
+          <ul>
+            <li>🎪 <strong>Tenda Terop Besi</strong> (4x6m &amp; 3x4m lengkap dengan terpal)</li>
+            <li>🪑 <strong>100 Unit Kursi Lipat Chitose</strong> berstandar kokoh</li>
+            <li>🔊 <strong>Wireless Portable Sound System</strong> + 2 Mic Tanpa Kabel</li>
+            <li>🌿 <strong>Mesin Pemotong Rumput Honda</strong> untuk kerja bakti</li>
+            <li>💨 <strong>Mesin Fogging Nyamuk DBD</strong></li>
+            <li>🏓 <strong>Meja Tenis Meja Lengkap</strong> di Balai Warga</li>
+          </ul>
+          <p>Harap ajukan permohonan peminjaman terlebih dahulu agar jadwal pemakaian tidak bentrok dengan warga lain.</p>
+        `,
+        actions: [
+          { label: '📦 Formulir Peminjaman Fasum', icon: 'fa-solid fa-boxes-stacked', onclick: 'closeRTAIAssistantModal(); const btn=document.querySelector(\"[data-view=\\\"view-fasum\\\"]\"); if(btn) btn.click();', type: 'cyan' }
+        ]
+      };
+    }
+
+    // 5. KARTU IDENTITAS WARGA DIGITAL (KTA 3D)
+    if (q.includes('kta') || q.includes('kartu') || q.includes('kartu warga') || q.includes('smart card') || q.includes('hologram') || q.includes('id card')) {
+      return {
+        text: `
+          <p><strong>Kartu Identitas Warga Digital Holografis 3D (KTA):</strong></p>
+          <p>Setiap Kepala Keluarga RT.001 memiliki KTA Digital berstandar eksklusif yang memuat:</p>
+          <ul>
+            <li>✨ <strong>Visual 3D &amp; Gyroscope Tilt</strong>: Kartu bergerak interaktif mengikuti gerakan kursor atau sensor kemiringan smartphone.</li>
+            <li>💳 <strong>EMV Microchip &amp; Hologram Seal</strong>: Tampilan resmi berkelas tinggi layaknya smart card perbankan internasional.</li>
+            <li>📱 <strong>Dynamic QR Code</strong>: Dapat dipindai untuk verifikasi domisili dan keabsahan warga di lapangan.</li>
+            <li>📥 <strong>Unduh &amp; Cetak</strong>: Siap diunduh format gambar PNG jernih (856x540 px) atau dicetak ukuran fisik kartu ID.</li>
+          </ul>
+        `,
+        actions: [
+          { label: '💎 Buka KTA Digital Warga 3D', icon: 'fa-solid fa-id-card-clip', onclick: 'closeRTAIAssistantModal(); if(typeof openResidentSmartCardModal===\"function\") openResidentSmartCardModal();', type: 'cyan' }
+        ]
+      };
+    }
+
+    // 7. PETA LINGKUNGAN / CAKUPAN WILAYAH
+    if (q.includes('peta') || q.includes('lokasi') || q.includes('alamat') || q.includes('jalan') || q.includes('ruas') || q.includes('wilayah') || q.includes('denah') || q.includes('satelit') || q.includes('citarum')) {
+      return {
+        text: `
+          <p><strong>Cakupan Wilayah Hukum RT.001 / RW.013 Graha Asri:</strong></p>
+          <p>RT.001 menaungi <strong>${ctx.totalKK} Kepala Keluarga (KK)</strong> yang tersebar di <strong>5 Ruas Jalan</strong>:</p>
+          <ul>
+            <li>🛣️ <strong>Jl. Citarum II</strong>: Blok B6 (Utara) &amp; Blok B7 (Selatan) - 35 Kavling</li>
+            <li>🛣️ <strong>Jl. Citarum IVA</strong>: Blok B6 &amp; B7 (Koridor Tengah) - 19 Kavling</li>
+            <li>🛣️ <strong>Jl. Citarum VIIIB</strong>: Blok B3 (Sisi Barat) - 15 Kavling</li>
+            <li>🛣️ <strong>Jl. Citarum VIIIC</strong>: Blok B3, B6 &amp; B4 (Koridor Tengah) - 30 Kavling</li>
+            <li>🛣️ <strong>Jl. Citarum IX</strong>: Blok B4 (Sisi Timur) - 13 Kavling</li>
+          </ul>
+          <p>Peta klaster kami dilengkapi <em>Dual-Mode</em> (Mode Smart Vector GIS dan Mode Citra Foto Udara Satelit Asli) serta live HUD saat disentuh.</p>
+        `,
+        actions: [
+          { label: '🗺️ Buka Peta Klaster Interaktif GIS', icon: 'fa-solid fa-map-location-dot', onclick: 'closeRTAIAssistantModal(); if(typeof openPetaWilayahModal===\"function\") openPetaWilayahModal();', type: 'cyan' },
+          { label: '🔍 Cari Warga di Command Palette', icon: 'fa-solid fa-magnifying-glass', onclick: 'closeRTAIAssistantModal(); if(typeof openCommandPalette===\"function\") openCommandPalette();', type: 'emerald' }
+        ]
+      };
+    }
+
+    // 8. DARURAT / NOMOR KONTAK / PENGURUS
+    if (q.includes('darurat') || q.includes('sos') || q.includes('kebakaran') || q.includes('maling') || q.includes('pencuri') || q.includes('sakit') || q.includes('ambulans') || q.includes('polsek') || q.includes('damkar') || q.includes('kontak') || q.includes('pengurus') || q.includes('ketua rt') || q.includes('telepon') || q.includes('wa') || q.includes('hotline')) {
+      return {
+        text: `
+          <p><strong>Kontak Darurat &amp; Hotline Pengurus RT.001:</strong></p>
+          <ul>
+            <li>🚨 <strong>Hotline Pos Ronda / Pengurus RT</strong>: <a href="tel:081289060002" class="text-cyan font-mono">0812-8906-0002</a> (Bapak Wageyanto)</li>
+            <li>🚒 <strong>Pemadam Kebakaran (Damkar)</strong>: <a href="tel:113" class="text-rose font-mono">113</a> / (021) 895-3000</li>
+            <li>👮 <strong>Polsek Cikarang Timur / Selatan</strong>: <a href="tel:110" class="text-gold font-mono">110</a> / (021) 8983-0003</li>
+            <li>🚑 <strong>Ambulans / Gawat Darurat</strong>: <a href="tel:119" class="text-emerald font-mono">119</a></li>
+            <li>📞 <strong>Layanan Panggilan Darurat Terpadu</strong>: <a href="tel:112" class="text-cyan font-mono">112</a> (Bebas Pulsa)</li>
+          </ul>
+        `,
+        actions: [
+          { label: '💬 WhatsApp Hotline RT.001', icon: 'fa-brands fa-whatsapp', onclick: 'window.open(\"https://wa.me/6281289060002?text=Halo%20Pengurus%20RT.001,%20saya%20warga%20membutuhkan%20informasi/bantuan\", \"_blank\");', type: 'emerald' },
+          { label: '👥 Lihat Susunan Pengurus RT', icon: 'fa-solid fa-users', onclick: 'closeRTAIAssistantModal(); const btn=document.querySelector(\"[data-subview=\\\"pengurus\\\"]\"); if(btn) btn.click();', type: 'gold' }
+        ]
+      };
+    }
+
+    // 9. KAS RT / SALDO / TRANSPARANSI
+    if (q.includes('kas') || q.includes('saldo') || q.includes('keuangan') || q.includes('laporan') || q.includes('uang')) {
+      return {
+        text: `
+          <p><strong>Transparansi Pembukuan &amp; Saldo Kas RT.001:</strong></p>
+          <p>RT-FinSmart PRO menerapkan akuntabilitas terbuka untuk seluruh aliran dana:</p>
+          <ul>
+            <li>💰 <strong>6 Pos Anggaran Terbuka</strong>: Kas Operasional RT, Kas Pengelolaan Sampah, Kas Keamanan Siskamling, Kas Sosial Warga, Kas Pembangunan &amp; Fasum, serta Kas Jimpitan Ronda.</li>
+            <li>📈 <strong>Grafik Arus Kas Realtime</strong>: Rincian total pemasukan, pengeluaran terverifikasi, dan saldo terkonsolidasi dapat dipantau langsung oleh seluruh warga.</li>
+          </ul>
+        `,
+        actions: [
+          { label: '📊 Lihat Transparansi Kas Lengkap', icon: 'fa-solid fa-vault', onclick: 'closeRTAIAssistantModal(); const btn=document.querySelector(\"[data-subview=\\\"layanan\\\"]\"); if(btn) btn.click();', type: 'gold' }
+        ]
+      };
+    }
+
+    // 10. GREETING / SALAM / SIAPA KAMU
+    if (q.includes('halo') || q.includes('hai') || q.includes('assalamualaikum') || q.includes('selamat') || q.includes('pagi') || q.includes('siang') || q.includes('sore') || q.includes('malam') || q.includes('siapa kamu') || q.includes('bisa apa')) {
+      return {
+        text: `
+          <p>Halo! Senang bisa melayani Anda. 😊</p>
+          <p>Saya adalah <strong>Asisten Pintar RT.001</strong> yang bertugas 24 jam untuk mendampingi warga dan pengurus Perumahan Graha Asri.</p>
+          <p>Silakan tanyakan apa saja seputar lingkungan kita:</p>
+          <ul>
+            <li>💳 <em>"Bagaimana cara bayar iuran RT?"</em></li>
+            <li>🛡️ <em>"Siapa jadwal ronda malam ini?"</em></li>
+            <li>📄 <em>"Cara bikin surat pengantar domisili?"</em></li>
+            <li>🎪 <em>"Mau pinjam tenda atau kursi untuk hajatan"</em></li>
+            <li>🗺️ <em>"Di mana lokasi rumah Blok B6 No 02?"</em></li>
+          </ul>
+        `,
+        actions: [
+          { label: '💳 Cara Bayar Iuran', icon: 'fa-solid fa-qrcode', onclick: 'askRTAIFromChip(\"Bagaimana cara bayar iuran RT via QRIS?\")', type: 'cyan' },
+          { label: '🛡️ Jadwal Ronda', icon: 'fa-solid fa-shield-halved', onclick: 'askRTAIFromChip(\"Siapa regu ronda yang bertugas malam ini?\")', type: 'emerald' },
+          { label: '📄 Buat Surat RT', icon: 'fa-solid fa-file-signature', onclick: 'askRTAIFromChip(\"Syarat dan cara buat e-Surat Pengantar RT?\")', type: 'gold' }
+        ]
+      };
+    }
+
+    // 11. TERIMA KASIH / CLOSING
+    if (q.includes('terima kasih') || q.includes('makasih') || q.includes('thanks') || q.includes('oke') || q.includes('baik') || q.includes('siap')) {
+      return {
+        text: `
+          <p>Sama-sama! Senang bisa membantu Anda. Tetap semangat, jaga kerukunan, dan mari bersama-sama mewujudkan lingkungan <strong>RT.001 Graha Asri yang Guyub, Bersih, Aman, dan Sejahtera</strong>! 🌟</p>
+          <p>Jika ada hal lain yang perlu ditanyakan nanti, saya selalu siaga di sini 24 jam.</p>
+        `,
+        actions: []
+      };
+    }
+
+    // 12. FALLBACK
+    return {
+      text: `
+        <p>Terima kasih atas pertanyaan Anda: <em>"${query}"</em>.</p>
+        <p>Saya dapat membantu memberikan informasi resmi dan tautan aksi cepat seputar:</p>
+        <ul>
+          <li>💳 <strong>Iuran Warga &amp; Pembayaran QRIS Pakasir</strong></li>
+          <li>🛡️ <strong>Jadwal 8 Regu Ronda &amp; Pos Siskamling</strong></li>
+          <li>📄 <strong>Pengurusan 8 Jenis e-Surat Pengantar Mandiri</strong></li>
+          <li>🎪 <strong>Peminjaman 33 Inventaris Sarpras RT</strong> (Tenda, Kursi, Sound System, dll.)</li>
+          <li>🗺️ <strong>Peta Klaster Interaktif GIS 112 Kavling Warga</strong></li>
+          <li>💎 <strong>Kartu Identitas Warga Digital Holografis 3D (KTA)</strong></li>
+        </ul>
+        <p>Silakan pilih salah satu opsi cepat di bawah atau hubungi hotline pengurus jika membutuhkan bantuan khusus:</p>
+      `,
+      actions: [
+        { label: '💳 Bayar Iuran QRIS', icon: 'fa-solid fa-qrcode', onclick: 'askRTAIFromChip(\"Bagaimana cara bayar iuran RT via QRIS?\")', type: 'cyan' },
+        { label: '🛡️ Cek Jadwal Ronda', icon: 'fa-solid fa-shield-halved', onclick: 'askRTAIFromChip(\"Siapa regu ronda yang bertugas malam ini?\")', type: 'emerald' },
+        { label: '💬 WhatsApp Pengurus', icon: 'fa-brands fa-whatsapp', onclick: 'window.open(\"https://wa.me/6281289060002\", \"_blank\");', type: 'gold' }
+      ]
+    };
+  }
+};
+
+// 9. Query Submission Handler
+function submitRTAIQuery() {
+  const input = document.getElementById('ai-chat-input');
+  if (!input) return;
+  const query = input.value.trim();
+  if (!query) return;
+
+  const messagesList = document.getElementById('ai-messages-list');
+  const chatBody = document.getElementById('ai-chat-body');
+  const typingIndicator = document.getElementById('ai-typing-indicator');
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+  // Escape HTML for user message
+  const escapedQuery = query.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // Append User Bubble
+  const userMsgHtml = `
+    <div class="ai-msg ai-msg-user">
+      <div class="ai-msg-avatar">
+        <i class="fa-solid fa-user"></i>
+      </div>
+      <div class="ai-msg-content">
+        <div class="ai-msg-sender">Anda <span class="ai-msg-time">${timeStr}</span></div>
+        <div class="ai-msg-text">
+          ${escapedQuery}
+        </div>
+      </div>
+    </div>
+  `;
+  messagesList.insertAdjacentHTML('beforeend', userMsgHtml);
+
+  // Clear input
+  input.value = '';
+
+  // Scroll to bottom
+  if (chatBody) {
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  // Show Typing Indicator
+  if (typingIndicator) {
+    typingIndicator.style.display = 'flex';
+    if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  // Generate Response with natural delay
+  setTimeout(() => {
+    if (typingIndicator) {
+      typingIndicator.style.display = 'none';
+    }
+
+    const res = RTCommunityAIEngine.process(query);
+
+    let actionsHtml = '';
+    if (res.actions && res.actions.length > 0) {
+      actionsHtml = `
+        <div class="ai-actions-wrap">
+          ${res.actions.map(act => `
+            <button type="button" class="ai-action-btn ${act.type ? 'ai-btn-' + act.type : ''}" onclick="${act.onclick}">
+              <i class="${act.icon}"></i> <span>${act.label}</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    const botMsgHtml = `
+      <div class="ai-msg ai-msg-bot">
+        <div class="ai-msg-avatar">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <div class="ai-msg-content">
+          <div class="ai-msg-sender">Asisten Pintar RT.001 <span class="ai-msg-time">${timeStr}</span></div>
+          <div class="ai-msg-text">
+            ${res.text}
+            ${actionsHtml}
+          </div>
+        </div>
+      </div>
+    `;
+
+    messagesList.insertAdjacentHTML('beforeend', botMsgHtml);
+
+    // Audio & Speech
+    playRTAIChime();
+    speakRTAIResponse(res.text);
+
+    if (chatBody) {
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+  }, 420);
+}
+
+// 10. Inisialisasi Asisten AI
+function initRTAIAssistant() {
+  // Load saved sound preference
+  const savedMute = localStorage.getItem('rt_ai_sound_muted');
+  if (savedMute === '1') {
+    rtAiSoundMuted = true;
+    const icon = document.getElementById('ai-sound-icon');
+    if (icon) icon.className = 'fa-solid fa-volume-xmark';
+  }
+
+  // Show friendly ambient greeting after 4 seconds (if not dismissed in session)
+  const isDismissed = sessionStorage.getItem('rt_ai_greeting_dismissed');
+  if (!isDismissed) {
+    setTimeout(() => {
+      const bubble = document.getElementById('rt-ai-greeting-bubble');
+      if (bubble) {
+        bubble.style.display = 'flex';
+      }
+    }, 4000);
+  }
+
+  // Keyboard shortcut listener (Alt + A to open AI Assistant)
+  window.addEventListener('keydown', (e) => {
+    if (e.altKey && (e.key === 'a' || e.key === 'A')) {
+      e.preventDefault();
+      const modal = document.getElementById('modal-rt-ai-assistant');
+      if (modal && modal.classList.contains('open')) {
+        closeRTAIAssistantModal();
+      } else {
+        openRTAIAssistantModal();
+      }
+    }
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('modal-rt-ai-assistant');
+      if (modal && modal.classList.contains('open')) {
+        closeRTAIAssistantModal();
+      }
+    }
+  });
+
+  // Welcome time sync
+  const welcomeTime = document.getElementById('ai-welcome-time');
+  if (welcomeTime) {
+    const now = new Date();
+    welcomeTime.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  }
+}
+
+// Expose globals for inline event handlers
+window.openRTAIAssistantModal = openRTAIAssistantModal;
+window.closeRTAIAssistantModal = closeRTAIAssistantModal;
+window.dismissRTAIGreeting = dismissRTAIGreeting;
+window.toggleRTAISound = toggleRTAISound;
+window.toggleRTAIVoiceInput = toggleRTAIVoiceInput;
+window.askRTAIFromChip = askRTAIFromChip;
+window.clearRTAIChatHistory = clearRTAIChatHistory;
+window.submitRTAIQuery = submitRTAIQuery;
+window.initRTAIAssistant = initRTAIAssistant;
+window.RTCommunityAIEngine = RTCommunityAIEngine;
+
+
 // Inisialisasi video background & Split-Text Reveal pada hero header
 document.addEventListener('DOMContentLoaded', () => {
   const flagVideo = document.querySelector('.flag-video-bg');
@@ -19362,6 +20056,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Jalankan Universal Command Palette (Prioritas 2)
   if (typeof initCommandPalette === 'function') {
     initCommandPalette();
+  }
+
+  // Jalankan Asisten Pintar RT Berbasis AI (Prioritas 4)
+  if (typeof initRTAIAssistant === 'function') {
+    initRTAIAssistant();
   }
 });
 

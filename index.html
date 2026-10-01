@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.86">
+  <link rel="stylesheet" href="styles.css?v=2.9.87">
 </head>
 <body>
 
@@ -120,6 +120,13 @@
             <kbd class="cmd-trigger-kbd" id="cmd-trigger-kbd-badge">Ctrl K</kbd>
           </button>
 
+          <!-- Asisten Pintar AI Trigger Button -->
+          <button type="button" class="btn-nav-ai-trigger" id="btn-navbar-ai-assistant" onclick="openRTAIAssistantModal()" title="Tanya Asisten Pintar RT.001 (AI 24 Jam)" aria-label="Buka Asisten AI">
+            <i class="fa-solid fa-wand-magic-sparkles text-cyan"></i>
+            <span class="nav-ai-text">Asisten AI</span>
+            <span class="nav-ai-badge">24 Jam</span>
+          </button>
+
           <div class="nav-portal-group" role="group" aria-label="Akses Cepat Portal">
             <button type="button" class="btn-nav-portal btn-nav-warga" id="btn-nav-portal-warga" title="Buka Portal Mandiri Warga RT.001">
               <i class="fa-solid fa-house-chimney-user"></i>
@@ -130,7 +137,7 @@
           <button type="button" class="btn-drawer-trigger" id="btn-open-drawer" title="Buka Menu Layanan Warga">
             <i class="fa-solid fa-bars-staggered"></i>
             <span class="drawer-trigger-text">Menu Layanan</span>
-            <span class="drawer-trigger-badge">7</span>
+            <span class="drawer-trigger-badge">8</span>
           </button>
         </div>
       </div>
@@ -273,6 +280,21 @@
                 <span class="drawer-badge-pill badge-gold"><i class="fa-solid fa-star"></i> Smart Card</span>
               </div>
               <p class="drawer-nav-desc">Kartu identitas holografis 3D resmi warga RT.001</p>
+            </div>
+            <i class="fa-solid fa-chevron-right drawer-nav-arrow"></i>
+          </button>
+
+          <!-- Menu 8: Asisten Pintar Warga Berbasis AI -->
+          <button type="button" class="drawer-nav-item drawer-nav-ai" id="btn-drawer-ai-assistant" onclick="closePublicDrawer(); openRTAIAssistantModal();">
+            <div class="drawer-nav-icon bg-purple-glow">
+              <i class="fa-solid fa-wand-magic-sparkles text-cyan"></i>
+            </div>
+            <div class="drawer-nav-content">
+              <div class="drawer-nav-title-row">
+                <span class="drawer-nav-title">Asisten Pintar RT (AI)</span>
+                <span class="drawer-badge-pill badge-cyan"><i class="fa-solid fa-circle text-emerald pulse-dot"></i> 24 Jam</span>
+              </div>
+              <p class="drawer-nav-desc">Tanya jawab pintar seputar iuran, ronda malam &amp; e-surat RT</p>
             </div>
             <i class="fa-solid fa-chevron-right drawer-nav-arrow"></i>
           </button>
@@ -5052,6 +5074,21 @@
                 <span class="btn-kta-chip"><i class="fa-solid fa-microchip"></i> 3D</span>
               </button>
             </div>
+
+            <!-- Tombol Asisten Pintar AI Warga -->
+            <div class="pw-hero-ai-btn-wrap">
+              <button type="button" class="btn-luxury-ai" id="btn-pw-open-ai" onclick="openRTAIAssistantModal()" title="Tanya Asisten Cerdas RT.001 (AI 24 Jam)">
+                <div class="btn-ai-glow"></div>
+                <div class="btn-ai-content">
+                  <i class="fa-solid fa-wand-magic-sparkles btn-ai-icon"></i>
+                  <div>
+                    <span class="btn-ai-title">Asisten Pintar</span>
+                    <span class="btn-ai-sub">Tanya AI 24 Jam</span>
+                  </div>
+                </div>
+                <span class="btn-ai-chip"><i class="fa-solid fa-circle text-emerald pulse-dot"></i> Live</span>
+              </button>
+            </div>
           </div>
 
           <div class="pw-hero-stats-bar">
@@ -8810,6 +8847,168 @@
   <!-- Hidden Printable KTA Container (for @media print) -->
   <div id="kta-printable-container" class="kta-printable-container" aria-hidden="true"></div>
 
+  <!-- ==================== PRIORITAS 4: ASISTEN PINTAR RT BERBASIS AI (RT-SMART AI AGENT) ==================== -->
+  
+  <!-- Floating RT-AI Smart Assistant Trigger Button (FAB) & Greeting Bubble -->
+  <div id="floating-rt-ai-container" class="floating-rt-ai-container" aria-label="Asisten Pintar RT.001">
+    <!-- Ambient Greeting Tooltip (Auto-appears after load with polite introduction) -->
+    <div id="rt-ai-greeting-bubble" class="rt-ai-greeting-bubble" onclick="openRTAIAssistantModal()">
+      <div class="rt-ai-greeting-avatar">
+        <i class="fa-solid fa-robot"></i>
+      </div>
+      <div class="rt-ai-greeting-content">
+        <div class="rt-ai-greeting-title">Halo Warga RT.001! 👋</div>
+        <div class="rt-ai-greeting-text">Ada yang bisa dibantu? Tanya iuran, jadwal ronda, atau e-surat!</div>
+      </div>
+      <button type="button" class="rt-ai-greeting-close" onclick="event.stopPropagation(); dismissRTAIGreeting();" aria-label="Tutup Sapaan">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Main Floating Action Button -->
+    <button type="button" id="btn-floating-rt-ai" class="btn-floating-rt-ai" onclick="openRTAIAssistantModal()" title="Buka Asisten Pintar RT.001 (AI 24 Jam)" aria-label="Tanya Asisten AI">
+      <div class="ai-fab-glow-ring"></div>
+      <div class="ai-fab-icon-box">
+        <i class="fa-solid fa-wand-magic-sparkles ai-fab-icon-primary"></i>
+        <i class="fa-solid fa-robot ai-fab-icon-secondary"></i>
+      </div>
+      <span class="ai-fab-label">Tanya RT-AI</span>
+      <span class="ai-fab-status-dot" title="AI Siap Melayani 24 Jam"></span>
+    </button>
+  </div>
+
+  <!-- Modal / Floating Window Asisten Pintar RT Berbasis AI -->
+  <div id="modal-rt-ai-assistant" class="modal-rt-ai-assistant" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="ai-modal-title">
+    <div class="ai-assistant-backdrop" onclick="closeRTAIAssistantModal()"></div>
+    <div class="ai-assistant-window">
+      
+      <!-- Window Header -->
+      <div class="ai-assistant-header">
+        <div class="ai-header-profile">
+          <div class="ai-avatar-wrap">
+            <div class="ai-avatar-ring"></div>
+            <div class="ai-avatar-inner">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <span class="ai-online-indicator" title="Online 24 Jam"></span>
+          </div>
+          <div class="ai-header-info">
+            <div class="ai-header-title-row">
+              <h3 id="ai-modal-title" class="ai-header-name">Asisten Pintar RT.001</h3>
+              <span class="ai-header-badge"><i class="fa-solid fa-microchip"></i> AI Live</span>
+            </div>
+            <p class="ai-header-status">
+              <span class="ai-status-pulse"></span>
+              Pelayanan Cerdas 24 Jam • Terhubung Supabase
+            </p>
+          </div>
+        </div>
+
+        <div class="ai-header-controls">
+          <button type="button" class="ai-control-btn" id="btn-ai-toggle-sound" onclick="toggleRTAISound()" title="Aktifkan/Matikan Suara Respons (Chime &amp; Suara)" aria-label="Toggle Suara">
+            <i class="fa-solid fa-volume-high" id="ai-sound-icon"></i>
+          </button>
+          <button type="button" class="ai-control-btn" id="btn-ai-clear-chat" onclick="clearRTAIChatHistory()" title="Bersihkan Percakapan" aria-label="Bersihkan Chat">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+          <button type="button" class="ai-control-btn ai-close-btn" onclick="closeRTAIAssistantModal()" title="Tutup Asisten AI" aria-label="Tutup">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Suggestion Chips Bar -->
+      <div class="ai-suggestion-bar">
+        <div class="ai-suggestion-scroll">
+          <button type="button" class="ai-chip" onclick="askRTAIFromChip('Bagaimana cara bayar iuran RT via QRIS?')">
+            <i class="fa-solid fa-qrcode text-cyan"></i> <span>Bayar Iuran QRIS</span>
+          </button>
+          <button type="button" class="ai-chip" onclick="askRTAIFromChip('Siapa regu ronda yang bertugas malam ini?')">
+            <i class="fa-solid fa-shield-halved text-emerald"></i> <span>Jadwal Ronda Malam</span>
+          </button>
+          <button type="button" class="ai-chip" onclick="askRTAIFromChip('Syarat dan cara buat e-Surat Pengantar RT?')">
+            <i class="fa-solid fa-file-signature text-gold"></i> <span>Buat Surat Pengantar</span>
+          </button>
+          <button type="button" class="ai-chip" onclick="askRTAIFromChip('Bagaimana cara meminjam tenda atau kursi inventaris RT?')">
+            <i class="fa-solid fa-boxes-stacked text-purple"></i> <span>Pinjam Tenda / Kursi</span>
+          </button>
+          <button type="button" class="ai-chip" onclick="askRTAIFromChip('Berapa saldo kas kas RT saat ini?')">
+            <i class="fa-solid fa-vault text-cyan"></i> <span>Transparansi Kas RT</span>
+          </button>
+          <button type="button" class="ai-chip" onclick="askRTAIFromChip('Bagaimana cara cek Kartu Warga Digital KTA 3D?')">
+            <i class="fa-solid fa-id-card-clip text-emerald"></i> <span>KTA Warga Digital 3D</span>
+          </button>
+          <button type="button" class="ai-chip" onclick="askRTAIFromChip('Bagaimana cara melihat peta digital lingkungan RT?')">
+            <i class="fa-solid fa-map-location-dot text-rose"></i> <span>Peta Klaster GIS</span>
+          </button>
+          <button type="button" class="ai-chip" onclick="askRTAIFromChip('Nomor kontak darurat dan pengurus RT.001?')">
+            <i class="fa-solid fa-phone-volume text-rose"></i> <span>Kontak Darurat &amp; RT</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chat Messages Body -->
+      <div class="ai-chat-body" id="ai-chat-body">
+        <div class="ai-messages-list" id="ai-messages-list">
+          <!-- Welcome Message -->
+          <div class="ai-msg ai-msg-bot">
+            <div class="ai-msg-avatar">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <div class="ai-msg-content">
+              <div class="ai-msg-sender">Asisten Pintar RT.001 <span class="ai-msg-time" id="ai-welcome-time">Sekarang</span></div>
+              <div class="ai-msg-text">
+                <p>Halo, selamat datang di <strong>RT.001 / RW.013 Graha Asri</strong>! 👋</p>
+                <p>Saya asisten kecerdasan buatan lingkungan Anda yang beroperasi 24 jam. Saya dapat membantu Anda dalam:</p>
+                <ul class="ai-welcome-features">
+                  <li>💳 <strong>Iuran &amp; Keuangan</strong>: Info nominal &amp; pembayaran instan QRIS Pakasir 24 jam.</li>
+                  <li>🛡️ <strong>Ronda Siskamling</strong>: Cek jadwal 8 regu &amp; tim piket bertugas.</li>
+                  <li>📄 <strong>e-Surat Pengantar Mandiri</strong>: Pengurusan surat online &amp; syarat dokumen.</li>
+                  <li>📦 <strong>Peminjaman Aset</strong>: Cek 33 inventaris RT (tenda, kursi, sound system, dll.).</li>
+                  <li>🗺️ <strong>Peta GIS &amp; Kavling</strong>: Cari lokasi rumah dari 112 KK warga di 5 ruas jalan.</li>
+                  <li>💎 <strong>KTA Warga 3D</strong>: Akses kartu identitas digital ber-chip &amp; ber-QR resmi.</li>
+                </ul>
+                <p>Silakan klik opsi pertanyaan di atas atau ketik pertanyaan apa saja di bawah ini!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="ai-typing-indicator" id="ai-typing-indicator" style="display: none;">
+          <div class="ai-typing-avatar">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div class="ai-typing-bubble">
+            <span class="ai-typing-dot"></span>
+            <span class="ai-typing-dot"></span>
+            <span class="ai-typing-dot"></span>
+            <span class="ai-typing-text">Asisten RT sedang merespons...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Input Area -->
+      <div class="ai-chat-footer">
+        <form id="form-ai-chat" class="ai-input-form" onsubmit="event.preventDefault(); submitRTAIQuery();">
+          <div class="ai-input-container">
+            <button type="button" class="ai-voice-btn" id="btn-ai-voice" onclick="toggleRTAIVoiceInput()" title="Bicara (Voice Input Bahasa Indonesia)" aria-label="Voice Input">
+              <i class="fa-solid fa-microphone" id="ai-voice-icon"></i>
+            </button>
+            <input type="text" id="ai-chat-input" class="ai-chat-input" placeholder="Tanya iuran, jadwal ronda, e-surat, pinjam tenda..." autocomplete="off">
+            <button type="submit" class="ai-send-btn" id="btn-ai-send" title="Kirim Pesan" aria-label="Kirim">
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </div>
+        </form>
+        <div class="ai-footer-note">
+          <span><i class="fa-solid fa-bolt text-cyan"></i> Ditenagai Database Supabase Cloud &amp; Engine RT-FinSmart PRO</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- Floating Luxury Scroll-to-Top Button -->
   <button id="btn-scroll-top" class="scroll-to-top-btn" title="Kembali ke Bagian Atas Halaman (1-Klik)" aria-label="Kembali ke Bagian Atas">
     <div class="scroll-top-icon-wrapper">
@@ -8822,6 +9021,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.86"></script>
+  <script src="app.js?v=2.9.87"></script>
 </body>
 </html>
