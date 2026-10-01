@@ -36,7 +36,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.89">
+  <link rel="stylesheet" href="styles.css?v=2.9.90">
 </head>
 
 <body>
@@ -367,34 +367,118 @@
           </p>
         </header>
 
-        <!-- BANNER IKLAN / BROADCAST HIGHLIGHT EVENT TERDEKAT (POPUP MODAL LUXURY FLYER) -->
+        <!-- BANNER IKLAN / BROADCAST HIGHLIGHT EVENT TERDEKAT (VIP DIGITAL PASS & FLIP COUNTDOWN) -->
         <div class="hub-event-banner-wrap" id="hub-event-banner-wrap" aria-label="Informasi Event Terdekat"
           role="dialog" aria-modal="true" style="display: none;">
-          <div class="hub-event-banner hub-event-flyer-modal glass-panel">
+          <div class="hub-event-pass-card glass-panel" id="hub-event-pass-card">
+            
+            <!-- Ticket Stub Perforation Notches -->
+            <div class="ticket-notch ticket-notch-left" aria-hidden="true"></div>
+            <div class="ticket-notch ticket-notch-right" aria-hidden="true"></div>
+
             <!-- Tombol Tutup Banner (Tanda Silang Mewah) -->
             <button type="button" class="btn-event-popup-close" id="btn-close-event-banner"
               aria-label="Tutup Pengumuman Event" title="Tutup Pengumuman (X atau Esc)">
               <i class="fa-solid fa-xmark"></i>
             </button>
 
-            <!-- Decorative Ambient Glow & Top Accent Line -->
-            <div class="event-banner-ambient"></div>
-            <div class="event-banner-shimmer"></div>
-            <div class="event-flyer-top-accent"></div>
+            <!-- Decorative Ambient Dual-Tone Glow & Holographic Foil -->
+            <div class="event-pass-ambient-aurora"></div>
+            <div class="event-pass-hologram-strip"></div>
+            <div class="event-pass-top-accent"></div>
 
-            <!-- Flyer Top Badges (Beacon, Category, Countdown) -->
-            <div class="event-flyer-topline">
-              <div class="event-live-beacon">
-                <span class="beacon-pulse"></span>
-                <span class="beacon-dot"></span>
-                <span class="beacon-text">EVENT TERDEKAT</span>
+            <!-- VIP Ticket Header Stub -->
+            <div class="event-pass-header-stub">
+              <div class="event-pass-meta-left">
+                <div class="event-live-beacon">
+                  <span class="beacon-pulse"></span>
+                  <span class="beacon-dot"></span>
+                  <span class="beacon-text">EVENT TERDEKAT</span>
+                </div>
+                <div class="event-vip-badge">
+                  <i class="fa-solid fa-crown text-gold"></i>
+                  <span id="event-vip-pass-id">VIP PASS #EVT-2026-KB01</span>
+                </div>
+                <span class="event-category-badge" id="event-banner-category">
+                  <i class="fa-solid fa-broom"></i> Kerja Bakti &amp; Lingkungan
+                </span>
               </div>
-              <span class="event-category-badge" id="event-banner-category">
-                <i class="fa-solid fa-broom"></i> Kerja Bakti &amp; Lingkungan
-              </span>
-              <span class="event-countdown-pill" id="event-banner-countdown">
-                <i class="fa-regular fa-clock"></i> <strong>3 Hari Lagi</strong>
-              </span>
+              <div class="event-barcode-stub" aria-hidden="true" title="Digital Resident Pass Serial">
+                <div class="barcode-lines"></div>
+                <span class="barcode-serial" id="event-barcode-serial">RT001-GRAHA-ASRI</span>
+              </div>
+            </div>
+
+            <!-- Perforation Divider Line with Holographic Shimmer -->
+            <div class="ticket-perforation-divider" aria-hidden="true"></div>
+
+            <!-- LIVE DYNAMIC FLIP COUNTDOWN (Hari : Jam : Menit : Detik : Centidetik) -->
+            <div class="event-countdown-cockpit" id="event-countdown-cockpit" aria-label="Hitung Mundur Waktu Acara">
+              <div class="countdown-cockpit-header">
+                <div class="countdown-pulse-beacon">
+                  <span class="countdown-beacon-dot"></span>
+                  <span class="countdown-title">HITUNG MUNDUR ACARA (REAL-TIME)</span>
+                </div>
+                <div class="countdown-target-label" id="event-target-label">
+                  <i class="fa-regular fa-clock text-amber"></i>
+                  <strong id="event-banner-countdown">3 Hari Lagi</strong>
+                </div>
+              </div>
+
+              <div class="countdown-digits-board" id="countdown-digits-board">
+                <!-- Days -->
+                <div class="countdown-unit-box">
+                  <div class="countdown-card" id="cd-card-days">
+                    <span class="cd-num" id="cd-val-days">03</span>
+                    <div class="cd-split-line"></div>
+                  </div>
+                  <span class="cd-label">HARI</span>
+                </div>
+
+                <div class="countdown-colon">:</div>
+
+                <!-- Hours -->
+                <div class="countdown-unit-box">
+                  <div class="countdown-card" id="cd-card-hours">
+                    <span class="cd-num" id="cd-val-hours">14</span>
+                    <div class="cd-split-line"></div>
+                  </div>
+                  <span class="cd-label">JAM</span>
+                </div>
+
+                <div class="countdown-colon">:</div>
+
+                <!-- Minutes -->
+                <div class="countdown-unit-box">
+                  <div class="countdown-card" id="cd-card-mins">
+                    <span class="cd-num" id="cd-val-mins">28</span>
+                    <div class="cd-split-line"></div>
+                  </div>
+                  <span class="cd-label">MENIT</span>
+                </div>
+
+                <div class="countdown-colon">:</div>
+
+                <!-- Seconds -->
+                <div class="countdown-unit-box">
+                  <div class="countdown-card" id="cd-card-secs">
+                    <span class="cd-num" id="cd-val-secs">45</span>
+                    <div class="cd-split-line"></div>
+                  </div>
+                  <span class="cd-label">DETIK</span>
+                </div>
+
+                <div class="countdown-colon colon-cs">:</div>
+
+                <!-- Centiseconds -->
+                <div class="countdown-unit-box box-cs">
+                  <div class="countdown-card card-cs" id="cd-card-cs">
+                    <span class="cd-num cd-num-cs" id="cd-val-cs">99</span>
+                    <div class="cd-split-line"></div>
+                  </div>
+                  <span class="cd-label">CENTIDETIK</span>
+                </div>
+              </div>
             </div>
 
             <!-- Flyer Main Dynamic Content (Judul & Narasi Event) -->
@@ -408,6 +492,24 @@
                 fogging nyamuk DBD demi kesehatan bersama warga RT.001.
               </p>
 
+              <!-- SMART WEATHER WIDGET (Prakiraan Cuaca Hari-H BMKG) -->
+              <div class="event-weather-widget" id="event-weather-widget">
+                <div class="weather-widget-icon" id="weather-widget-icon">
+                  <i class="fa-solid fa-cloud-sun text-cyan"></i>
+                </div>
+                <div class="weather-widget-info">
+                  <div class="weather-headline">
+                    <span class="weather-badge-title">PRAKIRAAN CUACA HARI-H (BMKG)</span>
+                    <strong class="weather-temp" id="weather-widget-temp">28°C • Cerah Berawan</strong>
+                  </div>
+                  <p class="weather-note" id="weather-widget-desc">Kelembapan 65% • Sangat ideal &amp; nyaman untuk aktivitas gotong royong outdoor.</p>
+                </div>
+                <div class="weather-shield-pill">
+                  <i class="fa-solid fa-shield-halved text-emerald"></i>
+                  <span>Aman Kegiatan</span>
+                </div>
+              </div>
+
               <!-- 4 Detail Kartu Grid Acara (Modern 2x2 Glass Cards) -->
               <div class="event-flyer-meta-grid">
                 <div class="event-meta-card">
@@ -416,7 +518,7 @@
                   </div>
                   <div class="event-meta-card-body">
                     <span class="event-meta-card-label">Hari &amp; Tanggal</span>
-                    <strong class="event-meta-card-value" id="event-banner-date">Minggu, 20 September 2026</strong>
+                    <strong class="event-meta-card-value" id="event-banner-date">Minggu, 4 Oktober 2026</strong>
                   </div>
                 </div>
 
@@ -436,8 +538,7 @@
                   </div>
                   <div class="event-meta-card-body">
                     <span class="event-meta-card-label">Lokasi / Titik Kumpul</span>
-                    <strong class="event-meta-card-value" id="event-banner-location">Titik Kumpul: Depan Blok
-                      B6</strong>
+                    <strong class="event-meta-card-value" id="event-banner-location">Titik Kumpul: Depan Blok B6 &amp; Pos Kamling</strong>
                   </div>
                 </div>
 
@@ -447,8 +548,7 @@
                   </div>
                   <div class="event-meta-card-body">
                     <span class="event-meta-card-label">Konsumsi &amp; Fasilitas</span>
-                    <strong class="event-meta-card-value" id="event-banner-note">Konsumsi &amp; Kopi Pagi
-                      Disediakan</strong>
+                    <strong class="event-meta-card-value" id="event-banner-note">Konsumsi &amp; Kopi Pagi Disediakan Pengurus</strong>
                   </div>
                 </div>
               </div>
@@ -478,20 +578,45 @@
               </div>
             </div>
 
-            <!-- Footer Action Buttons (2 Tombol Penuh: Detail & WhatsApp Share) -->
-            <div class="event-flyer-footer-actions">
-              <button type="button" class="btn-event-detail" id="btn-event-view-detail" data-subview="kegiatan"
-                title="Buka agenda lengkap kegiatan warga">
-                <i class="fa-solid fa-calendar-days"></i>
-                <span>Lihat Agenda Lengkap Warga</span>
-                <i class="fa-solid fa-arrow-right"></i>
-              </button>
-              <a href="#" target="_blank" rel="noopener" class="btn-event-wa" id="btn-event-share-wa"
-                title="Bagikan pengingat agenda ini ke grup WhatsApp warga">
-                <i class="fa-brands fa-whatsapp"></i>
-                <span>Ingatkan di WA Warga</span>
-              </a>
+            <!-- MULTI-TIER ACTION BUTTONS: SYNC CALENDAR, POSTER GENERATOR & WA -->
+            <div class="event-pass-action-stack">
+              <!-- Tier 1: Digital Tools (Google Calendar, Apple iCal, Auto-Gen WA Poster) -->
+              <div class="event-sync-tools-row">
+                <button type="button" class="btn-pass-tool btn-tool-gcal" id="btn-event-sync-gcal"
+                  title="Simpan jadwal acara ini langsung ke Google Calendar di smartphone Anda">
+                  <i class="fa-brands fa-google text-cyan"></i>
+                  <span>Google Calendar</span>
+                </button>
+
+                <button type="button" class="btn-pass-tool btn-tool-ical" id="btn-event-sync-ical"
+                  title="Unduh file kalender .ics resmi untuk Apple iPhone / Mac / Microsoft Outlook">
+                  <i class="fa-brands fa-apple text-slate-200"></i>
+                  <span>Apple iCal</span>
+                </button>
+
+                <button type="button" class="btn-pass-tool btn-tool-poster" id="btn-event-gen-poster"
+                  title="Buat flyer poster beresolusi tinggi otomatis (HD 9:16) untuk dipasang di Status WhatsApp">
+                  <i class="fa-solid fa-wand-magic-sparkles text-gold"></i>
+                  <span>Unduh Poster WA HD</span>
+                </button>
+              </div>
+
+              <!-- Tier 2: Main Navigation & Group Share -->
+              <div class="event-flyer-footer-actions">
+                <button type="button" class="btn-event-detail" id="btn-event-view-detail" data-subview="kegiatan"
+                  title="Buka agenda lengkap kegiatan warga">
+                  <i class="fa-solid fa-calendar-days"></i>
+                  <span>Lihat Agenda Lengkap Warga</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <a href="#" target="_blank" rel="noopener" class="btn-event-wa" id="btn-event-share-wa"
+                  title="Bagikan pengingat agenda ini ke grup WhatsApp warga">
+                  <i class="fa-brands fa-whatsapp"></i>
+                  <span>Ingatkan di WA Warga</span>
+                </a>
+              </div>
             </div>
+
           </div>
         </div>
 
@@ -10128,7 +10253,7 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.89"></script>
+  <script src="app.js?v=2.9.90"></script>
 </body>
 
 </html>

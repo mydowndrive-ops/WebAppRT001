@@ -7341,61 +7341,112 @@ function setupPublicPortalNavigation() {
 }
 
 
-// ==================== EVENT TERDEKAT BANNER ROTATOR ====================
+// ==================== EVENT TERDEKAT BANNER ROTATOR (VIP DIGITAL PASS & LIVE FLIP COUNTDOWN) ====================
 
 const UPCOMING_EVENTS = [
   {
     id: 'evt-1',
+    vipPassId: 'VIP PASS #EVT-2026-KB01',
+    barcodeSerial: 'RT001-KB-041026',
     category: 'Kerja Bakti & Lingkungan',
     categoryIcon: 'fa-solid fa-broom',
     countdown: '3 Hari Lagi',
+    targetDate: '2026-10-04T07:00:00+07:00',
     title: 'Kerja Bakti Gotong Royong & Fogging DBD Antisipasi Musim Hujan',
     desc: 'Pembersihan serentak saluran drainase 5 klaster jalan, pemangkasan dahan pohon rimbun, pembagian bubuk abate, serta fogging nyamuk DBD demi kesehatan & kenyamanan bersama warga RT.001.',
-    date: 'Minggu, 20 September 2026',
+    date: 'Minggu, 4 Oktober 2026',
     time: '07:00 – 10:30 WIB',
     location: 'Titik Kumpul: Depan Blok B6 & Pos Kamling',
     note: 'Konsumsi & Kopi Pagi Disediakan Pengurus',
-    waText: 'Halo Warga RT.001/RW.013! Mengingatkan agenda Kerja Bakti Gotong Royong & Fogging DBD pada Minggu, 20 September 2026 pukul 07:00 WIB di titik kumpul Depan Blok B6. Mari hadir dan guyub rukun!'
+    waText: 'Halo Warga RT.001/RW.013! Mengingatkan agenda Kerja Bakti Gotong Royong & Fogging DBD pada Minggu, 4 Oktober 2026 pukul 07:00 WIB di titik kumpul Depan Blok B6. Mari hadir dan guyub rukun!',
+    weather: {
+      temp: '28°C • Cerah Berawan',
+      icon: 'fa-solid fa-cloud-sun text-cyan',
+      desc: 'Kelembapan 65% • Sangat ideal & nyaman untuk aktivitas gotong royong outdoor.',
+      shield: 'Aman Kegiatan'
+    },
+    calendar: {
+      title: 'Kerja Bakti Gotong Royong & Fogging DBD RT.001',
+      details: 'Pembersihan serentak saluran drainase 5 klaster jalan, pemangkasan dahan pohon, pembagian abate, serta fogging DBD bersama warga RT.001/RW.013 Graha Asri.',
+      location: 'Depan Blok B6 & Pos Kamling RT.001 RW.013 Graha Asri',
+      startUtc: '20261004T000000Z',
+      endUtc: '20261004T033000Z'
+    }
   },
   {
     id: 'evt-2',
+    vipPassId: 'VIP PASS #EVT-2026-RN02',
+    barcodeSerial: 'RT001-RN-031026',
     category: 'Ronda & Jimpitan Warga',
     categoryIcon: 'fa-solid fa-shield-halved',
     countdown: '2 Hari Lagi',
+    targetDate: '2026-10-03T21:00:00+07:00',
     title: 'Ronda Malam & Penarikan Jimpitan Warga RT.001',
     desc: 'Patroli keliling malam terpadu, pengecekan gembok portal malam jam 23.00, pengambilan uang kas jimpitan di setiap rumah warga, dan silaturahmi ngopi bersama antar-warga.',
-    date: 'Sabtu Malam, 19 September 2026',
+    date: 'Sabtu Malam, 3 Oktober 2026',
     time: '21:00 – 03:00 WIB',
     location: 'Pos Ronda Kamling Utama RT.001',
     note: 'Kopi, Teh Hangat & Kudapan Ronda Disediakan',
-    waText: 'Halo Bapak/Warga RT.001! Mengingatkan jadwal Ronda Malam & Penarikan Jimpitan pada Sabtu Malam, 19 September 2026 mulai pukul 21:00 WIB di Pos Kamling Utama. Jaga lingkungan bersama, guyub rukun!'
+    waText: 'Halo Bapak/Warga RT.001! Mengingatkan jadwal Ronda Malam & Penarikan Jimpitan pada Sabtu Malam, 3 Oktober 2026 mulai pukul 21:00 WIB di Pos Kamling Utama. Jaga lingkungan bersama, guyub rukun!',
+    weather: {
+      temp: '24°C • Sejuk Berawan',
+      icon: 'fa-solid fa-moon text-cyan',
+      desc: 'Angin 8 km/jam tenang • Udara sejuk malam, nyaman untuk siskamling & ngopi santai.',
+      shield: 'Nyaman Ronda'
+    },
+    calendar: {
+      title: 'Ronda Malam & Penarikan Jimpitan Warga RT.001',
+      details: 'Patroli keliling siskamling malam terpadu, pengecekan gembok portal, dan silaturahmi ngopi bersama antar-warga RT.001/RW.013 Graha Asri.',
+      location: 'Pos Kamling Utama RT.001 RW.013 Graha Asri',
+      startUtc: '20261003T140000Z',
+      endUtc: '20261003T200000Z'
+    }
   },
   {
     id: 'evt-3',
+    vipPassId: 'VIP PASS #EVT-2026-ML03',
+    barcodeSerial: 'RT001-ML-091026',
     category: 'Kerohanian & PHBI',
     categoryIcon: 'fa-solid fa-mosque',
     countdown: '8 Hari Lagi',
+    targetDate: '2026-10-09T19:30:00+07:00',
     title: 'Peringatan Maulid Nabi Muhammad SAW 1448 H & Santunan Yatim',
     desc: 'Tabligh akbar silaturahmi warga, tausiyah hikmah maulid, serta penyaluran santunan anak yatim & dhuafa dari alokasi kas PHBI dan donasi sukarela warga.',
-    date: 'Jumat Malam, 25 September 2026',
+    date: 'Jumat Malam, 9 Oktober 2026',
     time: '19:30 WIB (Ba’da Isya)',
     location: 'Fasum Utama / Masjid RT.001 Graha Asri',
     note: 'Terbuka untuk Seluruh Keluarga & Warga RT.001',
-    waText: 'Undangan Warga RT.001: Hadirilah Peringatan Maulid Nabi Muhammad SAW 1448 H & Santunan Yatim pada Jumat Malam, 25 September 2026 pukul 19:30 WIB di Fasum Utama. Semoga membawa berkah bagi lingkungan kita!'
+    waText: 'Undangan Warga RT.001: Hadirilah Peringatan Maulid Nabi Muhammad SAW 1448 H & Santunan Yatim pada Jumat Malam, 9 Oktober 2026 pukul 19:30 WIB di Fasum Utama. Semoga membawa berkah bagi lingkungan kita!',
+    weather: {
+      temp: '26°C • Cerah Teduh',
+      icon: 'fa-solid fa-star-and-crescent text-gold',
+      desc: 'Peluang hujan 5% • Sangat khidmat & lancar untuk tabligh akbar maulid di fasum utama.',
+      shield: 'Ideal Acara'
+    },
+    calendar: {
+      title: 'Peringatan Maulid Nabi Muhammad SAW 1448 H & Santunan Yatim RT.001',
+      details: 'Tabligh akbar silaturahmi warga, tausiyah hikmah maulid, dan santunan yatim piatu di fasum utama RT.001/RW.013 Graha Asri.',
+      location: 'Fasum Utama / Masjid RT.001 RW.013 Graha Asri',
+      startUtc: '20261009T123000Z',
+      endUtc: '20261009T150000Z'
+    }
   }
 ];
 
 let currentUpcomingEventIdx = 0;
 let upcomingEventTimer = null;
+let eventCountdownInterval = null;
 
 function setupUpcomingEventBanner() {
   const bannerWrap = document.getElementById('hub-event-banner-wrap');
   if (!bannerWrap) return;
 
+  const vipPassIdEl = document.getElementById('event-vip-pass-id');
+  const barcodeSerialEl = document.getElementById('event-barcode-serial');
   const titleEl = document.getElementById('event-banner-title');
   const descEl = document.getElementById('event-banner-desc');
   const catEl = document.getElementById('event-banner-category');
-  const cdEl = document.getElementById('event-banner-countdown');
+  const cdHumanEl = document.getElementById('event-banner-countdown');
   const dateEl = document.getElementById('event-banner-date');
   const timeEl = document.getElementById('event-banner-time');
   const locEl = document.getElementById('event-banner-location');
@@ -7404,6 +7455,24 @@ function setupUpcomingEventBanner() {
   const currentIdxEl = document.getElementById('event-current-index');
   const totalCountEl = document.getElementById('event-total-count');
   const mainContent = bannerWrap.querySelector('.event-banner-main');
+
+  // Weather elements
+  const weatherIconEl = document.getElementById('weather-widget-icon');
+  const weatherTempEl = document.getElementById('weather-widget-temp');
+  const weatherDescEl = document.getElementById('weather-widget-desc');
+  const weatherShieldEl = bannerWrap.querySelector('.weather-shield-pill span');
+
+  // Countdown digits elements
+  const cdValDays = document.getElementById('cd-val-days');
+  const cdValHours = document.getElementById('cd-val-hours');
+  const cdValMins = document.getElementById('cd-val-mins');
+  const cdValSecs = document.getElementById('cd-val-secs');
+  const cdValCs = document.getElementById('cd-val-cs');
+  const cdCardDays = document.getElementById('cd-card-days');
+  const cdCardHours = document.getElementById('cd-card-hours');
+  const cdCardMins = document.getElementById('cd-card-mins');
+  const cdCardSecs = document.getElementById('cd-card-secs');
+  const cdCardCs = document.getElementById('cd-card-cs');
 
   if (totalCountEl) totalCountEl.textContent = UPCOMING_EVENTS.length;
 
@@ -7426,15 +7495,25 @@ function setupUpcomingEventBanner() {
     }
 
     function applyData() {
+      if (vipPassIdEl) vipPassIdEl.textContent = evt.vipPassId || 'VIP PASS';
+      if (barcodeSerialEl) barcodeSerialEl.textContent = evt.barcodeSerial || 'RT001-GRAHA-ASRI';
       if (titleEl) titleEl.textContent = evt.title;
       if (descEl) descEl.textContent = evt.desc;
       if (catEl) catEl.innerHTML = `<i class="${evt.categoryIcon}"></i> ${evt.category}`;
-      if (cdEl) cdEl.innerHTML = `<i class="fa-regular fa-clock"></i> <strong>${evt.countdown}</strong>`;
+      if (cdHumanEl) cdHumanEl.textContent = evt.countdown;
       if (dateEl) dateEl.textContent = evt.date;
       if (timeEl) timeEl.textContent = evt.time;
       if (locEl) locEl.textContent = evt.location;
       if (noteEl) noteEl.textContent = evt.note;
       if (currentIdxEl) currentIdxEl.textContent = currentUpcomingEventIdx + 1;
+
+      // Weather data
+      if (evt.weather) {
+        if (weatherIconEl) weatherIconEl.innerHTML = `<i class="${evt.weather.icon}"></i>`;
+        if (weatherTempEl) weatherTempEl.textContent = evt.weather.temp;
+        if (weatherDescEl) weatherDescEl.textContent = evt.weather.desc;
+        if (weatherShieldEl) weatherShieldEl.textContent = evt.weather.shield;
+      }
 
       if (waBtn) {
         waBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(evt.waText)}`;
@@ -7444,6 +7523,85 @@ function setupUpcomingEventBanner() {
       document.querySelectorAll('#event-banner-dots .event-dot').forEach((dot, dIdx) => {
         dot.classList.toggle('active', dIdx === currentUpcomingEventIdx);
       });
+
+      // Immediate tick on event switch
+      updateFlipCountdown();
+    }
+  }
+
+  // ==================== LIVE DYNAMIC FLIP COUNTDOWN TICKER ====================
+  let lastSec = -1;
+  let lastMin = -1;
+
+  function updateFlipCountdown() {
+    const evt = UPCOMING_EVENTS[currentUpcomingEventIdx];
+    if (!evt || !evt.targetDate) return;
+
+    const targetTime = new Date(evt.targetDate).getTime();
+    const now = Date.now();
+    let diff = targetTime - now;
+
+    if (diff <= 0) {
+      if (cdValDays) cdValDays.textContent = '00';
+      if (cdValHours) cdValHours.textContent = '00';
+      if (cdValMins) cdValMins.textContent = '00';
+      if (cdValSecs) cdValSecs.textContent = '00';
+      if (cdValCs) cdValCs.textContent = '00';
+      if (cdHumanEl) cdHumanEl.innerHTML = '<span class="text-rose font-bold">🔴 Sedang Berlangsung</span>';
+      return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    diff -= days * (1000 * 60 * 60 * 24);
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    diff -= hours * (1000 * 60 * 60);
+    const mins = Math.floor(diff / (1000 * 60));
+    diff -= mins * (1000 * 60);
+    const secs = Math.floor(diff / 1000);
+    diff -= secs * 1000;
+    const cs = Math.floor(diff / 10); // 00..99
+
+    const dStr = String(days).padStart(2, '0');
+    const hStr = String(hours).padStart(2, '0');
+    const mStr = String(mins).padStart(2, '0');
+    const sStr = String(secs).padStart(2, '0');
+    const csStr = String(cs).padStart(2, '0');
+
+    if (cdValDays && cdValDays.textContent !== dStr) cdValDays.textContent = dStr;
+    if (cdValHours && cdValHours.textContent !== hStr) cdValHours.textContent = hStr;
+
+    if (cdValMins && cdValMins.textContent !== mStr) {
+      cdValMins.textContent = mStr;
+      if (cdCardMins) {
+        cdCardMins.style.transform = 'scale(1.08)';
+        setTimeout(() => { if (cdCardMins) cdCardMins.style.transform = 'scale(1)'; }, 150);
+      }
+    }
+
+    if (cdValSecs && cdValSecs.textContent !== sStr) {
+      cdValSecs.textContent = sStr;
+      if (cdCardSecs) {
+        cdCardSecs.style.transform = 'scale(1.06)';
+        setTimeout(() => { if (cdCardSecs) cdCardSecs.style.transform = 'scale(1)'; }, 120);
+      }
+    }
+
+    if (cdValCs && cdValCs.textContent !== csStr) {
+      cdValCs.textContent = csStr;
+    }
+  }
+
+  function startCountdownTicker() {
+    stopCountdownTicker();
+    updateFlipCountdown();
+    // Run at ~30fps for smooth centiseconds
+    eventCountdownInterval = setInterval(updateFlipCountdown, 33);
+  }
+
+  function stopCountdownTicker() {
+    if (eventCountdownInterval) {
+      clearInterval(eventCountdownInterval);
+      eventCountdownInterval = null;
     }
   }
 
@@ -7451,7 +7609,7 @@ function setupUpcomingEventBanner() {
     stopEventAutoPlay();
     upcomingEventTimer = setInterval(() => {
       renderCurrentEvent(currentUpcomingEventIdx + 1, true);
-    }, 7000);
+    }, 8000);
   }
 
   function stopEventAutoPlay() {
@@ -7486,11 +7644,399 @@ function setupUpcomingEventBanner() {
   });
 
   // Pause on mouse enter, resume on mouse leave
-  const bannerBox = bannerWrap.querySelector('.hub-event-banner');
-  if (bannerBox) {
-    bannerBox.addEventListener('mouseenter', stopEventAutoPlay);
-    bannerBox.addEventListener('mouseleave', startEventAutoPlay);
+  const passBox = bannerWrap.querySelector('.hub-event-pass-card, .hub-event-banner');
+  if (passBox) {
+    passBox.addEventListener('mouseenter', stopEventAutoPlay);
+    passBox.addEventListener('mouseleave', startEventAutoPlay);
   }
+
+  // ==================== 1-KLIK SYNC GOOGLE CALENDAR ====================
+  document.getElementById('btn-event-sync-gcal')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const evt = UPCOMING_EVENTS[currentUpcomingEventIdx];
+    if (!evt || !evt.calendar) return;
+
+    const cal = evt.calendar;
+    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(cal.title)}&dates=${cal.startUtc}/${cal.endUtc}&details=${encodeURIComponent(cal.details + '\n\nCatatan: ' + evt.note)}&location=${encodeURIComponent(cal.location)}`;
+    
+    window.open(gcalUrl, '_blank', 'noopener,noreferrer');
+    if (typeof showToast === 'function') {
+      showToast('📅 Membuka Google Calendar untuk menyimpan jadwal acara...', 'info');
+    }
+  });
+
+  // ==================== 1-KLIK SYNC APPLE iCAL (.ICS) ====================
+  document.getElementById('btn-event-sync-ical')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const evt = UPCOMING_EVENTS[currentUpcomingEventIdx];
+    if (!evt || !evt.calendar) return;
+
+    const cal = evt.calendar;
+    const nowIso = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//RT001 RW013 Graha Asri//RT-FinSmart PRO//ID',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      `UID:${evt.id}-${Date.now()}@rt001grahaasri.pages.dev`,
+      `DTSTAMP:${nowIso}`,
+      `DTSTART:${cal.startUtc}`,
+      `DTEND:${cal.endUtc}`,
+      `SUMMARY:${cal.title}`,
+      `DESCRIPTION:${cal.details.replace(/\n/g, '\\n')}\\n\\nCatatan: ${evt.note}`,
+      `LOCATION:${cal.location}`,
+      'STATUS:CONFIRMED',
+      'BEGIN:VALARM',
+      'TRIGGER:-PT1H',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Pengingat Agenda RT.001 Graha Asri',
+      'END:VALARM',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    try {
+      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Agenda-RT001-${evt.id}.ics`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+
+      if (typeof showToast === 'function') {
+        showToast('🍏 File kalender .ics Apple / Outlook berhasil diunduh!', 'success');
+      }
+    } catch (err) {
+      console.error('Error exporting iCal:', err);
+      if (typeof showToast === 'function') {
+        showToast('Gagal mengunduh file iCal.', 'error');
+      }
+    }
+  });
+
+  // ==================== AUTO-GENERATOR FLYER WHATSAPP BERESOLUSI TINGGI ====================
+  document.getElementById('btn-event-gen-poster')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const evt = UPCOMING_EVENTS[currentUpcomingEventIdx];
+    if (!evt) return;
+
+    if (typeof showToast === 'function') {
+      showToast('🎨 Merender poster status WhatsApp beresolusi tinggi (1080x1920)...', 'info');
+    }
+
+    try {
+      // 1. Create high-resolution canvas (1080 x 1920 px standard WhatsApp & IG Story 9:16)
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas 2D context not supported');
+
+      // Helper function to wrap text
+      function drawWrappedText(context, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(' ');
+        let line = '';
+        let currentY = y;
+        for (let n = 0; n < words.length; n++) {
+          const testLine = line + words[n] + ' ';
+          const metrics = context.measureText(testLine);
+          if (metrics.width > maxWidth && n > 0) {
+            context.fillText(line.trim(), x, currentY);
+            line = words[n] + ' ';
+            currentY += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        context.fillText(line.trim(), x, currentY);
+        return currentY + lineHeight;
+      }
+
+      // Background: Deep Obsidian Luxury Glass
+      const bgGrad = ctx.createLinearGradient(0, 0, 1080, 1920);
+      bgGrad.addColorStop(0, '#040d12');
+      bgGrad.addColorStop(0.35, '#07181d');
+      bgGrad.addColorStop(0.7, '#09211a');
+      bgGrad.addColorStop(1, '#030a0d');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Ambient Cyber Aurora Glow Spheres
+      const radial1 = ctx.createRadialGradient(250, 300, 50, 250, 300, 650);
+      radial1.addColorStop(0, 'rgba(16, 185, 129, 0.28)');
+      radial1.addColorStop(0.5, 'rgba(6, 182, 212, 0.15)');
+      radial1.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = radial1;
+      ctx.fillRect(0, 0, 1080, 900);
+
+      const radial2 = ctx.createRadialGradient(850, 1400, 60, 850, 1400, 700);
+      radial2.addColorStop(0, 'rgba(245, 158, 11, 0.18)');
+      radial2.addColorStop(0.6, 'rgba(16, 185, 129, 0.1)');
+      radial2.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = radial2;
+      ctx.fillRect(0, 900, 1080, 1020);
+
+      // Cyber Grid Background lines
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+      ctx.lineWidth = 1.5;
+      for (let x = 60; x < 1080; x += 90) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, 1920);
+        ctx.stroke();
+      }
+      for (let y = 60; y < 1920; y += 90) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(1080, y);
+        ctx.stroke();
+      }
+
+      // Outer Decorative Border Frame
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(40, 40, 1000, 1840);
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.3)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(50, 50, 980, 1820);
+
+      // Top Corner Accents
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(36, 36, 40, 6);
+      ctx.fillRect(36, 36, 6, 40);
+      ctx.fillRect(1004, 36, 40, 6);
+      ctx.fillRect(1038, 36, 6, 40);
+      ctx.fillRect(36, 1878, 40, 6);
+      ctx.fillRect(36, 1844, 6, 40);
+      ctx.fillRect(1004, 1878, 40, 6);
+      ctx.fillRect(1038, 1844, 6, 40);
+
+      // Header: Official RT.001 Branding
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#10b981';
+      ctx.font = '800 28px "Outfit", "Plus Jakarta Sans", sans-serif';
+      ctx.letterSpacing = '4px';
+      ctx.fillText('PENGUMUMAN RESMI WARGA LINGKUNGAN', 540, 120);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 52px "Outfit", "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('RT.001 / RW.013 GRAHA ASRI', 540, 185);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '500 24px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('Portal Warga Digital • Smart Cluster Community', 540, 225);
+
+      // Top Divider Line
+      const divGrad = ctx.createLinearGradient(120, 260, 960, 260);
+      divGrad.addColorStop(0, 'rgba(16, 185, 129, 0)');
+      divGrad.addColorStop(0.5, 'rgba(245, 158, 11, 0.85)');
+      divGrad.addColorStop(1, 'rgba(16, 185, 129, 0)');
+      ctx.strokeStyle = divGrad;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(140, 265);
+      ctx.lineTo(940, 265);
+      ctx.stroke();
+
+      // VIP Pass Badge + Countdown Pill
+      ctx.textAlign = 'left';
+      // Badge 1: VIP Pass
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.18)';
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(100, 310, 360, 56, 28);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#fde68a';
+      ctx.font = '800 24px "Plus Jakarta Sans", monospace';
+      ctx.fillText(`★ ${evt.vipPassId}`, 130, 347);
+
+      // Badge 2: Countdown
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.22)';
+      ctx.strokeStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.roundRect(490, 310, 240, 56, 28);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#fca5a5';
+      ctx.font = '800 24px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`⏱️ ${evt.countdown}`, 520, 347);
+
+      // Badge 3: Category
+      ctx.fillStyle = 'rgba(6, 182, 212, 0.2)';
+      ctx.strokeStyle = '#06b6d4';
+      ctx.beginPath();
+      ctx.roundRect(750, 310, 230, 56, 28);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#67e8f9';
+      ctx.font = '800 22px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(evt.category.split('&')[0].trim(), 780, 346);
+
+      // Event Main Title
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 52px "Outfit", "Plus Jakarta Sans", sans-serif';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowBlur = 16;
+      let nextY = drawWrappedText(ctx, evt.title, 100, 445, 880, 68);
+      ctx.shadowBlur = 0;
+
+      // Event Description
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '500 28px "Plus Jakarta Sans", sans-serif';
+      nextY = drawWrappedText(ctx, evt.desc, 100, nextY + 15, 880, 44);
+
+      // Smart Weather Box
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.14)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(100, nextY + 25, 880, 96, 18);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = '800 26px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`🌤️ PRAKIRAAN CUACA HARI-H: ${evt.weather.temp}`, 130, nextY + 68);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '500 22px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(evt.weather.desc, 130, nextY + 102);
+
+      // 4 Detail Grid Cards
+      const gridStartY = nextY + 160;
+      const cardW = 425;
+      const cardH = 145;
+      const col1X = 100;
+      const col2X = 555;
+      const row1Y = gridStartY;
+      const row2Y = gridStartY + 175;
+
+      const metaBoxes = [
+        { label: 'HARI & TANGGAL', val: evt.date, icon: '📅', x: col1X, y: row1Y, border: '#10b981' },
+        { label: 'WAKTU PELAKSANAAN', val: evt.time, icon: '⏰', x: col2X, y: row1Y, border: '#38bdf8' },
+        { label: 'LOKASI / TITIK KUMPUL', val: evt.location, icon: '📍', x: col1X, y: row2Y, border: '#fb7185' },
+        { label: 'KONSUMSI & FASILITAS', val: evt.note, icon: '☕', x: col2X, y: row2Y, border: '#fbbf24' }
+      ];
+
+      metaBoxes.forEach((mb) => {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        ctx.strokeStyle = mb.border;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(mb.x, mb.y, cardW, cardH, 16);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = mb.border;
+        ctx.font = '800 20px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText(`${mb.icon}  ${mb.label}`, mb.x + 24, mb.y + 45);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '800 24px "Plus Jakarta Sans", sans-serif';
+        drawWrappedText(ctx, mb.val, mb.x + 24, mb.y + 88, cardW - 48, 32);
+      });
+
+      // Verification Stamp Seal & Community Signature Box
+      const sealY = row2Y + 220;
+      ctx.fillStyle = 'rgba(4, 14, 20, 0.8)';
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(100, sealY, 880, 180, 20);
+      ctx.fill();
+      ctx.stroke();
+
+      // Seal Stamp
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(200, sealY + 90, 65, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(200, sealY + 90, 57, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = '900 16px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('RT.001 / RW.013', 200, sealY + 75);
+      ctx.fillText('★ RESMI ★', 200, sealY + 95);
+      ctx.fillText('GRAHA ASRI', 200, sealY + 115);
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 26px "Outfit", "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('Diverifikasi Pengurus RT.001 Graha Asri', 290, sealY + 68);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '500 22px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('Mari hadir, bergotong royong, dan jalin silaturahmi antar-tetangga.', 290, sealY + 105);
+      ctx.fillStyle = '#34d399';
+      ctx.font = '700 20px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('Guyub Rukun • Lingkungan Aman & Asri • Bersatu Membangun', 290, sealY + 140);
+
+      // Footer
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '600 22px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('Akses Informasi Lengkap: rt001rw013grahaasri.pages.dev', 540, 1820);
+      ctx.fillStyle = '#64748b';
+      ctx.font = '500 18px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('Ditenagai WebApp RT-FinSmart PRO • Official Citizen Experience', 540, 1855);
+
+      // Export canvas to high-res Blob and download/share
+      canvas.toBlob(async (blob) => {
+        if (!blob) throw new Error('Blob export failed');
+
+        const fileName = `Flyer-WA-RT001-${evt.id}.png`;
+        const file = new File([blob], fileName, { type: 'image/png' });
+
+        // Try Web Share API on mobile
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: evt.title,
+              text: evt.waText,
+              files: [file]
+            });
+            if (typeof showToast === 'function') {
+              showToast('✨ Berhasil membagikan poster WhatsApp ke aplikasi!', 'success');
+            }
+            return;
+          } catch (shareErr) {
+            // User cancelled or aborted share, fallback to file download
+          }
+        }
+
+        // Direct Download fallback
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+
+        if (typeof showToast === 'function') {
+          showToast('📸 Poster WhatsApp HD 1080x1920 siap dibagikan ke status WA!', 'success');
+        }
+      }, 'image/png', 0.98);
+
+    } catch (err) {
+      console.error('Error generating poster:', err);
+      if (typeof showToast === 'function') {
+        showToast('Gagal membuat poster flyer WhatsApp.', 'error');
+      }
+    }
+  });
 
   // ==================== POPUP MODAL BANNER CONTROLS ====================
 
@@ -7502,6 +8048,7 @@ function setupUpcomingEventBanner() {
       bannerWrap.classList.remove('closing');
     });
     startEventAutoPlay();
+    startCountdownTicker();
     if (typeof pushNavHistory === 'function') {
       pushNavHistory('event-popup', null, 'event');
     }
@@ -7511,6 +8058,7 @@ function setupUpcomingEventBanner() {
     if (!bannerWrap) return;
     bannerWrap.classList.add('closing');
     stopEventAutoPlay();
+    stopCountdownTicker();
     setTimeout(() => {
       bannerWrap.classList.remove('show-popup', 'closing');
       bannerWrap.style.display = 'none';
@@ -7566,6 +8114,7 @@ function setupUpcomingEventBanner() {
     }
   }, 2800);
 }
+
 
 
 // ==================== JADWAL RONDA MALAM & JIMPITAN WARGA ====================
