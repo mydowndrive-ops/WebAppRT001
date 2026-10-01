@@ -3,12 +3,12 @@
  * Ensures lightning-fast offline access while always prioritizing live updates (Network-First).
  */
 
-const CACHE_NAME = 'rt-finsmart-cache-v2.9.92';
+const CACHE_NAME = 'rt-finsmart-cache-v2.9.93';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './styles.css?v=2.9.92',
-  './app.js?v=2.9.92',
+  './styles.css?v=2.9.93',
+  './app.js?v=2.9.93',
   './assets/qrcode.min.js',
   './assets/MaskingRenta.otf',
   './assets/peta-wilayah-rt001.jpg',

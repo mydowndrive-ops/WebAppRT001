@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (14:38 WIB)
-**Versi Rilis Aktif:** `v2.9.92`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (15:05 WIB)
+**Versi Rilis Aktif:** `v2.9.93`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -18,7 +18,27 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🎉 Redesain "EVENT TERDEKAT" Menjadi Pop-up Promo Banner Ringkas (Model Gambar 2 / In-App Promotional Card) (Update v2.9.92 - 1 Okt 2026)
+### 1. 🎯 Penyesuaian Visual Banner "EVENT TERDEKAT": Perbaikan Tumpukan Z-Index Navbar, Pembesaran Font "EVENT", Eliminasi Teks Kategori Sejajar & Penyesuaian Ukuran Judul (Update v2.9.93 - 1 Okt 2026)
+- **Permintaan Pengguna**:
+  - *"judul tidak terlihat.Ganti ukurannya menjadi lebih kecil.Buat ukuran font "EVENT" menjadi lebih besar, dan hilang kan teks yang sejajar dengan EVENT."*
+- **Hasil Implementasi & Analisis Akar Masalah**:
+  1. **Penyelesaian Tuntas Masalah "Judul Tidak Terlihat" (Root Cause: Stacking Context Trap)**:
+     - Sebelumnya, kontainer modal pop-up `.hub-event-banner-wrap` berada di dalam `.hub-container` di bawah `.public-home-hub` yang memiliki properti `z-index: 2`. Akibatnya, elemen navbar sticky `.public-navbar` (yang memiliki `z-index: 90`) menimpa area atas banner (~72px), sehingga tombol close dan bagian atas banner tertutup oleh navbar.
+     - **Solusi**: Memindahkan seluruh kontainer `<div class="hub-event-banner-wrap">` ke tingkat root `<body>` (bersama modal global lainnya) dan menetapkan `z-index: 9999999 !important;` serta `padding: 2.2rem 1rem 1.5rem`. Kini banner melayang sempurna 100% di atas seluruh elemen halaman termasuk navbar tanpa ada bagian yang tertutup atau terpotong.
+  2. **Pembesaran Menonjol Font "EVENT" (`.promo-event-badge-hero`)**:
+     - Font label `"EVENT"` diperbesar secara signifikan menjadi `1.38rem` dengan bobot `font-weight: 900`, tracking huruf `0.08em`, dan efek *text-shadow* mendalam.
+     - Disandingkan dengan sub-teks `"TERDEKAT"` (`0.96rem`, `color: #fef08a`, font-weight 800) dalam lencana kapsul merah-emas menyala beranimasi pulsing beacon.
+  3. **Eliminasi Teks Kategori yang Sejajar dengan EVENT**:
+     - Teks kategori yang sebelumnya berada sejajar di sebelah kanan EVENT (`#event-banner-category`) disembunyikan sepenuhnya dari pandangan visual (`display: none !important;`).
+     - Header lencana "EVENT" kini berada terpusat rapi dan bersih di bagian tengah atas banner card (`justify-content: center`).
+     - Elemen DOM tetap dipertahankan tersembunyi agar script `app.js` tetap aman tanpa risiko runtime error.
+  4. **Penyesuaian Ukuran Font Judul Event Menjadi Lebih Kecil & Rapi**:
+     - Ukuran font judul event (`.promo-banner-title`) disesuaikan menjadi lebih proporsional dan tidak mendominasi berlebihan, dari `1.22rem` menjadi `0.95rem` (`font-weight: 700`, `line-height: 1.4`).
+     - Judul kini tampil sangat elegan, mudah dibaca, serta memberikan proporsi visual yang seimbang dengan hitung mundur dan widget cuaca di bawahnya.
+  5. **Sinkronisasi Versi & PWA Service Worker**:
+     - Versi aplikasi ditingkatkan menjadi `v2.9.93` di `index.html` (`styles.css?v=2.9.93`, `app.js?v=2.9.93`) dan `sw.js` (`rt-finsmart-cache-v2.9.93`).
+
+### 2. 🎉 Redesain "EVENT TERDEKAT" Menjadi Pop-up Promo Banner Ringkas (Model Gambar 2 / In-App Promotional Card) (Update v2.9.92 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - Pengguna meminta agar model pop-up event terdekat disederhanakan mengikuti gaya iklan promosi pop-up (seperti aplikasi Flip Deals di Gambar 2): *"saya ingin model event terdekatnya dibuat seperti iklan banner di gambar 2.Yang simpel saja, berisi judul event, hitung mundur,prakiraan cuaca, hari,tgl,waktu saja. Ditampilan ini tidak perlu ditampilkan : Google Calendar, Apple iCal,Unduh poster,Ingatkan di WA warga,baru nanti jika banner ini di klik baru menuju ke halaman/informasinya detailnya."*
 - **Hasil Implementasi & Fitur Unggulan**:
