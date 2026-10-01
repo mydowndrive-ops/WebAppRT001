@@ -17927,6 +17927,885 @@ function initHubOrbitalNavigation() {
   });
 }
 
+// ==========================================================================
+// UNIVERSAL COMMAND PALETTE (CTRL + K) - PRIORITAS 2
+// Raycast / Linear / Spotlight Global Search & Command Engine
+// ==========================================================================
+
+let isCommandPaletteOpen = false;
+let commandPaletteFilter = 'all'; // 'all' | 'warga' | 'aset' | 'layanan' | 'navigasi'
+let commandPaletteQuery = '';
+let commandPaletteActiveIndex = 0;
+let commandPaletteItems = [];
+let commandPaletteFilteredItems = [];
+let commandSelectedAsset = null;
+
+function isMacPlatform() {
+  return navigator.platform && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+}
+
+function openCommandPalette() {
+  const modal = document.getElementById('modal-command-palette');
+  const input = document.getElementById('command-palette-input');
+  if (!modal || !input) return;
+
+  isCommandPaletteOpen = true;
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden', 'false');
+
+  // Close drawer if open
+  if (typeof closePublicDrawer === 'function') {
+    closePublicDrawer();
+  }
+
+  // Refresh index data from live state
+  buildCommandPaletteIndex();
+
+  // Reset or keep previous search query
+  input.focus();
+  input.select();
+
+  // Render initial / filtered results
+  renderCommandPaletteResults();
+}
+
+function closeCommandPalette() {
+  const modal = document.getElementById('modal-command-palette');
+  if (!modal) return;
+
+  isCommandPaletteOpen = false;
+  modal.classList.remove('active');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function buildCommandPaletteIndex() {
+  const items = [];
+  const currentMonth = state.selectedMonth || new Date().getMonth() + 1;
+  const currentYear = state.selectedYear || new Date().getFullYear();
+
+  // 1. INDEX WARGA (112 KK RT.001)
+  try {
+    let parcels = [];
+    if (typeof buildClusterMapParcelsData === 'function') {
+      parcels = buildClusterMapParcelsData();
+    } else if (state.residents && Array.isArray(state.residents)) {
+      parcels = state.residents;
+    }
+
+    parcels.forEach((w, idx) => {
+      const isPaid = typeof checkResidentDuesPaid === 'function' ? checkResidentDuesPaid(w.id, currentMonth, currentYear) : true;
+      const wife = w.wifeNama || w.nama_istri || '';
+      const block = w.block || w.blok || '';
+      const houseNo = w.houseNo || w.no_rumah || '';
+      const street = w.street || w.jalan || '';
+      const phone = w.phone || w.telepon || '';
+      const domicile = w.domicile || w.domisili || 'Tetap';
+
+      const familyNames = Array.isArray(w.familyMembers) 
+        ? w.familyMembers.map(m => m.nama || m.name || '').filter(Boolean).join(' ') 
+        : '';
+
+      const searchTerms = [
+        w.name,
+        wife,
+        block,
+        houseNo,
+        `${block} ${houseNo}`,
+        street,
+        phone,
+        domicile,
+        familyNames,
+        'warga kk kepala keluarga rumah persil'
+      ].join(' ').toLowerCase();
+
+      items.push({
+        id: `warga-${w.id || idx}`,
+        type: 'warga',
+        categoryLabel: 'Warga RT.001',
+        title: `Bapak ${w.name}`,
+        subtitle: `${wife ? 'Ny. ' + wife + ' • ' : ''}${block} ${houseNo} • ${street}`,
+        icon: 'fa-solid fa-house-user',
+        iconClass: 'command-icon-warga',
+        badge: isPaid 
+          ? { text: 'Lunas', class: 'pill-ok', icon: 'fa-circle-check' }
+          : { text: 'Belum Bayar', class: 'pill-warn', icon: 'fa-clock' },
+        searchText: searchTerms,
+        data: { ...w, isPaid },
+        action: () => {
+          closeCommandPalette();
+          if (typeof openMapResidentDetailModal === 'function') {
+            openMapResidentDetailModal(w, isPaid);
+          }
+        }
+      });
+    });
+  } catch (err) {
+    console.error('Error indexing warga for palette:', err);
+  }
+
+  // 2. INDEX ASET & INVENTARIS RT.001 (33 Items)
+  try {
+    const assets = typeof getAsetList === 'function' ? getAsetList() : [];
+    assets.forEach((a, idx) => {
+      const meta = typeof getCategoryMeta === 'function' ? getCategoryMeta(a.kategori) : { label: 'Aset RT', icon: 'fa-box' };
+      const kondisiText = a.kondisi === 'ok' ? 'Laik Pakai' : (a.kondisi === 'sebagian_rusak' ? 'Sebagian Rusak' : 'Rusak');
+      const badgeClass = a.kondisi === 'ok' ? 'pill-ok' : (a.kondisi === 'sebagian_rusak' ? 'pill-warn' : 'pill-danger');
+
+      const searchTerms = [
+        a.nama,
+        meta.label,
+        a.kategori,
+        a.sumber,
+        a.keterangan,
+        kondisiText,
+        `${a.qty} ${a.satuan}`,
+        'aset inventaris perlengkapan fasilitas pinjam'
+      ].join(' ').toLowerCase();
+
+      items.push({
+        id: `aset-${a.id || idx}`,
+        type: 'aset',
+        categoryLabel: meta.label,
+        title: a.nama,
+        subtitle: `${meta.label} • Qty: ${a.qty} ${a.satuan} • Sumber: ${a.sumber}`,
+        icon: a.icon ? `fa-solid ${a.icon}` : 'fa-solid fa-box',
+        iconClass: 'command-icon-aset',
+        badge: { text: kondisiText, class: badgeClass },
+        searchText: searchTerms,
+        data: a,
+        action: () => {
+          closeCommandPalette();
+          showCommandAssetDetail(a);
+        }
+      });
+    });
+  } catch (err) {
+    console.error('Error indexing aset for palette:', err);
+  }
+
+  // 3. INDEX LAYANAN & AKSI CEPAT
+  const layananActions = [
+    {
+      id: 'act-map-gis',
+      title: 'Peta Digital GIS RT.001 (Interactive Cluster Map)',
+      subtitle: 'Navigasi interaktif 112 persil, radar satelit & status iuran real-time',
+      icon: 'fa-solid fa-map-location-dot',
+      iconClass: 'command-icon-action',
+      badge: { text: 'Peta GIS', class: 'pill-cyan' },
+      search: 'peta gis klaster digital satelit rumah denah navigasi persil 112 kk',
+      action: () => {
+        closeCommandPalette();
+        if (typeof switchPublicView === 'function') switchPublicView('tentang');
+        setTimeout(() => {
+          document.getElementById('smart-map-card-main')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+    },
+    {
+      id: 'act-iuran-qris',
+      title: 'Cek & Bayar Iuran Warga (QRIS Online)',
+      subtitle: 'Bayar iuran bulanan warga RT.001 online instan via Pakasir QRIS Gateway',
+      icon: 'fa-solid fa-qrcode',
+      iconClass: 'command-icon-action',
+      badge: { text: 'QRIS Instan', class: 'pill-ok' },
+      search: 'bayar iuran qris online kas rt sampah keamanan dana sosial pakasir transfer',
+      action: () => {
+        closeCommandPalette();
+        if (typeof openPakasirPaymentModal === 'function') {
+          openPakasirPaymentModal();
+        }
+      }
+    },
+    {
+      id: 'act-ronda',
+      title: 'Jadwal Ronda 8 Regu & Pos Kamling',
+      subtitle: 'Roster piket ronda malam warga, koordinator & pos keamanan RT',
+      icon: 'fa-solid fa-shield-halved',
+      iconClass: 'command-icon-action',
+      badge: { text: 'Keamanan', class: 'pill-cyan' },
+      search: 'jadwal ronda pos kamling 8 regu keamanan malam minggu siskamling jimpitan',
+      action: () => {
+        closeCommandPalette();
+        if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+          if (typeof showAdminApp === 'function') showAdminApp();
+          if (typeof navigateToView === 'function') navigateToView('ronda-pengurus');
+        } else {
+          if (typeof switchPublicView === 'function') switchPublicView('layanan');
+        }
+      }
+    },
+    {
+      id: 'act-pinjam-fasum',
+      title: 'Pengajuan Peminjaman Fasum & Aset RT',
+      subtitle: 'Formulir izin peminjaman tenda terop, kursi, sound system & sarana prasarana',
+      icon: 'fa-solid fa-hand-holding-hand',
+      iconClass: 'command-icon-action',
+      badge: { text: 'Fasilitas', class: 'pill-warn' },
+      search: 'pinjam peminjaman fasum aset tenda kursi sound system lapangan izin sewa fasilitas',
+      action: () => {
+        closeCommandPalette();
+        if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+          if (typeof showAdminApp === 'function') showAdminApp();
+          if (typeof navigateToView === 'function') navigateToView('pengajuan-fasum');
+        } else {
+          if (typeof window.openRoleLogin === 'function') window.openRoleLogin('warga');
+          else if (typeof showLoginOverlay === 'function') showLoginOverlay('warga');
+        }
+      }
+    },
+    {
+      id: 'act-surat-pengantar',
+      title: 'Buat e-Surat Pengantar RT Mandiri 24/7',
+      subtitle: 'Layanan mandiri cetak surat pengantar resmi ber-KOP RT.001 & barcode QR',
+      icon: 'fa-solid fa-file-signature',
+      iconClass: 'command-icon-action',
+      badge: { text: 'e-Surat', class: 'pill-purple' },
+      search: 'buat surat pengantar rt mandiri online cetak domisili kelurahan skck nikah izin usaha',
+      action: () => {
+        closeCommandPalette();
+        if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+          if (typeof showAdminApp === 'function') showAdminApp();
+          if (typeof navigateToView === 'function') navigateToView('surat-pengantar');
+        } else {
+          if (typeof window.openRoleLogin === 'function') window.openRoleLogin('warga');
+          else if (typeof showLoginOverlay === 'function') showLoginOverlay('warga');
+        }
+      }
+    },
+    {
+      id: 'act-arsip-surat',
+      title: 'Buku Register & Arsip e-Surat Warga',
+      subtitle: 'Pusat otorisasi, verifikasi tanda tangan digital & buku nomor surat RT.001',
+      icon: 'fa-solid fa-book-bookmark',
+      iconClass: 'command-icon-action',
+      badge: { text: 'Arsip RT', class: 'pill-purple' },
+      search: 'arsip surat register buku nomor verifikasi ttd digital sekretariat surat masuk keluar',
+      action: () => {
+        closeCommandPalette();
+        if (typeof showAdminApp === 'function') showAdminApp();
+        if (typeof navigateToView === 'function') navigateToView('arsip-surat');
+      }
+    },
+    {
+      id: 'act-aspirasi',
+      title: 'Kotak Aspirasi, Ide & Masukan Warga',
+      subtitle: 'Penyampaian saran, gagasan kreatif & pengaduan lingkungan langsung ke pengurus',
+      icon: 'fa-solid fa-lightbulb',
+      iconClass: 'command-icon-action',
+      badge: { text: 'Aspirasi', class: 'pill-warn' },
+      search: 'aspirasi masukan saran kritik keluhan ide kreatif warga kotak pengaduan',
+      action: () => {
+        closeCommandPalette();
+        if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+          if (typeof showAdminApp === 'function') showAdminApp();
+          if (typeof navigateToView === 'function') navigateToView('aspirasi-warga');
+        } else {
+          if (typeof window.openRoleLogin === 'function') window.openRoleLogin('warga');
+          else if (typeof showLoginOverlay === 'function') showLoginOverlay('warga');
+        }
+      }
+    },
+    {
+      id: 'act-portal-warga',
+      title: 'Portal Mandiri Warga RT.001 (Masuk Akun)',
+      subtitle: 'Akses mandiri rekap iuran keluarga, jadwal ronda pribadi & layanan digital',
+      icon: 'fa-solid fa-house-chimney-user',
+      iconClass: 'command-icon-action',
+      badge: { text: 'Portal KK', class: 'pill-cyan' },
+      search: 'portal warga login akun mandiri cek status iuran pribadi keluarga data',
+      action: () => {
+        closeCommandPalette();
+        if (typeof isLoggedIn === 'function' && isLoggedIn() && state.currentUser === 'warga') {
+          if (typeof showAdminApp === 'function') showAdminApp();
+          if (typeof navigateToView === 'function') navigateToView('portal-warga');
+        } else {
+          if (typeof window.openRoleLogin === 'function') window.openRoleLogin('warga');
+          else if (typeof showLoginOverlay === 'function') showLoginOverlay('warga');
+        }
+      }
+    },
+    {
+      id: 'act-wa-pengurus',
+      title: 'Hubungi Call Center & Hotline WhatsApp RT',
+      subtitle: 'Hubungi Ketua RT & Sekretariat via WhatsApp untuk keperluan mendesak',
+      icon: 'fa-brands fa-whatsapp',
+      iconClass: 'command-icon-action',
+      badge: { text: 'Hotline WA', class: 'pill-ok' },
+      search: 'hubungi kontak wa whatsapp ketua rt nomor darurat call center pengurus hotline',
+      action: () => {
+        closeCommandPalette();
+        window.open('https://wa.me/6281289060002?text=Halo%20Pengurus%20RT.001%2C%20saya%20warga%20ingin%20bertanya', '_blank');
+      }
+    }
+  ];
+
+  layananActions.forEach(act => {
+    items.push({
+      id: act.id,
+      type: 'layanan',
+      categoryLabel: 'Layanan & Aksi',
+      title: act.title,
+      subtitle: act.subtitle,
+      icon: act.icon,
+      iconClass: act.iconClass,
+      badge: act.badge,
+      searchText: `${act.title} ${act.subtitle} ${act.search}`.toLowerCase(),
+      data: act,
+      action: act.action
+    });
+  });
+
+  // 4. INDEX NAVIGASI MENU PUBLIK
+  const navItems = [
+    {
+      id: 'nav-hub',
+      title: 'Beranda & Orbital Hub Utama',
+      subtitle: 'Tampilan beranda resmi, ticker warta & navigasi 6 sektor orbital',
+      icon: 'fa-solid fa-circle-nodes',
+      search: 'beranda home hub depan orbital utama selamat datang',
+      action: () => {
+        closeCommandPalette();
+        if (typeof switchPublicView === 'function') switchPublicView('hub');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    },
+    {
+      id: 'nav-tentang',
+      title: 'Profil Wilayah & Peta 5 Ruas Jalan RT.001',
+      subtitle: 'Batas wilayah hukum, peta satelit klaster & karakteristik lingkungan',
+      icon: 'fa-solid fa-map',
+      search: 'profil tentang wilayah batas peta 5 ruas jalan citarum lingkungan',
+      action: () => {
+        closeCommandPalette();
+        if (typeof switchPublicView === 'function') switchPublicView('tentang');
+      }
+    },
+    {
+      id: 'nav-demografi',
+      title: 'Statistik Demografi & Piramida Kependudukan',
+      subtitle: 'Data statistik 112 KK, rasio gender, kelompok usia balita hingga lansia',
+      icon: 'fa-solid fa-chart-pie',
+      search: 'statistik demografi grafik diagram piramida usia lansia balita laki perempuan jiwa',
+      action: () => {
+        closeCommandPalette();
+        if (typeof switchPublicView === 'function') switchPublicView('demografi');
+      }
+    },
+    {
+      id: 'nav-layanan',
+      title: 'Transparansi Kas RT, Keuangan & Jimpitan',
+      subtitle: 'Rekapitulasi arus kas 6 pos anggaran, saldo aktif & laporan jimpitan ronda',
+      icon: 'fa-solid fa-vault',
+      search: 'keuangan kas kas rt jimpitan saldo pemasukan pengeluaran transparansi laporan',
+      action: () => {
+        closeCommandPalette();
+        if (typeof switchPublicView === 'function') switchPublicView('layanan');
+      }
+    },
+    {
+      id: 'nav-kegiatan',
+      title: 'Agenda Kegiatan & Warta Lingkungan RT.001',
+      subtitle: 'Kalender kerja bakti, pertemuan warga, senam sehat & peringatan hari besar',
+      icon: 'fa-solid fa-calendar-days',
+      search: 'agenda kegiatan jadwal kerja bakti pengajian rapat arisan hari besar phbi agustusan',
+      action: () => {
+        closeCommandPalette();
+        if (typeof switchPublicView === 'function') switchPublicView('kegiatan');
+      }
+    },
+    {
+      id: 'nav-pengurus',
+      title: 'Struktur Organisasi & Tata Kelola Pengurus RT',
+      subtitle: 'Bagan kepengurusan RT.001 periode 2022–2027 & tupoksi seksi',
+      icon: 'fa-solid fa-sitemap',
+      search: 'struktur bagan organisasi pengurus ketua sekretaris bendahara seksi humas keamanan',
+      action: () => {
+        closeCommandPalette();
+        if (typeof switchPublicView === 'function') switchPublicView('pengurus');
+      }
+    }
+  ];
+
+  navItems.forEach(nav => {
+    items.push({
+      id: nav.id,
+      type: 'navigasi',
+      categoryLabel: 'Navigasi Menu',
+      title: nav.title,
+      subtitle: nav.subtitle,
+      icon: nav.icon,
+      iconClass: 'command-icon-nav',
+      badge: { text: 'Menu', class: 'pill-purple' },
+      searchText: `${nav.title} ${nav.subtitle} ${nav.search}`.toLowerCase(),
+      data: nav,
+      action: nav.action
+    });
+  });
+
+  commandPaletteItems = items;
+}
+
+function filterCommandPaletteItems() {
+  const q = (commandPaletteQuery || '').toLowerCase().trim();
+  const filter = commandPaletteFilter || 'all';
+
+  let list = commandPaletteItems;
+
+  // Filter by category tab
+  if (filter !== 'all') {
+    list = list.filter(item => item.type === filter);
+  }
+
+  // If query is empty, return curated default view
+  if (!q) {
+    if (filter === 'all') {
+      // Pick top actions, top assets, and sample residents
+      const topActions = list.filter(it => it.type === 'layanan');
+      const topNav = list.filter(it => it.type === 'navigasi').slice(0, 3);
+      const topAssets = list.filter(it => it.type === 'aset').slice(0, 6);
+      const topWarga = list.filter(it => it.type === 'warga').slice(0, 5);
+      return [...topActions, ...topNav, ...topAssets, ...topWarga];
+    }
+    return list;
+  }
+
+  // Keywords search with multi-word scoring
+  const words = q.split(/\s+/).filter(Boolean);
+
+  const scored = [];
+  list.forEach(item => {
+    const text = item.searchText;
+    const titleLower = item.title.toLowerCase();
+
+    // Must match all query words
+    const allWordsMatch = words.every(word => text.includes(word));
+    if (!allWordsMatch) return;
+
+    let score = 0;
+    if (titleLower.startsWith(q)) score += 150;
+    else if (titleLower.includes(q)) score += 80;
+
+    if (item.subtitle.toLowerCase().includes(q)) score += 40;
+
+    // Favor warga and services matches
+    if (item.type === 'warga') score += 20;
+    if (item.type === 'layanan') score += 15;
+
+    scored.push({ item, score });
+  });
+
+  scored.sort((a, b) => b.score - a.score);
+  return scored.map(s => s.item);
+}
+
+function highlightCommandMatch(text, query) {
+  if (!query) return text;
+  const q = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\// Inisialisasi video background & Split-Text Reveal pada hero header');
+  if (!q) return text;
+  const regex = new RegExp(`(${q})`, 'gi');
+  return text.replace(regex, '<mark class="cmd-highlight">$1</mark>');
+}
+
+function renderCommandPaletteResults() {
+  const container = document.getElementById('command-palette-results');
+  const countEl = document.getElementById('command-palette-count');
+  const clearBtn = document.getElementById('btn-command-clear');
+  if (!container) return;
+
+  const results = filterCommandPaletteItems();
+  commandPaletteFilteredItems = results;
+  commandPaletteActiveIndex = 0;
+
+  // Toggle clear button
+  if (clearBtn) {
+    clearBtn.style.display = commandPaletteQuery ? 'flex' : 'none';
+  }
+
+  // Update status count in footer
+  if (countEl) {
+    if (commandPaletteQuery) {
+      countEl.textContent = `${results.length} hasil ditemukan`;
+    } else {
+      countEl.textContent = '112 Warga • 33 Aset RT.001';
+    }
+  }
+
+  // Empty state
+  if (results.length === 0) {
+    container.innerHTML = `
+      <div class="command-palette-empty">
+        <i class="fa-solid fa-magnifying-glass-arrow-right command-empty-icon"></i>
+        <div class="command-empty-title">Tidak ada hasil yang cocok</div>
+        <p class="command-empty-desc">Coba gunakan kata kunci nama warga, nomor rumah, nama aset, atau nama layanan lainnya.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Group results if query is empty or filter is 'all'
+  let html = '';
+  let currentIndex = 0;
+
+  // Group mapping
+  const groupOrder = [
+    { type: 'layanan', label: 'Layanan & Aksi Cepat' },
+    { type: 'warga', label: 'Warga RT.001 (112 KK)' },
+    { type: 'aset', label: 'Inventaris & Aset RT (33 Item)' },
+    { type: 'navigasi', label: 'Navigasi Menu' }
+  ];
+
+  if (commandPaletteFilter === 'all') {
+    groupOrder.forEach(grp => {
+      const grpItems = results.filter(it => it.type === grp.type);
+      if (grpItems.length === 0) return;
+
+      html += `
+        <div class="command-result-group-title">
+          <span>${grp.label}</span>
+          <span class="group-count">${grpItems.length}</span>
+        </div>
+      `;
+
+      grpItems.forEach(item => {
+        const itemIdx = currentIndex++;
+        html += renderSingleCommandItem(item, itemIdx);
+      });
+    });
+  } else {
+    results.forEach((item, itemIdx) => {
+      html += renderSingleCommandItem(item, itemIdx);
+    });
+  }
+
+  container.innerHTML = html;
+
+  // Bind click & mouseenter events
+  container.querySelectorAll('.command-result-item').forEach(el => {
+    const idx = parseInt(el.getAttribute('data-index'), 10);
+
+    el.addEventListener('click', () => {
+      executeCommandPaletteItem(idx);
+    });
+
+    el.addEventListener('mouseenter', () => {
+      commandPaletteActiveIndex = idx;
+      updateCommandPaletteActiveItem();
+    });
+  });
+
+  updateCommandPaletteActiveItem();
+}
+
+function renderSingleCommandItem(item, itemIdx) {
+  const isActive = itemIdx === commandPaletteActiveIndex;
+  const titleHighlighted = highlightCommandMatch(item.title, commandPaletteQuery);
+  const subtitleHighlighted = highlightCommandMatch(item.subtitle, commandPaletteQuery);
+
+  let extraActionsHtml = '';
+  if (item.type === 'warga') {
+    extraActionsHtml = `
+      <div class="command-item-meta">
+        ${item.badge ? `<span class="badge-status-pill ${item.badge.class}" style="font-size:0.68rem; padding:2px 8px;"><i class="fa-solid ${item.badge.icon || 'fa-tag'}"></i> ${item.badge.text}</span>` : ''}
+        <button type="button" class="cmd-action-chip" title="Fokus di Peta GIS" onclick="event.stopPropagation(); focusCitizenOnMap('${item.data.id}')">
+          <i class="fa-solid fa-location-crosshairs text-cyan"></i> Peta
+        </button>
+        <button type="button" class="cmd-action-chip" title="Cek & Bayar Iuran QRIS" onclick="event.stopPropagation(); payCitizenDues('${item.data.id}')">
+          <i class="fa-solid fa-qrcode text-emerald"></i> Bayar
+        </button>
+        <span class="cmd-select-hint"><i class="fa-solid fa-arrow-turn-down-left"></i> ↵</span>
+      </div>
+    `;
+  } else if (item.type === 'aset') {
+    extraActionsHtml = `
+      <div class="command-item-meta">
+        ${item.badge ? `<span class="badge-status-pill ${item.badge.class}" style="font-size:0.68rem; padding:2px 8px;">${item.badge.text}</span>` : ''}
+        <button type="button" class="cmd-action-chip" title="Ajukan Pinjam Aset" onclick="event.stopPropagation(); handleCommandAssetBorrowDirect('${item.id}')">
+          <i class="fa-solid fa-hand-holding-hand text-warn"></i> Pinjam
+        </button>
+        <span class="cmd-select-hint"><i class="fa-solid fa-arrow-turn-down-left"></i> ↵</span>
+      </div>
+    `;
+  } else {
+    extraActionsHtml = `
+      <div class="command-item-meta">
+        ${item.badge ? `<span class="badge-status-pill ${item.badge.class}" style="font-size:0.68rem; padding:2px 8px;">${item.badge.text}</span>` : ''}
+        <span class="cmd-select-hint"><i class="fa-solid fa-arrow-turn-down-left"></i> ↵</span>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="command-result-item ${isActive ? 'active' : ''}" data-index="${itemIdx}" role="option" aria-selected="${isActive}">
+      <div class="command-item-icon ${item.iconClass || ''}">
+        <i class="${item.icon}"></i>
+      </div>
+      <div class="command-item-main">
+        <div class="command-item-title-row">
+          <span class="command-item-title">${titleHighlighted}</span>
+        </div>
+        <div class="command-item-subtitle">${subtitleHighlighted}</div>
+      </div>
+      ${extraActionsHtml}
+    </div>
+  `;
+}
+
+function updateCommandPaletteActiveItem() {
+  const container = document.getElementById('command-palette-results');
+  if (!container) return;
+
+  const items = container.querySelectorAll('.command-result-item');
+  items.forEach(el => {
+    const idx = parseInt(el.getAttribute('data-index'), 10);
+    const isAct = idx === commandPaletteActiveIndex;
+    el.classList.toggle('active', isAct);
+    el.setAttribute('aria-selected', isAct ? 'true' : 'false');
+  });
+
+  // Scroll active item smoothly into view if needed
+  const activeEl = container.querySelector(`.command-result-item[data-index="${commandPaletteActiveIndex}"]`);
+  if (activeEl) {
+    activeEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
+function moveCommandPaletteActive(step) {
+  if (commandPaletteFilteredItems.length === 0) return;
+  const total = commandPaletteFilteredItems.length;
+  commandPaletteActiveIndex = (commandPaletteActiveIndex + step + total) % total;
+  updateCommandPaletteActiveItem();
+}
+
+function executeCommandPaletteItem(index) {
+  if (index < 0 || index >= commandPaletteFilteredItems.length) return;
+  const item = commandPaletteFilteredItems[index];
+  if (item && typeof item.action === 'function') {
+    item.action();
+  }
+}
+
+function executeCommandPaletteActive() {
+  executeCommandPaletteItem(commandPaletteActiveIndex);
+}
+
+// ---- Direct Actions from Results ----
+
+function focusCitizenOnMap(citizenId) {
+  closeCommandPalette();
+  if (typeof switchPublicView === 'function') {
+    switchPublicView('tentang');
+  }
+
+  // Find citizen
+  let citizen = null;
+  if (typeof buildClusterMapParcelsData === 'function') {
+    citizen = buildClusterMapParcelsData().find(p => p.id === citizenId);
+  }
+  if (!citizen && state.residents) {
+    citizen = state.residents.find(r => r.id === citizenId);
+  }
+
+  if (citizen) {
+    smartMapSearchQuery = citizen.name;
+    const input = document.getElementById('smart-map-search-input');
+    if (input) input.value = citizen.name;
+    if (typeof renderSmartClusterMapParcels === 'function') {
+      renderSmartClusterMapParcels();
+    }
+  }
+
+  setTimeout(() => {
+    const mapCard = document.getElementById('smart-map-card-main');
+    if (mapCard) {
+      mapCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 180);
+}
+
+function payCitizenDues(citizenId) {
+  closeCommandPalette();
+  let citizen = null;
+  if (state.residents) {
+    citizen = state.residents.find(r => r.id === citizenId);
+  }
+  if (!citizen && typeof buildClusterMapParcelsData === 'function') {
+    citizen = buildClusterMapParcelsData().find(p => p.id === citizenId);
+  }
+
+  if (typeof openPakasirPaymentModal === 'function') {
+    openPakasirPaymentModal(citizen || null);
+  }
+}
+
+function showCommandAssetDetail(asset) {
+  commandSelectedAsset = asset;
+  const modal = document.getElementById('modal-command-asset-detail');
+  if (!modal) return;
+
+  const iconEl = document.getElementById('cmd-asset-icon');
+  const nameEl = document.getElementById('cmd-asset-nama');
+  const catEl = document.getElementById('cmd-asset-kategori');
+  const qtyEl = document.getElementById('cmd-asset-qty');
+  const konEl = document.getElementById('cmd-asset-kondisi');
+  const ketEl = document.getElementById('cmd-asset-ket');
+  const subEl = document.getElementById('cmd-asset-sumber');
+  const tglEl = document.getElementById('cmd-asset-tgl');
+
+  if (iconEl) iconEl.className = asset.icon ? `fa-solid ${asset.icon}` : 'fa-solid fa-box';
+  if (nameEl) nameEl.textContent = asset.nama;
+  if (catEl) {
+    const meta = typeof getCategoryMeta === 'function' ? getCategoryMeta(asset.kategori) : { label: 'Aset RT' };
+    catEl.textContent = meta.label;
+  }
+  if (qtyEl) qtyEl.textContent = `${asset.qty} ${asset.satuan}`;
+  if (konEl) {
+    konEl.textContent = asset.kondisi === 'ok' ? 'Laik Pakai (OK)' : (asset.kondisi === 'sebagian_rusak' ? 'Sebagian Rusak' : 'Rusak');
+    konEl.style.color = asset.kondisi === 'ok' ? '#10b981' : '#f59e0b';
+  }
+  if (ketEl) ketEl.textContent = asset.keterangan || 'Tidak ada keterangan tambahan.';
+  if (subEl) subEl.textContent = asset.sumber || 'Kas RT';
+  if (tglEl) tglEl.textContent = asset.tgl_beli || '-';
+
+  modal.style.display = 'flex';
+  setTimeout(() => modal.classList.add('active'), 10);
+}
+
+function closeCommandAssetModal() {
+  const modal = document.getElementById('modal-command-asset-detail');
+  if (!modal) return;
+  modal.classList.remove('active');
+  setTimeout(() => {
+    modal.style.display = 'none';
+  }, 200);
+}
+
+function handleCommandAssetBorrow() {
+  closeCommandAssetModal();
+  if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+    if (typeof showAdminApp === 'function') showAdminApp();
+    if (typeof navigateToView === 'function') navigateToView('pengajuan-fasum');
+  } else {
+    if (typeof window.openRoleLogin === 'function') window.openRoleLogin('warga');
+    else if (typeof showLoginOverlay === 'function') showLoginOverlay('warga');
+  }
+}
+
+function handleCommandAssetBorrowDirect(itemId) {
+  closeCommandPalette();
+  if (typeof isLoggedIn === 'function' && isLoggedIn()) {
+    if (typeof showAdminApp === 'function') showAdminApp();
+    if (typeof navigateToView === 'function') navigateToView('pengajuan-fasum');
+  } else {
+    if (typeof window.openRoleLogin === 'function') window.openRoleLogin('warga');
+    else if (typeof showLoginOverlay === 'function') showLoginOverlay('warga');
+  }
+}
+
+// ---- Initialization ----
+
+function initCommandPalette() {
+  const triggerBtn = document.getElementById('btn-open-command-palette');
+  const drawerSearchBtn = document.getElementById('btn-drawer-search');
+  const modal = document.getElementById('modal-command-palette');
+  const input = document.getElementById('command-palette-input');
+  const clearBtn = document.getElementById('btn-command-clear');
+  const filterPills = document.querySelectorAll('.command-filter-pill');
+  const kbdBadge = document.getElementById('cmd-trigger-kbd-badge');
+
+  // Set platform-specific shortcut badge (⌘K on Mac, Ctrl K on Windows/Linux)
+  if (kbdBadge && isMacPlatform()) {
+    kbdBadge.textContent = '⌘K';
+  }
+
+  // Trigger buttons
+  triggerBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openCommandPalette();
+  });
+
+  drawerSearchBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openCommandPalette();
+  });
+
+  // Global Keyboard Shortcut: Ctrl + K or Cmd + K
+  window.addEventListener('keydown', (e) => {
+    const isK = e.key && e.key.toLowerCase() === 'k';
+    const isModifier = e.ctrlKey || e.metaKey;
+
+    if (isModifier && isK) {
+      e.preventDefault();
+      if (isCommandPaletteOpen) {
+        closeCommandPalette();
+      } else {
+        openCommandPalette();
+      }
+    } else if (e.key === 'Escape' && isCommandPaletteOpen) {
+      e.preventDefault();
+      closeCommandPalette();
+    }
+  });
+
+  // Backdrop click to close
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeCommandPalette();
+    }
+  });
+
+  // Search input typing & keyboard navigation
+  input?.addEventListener('input', (e) => {
+    commandPaletteQuery = e.target.value;
+    renderCommandPaletteResults();
+  });
+
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      moveCommandPaletteActive(1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      moveCommandPaletteActive(-1);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      executeCommandPaletteActive();
+    }
+  });
+
+  // Clear button
+  clearBtn?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      commandPaletteQuery = '';
+      input.focus();
+      renderCommandPaletteResults();
+    }
+  });
+
+  // Filter tabs
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      filterPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      commandPaletteFilter = pill.getAttribute('data-filter') || 'all';
+      renderCommandPaletteResults();
+    });
+  });
+
+  // Initial index preload
+  buildCommandPaletteIndex();
+}
+
+// Expose globals for HTML inline handlers
+window.openCommandPalette = openCommandPalette;
+window.closeCommandPalette = closeCommandPalette;
+window.showCommandAssetDetail = showCommandAssetDetail;
+window.closeCommandAssetModal = closeCommandAssetModal;
+window.handleCommandAssetBorrow = handleCommandAssetBorrow;
+window.handleCommandAssetBorrowDirect = handleCommandAssetBorrowDirect;
+window.focusCitizenOnMap = focusCitizenOnMap;
+window.payCitizenDues = payCitizenDues;
+
 // Inisialisasi video background & Split-Text Reveal pada hero header
 document.addEventListener('DOMContentLoaded', () => {
   const flagVideo = document.querySelector('.flag-video-bg');
@@ -17943,6 +18822,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Jalankan Peta Digital Cerdas RT.001 (Prioritas 1)
   if (typeof initSmartClusterMap === 'function') {
     initSmartClusterMap();
+  }
+
+  // Jalankan Universal Command Palette (Prioritas 2)
+  if (typeof initCommandPalette === 'function') {
+    initCommandPalette();
   }
 });
 

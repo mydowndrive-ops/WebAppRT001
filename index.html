@@ -32,7 +32,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.84">
+  <link rel="stylesheet" href="styles.css?v=2.9.85">
 </head>
 <body>
 
@@ -111,8 +111,15 @@
           <h1 class="nav-flag-title-main" id="hero-split-title" aria-label="WARGA RT.001 RW.013"><span class="ocean-wave-char" style="--i:0">W</span><span class="ocean-wave-char" style="--i:1">A</span><span class="ocean-wave-char" style="--i:2">R</span><span class="ocean-wave-char" style="--i:3">G</span><span class="ocean-wave-char" style="--i:4">A</span><span class="ocean-wave-space" style="--i:5">&nbsp;</span><span class="ocean-wave-char" style="--i:6">R</span><span class="ocean-wave-char" style="--i:7">T</span><span class="ocean-wave-char" style="--i:8">.</span><span class="ocean-wave-char" style="--i:9">0</span><span class="ocean-wave-char" style="--i:10">0</span><span class="ocean-wave-char" style="--i:11">1</span><span class="ocean-wave-space" style="--i:12">&nbsp;</span><span class="ocean-wave-char" style="--i:13">R</span><span class="ocean-wave-char" style="--i:14">W</span><span class="ocean-wave-char" style="--i:15">.</span><span class="ocean-wave-char" style="--i:16">0</span><span class="ocean-wave-char" style="--i:17">1</span><span class="ocean-wave-char" style="--i:18">3</span></h1>
         </div>
 
-        <!-- Kanan: Tombol Akses Portal Warga & Menu Layanan (Menu Pengurus di Navbar Dihilangkan) -->
+        <!-- Kanan: Tombol Akses Portal Warga, Pencarian Cepat & Menu Layanan -->
         <div class="public-nav-actions">
+          <!-- Command Palette Trigger Button (Ctrl + K) -->
+          <button type="button" class="btn-command-palette-trigger" id="btn-open-command-palette" title="Pencarian Cepat Warga, Aset & Layanan (Ctrl+K)" aria-label="Buka Pencarian Cepat">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span class="cmd-trigger-text">Cari...</span>
+            <kbd class="cmd-trigger-kbd" id="cmd-trigger-kbd-badge">Ctrl K</kbd>
+          </button>
+
           <div class="nav-portal-group" role="group" aria-label="Akses Cepat Portal">
             <button type="button" class="btn-nav-portal btn-nav-warga" id="btn-nav-portal-warga" title="Buka Portal Mandiri Warga RT.001">
               <i class="fa-solid fa-house-chimney-user"></i>
@@ -153,6 +160,15 @@
       </div>
 
       <div class="drawer-body">
+        <!-- Quick Search Bar in Drawer -->
+        <div class="drawer-search-wrap">
+          <button type="button" class="drawer-search-trigger" id="btn-drawer-search" title="Buka Pencarian Cepat (Ctrl+K)">
+            <i class="fa-solid fa-magnifying-glass text-cyan"></i>
+            <span>Cari Warga, Aset, Layanan...</span>
+            <kbd class="drawer-search-kbd">Ctrl K</kbd>
+          </button>
+        </div>
+
         <div class="drawer-section-label">PILIHAN LAYANAN &amp; INFORMASI</div>
         <div class="drawer-nav-list">
           
@@ -8459,6 +8475,113 @@
     </div>
   </div>
 
+  <!-- ==================== WORLD-CLASS UNIVERSAL COMMAND PALETTE (CTRL+K) ==================== -->
+  <div id="modal-command-palette" class="command-palette-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Pencarian Cepat & Command Palette">
+    <div class="command-palette-box">
+      <!-- Search Input Header -->
+      <div class="command-palette-header">
+        <i class="fa-solid fa-magnifying-glass command-search-icon"></i>
+        <input 
+          type="text" 
+          id="command-palette-input" 
+          class="command-search-input" 
+          placeholder="Cari warga (112 KK), aset (33 item), atau ketik perintah..." 
+          autocomplete="off" 
+          spellcheck="false"
+          aria-autocomplete="list"
+        />
+        <button type="button" id="btn-command-clear" class="command-clear-btn" title="Hapus teks" style="display: none;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <button type="button" class="command-close-btn" onclick="closeCommandPalette()" title="Tutup (Esc)">
+          <kbd>ESC</kbd>
+        </button>
+      </div>
+
+      <!-- Filter Tabs / Pills -->
+      <div class="command-palette-filters" role="tablist">
+        <button type="button" class="command-filter-pill active" data-filter="all">Semua</button>
+        <button type="button" class="command-filter-pill" data-filter="warga">
+          <i class="fa-solid fa-users"></i> Warga <span class="filter-count">112</span>
+        </button>
+        <button type="button" class="command-filter-pill" data-filter="aset">
+          <i class="fa-solid fa-boxes-stacked"></i> Aset <span class="filter-count">33</span>
+        </button>
+        <button type="button" class="command-filter-pill" data-filter="layanan">
+          <i class="fa-solid fa-bolt"></i> Layanan Warga
+        </button>
+        <button type="button" class="command-filter-pill" data-filter="navigasi">
+          <i class="fa-solid fa-compass"></i> Navigasi Menu
+        </button>
+      </div>
+
+      <!-- Results Body -->
+      <div class="command-palette-results" id="command-palette-results" role="listbox">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Keyboard Shortcuts & Status Footer -->
+      <div class="command-palette-footer">
+        <div class="cmd-footer-shortcuts">
+          <span class="cmd-shortcut-hint"><kbd class="cmd-key">↑</kbd><kbd class="cmd-key">↓</kbd> Navigasi</span>
+          <span class="cmd-shortcut-hint"><kbd class="cmd-key">↵</kbd> Pilih</span>
+          <span class="cmd-shortcut-hint"><kbd class="cmd-key">ESC</kbd> Tutup</span>
+        </div>
+        <div class="cmd-footer-status" id="command-palette-count">
+          112 Warga • 33 Aset RT.001
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Asset Detail Modal (from Command Palette) -->
+  <div id="modal-command-asset-detail" class="command-palette-backdrop modal-asset-quick-backdrop" aria-hidden="true" role="dialog" aria-modal="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 500px; width: 92%;">
+      <div class="modal-content glass-card-high" style="background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 18px; box-shadow: 0 25px 60px rgba(0,0,0,0.8);">
+        <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding: 1.1rem 1.4rem; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div id="cmd-asset-icon-wrap" style="width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8;">
+              <i id="cmd-asset-icon" class="fa-solid fa-box"></i>
+            </div>
+            <div>
+              <h4 id="cmd-asset-nama" style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #f8fafc;">Nama Aset</h4>
+              <span id="cmd-asset-kategori" class="badge-status-pill pill-cyan" style="font-size: 0.7rem; padding: 2px 8px; margin-top: 3px; display: inline-block;">Kategori</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close-modal" onclick="closeCommandAssetModal()" style="background: rgba(255,255,255,0.08); border: none; color: #94a3b8; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body" style="padding: 1.25rem 1.4rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div style="background: rgba(255,255,255,0.03); padding: 0.65rem 0.85rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+              <span style="font-size: 0.72rem; color: #94a3b8; display: block;">Jumlah Tersedia</span>
+              <strong id="cmd-asset-qty" style="font-size: 0.95rem; color: #38bdf8;">1 Unit</strong>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); padding: 0.65rem 0.85rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+              <span style="font-size: 0.72rem; color: #94a3b8; display: block;">Kondisi Fisik</span>
+              <span id="cmd-asset-kondisi" style="font-size: 0.82rem; font-weight: 700; color: #10b981;">Laik Pakai</span>
+            </div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 0.75rem 0.85rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1rem;">
+            <span style="font-size: 0.72rem; color: #94a3b8; display: block; margin-bottom: 4px;">Keterangan & Lokasi</span>
+            <p id="cmd-asset-ket" style="margin: 0; font-size: 0.82rem; color: #e2e8f0; line-height: 1.5;">Keterangan aset RT.</p>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: #94a3b8; padding: 0 4px;">
+            <span>Sumber Pengadaan: <strong id="cmd-asset-sumber" style="color: #cbd5e1;">Kas RT</strong></span>
+            <span>Tgl Perolehan: <strong id="cmd-asset-tgl" style="color: #cbd5e1;">-</strong></span>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.08); padding: 0.9rem 1.4rem; display: flex; justify-content: space-between; gap: 0.75rem;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="closeCommandAssetModal()">Tutup</button>
+          <button type="button" class="btn btn-emerald btn-sm" id="cmd-asset-btn-pinjam" onclick="handleCommandAssetBorrow()">
+            <i class="fa-solid fa-hand-holding-hand"></i> Ajukan Peminjaman
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Floating Luxury Scroll-to-Top Button -->
   <button id="btn-scroll-top" class="scroll-to-top-btn" title="Kembali ke Bagian Atas Halaman (1-Klik)" aria-label="Kembali ke Bagian Atas">
     <div class="scroll-top-icon-wrapper">
@@ -8471,6 +8594,6 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.84"></script>
+  <script src="app.js?v=2.9.85"></script>
 </body>
 </html>

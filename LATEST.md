@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (02:16 WIB)  
-**Versi Rilis Aktif:** `v2.9.84`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (08:40 WIB)  
+**Versi Rilis Aktif:** `v2.9.85`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -18,7 +18,33 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🏷️ Penyesuaian Nomenklatur Jalur Jalan (Update v2.9.84 - 1 Okt 2026)
+### 1. ⚡ Universal Command Palette (Ctrl+K) — Spotlight / Raycast / Linear Engine (Prioritas 2 - Update v2.9.85 - 1 Okt 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Sekarang lanjutkan ke Prioritas 2"*
+  - Mewujudkan sistem pencarian instan dan navigasi global kelas dunia layaknya Linear / Raycast / macOS Spotlight untuk seluruh entitas RT.001.
+- **Hasil Implementasi & Fitur Unggulan**:
+  1. **Akses Global Instan via Shortcut Keyboard & Trigger UI**:
+     - **Keyboard Shortcut**: `Ctrl + K` (Windows/Linux) atau `⌘K` (macOS) dapat ditekan kapan saja dari halaman mana pun untuk memunculkan palette seketika.
+     - **Tombol Kapsul Glassmorphism di Navbar**: Ditambahkan tombol `#btn-open-command-palette` dengan ikon pencarian, teks `"Cari..."`, dan badge shortcut keyboard `<kbd>Ctrl K</kbd>` (atau `⌘K` di Mac) dengan efek hover neon cyan.
+     - **Quick Search di Drawer Menu**: Bilah pencarian cepat terintegrasi di bagian atas drawer mobile (`#btn-drawer-search`) agar warga pengguna ponsel dapat mencari dalam 1 ketukan.
+     - **Navigasi Keyboard Penuh**: Mendukung `ArrowDown` & `ArrowUp` untuk memilih hasil, `Enter` untuk mengeksekusi aksi, dan `Escape` untuk menutup dialog.
+  2. **Pengindeksan Mendalam (Deep Search Indexing) Multi-Entitas**:
+     - **112 KK Warga RT.001**: Dapat dicari berdasarkan Nama Kepala Keluarga (Bapak), Nama Istri (Ibu), Blok, Nomor Rumah, Nama Jalan, Nomor Kontak WA, maupun Anggota Keluarga. Hasil menampilkan status iuran real-time (`Lunas` berikon hijau atau `Belum Bayar` berikon amber).
+     - **33 Aset & Inventaris RT.001**: Dapat dicari berdasarkan nama alat (Tenda Terop, Kursi Lipat, Sound System, Multifunction Printer, Mesin Fogging DBD, Meja Tenis Meja, Kipas Angin, Terpal, Umbul-umbul, Lampu LED, dll.), kategori aset, sumber dana pengadaan, dan kondisi fisik.
+     - **Layanan & Aksi Cepat**: Akses 1-klik ke Peta GIS Klaster, Pembayaran Iuran QRIS Online Pakasir, Jadwal Ronda 8 Regu, Pengajuan Peminjaman Fasum, Pembuatan e-Surat Pengantar RT Mandiri, Buku Register e-Surat, Kotak Aspirasi Warga, dan Hotline WhatsApp Pengurus.
+     - **Navigasi Menu Utama**: Lompatan cepat ke Beranda Hub, Profil Wilayah 5 Ruas Jalan, Statistik Demografi, Transparansi Kas RT, Agenda Warga, dan Struktur Pengurus.
+  3. **Aksi Cepat Terintegrasi (1-Click Actions)**:
+     - **Fokus ke Peta GIS (`focusCitizenOnMap`)**: Memilih tombol *Peta* pada warga langsung mengarahkan tampilan ke Peta Klaster Interaktif, menggulir mulus ke peta, dan menyalakan highlight radar/denyut pada kavling rumah warga bersangkutan.
+     - **Bayar Iuran Instan (`payCitizenDues`)**: Memilih tombol *Bayar* langsung membuka modal QRIS Pakasir untuk warga terkait.
+     - **Detail & Pinjam Aset (`showCommandAssetDetail`)**: Mengklik aset membuka modal detail cepat yang menampilkan kuantitas barang, kondisi laik pakai, lokasi penyimpanan, dan tombol *"Ajukan Peminjaman"* yang langsung mengarahkan ke formulir peminjaman fasum.
+  4. **Filter Kategori Dinamis (Filter Pills)**:
+     - Disediakan filter cepat: `Semua`, `Warga (112)`, `Aset (33)`, `Layanan Warga`, dan `Navigasi Menu`.
+     - Penanda teks cocok (*matched highlight*) menggunakan elemen `<mark class="cmd-highlight">` dengan aksen cyan berpendar.
+  5. **Pembaruan Service Worker & Versi PWA**:
+     - Service worker cache di-bump ke `v2.9.85` (`rt-finsmart-cache-v2.9.85`).
+     - Query string versi aset di `index.html` diperbarui ke `styles.css?v=2.9.85` dan `app.js?v=2.9.85`.
+
+### 2. 🏷️ Penyesuaian Nomenklatur Jalur Jalan (Update v2.9.84 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"Ganti teks '5 RUAS LORONG JALAN' menjadi 5 RUAS JALAN'"*
 - **Hasil Implementasi**:
