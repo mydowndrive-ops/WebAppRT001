@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (09:42 WIB)  
-**Versi Rilis Aktif:** `v2.9.88`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (09:54 WIB)  
+**Versi Rilis Aktif:** `v2.9.89`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -18,7 +18,18 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🏷️ Penyesuaian Teks Footer Note Modal Asisten AI (Update v2.9.88 - 1 Okt 2026)
+### 1. 🧹 Pembersihan Teks Header Modal Asisten AI (Update v2.9.89 - 1 Okt 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - *"Hapus teks ini 'Terhubung Supabase'"*
+- **Hasil Implementasi**:
+  1. **Pembersihan Subtitle Header Modal AI (`.ai-header-status`)**:
+     - Menghapus teks `" • Terhubung Supabase"` dari baris status header Asisten Pintar RT.001 di `index.html`.
+     - Tampilan kini berfokus pada badge denyut online hijau dan teks bersih: **"Pelayanan Cerdas 24 Jam"**, memberikan kesan antarmuka yang lebih minimalis, fokus, dan profesional.
+  2. **Pembaruan Service Worker & Versi PWA**:
+     - Cache Service Worker di-bump ke `v2.9.89` (`rt-finsmart-cache-v2.9.89`).
+     - Query string versi aset di `index.html` dan `sw.js` diperbarui menjadi `styles.css?v=2.9.89` dan `app.js?v=2.9.89`.
+
+### 2. 🏷️ Penyesuaian Teks Footer Note Modal Asisten AI (Update v2.9.88 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:
   - *"ganti teks ' Ditenagai Database Supabase Cloud & Engine RT-FinSmart PRO' menjadi ' WebApp ini ditenagai Engine RT-FinSmart PRO'"*
 - **Hasil Implementasi**:
