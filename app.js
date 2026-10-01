@@ -18102,6 +18102,19 @@ function buildCommandPaletteIndex() {
       }
     },
     {
+      id: 'act-kta-3d',
+      title: '💎 Kartu Warga Digital Holografis 3D (KTA)',
+      subtitle: 'Smart Card resmi warga RT.001 dengan efek 3D tilt, chip EMV, QR code & unduh PNG',
+      icon: 'fa-solid fa-id-card-clip',
+      iconClass: 'command-icon-action',
+      badge: { text: 'Smart Card', class: 'pill-gold' },
+      search: 'kta kartu tanda anggota warga digital 3d id card identitas cetak chip hologram prasarana',
+      action: () => {
+        closeCommandPalette();
+        openResidentSmartCardModal();
+      }
+    },
+    {
       id: 'act-iuran-qris',
       title: 'Cek & Bayar Iuran Warga (QRIS Online)',
       subtitle: 'Bayar iuran bulanan warga RT.001 online instan via Pakasir QRIS Gateway',
@@ -18400,7 +18413,7 @@ function filterCommandPaletteItems() {
 
 function highlightCommandMatch(text, query) {
   if (!query) return text;
-  const q = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\// Inisialisasi video background & Split-Text Reveal pada hero header');
+  const q = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   if (!q) return text;
   const regex = new RegExp(`(${q})`, 'gi');
   return text.replace(regex, '<mark class="cmd-highlight">$1</mark>');
@@ -18511,6 +18524,9 @@ function renderSingleCommandItem(item, itemIdx) {
         </button>
         <button type="button" class="cmd-action-chip" title="Cek & Bayar Iuran QRIS" onclick="event.stopPropagation(); payCitizenDues('${item.data.id}')">
           <i class="fa-solid fa-qrcode text-emerald"></i> Bayar
+        </button>
+        <button type="button" class="cmd-action-chip" title="Buka KTA Digital 3D" onclick="event.stopPropagation(); closeCommandPalette(); openResidentSmartCardModal(item.data)">
+          <i class="fa-solid fa-id-card-clip text-purple"></i> KTA
         </button>
         <span class="cmd-select-hint"><i class="fa-solid fa-arrow-turn-down-left"></i> ↵</span>
       </div>
@@ -18805,6 +18821,525 @@ window.handleCommandAssetBorrow = handleCommandAssetBorrow;
 window.handleCommandAssetBorrowDirect = handleCommandAssetBorrowDirect;
 window.focusCitizenOnMap = focusCitizenOnMap;
 window.payCitizenDues = payCitizenDues;
+
+// ==========================================================================
+// KARTU WARGA DIGITAL HOLOGRAFIS 3D (PRIORITAS 3)
+// Digital Resident Smart Card Engine with 3D Tilt, Hologram Foil, QR & Flip
+// ==========================================================================
+
+let isSmartCardModalOpen = false;
+let smartCardCurrentResident = null;
+let smartCardCurrentTheme = 'cyber'; // 'cyber' | 'royal' | 'patriot'
+let smartCardIsFlipped = false;
+let smartCardTiltBound = false;
+
+function openResidentSmartCardModal(targetResident = null) {
+  const modal = document.getElementById('modal-smart-card-kta');
+  if (!modal) return;
+
+  isSmartCardModalOpen = true;
+  smartCardIsFlipped = false;
+
+  const cardInner = document.getElementById('smart-card-inner');
+  if (cardInner) cardInner.classList.remove('is-flipped');
+
+  // Populate warga dropdown if empty
+  populateSmartCardWargaSelect();
+
+  // Resolve target resident
+  let res = targetResident;
+  if (!res) {
+    if (typeof state !== 'undefined') {
+      res = state.currentVerifiedResident;
+      if (!res && state.residents && state.residents.length > 0) {
+        res = state.residents[0];
+      }
+    }
+  }
+
+  // Fallback to first parcel
+  if (!res && typeof buildClusterMapParcelsData === 'function') {
+    const parcels = buildClusterMapParcelsData();
+    if (parcels && parcels.length > 0) res = parcels[0];
+  }
+
+  smartCardCurrentResident = res;
+
+  // Sync dropdown selection
+  const select = document.getElementById('kta-select-warga');
+  if (select && res) {
+    select.value = res.id;
+  }
+
+  // Render card details & dynamic QR
+  renderResidentSmartCard(res);
+
+  // Apply active theme
+  setResidentSmartCardTheme(smartCardCurrentTheme);
+
+  // Show modal
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden', 'false');
+
+  // Initialize 3D tilt handlers once
+  if (!smartCardTiltBound) {
+    bindSmartCardTiltEvents();
+    smartCardTiltBound = true;
+  }
+}
+
+function openResidentSmartCardModalFromMap() {
+  // If map detail modal is open, get current resident from map data or name
+  let target = null;
+  const nameEl = document.getElementById('resmodal-name');
+  if (nameEl) {
+    const rawName = nameEl.textContent.replace(/^Bapak\s+/i, '').trim();
+    if (state.residents) {
+      target = state.residents.find(r => (r.name || r.nama || '').trim().toLowerCase() === rawName.toLowerCase());
+    }
+  }
+
+  openResidentSmartCardModal(target);
+}
+
+function closeResidentSmartCardModal() {
+  const modal = document.getElementById('modal-smart-card-kta');
+  if (!modal) return;
+
+  isSmartCardModalOpen = false;
+  modal.classList.remove('active');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function flipResidentSmartCard() {
+  const inner = document.getElementById('smart-card-inner');
+  if (!inner) return;
+
+  smartCardIsFlipped = !smartCardIsFlipped;
+  inner.classList.toggle('is-flipped', smartCardIsFlipped);
+}
+
+function setResidentSmartCardTheme(theme) {
+  smartCardCurrentTheme = theme;
+  const card = document.getElementById('smart-card-3d');
+  if (card) {
+    card.classList.remove('theme-cyber', 'theme-royal', 'theme-patriot');
+    card.classList.add(`theme-${theme}`);
+  }
+
+  document.querySelectorAll('.kta-theme-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
+  });
+}
+
+function populateSmartCardWargaSelect() {
+  const select = document.getElementById('kta-select-warga');
+  if (!select) return;
+
+  // If already populated, keep
+  if (select.children.length > 5) return;
+
+  let residents = [];
+  if (typeof buildClusterMapParcelsData === 'function') {
+    residents = buildClusterMapParcelsData();
+  } else if (state.residents && Array.isArray(state.residents)) {
+    residents = state.residents;
+  }
+
+  select.innerHTML = residents.map((r, i) => {
+    const block = r.block || r.blok || '';
+    const house = r.houseNo || r.no_rumah || '';
+    const name = r.name || r.nama || '';
+    return `<option value="${r.id}">${i + 1}. ${name} — ${block} ${house}</option>`;
+  }).join('');
+}
+
+function changeSmartCardResident(residentId) {
+  let found = null;
+  if (typeof buildClusterMapParcelsData === 'function') {
+    found = buildClusterMapParcelsData().find(r => r.id === residentId);
+  }
+  if (!found && state.residents) {
+    found = state.residents.find(r => r.id === residentId);
+  }
+
+  if (found) {
+    smartCardCurrentResident = found;
+    renderResidentSmartCard(found);
+  }
+}
+
+function renderResidentSmartCard(resident) {
+  if (!resident) return;
+
+  const currentMonth = state.selectedMonth || new Date().getMonth() + 1;
+  const currentYear = state.selectedYear || new Date().getFullYear();
+  const isPaid = typeof checkResidentDuesPaid === 'function' ? checkResidentDuesPaid(resident.id, currentMonth, currentYear) : true;
+
+  const name = resident.name || resident.nama || 'Warga RT.001';
+  const wife = resident.wifeNama || resident.nama_istri || '';
+  const block = (resident.block || resident.blok || '').trim();
+  const houseNo = (resident.houseNo || resident.no_rumah || '').trim();
+  const street = (resident.street || resident.jalan || 'Jl. Citarum RT.001').trim();
+  const domicile = resident.domicile || resident.domisili || 'Warga Tetap';
+  const members = Number(resident.members || resident.jumlah_jiwa || 4);
+  const noUrut = resident.noUrut || resident.no_urut || 1;
+
+  // Clean registration number: REG: RT001-B6-02-001
+  const cleanBlock = block.replace(/[^0-9A-Za-z]/g, '').toUpperCase() || 'B6';
+  const cleanNo = houseNo.replace(/[^0-9A-Za-z]/g, '') || '01';
+  const regNo = `RT001-${cleanBlock}-${cleanNo}-${String(noUrut).padStart(3, '0')}`;
+  const secId = `${cleanBlock}${cleanNo}`;
+
+  // Front elements
+  const elRegNo = document.getElementById('kta-card-regno');
+  const elName = document.getElementById('kta-card-name');
+  const elWife = document.getElementById('kta-card-wife');
+  const elWifeGrp = document.getElementById('kta-card-wife-group');
+  const elAddress = document.getElementById('kta-card-address');
+  const elStatus = document.getElementById('kta-card-status');
+  const elMembers = document.getElementById('kta-card-members');
+  const elDues = document.getElementById('kta-card-dues');
+
+  if (elRegNo) elRegNo.textContent = regNo;
+  if (elName) elName.textContent = `Bpk. ${name}`;
+  if (elWifeGrp) {
+    if (wife) {
+      elWifeGrp.style.display = 'flex';
+      if (elWife) elWife.textContent = `Ny. ${wife}`;
+    } else {
+      elWifeGrp.style.display = 'none';
+    }
+  }
+  if (elAddress) elAddress.textContent = `${street}, ${block} ${houseNo}`;
+  if (elStatus) elStatus.textContent = domicile;
+  if (elMembers) elMembers.textContent = `${members} Jiwa`;
+  if (elDues) {
+    elDues.textContent = isPaid ? 'Lunas Iuran' : 'Iuran Berjalan';
+    elDues.style.background = isPaid ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)';
+    elDues.style.color = isPaid ? '#34d399' : '#fbbf24';
+  }
+
+  // Back elements
+  const elSigName = document.getElementById('kta-back-sig-name');
+  const elSecId = document.getElementById('kta-back-sec-id');
+  const elBarcodeVal = document.getElementById('kta-barcode-val');
+
+  if (elSigName) elSigName.textContent = name;
+  if (elSecId) elSecId.textContent = secId;
+  if (elBarcodeVal) elBarcodeVal.textContent = `*${regNo}*`;
+
+  // Render Dynamic QR Code
+  const qrContainer = document.getElementById('kta-qrcode-canvas');
+  if (qrContainer) {
+    qrContainer.innerHTML = '';
+    const verifyPayload = `https://rt001rw013grahaasri.pages.dev/?kta=${encodeURIComponent(regNo)}&id=${encodeURIComponent(resident.id)}&name=${encodeURIComponent(name)}`;
+
+    if (typeof QRCode !== 'undefined') {
+      try {
+        new QRCode(qrContainer, {
+          text: verifyPayload,
+          width: 58,
+          height: 58,
+          colorDark: '#091224',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.M
+        });
+      } catch (e) {
+        console.warn('Error generating KTA QR:', e);
+      }
+    }
+  }
+}
+
+// ---- 3D Gyroscopic & Mouse Tilt Engine ----
+function bindSmartCardTiltEvents() {
+  const cardWrapper = document.getElementById('kta-card-wrapper');
+  const card = document.getElementById('smart-card-3d');
+  if (!cardWrapper || !card) return;
+
+  cardWrapper.addEventListener('mousemove', (e) => {
+    if (!isSmartCardModalOpen) return;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((centerY - y) / centerY) * 15;
+    const rotateY = ((x - centerX) / centerX) * 15;
+
+    const sheenX = (x / rect.width) * 100;
+    const sheenY = (y / rect.height) * 100;
+
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+    card.style.setProperty('--sheen-x', `${sheenX}%`);
+    card.style.setProperty('--sheen-y', `${sheenY}%`);
+  });
+
+  cardWrapper.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    card.style.setProperty('--sheen-x', '50%');
+    card.style.setProperty('--sheen-y', '50%');
+  });
+
+  // Mobile Device Orientation (Gyroscope)
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', (e) => {
+      if (!isSmartCardModalOpen || window.innerWidth > 768) return;
+      const gamma = Math.min(Math.max(e.gamma || 0, -25), 25);
+      const beta = Math.min(Math.max((e.beta || 0) - 45, -25), 25);
+
+      const rotateY = (gamma / 25) * 15;
+      const rotateX = (-beta / 25) * 15;
+
+      const sheenX = ((gamma + 25) / 50) * 100;
+      const sheenY = ((beta + 25) / 50) * 100;
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      card.style.setProperty('--sheen-x', `${sheenX}%`);
+      card.style.setProperty('--sheen-y', `${sheenY}%`);
+    });
+  }
+}
+
+// ---- High-Resolution HTML5 Canvas PNG Exporter ----
+function downloadResidentSmartCardPNG() {
+  const resident = smartCardCurrentResident;
+  if (!resident) return;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 856;
+  canvas.height = 540;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const isRoyal = smartCardCurrentTheme === 'royal';
+  const isPatriot = smartCardCurrentTheme === 'patriot';
+
+  // 1. Background Gradient
+  const grad = ctx.createLinearGradient(0, 0, 856, 540);
+  if (isRoyal) {
+    grad.addColorStop(0, '#022c22');
+    grad.addColorStop(0.45, '#064e3b');
+    grad.addColorStop(1, '#021a14');
+  } else if (isPatriot) {
+    grad.addColorStop(0, '#7f1d1d');
+    grad.addColorStop(0.45, '#991b1b');
+    grad.addColorStop(1, '#450a0a');
+  } else {
+    grad.addColorStop(0, '#091224');
+    grad.addColorStop(0.45, '#0d1e3d');
+    grad.addColorStop(1, '#060b18');
+  }
+
+  // Rounded card rectangle
+  roundRect(ctx, 0, 0, 856, 540, 36);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // 2. Border
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = isRoyal ? '#fbbf24' : (isPatriot ? '#f87171' : '#38bdf8');
+  ctx.stroke();
+
+  // Subtle Hologram Mesh Lines
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+  ctx.lineWidth = 1;
+  for (let i = -540; i < 856; i += 28) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + 540, 540);
+    ctx.stroke();
+  }
+
+  // 3. Kop Header Text
+  ctx.fillStyle = isRoyal ? '#fbbf24' : (isPatriot ? '#fca5a5' : '#38bdf8');
+  ctx.font = 'bold 16px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('KARTU IDENTITAS WARGA DIGITAL (KTA)', 100, 50);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 24px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('RT.001 / RW.013 GRAHA ASRI', 100, 78);
+
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '14px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('DESA TELAGA MURNI • KEC. CIKARANG BARAT, KAB. BEKASI', 100, 98);
+
+  // 4. Gold EMV Microchip
+  const chipGrad = ctx.createLinearGradient(48, 130, 136, 195);
+  chipGrad.addColorStop(0, '#fde047');
+  chipGrad.addColorStop(0.5, '#eab308');
+  chipGrad.addColorStop(1, '#ca8a04');
+  roundRect(ctx, 48, 130, 88, 65, 12);
+  ctx.fillStyle = chipGrad;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(161, 98, 7, 0.7)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Chip circuit lines
+  ctx.beginPath();
+  ctx.moveTo(48, 152); ctx.lineTo(136, 152);
+  ctx.moveTo(48, 172); ctx.lineTo(136, 172);
+  ctx.stroke();
+  roundRect(ctx, 76, 144, 32, 36, 6);
+  ctx.stroke();
+
+  // 5. Registration Number
+  const block = (resident.block || resident.blok || '').trim();
+  const houseNo = (resident.houseNo || resident.no_rumah || '').trim();
+  const noUrut = resident.noUrut || resident.no_urut || 1;
+  const cleanBlock = block.replace(/[^0-9A-Za-z]/g, '').toUpperCase() || 'B6';
+  const cleanNo = houseNo.replace(/[^0-9A-Za-z]/g, '') || '01';
+  const regNo = `RT001-${cleanBlock}-${cleanNo}-${String(noUrut).padStart(3, '0')}`;
+
+  ctx.fillStyle = isRoyal ? '#fbbf24' : '#38bdf8';
+  ctx.font = 'bold 28px "Courier New", monospace';
+  ctx.fillText(regNo, 48, 238);
+
+  // 6. Resident Details
+  const name = resident.name || resident.nama || 'Warga RT.001';
+  const wife = resident.wifeNama || resident.nama_istri || '';
+  const street = (resident.street || resident.jalan || 'Jl. Citarum RT.001').trim();
+  const domicile = resident.domicile || resident.domisili || 'Warga Tetap';
+  const members = Number(resident.members || resident.jumlah_jiwa || 4);
+
+  // Nama
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = 'bold 13px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('KEPALA KELUARGA:', 48, 280);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 22px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(`Bpk. ${name}`, 48, 306);
+
+  // Istri
+  let curY = 340;
+  if (wife) {
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = 'bold 13px "Plus Jakarta Sans", sans-serif';
+    ctx.fillText('ISTRI:', 48, curY);
+    ctx.fillStyle = '#f1f5f9';
+    ctx.font = 'bold 18px "Plus Jakarta Sans", sans-serif';
+    ctx.fillText(`Ny. ${wife}`, 48, curY + 24);
+    curY += 58;
+  }
+
+  // Alamat
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = 'bold 13px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('ALAMAT HUNIAN:', 48, curY);
+  ctx.fillStyle = '#f1f5f9';
+  ctx.font = '16px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(`${street}, ${block} ${houseNo}`, 48, curY + 22);
+
+  // Badge status bar
+  curY += 54;
+  roundRect(ctx, 48, curY, 120, 28, 6);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.fill();
+  ctx.fillStyle = '#cbd5e1';
+  ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(domicile, 62, curY + 19);
+
+  roundRect(ctx, 180, curY, 90, 28, 6);
+  ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
+  ctx.fill();
+  ctx.fillStyle = '#d8b4fe';
+  ctx.fillText(`${members} Jiwa`, 198, curY + 19);
+
+  roundRect(ctx, 282, curY, 110, 28, 6);
+  ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+  ctx.fill();
+  ctx.fillStyle = '#34d399';
+  ctx.fillText('Lunas Iuran', 300, curY + 19);
+
+  // 7. Render QR Code onto Canvas
+  const qrImg = document.querySelector('#kta-qrcode-canvas img') || document.querySelector('#kta-qrcode-canvas canvas');
+  if (qrImg) {
+    roundRect(ctx, 670, 330, 140, 160, 12);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.drawImage(qrImg, 680, 340, 120, 120);
+
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 11px monospace';
+    ctx.fillText('VERIFIED KTA', 700, 480);
+  }
+
+  // 8. Logo RT in Kop
+  const logoImg = document.querySelector('.card-logo-img');
+  if (logoImg && logoImg.complete) {
+    ctx.drawImage(logoImg, 42, 38, 48, 48);
+  }
+
+  // Trigger Download
+  try {
+    const dataUrl = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.download = `KTA_RT001_${name.replace(/\s+/g, '_')}_${cleanBlock}${cleanNo}.png`;
+    a.href = dataUrl;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    if (typeof showToast === 'function') {
+      showToast('KTA Warga Digital 3D berhasil diunduh ke galeri!');
+    }
+  } catch (err) {
+    console.error('Error downloading KTA image:', err);
+  }
+}
+
+// Canvas rounded rectangle helper
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+}
+
+// Print KTA seukuran ID card fisik
+function printResidentSmartCard() {
+  const container = document.getElementById('kta-printable-container');
+  if (!container || !smartCardCurrentResident) return;
+
+  const frontClone = document.getElementById('kta-face-front')?.cloneNode(true);
+  const backClone = document.getElementById('kta-face-back')?.cloneNode(true);
+
+  container.innerHTML = '';
+  if (frontClone && backClone) {
+    const fWrap = document.createElement('div');
+    fWrap.className = 'print-card-box';
+    fWrap.appendChild(frontClone);
+
+    const bWrap = document.createElement('div');
+    bWrap.className = 'print-card-box';
+    bWrap.appendChild(backClone);
+
+    container.appendChild(fWrap);
+    container.appendChild(bWrap);
+  }
+
+  window.print();
+}
+
+// Expose globals for HTML inline handlers
+window.openResidentSmartCardModal = openResidentSmartCardModal;
+window.openResidentSmartCardModalFromMap = openResidentSmartCardModalFromMap;
+window.closeResidentSmartCardModal = closeResidentSmartCardModal;
+window.flipResidentSmartCard = flipResidentSmartCard;
+window.setResidentSmartCardTheme = setResidentSmartCardTheme;
+window.changeSmartCardResident = changeSmartCardResident;
+window.downloadResidentSmartCardPNG = downloadResidentSmartCardPNG;
+window.printResidentSmartCard = printResidentSmartCard;
 
 // Inisialisasi video background & Split-Text Reveal pada hero header
 document.addEventListener('DOMContentLoaded', () => {
