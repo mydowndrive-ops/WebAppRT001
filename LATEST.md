@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (15:15 WIB)
-**Versi Rilis Aktif:** `v2.9.94`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (15:45 WIB)
+**Versi Rilis Aktif:** `v2.9.95`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -18,7 +18,31 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 📅 Penyederhanaan Strip Jadwal Banner Event: Eliminasi Label "Hari & Tanggal" & "Waktu Pelaksanaan" Serta Tampilan Langsung Vertikal (Update v2.9.94 - 1 Okt 2026)
+### 1. 🖼️ Transformasi Banner Event ke Format Landscape, Pembesaran Font Judul, Animasi Puls Sedang & Pancaran Cahaya Merah Putih (Update v2.9.95 - 1 Okt 2026)
+- **Permintaan Pengguna**:
+  - *"revisi lagi, bentuk kotaknya dibuat landscape saja, dan font judul acaranya dibuat lebih besar agar mudah dibaca.Berikan efek puls sedang di kotaknya ditambah efek sperti pancaran cahaya merah putih mengelilingi kotak eventnya."*
+- **Hasil Implementasi & Fitur Unggulan**:
+  1. **Desain Kotak Banner Landscape 2-Kolom (`.hub-promo-landscape-box`)**:
+     - Memperluas lebar kartu dari sebelumnya portrait (`max-width: 440px`) menjadi **landscape lebar seimbang** (`max-width: 780px`).
+     - Mengorganisasi konten menggunakan grid 2-kolom yang harmonis:
+       - **Kolom Kiri**: Kokpit hitung mundur real-time (*real-time countdown cockpit*) dengan digit flip clock (Hari : Jam : Menit : Detik : Centidetik).
+       - **Kolom Kanan**: Widget cuaca cerdas BMKG dan kotak jadwal langsung (Tanggal & Waktu).
+       - Tinggi kolom kiri dan kanan kini seimbang simetris, menghasilkan tampilan banner yang ramping, mewah, dan profesional tanpa memakan tinggi layar secara berlebihan.
+  2. **Pembesaran Font Judul Event (`.promo-banner-title`)**:
+     - Ukuran font judul event diperbesar dari `0.95rem` menjadi **`1.32rem`** (`font-weight: 800`, `line-height: 1.35`, warna putih solid dengan bayangan tegas).
+     - Judul kini sangat mudah dibaca (*high-readability*) dalam rentang 1-2 baris yang luas.
+  3. **Efek Puls Sedang (*Medium Breathing Pulse Animation*)**:
+     - Menerapkan `@keyframes promoCardPulse` dengan durasi 3.2 detik halus (*smooth breathing rhythm*, skala `1.0` ke `1.018`).
+     - Kartu bernapas secara dinamis dan elegan tanpa mengganggu kenyamanan membaca.
+  4. **Pancaran Cahaya Merah Putih Mengelilingi Kotak Event (`.promo-card-flag-beam`)**:
+     - Mengimplementasikan sinar aura berputar (*rotating radiant halo*) menggunakan `conic-gradient` dinamis bernuansa **Merah Putih Indonesia** (`#ef4444` dan `#ffffff`) dengan blur optik dan rotasi kontinu 360° selama 4.5 detik.
+     - Dipadukan dengan multi-layer ambient shadow merah-putih (`box-shadow: 0 0 25px rgba(239, 68, 68, 0.55), 0 0 50px rgba(255, 255, 255, 0.4)`) yang menciptakan efek pendaran cahaya nasionalis berkelas eksekutif.
+  5. **Responsivitas Mobile Sempurna**:
+     - Pada layar ponsel kecil (`<= 680px`), grid 2-kolom secara otomatis beralih menjadi 1-kolom rapi (*graceful fallback*) sehingga tidak terjadi overflow horizontal.
+  6. **Sinkronisasi Versi & PWA**:
+     - Versi rilis dinaikkan ke `v2.9.95` di `index.html`, `styles.css`, dan PWA `sw.js` (`rt-finsmart-cache-v2.9.95`).
+
+### 2. 📅 Penyederhanaan Strip Jadwal Banner Event: Eliminasi Label "Hari & Tanggal" & "Waktu Pelaksanaan" Serta Tampilan Langsung Vertikal (Update v2.9.94 - 1 Okt 2026)
 - **Permintaan Pengguna**:
   - *"hilangkan kata "Hari &Tanggal" juga kata "Waktu Pelaksanaan". Di tampilkan langsung saja, (Misalnya Minggu, 4 Oktober 2026 dibawahnya langsung 07:00~selesai)"*
 - **Hasil Implementasi & Fitur Unggulan**:

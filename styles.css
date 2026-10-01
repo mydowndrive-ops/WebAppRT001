@@ -19820,18 +19820,18 @@ mark.cmd-highlight {
 }
 
 
-/* ==================== EVENT POPUP PROMO BANNER (SEPERTI GAMBAR 2) ==================== */
+/* ==================== EVENT POPUP PROMO BANNER (LANDSCAPE MODEL & MERAH-PUTIH RADIANT BEAM) ==================== */
 .hub-event-banner-wrap {
   position: fixed !important;
   inset: 0 !important;
   z-index: 9999999 !important;
-  background: rgba(0, 0, 0, 0.82) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 2.2rem 1rem 1.5rem !important;
+  padding: 2rem 1.25rem !important;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -19845,26 +19845,56 @@ mark.cmd-highlight {
   pointer-events: auto !important;
 }
 
+/* Landscape Box Container */
 .hub-promo-popup-box {
   position: relative !important;
   width: 100% !important;
-  max-width: 440px !important;
+  max-width: 780px !important;
   margin: auto !important;
   animation: promoPopupBounceIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards !important;
 }
 
 @keyframes promoPopupBounceIn {
-  0% { transform: scale(0.85) translateY(24px); opacity: 0; }
+  0% { transform: scale(0.88) translateY(20px); opacity: 0; }
   100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
-/* Tombol Close Melayang Bulat Putih di Kanan Atas (Persis Gambar 2) */
+/* Pancaran Cahaya Merah Putih Mengelilingi Kotak Event (Aura Berputar) */
+.promo-card-flag-beam {
+  position: absolute !important;
+  inset: -6px !important;
+  border-radius: 34px !important;
+  background: conic-gradient(
+    from 0deg,
+    #ef4444 0deg,
+    #ffffff 45deg,
+    rgba(239, 68, 68, 0.1) 90deg,
+    #ffffff 135deg,
+    #dc2626 180deg,
+    #ffffff 225deg,
+    rgba(220, 38, 38, 0.1) 270deg,
+    #ffffff 315deg,
+    #ef4444 360deg
+  ) !important;
+  animation: rotateFlagBeam 4.5s linear infinite !important;
+  z-index: 1 !important;
+  filter: blur(8px) !important;
+  opacity: 0.95 !important;
+  pointer-events: none !important;
+}
+
+@keyframes rotateFlagBeam {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Tombol Close Melayang Bulat Putih di Kanan Atas */
 .btn-promo-floating-close {
   position: absolute !important;
   top: -16px !important;
   right: -8px !important;
-  width: 42px !important;
-  height: 42px !important;
+  width: 44px !important;
+  height: 44px !important;
   border-radius: 50% !important;
   background: #ffffff !important;
   color: #0f172a !important;
@@ -19872,10 +19902,10 @@ mark.cmd-highlight {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 1.2rem !important;
+  font-size: 1.25rem !important;
   font-weight: 900 !important;
   cursor: pointer !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.25) !important;
   z-index: 30 !important;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
@@ -19884,30 +19914,47 @@ mark.cmd-highlight {
   transform: scale(1.15) rotate(90deg) !important;
   background: #f8fafc !important;
   color: #ef4444 !important;
-  box-shadow: 0 10px 28px rgba(239, 68, 68, 0.4) !important;
+  box-shadow: 0 10px 28px rgba(239, 68, 68, 0.5) !important;
 }
 
 .btn-promo-floating-close:active {
   transform: scale(0.95) !important;
 }
 
-/* Kartu Banner Promo */
+/* Efek Puls Sedang pada Kotak Event dengan Halo Merah Putih */
+@keyframes promoCardPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 22px rgba(239, 68, 68, 0.55), 
+                0 0 45px rgba(255, 255, 255, 0.4), 
+                0 0 75px rgba(220, 38, 38, 0.3),
+                0 25px 65px rgba(0, 0, 0, 0.85);
+  }
+  50% {
+    transform: scale(1.018);
+    box-shadow: 0 0 38px rgba(239, 68, 68, 0.85), 
+                0 0 68px rgba(255, 255, 255, 0.65), 
+                0 0 100px rgba(220, 38, 38, 0.5),
+                0 30px 85px rgba(0, 0, 0, 0.95);
+  }
+}
+
+/* Kartu Banner Promo Landscape */
 .hub-promo-banner-card {
-  background: linear-gradient(168deg, #0b1329 0%, #0f1d35 45%, #063124 100%) !important;
-  border: 1.5px solid rgba(245, 158, 11, 0.55) !important;
+  background: linear-gradient(168deg, #091122 0%, #0c1a2e 45%, #05261d 100%) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
   border-radius: 28px !important;
-  padding: 1.35rem 1.25rem 1.2rem !important;
-  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.85), 0 0 45px rgba(16, 185, 129, 0.25) !important;
+  padding: 1.35rem 1.75rem 1.25rem !important;
   position: relative !important;
   overflow: hidden !important;
   cursor: pointer !important;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+  z-index: 2 !important;
+  animation: promoCardPulse 3.2s ease-in-out infinite !important;
+  transition: border-color 0.25s ease !important;
 }
 
 .hub-promo-banner-card:hover {
-  transform: translateY(-3px) !important;
   border-color: rgba(245, 158, 11, 0.85) !important;
-  box-shadow: 0 30px 75px rgba(0, 0, 0, 0.9), 0 0 55px rgba(16, 185, 129, 0.4) !important;
 }
 
 .promo-card-glow {
@@ -19915,8 +19962,8 @@ mark.cmd-highlight {
   top: -80px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  width: 280px !important;
-  height: 140px !important;
+  width: 420px !important;
+  height: 160px !important;
   background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.35) 0%, rgba(245, 158, 11, 0.15) 50%, transparent 80%) !important;
   pointer-events: none !important;
   z-index: 1 !important;
@@ -19925,7 +19972,7 @@ mark.cmd-highlight {
 .promo-card-header {
   display: flex !important;
   align-items: center !important;
-  margin-bottom: 0.65rem !important;
+  margin-bottom: 0.55rem !important;
   position: relative !important;
   z-index: 2 !important;
 }
@@ -19942,9 +19989,9 @@ mark.cmd-highlight {
   justify-content: center !important;
   gap: 0.55rem !important;
   background: linear-gradient(135deg, rgba(225, 29, 72, 0.95), rgba(190, 18, 60, 0.95)) !important;
-  border: 1.5px solid rgba(254, 240, 138, 0.75) !important;
-  box-shadow: 0 0 22px rgba(225, 29, 72, 0.65), 0 4px 14px rgba(0, 0, 0, 0.45) !important;
-  padding: 0.4rem 1.35rem !important;
+  border: 1.5px solid rgba(254, 240, 138, 0.8) !important;
+  box-shadow: 0 0 22px rgba(225, 29, 72, 0.7), 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+  padding: 0.4rem 1.4rem !important;
   border-radius: 9999px !important;
 }
 
@@ -19973,28 +20020,92 @@ mark.cmd-highlight {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5) !important;
 }
 
-/* Hilangkan teks kategori yang sejajar dengan EVENT */
 .promo-cat-pill {
   display: none !important;
 }
 
+/* Judul Event: Dibuat Lebih Besar & Jelas Agar Mudah Dibaca Sesuai Permintaan */
 .promo-title-wrap {
   text-align: center !important;
   margin-top: 0.2rem !important;
-  margin-bottom: 0.75rem !important;
-  padding: 0 0.5rem !important;
+  margin-bottom: 1rem !important;
+  padding: 0 1rem !important;
   position: relative !important;
   z-index: 2 !important;
 }
 
-/* Judul Event: Dibuat Lebih Kecil Sesuai Permintaan Pengguna */
 .promo-banner-title {
-  font-size: 0.95rem !important;
-  font-weight: 700 !important;
-  line-height: 1.4 !important;
-  color: #f8fafc !important;
+  font-size: 1.32rem !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
+  color: #ffffff !important;
   margin: 0 !important;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75) !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* Landscape Grid 2-Kolom */
+.promo-landscape-grid {
+  display: grid !important;
+  grid-template-columns: 1.12fr 0.88fr !important;
+  gap: 1rem !important;
+  align-items: stretch !important;
+  margin-bottom: 0.95rem !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.promo-grid-col-left {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.promo-grid-col-left .promo-countdown-cockpit {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  margin-bottom: 0 !important;
+}
+
+.promo-grid-col-right {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.65rem !important;
+  justify-content: center !important;
+}
+
+.promo-grid-col-right .promo-weather-strip {
+  margin-bottom: 0 !important;
+}
+
+.promo-grid-col-right .promo-schedule-box {
+  margin-bottom: 0 !important;
+}
+
+.promo-landscape-footer {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Responsive Mobile Graceful Fallback */
+@media (max-width: 680px) {
+  .hub-promo-popup-box {
+    max-width: 95vw !important;
+  }
+  .hub-promo-banner-card {
+    padding: 1.15rem 1rem 1rem !important;
+  }
+  .promo-banner-title {
+    font-size: 1.1rem !important;
+  }
+  .promo-landscape-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
 }
 
 .promo-countdown-cockpit {

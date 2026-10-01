@@ -36,7 +36,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.94">
+  <link rel="stylesheet" href="styles.css?v=2.9.95">
 </head>
 
 <body>
@@ -10003,25 +10003,28 @@
     </div>
   </div>
 
-  <!-- ==================== BANNER IKLAN / BROADCAST HIGHLIGHT EVENT TERDEKAT (POPUP BANNER MODAL - DIRECT BODY CHILD) ==================== -->
+  <!-- ==================== BANNER IKLAN / BROADCAST HIGHLIGHT EVENT TERDEKAT (POPUP BANNER MODAL LANDSCAPE) ==================== -->
   <div class="hub-event-banner-wrap" id="hub-event-banner-wrap" aria-label="Informasi Event Terdekat"
     role="dialog" aria-modal="true" style="display: none;">
     
-    <div class="hub-promo-popup-box">
+    <div class="hub-promo-popup-box hub-promo-landscape-box">
+      <!-- Pancaran Cahaya Merah Putih Mengelilingi Kotak Event (Aura Berputar) -->
+      <div class="promo-card-flag-beam" aria-hidden="true"></div>
+
       <!-- Tombol Tutup Bulat Melayang di Kanan Atas (Sesuai Gambar 2) -->
       <button type="button" class="btn-promo-floating-close" id="btn-close-event-banner"
         aria-label="Tutup Pengumuman Event" title="Tutup (Esc)">
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-      <!-- Card Banner Interaktif (Bisa Diklik Langsung ke Halaman Detail) -->
-      <div class="hub-event-pass-card hub-promo-banner-card" id="hub-event-pass-card"
+      <!-- Card Banner Interaktif (Format Landscape dengan Efek Puls Sedang & Cahaya Merah Putih) -->
+      <div class="hub-event-pass-card hub-promo-banner-card hub-promo-card-landscape" id="hub-event-pass-card"
         role="button" tabindex="0" title="Klik untuk melihat detail lengkap agenda acara">
         
         <!-- Ambient Lighting & Glow -->
         <div class="promo-card-glow"></div>
         
-        <!-- Header Prominen EVENT (Besar, Menonjol & Terpusat - Teks Kategori Sejajar Dihilangkan Sesuai Permintaan) -->
+        <!-- Header Prominen EVENT (Besar, Menonjol & Terpusat) -->
         <div class="promo-card-header promo-header-center">
           <div class="promo-event-badge-hero">
             <span class="promo-pulse-dot-hero"></span>
@@ -10032,143 +10035,158 @@
           <span class="promo-cat-pill" id="event-banner-category" style="display: none !important;" aria-hidden="true"></span>
         </div>
 
-        <!-- Judul Event (Font Dibuat Lebih Kecil & Rapi Sesuai Permintaan) -->
+        <!-- Judul Event (Font Dibuat Lebih Besar & Jelas Sesuai Permintaan) -->
         <div class="promo-title-wrap">
-          <h3 class="promo-banner-title" id="event-banner-title">
+          <h3 class="promo-banner-title promo-title-landscape" id="event-banner-title">
             Kerja Bakti Gotong Royong &amp; Fogging DBD Antisipasi Musim Hujan
           </h3>
         </div>
 
-        <!-- Hitung Mundur Real-Time (Countdown Timer) -->
-        <div class="event-countdown-cockpit promo-countdown-cockpit" id="event-countdown-cockpit" aria-label="Hitung Mundur Waktu Acara">
-          <div class="countdown-cockpit-header">
-            <div class="countdown-pulse-beacon">
-              <span class="countdown-beacon-dot"></span>
-              <span class="countdown-title">HITUNG MUNDUR ACARA</span>
-            </div>
-            <div class="countdown-target-label" id="event-target-label">
-              <i class="fa-regular fa-clock"></i>
-              <strong id="event-banner-countdown">3 Hari Lagi</strong>
+        <!-- Landscape Grid 2-Kolom: Kiri Countdown, Kanan Cuaca & Jadwal -->
+        <div class="promo-landscape-grid">
+          
+          <!-- Kolom Kiri: Hitung Mundur Real-Time -->
+          <div class="promo-grid-col-left">
+            <div class="event-countdown-cockpit promo-countdown-cockpit" id="event-countdown-cockpit" aria-label="Hitung Mundur Waktu Acara">
+              <div class="countdown-cockpit-header">
+                <div class="countdown-pulse-beacon">
+                  <span class="countdown-beacon-dot"></span>
+                  <span class="countdown-title">HITUNG MUNDUR ACARA</span>
+                </div>
+                <div class="countdown-target-label" id="event-target-label">
+                  <i class="fa-regular fa-clock"></i>
+                  <strong id="event-banner-countdown">3 Hari Lagi</strong>
+                </div>
+              </div>
+
+              <div class="countdown-digits-board" id="countdown-digits-board">
+                <!-- Hari -->
+                <div class="countdown-unit-box">
+                  <div class="countdown-card" id="cd-card-days">
+                    <span class="cd-num" id="cd-val-days">03</span>
+                    <div class="cd-split-line"></div>
+                  </div>
+                  <span class="cd-label">HARI</span>
+                </div>
+
+                <div class="countdown-colon">:</div>
+
+                <!-- Jam -->
+                <div class="countdown-unit-box">
+                  <div class="countdown-card" id="cd-card-hours">
+                    <span class="cd-num" id="cd-val-hours">06</span>
+                    <div class="cd-split-line"></div>
+                  </div>
+                  <span class="cd-label">JAM</span>
+                </div>
+
+                <div class="countdown-colon">:</div>
+
+                <!-- Menit -->
+                <div class="countdown-unit-box">
+                  <div class="countdown-card" id="cd-card-mins">
+                    <span class="cd-num" id="cd-val-mins">20</span>
+                    <div class="cd-split-line"></div>
+                  </div>
+                  <span class="cd-label">MENIT</span>
+                </div>
+
+                <div class="countdown-colon">:</div>
+
+                <!-- Detik -->
+                <div class="countdown-unit-box">
+                  <div class="countdown-card" id="cd-card-secs">
+                    <span class="cd-num" id="cd-val-secs">45</span>
+                    <div class="cd-split-line"></div>
+                  </div>
+                  <span class="cd-label">DETIK</span>
+                </div>
+
+                <div class="countdown-colon colon-cs">:</div>
+
+                <!-- Centidetik -->
+                <div class="countdown-unit-box box-cs">
+                  <div class="countdown-card card-cs" id="cd-card-cs">
+                    <span class="cd-num cd-num-cs" id="cd-val-cs">99</span>
+                    <div class="cd-split-line"></div>
+                  </div>
+                  <span class="cd-label">CENTIDETIK</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="countdown-digits-board" id="countdown-digits-board">
-            <!-- Hari -->
-            <div class="countdown-unit-box">
-              <div class="countdown-card" id="cd-card-days">
-                <span class="cd-num" id="cd-val-days">03</span>
-                <div class="cd-split-line"></div>
+          <!-- Kolom Kanan: Prakiraan Cuaca & Jadwal Langsung -->
+          <div class="promo-grid-col-right">
+            <!-- Smart Weather Widget (Prakiraan Cuaca Hari-H BMKG) -->
+            <div class="promo-weather-strip" id="event-weather-widget">
+              <div class="promo-weather-icon" id="weather-widget-icon">
+                <i class="fa-solid fa-cloud-sun text-cyan"></i>
               </div>
-              <span class="cd-label">HARI</span>
+              <div class="promo-weather-text">
+                <div class="promo-weather-headline">
+                  <span class="promo-weather-badge">PRAKIRAAN CUACA HARI-H (BMKG)</span>
+                  <strong class="promo-weather-temp" id="weather-widget-temp">28°C • Cerah Berawan</strong>
+                </div>
+                <span class="promo-weather-sub" id="weather-widget-desc">Kelembapan 65% • Sangat ideal &amp; nyaman untuk aktivitas outdoor.</span>
+              </div>
             </div>
 
-            <div class="countdown-colon">:</div>
-
-            <!-- Jam -->
-            <div class="countdown-unit-box">
-              <div class="countdown-card" id="cd-card-hours">
-                <span class="cd-num" id="cd-val-hours">06</span>
-                <div class="cd-split-line"></div>
+            <!-- Informasi Jadwal Langsung: Tanggal & Waktu (Tanpa Kata "Hari & Tanggal" & "Waktu Pelaksanaan") -->
+            <div class="promo-schedule-box">
+              <div class="promo-schedule-icon">
+                <i class="fa-regular fa-calendar-check text-emerald"></i>
               </div>
-              <span class="cd-label">JAM</span>
-            </div>
-
-            <div class="countdown-colon">:</div>
-
-            <!-- Menit -->
-            <div class="countdown-unit-box">
-              <div class="countdown-card" id="cd-card-mins">
-                <span class="cd-num" id="cd-val-mins">20</span>
-                <div class="cd-split-line"></div>
+              <div class="promo-schedule-content">
+                <div class="promo-schedule-date" id="event-banner-date">Minggu, 4 Oktober 2026</div>
+                <div class="promo-schedule-time">
+                  <i class="fa-regular fa-clock text-cyan"></i>
+                  <span id="event-banner-time">07:00 &ndash; Selesai</span>
+                </div>
               </div>
-              <span class="cd-label">MENIT</span>
-            </div>
-
-            <div class="countdown-colon">:</div>
-
-            <!-- Detik -->
-            <div class="countdown-unit-box">
-              <div class="countdown-card" id="cd-card-secs">
-                <span class="cd-num" id="cd-val-secs">45</span>
-                <div class="cd-split-line"></div>
-              </div>
-              <span class="cd-label">DETIK</span>
-            </div>
-
-            <div class="countdown-colon colon-cs">:</div>
-
-            <!-- Centidetik -->
-            <div class="countdown-unit-box box-cs">
-              <div class="countdown-card card-cs" id="cd-card-cs">
-                <span class="cd-num cd-num-cs" id="cd-val-cs">99</span>
-                <div class="cd-split-line"></div>
-              </div>
-              <span class="cd-label">CENTIDETIK</span>
             </div>
           </div>
+
         </div>
 
-        <!-- Smart Weather Widget (Prakiraan Cuaca Hari-H BMKG) -->
-        <div class="promo-weather-strip" id="event-weather-widget">
-          <div class="promo-weather-icon" id="weather-widget-icon">
-            <i class="fa-solid fa-cloud-sun text-cyan"></i>
-          </div>
-          <div class="promo-weather-text">
-            <div class="promo-weather-headline">
-              <span class="promo-weather-badge">PRAKIRAAN CUACA HARI-H (BMKG)</span>
-              <strong class="promo-weather-temp" id="weather-widget-temp">28°C • Cerah Berawan</strong>
+        <!-- Landscape Footer: Carousel Dots & Tombol CTA Utama -->
+        <div class="promo-landscape-footer">
+          <!-- Navigasi Carousel Dots (Jika ada multiple agenda) -->
+          <div class="promo-carousel-row">
+            <div class="promo-counter-text">
+              <i class="fa-solid fa-layer-group text-emerald me-1"></i>
+              <span>Agenda <strong id="event-current-index" class="text-emerald">1</strong> dari <span id="event-total-count">3</span></span>
             </div>
-            <span class="promo-weather-sub" id="weather-widget-desc">Kelembapan 65% • Sangat ideal &amp; nyaman untuk aktivitas outdoor.</span>
-          </div>
-        </div>
-
-        <!-- Informasi Jadwal Langsung: Tanggal & Waktu (Tanpa Kata "Hari & Tanggal" & "Waktu Pelaksanaan") -->
-        <div class="promo-schedule-box">
-          <div class="promo-schedule-icon">
-            <i class="fa-regular fa-calendar-check text-emerald"></i>
-          </div>
-          <div class="promo-schedule-content">
-            <div class="promo-schedule-date" id="event-banner-date">Minggu, 4 Oktober 2026</div>
-            <div class="promo-schedule-time">
-              <i class="fa-regular fa-clock text-cyan"></i>
-              <span id="event-banner-time">07:00 &ndash; Selesai</span>
+            <div class="event-dots-wrap promo-dots-wrap" id="event-banner-dots">
+              <button type="button" class="event-dot active" data-event-idx="0" aria-label="Event 1"></button>
+              <button type="button" class="event-dot" data-event-idx="1" aria-label="Event 2"></button>
+              <button type="button" class="event-dot" data-event-idx="2" aria-label="Event 3"></button>
+            </div>
+            <div class="promo-nav-buttons">
+              <button type="button" class="btn-promo-nav" id="btn-event-prev" aria-label="Sebelumnya" title="Event Sebelumnya">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <button type="button" class="btn-promo-nav" id="btn-event-next" aria-label="Berikutnya" title="Event Berikutnya">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
             </div>
           </div>
-        </div>
 
-        <!-- Navigasi Carousel Dots (Jika ada multiple agenda) -->
-        <div class="promo-carousel-row">
-          <div class="promo-counter-text">
-            <i class="fa-solid fa-layer-group text-emerald me-1"></i>
-            <span>Agenda <strong id="event-current-index" class="text-emerald">1</strong> dari <span id="event-total-count">3</span></span>
-          </div>
-          <div class="event-dots-wrap promo-dots-wrap" id="event-banner-dots">
-            <button type="button" class="event-dot active" data-event-idx="0" aria-label="Event 1"></button>
-            <button type="button" class="event-dot" data-event-idx="1" aria-label="Event 2"></button>
-            <button type="button" class="event-dot" data-event-idx="2" aria-label="Event 3"></button>
-          </div>
-          <div class="promo-nav-buttons">
-            <button type="button" class="btn-promo-nav" id="btn-event-prev" aria-label="Sebelumnya" title="Event Sebelumnya">
-              <i class="fa-solid fa-chevron-left"></i>
+          <!-- Tombol CTA Utama -->
+          <div class="promo-cta-wrapper">
+            <button type="button" class="btn-promo-cta" id="btn-event-view-detail" data-subview="kegiatan">
+              <span>Lihat Detail Acara</span>
+              <i class="fa-solid fa-arrow-right"></i>
             </button>
-            <button type="button" class="btn-promo-nav" id="btn-event-next" aria-label="Berikutnya" title="Event Berikutnya">
-              <i class="fa-solid fa-chevron-right"></i>
-            </button>
+            <span class="promo-tap-hint"><i class="fa-solid fa-hand-pointer"></i> Klik banner untuk membuka rincian kegiatan warga</span>
           </div>
-        </div>
-
-        <!-- Tombol CTA Utama (Persis Gaya Gambar 2 "Belanja, yuk!") -->
-        <div class="promo-cta-wrapper">
-          <button type="button" class="btn-promo-cta" id="btn-event-view-detail" data-subview="kegiatan">
-            <span>Lihat Detail Acara</span>
-            <i class="fa-solid fa-arrow-right"></i>
-          </button>
-          <span class="promo-tap-hint"><i class="fa-solid fa-hand-pointer"></i> Klik banner untuk membuka rincian kegiatan warga</span>
         </div>
 
       </div>
     </div>
   </div>
+
+
 
   <!-- Floating Luxury Scroll-to-Top Button -->
   <button id="btn-scroll-top" class="scroll-to-top-btn" title="Kembali ke Bagian Atas Halaman (1-Klik)"
@@ -10183,7 +10201,7 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.94"></script>
+  <script src="app.js?v=2.9.95"></script>
 </body>
 
 </html>
