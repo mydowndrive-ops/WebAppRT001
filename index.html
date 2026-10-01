@@ -36,7 +36,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.90">
+  <link rel="stylesheet" href="styles.css?v=2.9.91">
 </head>
 
 <body>
@@ -9881,12 +9881,13 @@
       </div>
 
       <!-- Toolbar: Warga Selector & Theme Selector -->
-      <div class="kta-modal-toolbar">
+      <div class="kta-modal-toolbar" id="kta-modal-toolbar">
         <div class="kta-resident-select-wrap">
           <label for="kta-select-warga"><i class="fa-solid fa-users text-cyan"></i> Pilih KK (112 Warga):</label>
           <select id="kta-select-warga" class="kta-resident-select" onchange="changeSmartCardResident(this.value)">
             <!-- Populated dynamically with all 112 KK -->
           </select>
+          <div id="kta-resident-owner-badge" style="display: none;"></div>
         </div>
 
         <div class="kta-theme-selector" role="group" aria-label="Pilih Tema Kartu">
@@ -9907,7 +9908,23 @@
       </div>
 
       <!-- 3D Interactive Stage -->
-      <div class="kta-stage-container">
+      
+      <!-- Privacy Gate for Unauthenticated Visitors (UU PDP No. 27/2022) -->
+      <div class="kta-privacy-gate" id="kta-privacy-gate" style="display: none;">
+        <div class="kta-gate-shield"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3>Kartu Warga Digital Terproteksi</h3>
+        <p class="kta-gate-desc">Berdasarkan Ketentuan UU Perlindungan Data Pribadi (UU PDP No. 27/2022), Kartu Tanda Anggota (KTA) Digital hanya dapat diakses oleh pemilik identitas yang sah atau Pengurus RT.001.</p>
+        <div class="kta-gate-actions">
+          <button type="button" class="btn btn-primary" onclick="closeResidentSmartCardModal(); showLoginModal('warga');">
+            <i class="fa-solid fa-key"></i> Masuk Sebagai Warga untuk Buka KTA
+          </button>
+          <button type="button" class="btn btn-outline" onclick="closeResidentSmartCardModal();">
+            Tutup
+          </button>
+        </div>
+      </div>
+
+      <div class="kta-stage-container" id="kta-stage-container">
         <div class="kta-stage-hint">
           <span class="stage-hint-pill"><i class="fa-solid fa-arrows-up-down-left-right"></i> Gerakkan kursor atau
             miringkan HP untuk efek 3D &amp; pantulan cahaya hologram</span>
@@ -10253,7 +10270,7 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.90"></script>
+  <script src="app.js?v=2.9.91"></script>
 </body>
 
 </html>

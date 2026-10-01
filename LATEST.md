@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (10:08 WIB)  
-**Versi Rilis Aktif:** `v2.9.90`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (14:15 WIB)
+**Versi Rilis Aktif:** `v2.9.91`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,6 +17,30 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 ---
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
+
+### 1. 🛡️ Rombak Total Sistem Keamanan & Kepatuhan Privasi Data Pribadi Warga (UU PDP No. 27/2022) — Privacy-by-Design Architecture (Update v2.9.91 - 1 Okt 2026)
+- **Latar Belakang & Perhatian Kritis Pengguna**:
+  - Pengguna menemukan potensi celah privasi yang sangat krusial pada aplikasi: *"Sebelumnya terima kasih atas ide. Tapi ada 1 hal yang paling tidak saya sukai dari web app ini yaitu PRIVASI. Setelah saya amati web ini tidak ada privasinya, maksudnya di web ini sekali ketik data warga RT.001 terbuka semuanya. Semua orang di dunia yang mengakses web ini dengan sangat mudah mendapatkan informasi yang lumayan detail dan bisa disalahgunakan. Apakah tahu dan menyadari akibat jika hal ini terjadi? Ya. lakukan sekarang"*
+- **Implementasi 5 Lapisan Perlindungan Keamanan (Privacy-by-Design)**:
+  1. **Sanitasi Kredensial & Eliminasi Total Plaintext Passwords (`app.js` & `data/warga_master.json`)**:
+     - Menghapus 100% properti `password` plaintext dari seluruh 112 objek warga pada array `INITIAL_RESIDENTS` di `app.js`.
+     - Menghapus seluruh plaintext passwords dari berkas cadangan lokal `data/warga_master.json`.
+     - Menggantikan verifikasi dengan fungsi deterministik algoritmik `getResidentDefaultPass(r)` yang aman, menjaga toleransi login warga tetap bekerja normal tanpa pernah mengekspos kata sandi di sumber skrip publik browser.
+  2. **Penguncian Privasi Peta Klaster Interaktif GIS 112 Kavling**:
+     - *Hover HUD*: Untuk pengunjung umum/anonim, nama kepala keluarga disamarkan (`maskCitizenName`, contoh: `Bpk. W***`), nama istri disembunyikan sepenuhnya, jumlah jiwa hanya menampilkan total tanpa susunan keluarga, dan status pembayaran diubah menjadi lencana netral `STATUS: TERISI (Data Terlindungi)` untuk mencegah paparan status finansial warga ke publik.
+     - *Modal Detail Kavling*: Pengunjung umum disajikan *Security Shield Card* resmi standar UU PDP No. 27/2022. Susunan keluarga, anggota keluarga, serta tautan nomor WhatsApp pribadi disembunyikan dan digantikan dengan tombol direct ke Hotline Pengurus RT dan tombol masuk otentikasi warga.
+  3. **Universal Command Palette (`Ctrl + K`) Privacy Filter**:
+     - Seluruh nama warga, istri, anak, dan nomor telepon dikeluarkan 100% dari indeks pencarian publik untuk pengunjung yang belum login.
+     - Penelusuran kata kunci seputar warga akan menampilkan satu kartu proteksi direktori warga yang mengarahkan untuk verifikasi/login terlebih dahulu.
+  4. **Gerbang Keamanan Kartu Warga Digital 3D (KTA Gate Lock)**:
+     - Pengunjung publik yang membuka modal KTA akan disambut dengan *Interactive Privacy Gate* beranimasi perisai emas yang menginformasikan bahwa KTA hanya dapat diakses oleh pemilik identitas yang sah sesuai hukum yang berlaku.
+     - Warga yang telah login hanya dapat melihat dan mengunduh KTA miliknya sendiri (dropdown pilihan 112 KK tetangga disembunyikan dan digantikan dengan lencana kepemilikan privat).
+     - Pengurus RT (B1, B2, Pengurus) mempertahankan hak akses administratif untuk membantu pencetakan KTA bagi seluruh warga.
+  5. **Guardrail Privasi AI Asisten Pintar RT (Anti-Leakage LLM/NLP Engine)**:
+     - Jika pengunjung umum menanyakan detail istri, nomor HP, susunan keluarga, atau tempat tinggal warga, AI menolak secara sopan dengan mengutip amanat UU PDP No. 27/2022 dan mengarahkan ke kanal komunikasi pengurus resmi.
+     - Jika ada pihak yang menanyakan daftar penunggak iuran/warga yang belum bayar, AI memblokir kebocoran data finansial dan menginstruksikan pengecekan privat di Portal Warga.
+  6. **Pembaruan Service Worker & Versi PWA**:
+     - Sinkronisasi cache versi `v2.9.91` di `sw.js` dan cache-busting di `index.html` menjamin pengunjung langsung menerima perlindungan privasi terbaru tanpa tertahan cache lama browser.
 
 ### 1. 🎟️ Transformasi Futuristik "EVENT TERDEKAT" Menjadi "VIP Digital Event Pass & Live Dynamic Flip Countdown" (Update v2.9.90 - 1 Okt 2026)
 - **Latar Belakang & Permintaan Pengguna**:

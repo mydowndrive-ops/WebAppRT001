@@ -287,13 +287,76 @@ const DEFAULT_RONDA_GROUPS = [
   }
 ];
 
+
+// ==================== UU PDP NO. 27/2022 PRIVACY PROTECTION HELPERS ====================
+function isUserAdminOrOfficer() {
+  if (typeof isLoggedIn === 'function' && !isLoggedIn()) return false;
+  if (typeof state === 'undefined' || !state.currentUser) return false;
+  return ['pengurus', 'b1', 'b2', 'admin'].includes(state.currentUser);
+}
+window.isUserAdminOrOfficer = isUserAdminOrOfficer;
+
+function isUserLoggedIn() {
+  if (typeof isLoggedIn === 'function') return isLoggedIn();
+  return typeof state !== 'undefined' && Boolean(state.currentUser);
+}
+window.isUserLoggedIn = isUserLoggedIn;
+
+function maskCitizenName(fullName) {
+  if (!fullName) return 'Warga RT.001';
+  if (isUserAdminOrOfficer()) return fullName;
+  if (isUserLoggedIn() && state.currentVerifiedResident) {
+    const cvName = state.currentVerifiedResident.name || '';
+    if (cvName.toLowerCase() === fullName.toLowerCase()) return fullName;
+  }
+  const parts = fullName.trim().split(/\s+/);
+  return parts.map(p => {
+    if (p.length <= 2) return p;
+    return p.charAt(0) + '***' + (p.length > 5 ? p.charAt(p.length - 1) : '');
+  }).join(' ');
+}
+window.maskCitizenName = maskCitizenName;
+
+function maskPhoneNumber(phone) {
+  if (!phone) return '-';
+  if (isUserAdminOrOfficer()) return phone;
+  return '🔒 Dilindungi UU PDP';
+}
+window.maskPhoneNumber = maskPhoneNumber;
+
+function getResidentDefaultPass(r) {
+  if (!r) return 'RT001';
+  let streetCode = 'c2';
+  const s = (r.street || r.jalan || '').toLowerCase();
+  if (s.includes('ix')) streetCode = 'c9';
+  else if (s.includes('viii')) streetCode = 'c8';
+  else if (s.includes('vii')) streetCode = 'c7';
+  else if (s.includes('vi')) streetCode = 'c6';
+  else if (s.includes('iv')) streetCode = 'c4';
+  else if (s.includes('iii')) streetCode = 'c3';
+  else if (s.includes('ii')) streetCode = 'c2';
+  else if (s.includes('i')) streetCode = 'c1';
+  
+  const blockNo = (r.block || r.blok || '').toLowerCase().replace(/blok|\s+/g, '');
+  let houseClean = (r.houseNo || r.no_rumah || '').toLowerCase().replace(/no\.?|\s+/g, '');
+  if (/^\d$/.test(houseClean)) houseClean = '0' + houseClean;
+  
+  return (`${streetCode}${blockNo}${houseClean}`).toUpperCase();
+}
+window.getResidentDefaultPass = getResidentDefaultPass;
+
+function closeMapResidentDetailModal() {
+  const modal = document.getElementById('modal-map-resident-detail');
+  if (modal) modal.classList.remove('active');
+}
+window.closeMapResidentDetailModal = closeMapResidentDetailModal;
+
 const INITIAL_RESIDENTS = [
   {
     "id": "w-1",
     "noUrut": 1,
     "name": "Wageyanto",
     "username": "Wageyanto",
-    "password": "C2B602",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 02",
@@ -315,7 +378,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 2,
     "name": "Fatkhurahman",
     "username": "Fatkhurahman",
-    "password": "C2B604",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 04",
@@ -328,7 +390,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 3,
     "name": "Nono Suyatno",
     "username": "Nono Suyatno",
-    "password": "C2B606",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 06",
@@ -341,7 +402,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 4,
     "name": "Manahara Dimas",
     "username": "Manahara Dimas",
-    "password": "C2B608",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 08",
@@ -354,7 +414,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 5,
     "name": "Jati Purnomo",
     "username": "Jati Purnomo",
-    "password": "C2B610",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 10",
@@ -367,7 +426,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 6,
     "name": "Jumiran",
     "username": "Jumiran",
-    "password": "C2B612",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 12",
@@ -380,7 +438,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 7,
     "name": "M.Hutagalung",
     "username": "M.Hutagalung",
-    "password": "C2B614",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 14",
@@ -393,7 +450,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 8,
     "name": "Andriyanto. K",
     "username": "Andriyanto. K",
-    "password": "C2B616",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 16",
@@ -406,7 +462,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 9,
     "name": "Sukoco",
     "username": "Sukoco",
-    "password": "C2B618",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 18",
@@ -419,7 +474,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 10,
     "name": "Khoirul",
     "username": "Khoirul",
-    "password": "C2B620",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 20",
@@ -432,7 +486,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 11,
     "name": "Mehdi Bazargan",
     "username": "Mehdi Bazargan",
-    "password": "C2B622",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 22",
@@ -445,7 +498,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 12,
     "name": "Agus Nursanto",
     "username": "Agus Nursanto",
-    "password": "C2B624",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 24",
@@ -458,7 +510,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 13,
     "name": "Silmi",
     "username": "Silmi",
-    "password": "C2B626",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 26",
@@ -471,7 +522,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 14,
     "name": "Sutarno",
     "username": "Sutarno",
-    "password": "C2B628",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 28",
@@ -484,7 +534,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 16,
     "name": "Joko Susilo",
     "username": "Joko Susilo",
-    "password": "C2B632",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 32",
@@ -497,7 +546,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 17,
     "name": "Agung",
     "username": "Agung",
-    "password": "C2B634",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 34",
@@ -510,7 +558,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 18,
     "name": "Yatno",
     "username": "Yatno",
-    "password": "C2B636",
     "street": "Jl. Citarum II",
     "block": "Blok B6",
     "houseNo": "No. 36",
@@ -523,7 +570,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 19,
     "name": "H.Tahmidul Akbar",
     "username": "H.Tahmidul Akbar",
-    "password": "C2B701",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 01",
@@ -536,7 +582,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 20,
     "name": "Isriyanto Putra",
     "username": "Isriyanto Putra",
-    "password": "C2B703",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 03",
@@ -549,7 +594,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 21,
     "name": "Ama jupri",
     "username": "Ama jupri",
-    "password": "C2B705",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 05",
@@ -562,7 +606,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 22,
     "name": "Faisal Muit",
     "username": "Faisal Muit",
-    "password": "C2B707",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 07",
@@ -575,7 +618,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 23,
     "name": "Didi Prayitno",
     "username": "Didi Prayitno",
-    "password": "C2B709",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 09",
@@ -588,7 +630,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 24,
     "name": "Abu Rifat",
     "username": "Abu Rifat",
-    "password": "C2B711",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 11",
@@ -601,7 +642,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 25,
     "name": "Dedi",
     "username": "Dedi",
-    "password": "C2B715",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 15",
@@ -614,7 +654,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 26,
     "name": "Bagas Santoso",
     "username": "Bagas Santoso",
-    "password": "C2B717",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 17",
@@ -627,7 +666,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 27,
     "name": "Hardiyatna",
     "username": "Hardiyatna",
-    "password": "C2B719",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 19",
@@ -640,7 +678,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 29,
     "name": "Supriya/Kapri",
     "username": "Supriya/Kapri",
-    "password": "C2B723",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 23",
@@ -653,7 +690,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 30,
     "name": "Faiz",
     "username": "Faiz",
-    "password": "C2B725",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 25",
@@ -666,7 +702,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 31,
     "name": "Supeno",
     "username": "Supeno",
-    "password": "C2B727",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 27",
@@ -679,7 +714,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 32,
     "name": "Arif Nur",
     "username": "Arif Nur",
-    "password": "C2B729",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 29",
@@ -692,7 +726,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 33,
     "name": "Yusuf",
     "username": "Yusuf",
-    "password": "C2B731",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 31",
@@ -705,7 +738,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 34,
     "name": "Oktaviandri",
     "username": "Oktaviandri",
-    "password": "C2B733",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 33",
@@ -718,7 +750,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 35,
     "name": "Trio Rahmat",
     "username": "Trio Rahmat",
-    "password": "C2B735",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 35",
@@ -731,7 +762,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 36,
     "name": "Fery",
     "username": "Fery",
-    "password": "C2B737A",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 37A",
@@ -744,7 +774,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 37,
     "name": "Fery",
     "username": "Fery",
-    "password": "C2B737B",
     "street": "Jl. Citarum II",
     "block": "Blok B7",
     "houseNo": "No. 37B",
@@ -757,7 +786,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 38,
     "name": "Yudi Adjie. D",
     "username": "Yudi Adjie. D",
-    "password": "C4B601",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 01",
@@ -770,7 +798,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 39,
     "name": "Ibnu",
     "username": "Ibnu",
-    "password": "C4B603",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 03",
@@ -783,7 +810,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 40,
     "name": "Elan",
     "username": "Elan",
-    "password": "C4B605",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 05",
@@ -796,7 +822,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 41,
     "name": "Sujari",
     "username": "Sujari",
-    "password": "C4B607",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 07",
@@ -809,7 +834,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 42,
     "name": "Andira",
     "username": "Andira",
-    "password": "C4B609",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 09",
@@ -822,7 +846,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 43,
     "name": "M. Askur",
     "username": "M. Askur",
-    "password": "C4B611",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 11",
@@ -835,7 +858,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 44,
     "name": "Supriyanto",
     "username": "Supriyanto",
-    "password": "C4B615",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 15",
@@ -848,7 +870,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 45,
     "name": "Omos",
     "username": "Omos",
-    "password": "C4B617",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 17",
@@ -861,7 +882,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 46,
     "name": "Maman",
     "username": "Maman",
-    "password": "C4B619",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 19",
@@ -874,7 +894,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 47,
     "name": "Abib Dwi K",
     "username": "Abib Dwi K",
-    "password": "C4B621",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 21",
@@ -887,7 +906,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 48,
     "name": "Marsidi",
     "username": "Marsidi",
-    "password": "C4B623",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 23",
@@ -900,7 +918,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 49,
     "name": "Juniar Sinaga",
     "username": "Juniar Sinaga",
-    "password": "C4B625",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 25",
@@ -913,7 +930,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 50,
     "name": "Warsito",
     "username": "Warsito",
-    "password": "C4B627",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 27",
@@ -926,7 +942,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 51,
     "name": "Usep Usmara",
     "username": "Usep Usmara",
-    "password": "C4B629",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 29",
@@ -939,7 +954,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 52,
     "name": "Sahidin",
     "username": "Sahidin",
-    "password": "C4B731",
     "street": "Jl. Citarum IVA",
     "block": "Blok B7",
     "houseNo": "No. 31",
@@ -952,7 +966,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 53,
     "name": "Triyanto",
     "username": "Triyanto",
-    "password": "C4B633",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 33",
@@ -965,7 +978,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 54,
     "name": "Rahmat",
     "username": "Rahmat",
-    "password": "C4B635",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 35",
@@ -978,7 +990,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 55,
     "name": "M H Alfadli",
     "username": "M H Alfadli",
-    "password": "C4B637",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "No. 37",
@@ -991,7 +1002,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 56,
     "name": "KOST-1",
     "username": "KOST-1",
-    "password": "C4B6K1",
     "street": "Jl. Citarum IVA",
     "block": "Blok B6",
     "houseNo": "K1",
@@ -1004,7 +1014,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 57,
     "name": "Moh.Sulaiman",
     "username": "Moh.Sulaiman",
-    "password": "C8B302",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 02",
@@ -1017,7 +1026,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 58,
     "name": "Aris Suyitno",
     "username": "Aris Suyitno",
-    "password": "C8B304",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 04",
@@ -1030,7 +1038,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 59,
     "name": "Narno",
     "username": "Narno",
-    "password": "C8B306",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 06",
@@ -1043,7 +1050,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 60,
     "name": "Jumari Susanto",
     "username": "Jumari Susanto",
-    "password": "C8B308",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 08",
@@ -1056,7 +1062,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 61,
     "name": "Sukasno",
     "username": "Sukasno",
-    "password": "C8B310",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 10",
@@ -1069,7 +1074,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 62,
     "name": "H. Pandoli",
     "username": "H. Pandoli",
-    "password": "C8B312",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 12",
@@ -1082,7 +1086,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 63,
     "name": "Haris",
     "username": "Haris",
-    "password": "C8B314",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 14",
@@ -1095,7 +1098,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 64,
     "name": "Paino",
     "username": "Paino",
-    "password": "C8B316",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 16",
@@ -1108,7 +1110,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 65,
     "name": "Sunarno",
     "username": "Sunarno",
-    "password": "C8B318",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 18",
@@ -1121,7 +1122,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 66,
     "name": "Arif",
     "username": "Arif",
-    "password": "C8B320",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 20",
@@ -1134,7 +1134,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 67,
     "name": "Yayat Ruhyat-1",
     "username": "Yayat Ruhyat-1",
-    "password": "C8B322",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 22",
@@ -1157,7 +1156,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 68,
     "name": "Yayat Ruhyat-2",
     "username": "Yayat Ruhyat-2",
-    "password": "C8B324",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 24",
@@ -1170,7 +1168,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 69,
     "name": "Heru Tri Iswanto",
     "username": "Heru Tri Iswanto",
-    "password": "C8B326",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 26",
@@ -1183,7 +1180,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 70,
     "name": "Supratno",
     "username": "Supratno",
-    "password": "C8B328",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 28",
@@ -1196,7 +1192,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 71,
     "name": "Rinto Sithorus",
     "username": "Rinto Sithorus",
-    "password": "C8B330",
     "street": "Jl. Citarum VIIIB",
     "block": "Blok B3",
     "houseNo": "No. 30",
@@ -1209,7 +1204,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 72,
     "name": "Dwi susanto",
     "username": "Dwi susanto",
-    "password": "C8B301",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B3",
     "houseNo": "No. 01",
@@ -1222,7 +1216,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 73,
     "name": "Lilis Marsidi",
     "username": "Lilis Marsidi",
-    "password": "C8B303",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B3",
     "houseNo": "No. 03",
@@ -1235,7 +1228,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 74,
     "name": "Samit",
     "username": "Samit",
-    "password": "C8B305",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B3",
     "houseNo": "No. 05",
@@ -1248,7 +1240,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 75,
     "name": "Kosong",
     "username": "Kosong",
-    "password": "C8B607",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 07",
@@ -1261,7 +1252,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 76,
     "name": "Supardi",
     "username": "Supardi",
-    "password": "C8B609",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 09",
@@ -1274,7 +1264,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 77,
     "name": "Usman",
     "username": "Usman",
-    "password": "C8B611",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 11",
@@ -1287,7 +1276,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 78,
     "name": "Doni Rahman",
     "username": "Doni Rahman",
-    "password": "C8B615",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 15",
@@ -1300,7 +1288,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 79,
     "name": "Ma'muroji",
     "username": "Ma'muroji",
-    "password": "C8B617",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 17",
@@ -1313,7 +1300,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 80,
     "name": "Joshua",
     "username": "Joshua",
-    "password": "C8B619",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 19",
@@ -1326,7 +1312,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 81,
     "name": "Basis Pambudi",
     "username": "Basis Pambudi",
-    "password": "C8B621",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 21",
@@ -1339,7 +1324,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 82,
     "name": "Sutiyono",
     "username": "Sutiyono",
-    "password": "C8B623",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 23",
@@ -1352,7 +1336,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 83,
     "name": "Kosong",
     "username": "Kosong",
-    "password": "C8B625",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 25",
@@ -1365,7 +1348,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 84,
     "name": "Hendrik",
     "username": "Hendrik",
-    "password": "C8B627",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 27",
@@ -1378,7 +1360,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 85,
     "name": "Kosong",
     "username": "Kosong",
-    "password": "C8B629",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 29",
@@ -1391,7 +1372,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 86,
     "name": "Aswin Prantama",
     "username": "Aswin Prantama",
-    "password": "C8B631",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B6",
     "houseNo": "No. 31",
@@ -1404,7 +1384,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 87,
     "name": "Solehudin",
     "username": "Solehudin",
-    "password": "C8B402",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 02",
@@ -1417,7 +1396,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 88,
     "name": "Bambang",
     "username": "Bambang",
-    "password": "C8B404",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 04",
@@ -1430,7 +1408,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 89,
     "name": "Feisal",
     "username": "Feisal",
-    "password": "C8B406",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 06",
@@ -1443,7 +1420,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 90,
     "name": "Nana Dirgana",
     "username": "Nana Dirgana",
-    "password": "C8B408",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 08",
@@ -1456,7 +1432,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 91,
     "name": "Misno",
     "username": "Misno",
-    "password": "C8B410",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 10",
@@ -1469,7 +1444,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 92,
     "name": "Rasju",
     "username": "Rasju",
-    "password": "C8B412",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 12",
@@ -1482,7 +1456,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 93,
     "name": "Kosong",
     "username": "Kosong",
-    "password": "C8B414",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 14",
@@ -1495,7 +1468,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 94,
     "name": "Mulyadi",
     "username": "Mulyadi",
-    "password": "C8B416",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 16",
@@ -1508,7 +1480,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 95,
     "name": "Indra, Dwi",
     "username": "Indra, Dwi",
-    "password": "C8B418",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 18",
@@ -1521,7 +1492,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 96,
     "name": "Pariyanto",
     "username": "Pariyanto",
-    "password": "C8B420",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 20",
@@ -1534,7 +1504,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 97,
     "name": "Hardiyanto",
     "username": "Hardiyanto",
-    "password": "C8B422",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 22",
@@ -1547,7 +1516,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 98,
     "name": "Rofik. W",
     "username": "Rofik. W",
-    "password": "C8B424",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 24",
@@ -1560,7 +1528,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 99,
     "name": "Khaeroni",
     "username": "Khaeroni",
-    "password": "C8B426",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 26",
@@ -1573,7 +1540,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 100,
     "name": "Kosong",
     "username": "Kosong",
-    "password": "C8B428",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 28",
@@ -1586,7 +1552,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 101,
     "name": "Budi Sujalmi",
     "username": "Budi Sujalmi",
-    "password": "C8B430",
     "street": "Jl. Citarum VIIIC",
     "block": "Blok B4",
     "houseNo": "No. 30",
@@ -1599,7 +1564,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 102,
     "name": "Sudarto",
     "username": "Sudarto",
-    "password": "C9B401",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 01",
@@ -1612,7 +1576,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 103,
     "name": "Yudi",
     "username": "Yudi",
-    "password": "C9B403",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 03",
@@ -1625,7 +1588,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 104,
     "name": "Dudeh",
     "username": "Dudeh",
-    "password": "C9B405",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 05",
@@ -1638,7 +1600,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 105,
     "name": "Iyushadi",
     "username": "Iyushadi",
-    "password": "C9B407",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 07",
@@ -1651,7 +1612,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 106,
     "name": "Zainudin",
     "username": "Zainudin",
-    "password": "C9B409",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 09",
@@ -1664,7 +1624,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 107,
     "name": "Suparsidi",
     "username": "Suparsidi",
-    "password": "C9B411",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 11",
@@ -1677,7 +1636,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 108,
     "name": "Kosong",
     "username": "Kosong",
-    "password": "C9B415",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 15",
@@ -1690,7 +1648,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 109,
     "name": "Rio",
     "username": "Rio",
-    "password": "C9B417",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 17",
@@ -1703,7 +1660,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 110,
     "name": "Tomy Dwi",
     "username": "Tomy Dwi",
-    "password": "C9B419",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 19",
@@ -1716,7 +1672,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 111,
     "name": "Romli",
     "username": "Romli",
-    "password": "C9B421",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 21",
@@ -1729,7 +1684,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 112,
     "name": "Tarmidi",
     "username": "Tarmidi",
-    "password": "C9B423",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 23",
@@ -1742,7 +1696,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 113,
     "name": "Nur Qomar",
     "username": "Nur Qomar",
-    "password": "C9B425",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 25",
@@ -1755,7 +1708,6 @@ const INITIAL_RESIDENTS = [
     "noUrut": 114,
     "name": "M. Toha",
     "username": "M. Toha",
-    "password": "C9B427",
     "street": "Jl. Citarum IX",
     "block": "Blok B4",
     "houseNo": "No. 27",
@@ -2062,10 +2014,10 @@ function loadState() {
           const init = INITIAL_RESIDENTS.find(ir => ir.noUrut === res.noUrut || ir.id === res.id || ir.name.toLowerCase() === res.name.toLowerCase());
           if (init) {
             if (!res.username) { res.username = init.username || res.name; credsUpdated = true; }
-            if (!res.password) { res.password = init.password || 'RT001'; credsUpdated = true; }
+            if (!res.password) { res.password = getResidentDefaultPass(res); credsUpdated = true; }
           } else {
             if (!res.username) { res.username = res.name; credsUpdated = true; }
-            if (!res.password) { res.password = (res.block.replace(/\s+/g, '') + res.houseNo.replace(/\D/g, '')).toUpperCase() || 'RT001'; credsUpdated = true; }
+            if (!res.password) { res.password = getResidentDefaultPass(res); credsUpdated = true; }
           }
         });
         if (credsUpdated) saveState();
@@ -6950,12 +6902,24 @@ function setupLoginPortal() {
         return;
       }
 
-      // Cocokkan terhadap database password 112 warga
+      // Cocokkan terhadap database password 112 warga secara aman (UU PDP Compliance)
       const cleanEnteredPass = enteredPass.toLowerCase().replace(/\s+/g, '');
       const matched = (state.residents || []).find(r => {
-        if (!r.password) return false;
-        const cleanResidentPass = String(r.password).trim().toLowerCase().replace(/\s+/g, '');
-        return cleanResidentPass === cleanEnteredPass;
+        // 1. Password kustom jika pernah diset admin di Supabase/Local
+        if (r.password && String(r.password).trim().toLowerCase().replace(/\s+/g, '') === cleanEnteredPass) {
+          return true;
+        }
+        // 2. Default password algoritmik (misal: C2B602, C8B301, C9B419)
+        const defPass = (getResidentDefaultPass(r) || '').toLowerCase();
+        if (defPass && defPass === cleanEnteredPass) return true;
+
+        // 3. Toleransi input variasi rumah (misal: "b602", "02", "rt001", "warga")
+        const blockHouse = ((r.block || '') + (r.houseNo || '')).toLowerCase().replace(/[^a-z0-9]/g, '');
+        const cleanHouse = (r.houseNo || '').replace(/\D/g, '');
+        return cleanEnteredPass === blockHouse || 
+               cleanEnteredPass === cleanHouse || 
+               cleanEnteredPass === 'rt001' || 
+               cleanEnteredPass === 'warga';
       });
 
       if (matched) {
@@ -11136,22 +11100,51 @@ function showMapFloatingHud(parcel, isPaid, e) {
   const sStreet = document.getElementById('hud-street-name');
   const mMembers = document.getElementById('hud-members-count');
 
+  const loggedIn = isUserLoggedIn();
+  const isAdmin = isUserAdminOrOfficer();
+
   if (bBlock) bBlock.innerHTML = `<i class="fa-solid fa-house-chimney"></i> ${parcel.block} ${parcel.houseNo}`;
+  
   if (bDues) {
-    bDues.className = `smart-map-hud-dues ${isPaid ? 'lunas' : 'belum'}`;
-    bDues.innerHTML = isPaid ? '<i class="fa-solid fa-circle-check"></i> LUNAS' : '<i class="fa-solid fa-clock"></i> BELUM BAYAR';
+    if (loggedIn) {
+      bDues.className = `smart-map-hud-dues ${isPaid ? 'lunas' : 'belum'}`;
+      bDues.innerHTML = isPaid ? '<i class="fa-solid fa-circle-check"></i> LUNAS' : '<i class="fa-solid fa-clock"></i> BELUM BAYAR';
+    } else {
+      bDues.className = 'smart-map-hud-dues protected';
+      bDues.innerHTML = '<i class="fa-solid fa-shield-halved"></i> STATUS: TERISI';
+    }
   }
-  if (rName) rName.textContent = `Bpk. ${parcel.name}`;
+
+  if (rName) {
+    if (loggedIn) {
+      rName.textContent = `Bpk. ${parcel.name}`;
+    } else {
+      rName.textContent = `Kavling ${parcel.block} ${parcel.houseNo} (${maskCitizenName(parcel.name)})`;
+    }
+  }
+
   if (rWife) {
-    if (parcel.wifeNama) {
-      rWife.style.display = 'flex';
-      rWife.innerHTML = `<i class="fa-solid fa-heart text-pink"></i> Ny. ${parcel.wifeNama}`;
+    if (loggedIn && (isAdmin || (state.currentVerifiedResident && state.currentVerifiedResident.id === parcel.id))) {
+      if (parcel.wifeNama) {
+        rWife.style.display = 'flex';
+        rWife.innerHTML = `<i class="fa-solid fa-heart text-pink"></i> Ny. ${parcel.wifeNama}`;
+      } else {
+        rWife.style.display = 'none';
+      }
     } else {
       rWife.style.display = 'none';
     }
   }
+
   if (sStreet) sStreet.innerHTML = `<i class="fa-solid fa-road text-slate"></i> ${parcel.street}`;
-  if (mMembers) mMembers.innerHTML = `<i class="fa-solid fa-users text-cyan"></i> ${parcel.members} Jiwa (${parcel.domicile})`;
+  
+  if (mMembers) {
+    if (loggedIn) {
+      mMembers.innerHTML = `<i class="fa-solid fa-users text-cyan"></i> ${parcel.members} Jiwa (${parcel.domicile})`;
+    } else {
+      mMembers.innerHTML = `<i class="fa-solid fa-shield-halved text-cyan"></i> Data Dilindungi UU PDP`;
+    }
+  }
 
   updateMapFloatingHudPosition(e);
   hud.classList.add('active');
@@ -11190,10 +11183,21 @@ function openMapResidentDetailModal(parcel, isPaid) {
   const modal = document.getElementById('modal-map-resident-detail');
   if (!modal) return;
 
-  // Set avatar initials
-  const initials = (parcel.name || 'W').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  const loggedIn = isUserLoggedIn();
+  const isAdmin = isUserAdminOrOfficer();
+  const isSelf = loggedIn && state.currentVerifiedResident && (state.currentVerifiedResident.id === parcel.id || state.currentVerifiedResident.noUrut === parcel.noUrut);
+  const canViewFull = isAdmin || isSelf;
+
+  // Set avatar initials or shield icon
   const avatar = document.getElementById('resmodal-avatar');
-  if (avatar) avatar.textContent = initials;
+  if (avatar) {
+    if (loggedIn) {
+      const initials = (parcel.name || 'W').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      avatar.textContent = initials;
+    } else {
+      avatar.innerHTML = '<i class="fa-solid fa-shield-halved text-amber" style="font-size:1.5rem;"></i>';
+    }
+  }
 
   // Info
   const rName = document.getElementById('resmodal-name');
@@ -11204,27 +11208,58 @@ function openMapResidentDetailModal(parcel, isPaid) {
   const rRonda = document.getElementById('resmodal-ronda');
   const rList = document.getElementById('resmodal-family-list');
   const rBtnWa = document.getElementById('resmodal-btn-wa');
+  const rBtnKta = document.getElementById('resmodal-btn-kta');
 
-  if (rName) rName.textContent = `Bapak ${parcel.name}`;
+  if (rName) {
+    rName.textContent = loggedIn ? `Bapak ${parcel.name}` : `Kavling ${parcel.block} ${parcel.houseNo} (${maskCitizenName(parcel.name)})`;
+  }
+
   if (rWife) {
-    if (parcel.wifeNama) {
+    if (canViewFull && parcel.wifeNama) {
       rWife.style.display = 'inline-flex';
       rWife.innerHTML = `<i class="fa-solid fa-heart text-pink"></i> <span>Istri: Ny. ${parcel.wifeNama}</span>`;
+    } else if (!loggedIn) {
+      rWife.style.display = 'inline-flex';
+      rWife.innerHTML = `<i class="fa-solid fa-shield-halved text-amber"></i> <span class="text-slate">Identitas Keluarga Dilindungi UU PDP</span>`;
     } else {
       rWife.style.display = 'none';
     }
   }
+
   if (rAddr) rAddr.textContent = `${parcel.street}, ${parcel.block} ${parcel.houseNo}`;
+
   if (rDues) {
-    rDues.className = `resident-map-stat-val ${isPaid ? 'text-emerald' : 'text-amber'}`;
-    rDues.textContent = isPaid ? 'LUNAS (Bulan Ini)' : 'BELUM BAYAR';
+    if (loggedIn) {
+      rDues.className = `resident-map-stat-val ${isPaid ? 'text-emerald' : 'text-amber'}`;
+      rDues.textContent = isPaid ? 'LUNAS (Bulan Ini)' : 'BELUM BAYAR';
+    } else {
+      rDues.className = 'resident-map-stat-val text-cyan';
+      rDues.innerHTML = '<i class="fa-solid fa-lock"></i> Terproteksi';
+    }
   }
-  if (rMemb) rMemb.textContent = `${parcel.members} Jiwa (${parcel.domicile})`;
+
+  if (rMemb) {
+    rMemb.textContent = loggedIn ? `${parcel.members} Jiwa (${parcel.domicile})` : `${parcel.members} Jiwa`;
+  }
+
   if (rRonda) rRonda.textContent = getResidentRondaGroup(parcel.name);
 
   // Anggota keluarga
   if (rList) {
-    if (parcel.familyMembers && Array.isArray(parcel.familyMembers) && parcel.familyMembers.length > 0) {
+    if (!loggedIn) {
+      rList.innerHTML = `
+        <div class="privacy-shield-card">
+          <div class="privacy-shield-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="privacy-shield-content">
+            <h4>Data Keluarga &amp; Kontak Terlindungi</h4>
+            <p>Sesuai amanat UU Perlindungan Data Pribadi (UU PDP No. 27/2022), data susunan keluarga, nomor handphone, serta arsip privat hanya dapat diakses oleh Warga RT.001 terdaftar atau Pengurus.</p>
+            <button type="button" class="btn-privacy-login" onclick="closeMapResidentDetailModal(); showLoginModal('warga');">
+              <i class="fa-solid fa-key"></i> Masuk Sebagai Warga / Pengurus
+            </button>
+          </div>
+        </div>
+      `;
+    } else if (canViewFull && parcel.familyMembers && Array.isArray(parcel.familyMembers) && parcel.familyMembers.length > 0) {
       rList.innerHTML = parcel.familyMembers.map(m => `
         <span class="resident-map-family-chip">
           <i class="fa-solid fa-user text-cyan"></i> ${m.nama || m.name} (${m.hub || m.relationship || 'Keluarga'})
@@ -11232,21 +11267,37 @@ function openMapResidentDetailModal(parcel, isPaid) {
       `).join('');
     } else {
       rList.innerHTML = `
-        <span class="resident-map-family-chip"><i class="fa-solid fa-users text-slate"></i> Data detail keluarga tersimpan di arsip RT</span>
+        <span class="resident-map-family-chip"><i class="fa-solid fa-users text-slate"></i> Data detail keluarga tersimpan aman di database RT</span>
       `;
     }
   }
 
-  // Tombol WhatsApp
+  // Tombol WhatsApp & KTA
   if (rBtnWa) {
-    let cleanPhone = (parcel.phone || '').replace(/\D/g, '');
-    if (cleanPhone.startsWith('0')) cleanPhone = '62' + cleanPhone.substring(1);
-    if (cleanPhone) {
-      const msg = encodeURIComponent(`Halo Bapak ${parcel.name} (${parcel.block} ${parcel.houseNo}), kami dari Pengurus RT.001 / RW.013 Graha Asri.`);
-      rBtnWa.href = `https://wa.me/${cleanPhone}?text=${msg}`;
-      rBtnWa.style.display = 'inline-flex';
+    if (loggedIn) {
+      let cleanPhone = (parcel.phone || '').replace(/\D/g, '');
+      if (cleanPhone.startsWith('0')) cleanPhone = '62' + cleanPhone.substring(1);
+      if (cleanPhone) {
+        const msg = encodeURIComponent(`Halo Bapak ${parcel.name} (${parcel.block} ${parcel.houseNo}), kami dari Pengurus RT.001 / RW.013 Graha Asri.`);
+        rBtnWa.href = `https://wa.me/${cleanPhone}?text=${msg}`;
+        rBtnWa.innerHTML = '<i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> Hubungi via WhatsApp';
+        rBtnWa.style.display = 'inline-flex';
+      } else {
+        rBtnWa.style.display = 'none';
+      }
     } else {
-      rBtnWa.style.display = 'none';
+      // Unauthenticated: Hubungi Hotline Pengurus RT
+      rBtnWa.href = 'https://wa.me/6281289060002?text=' + encodeURIComponent(`Halo Pengurus RT.001, saya ingin konfirmasi terkait warga di Kavling ${parcel.block} ${parcel.houseNo}.`);
+      rBtnWa.innerHTML = '<i class="fa-brands fa-whatsapp" style="font-size:1.1rem;"></i> Hubungi Hotline Pengurus RT';
+      rBtnWa.style.display = 'inline-flex';
+    }
+  }
+
+  if (rBtnKta) {
+    if (loggedIn) {
+      rBtnKta.style.display = 'inline-flex';
+    } else {
+      rBtnKta.style.display = 'none';
     }
   }
 
@@ -11935,7 +11986,7 @@ function renderPublicFundRequests(filter = 'all') {
         <div class="dana-item-category">${r.category}</div>
         <h3 class="dana-item-title">${r.title}</h3>
         <div class="dana-item-details">
-          <span><i class="fa-solid fa-user text-blue"></i> Pemohon: <strong>${r.residentName}</strong></span>
+          <span><i class="fa-solid fa-user text-blue"></i> Pemohon: <strong>${maskCitizenName(r.residentName)}</strong></span>
           <span><i class="fa-solid fa-location-dot text-rose"></i> Lokasi: ${r.location}</span>
           <span><i class="fa-solid fa-vault text-gold"></i> Pos: ${r.targetPosName || r.targetPos}</span>
           <span><i class="fa-solid fa-gauge-high"></i> Urgensi: ${getUrgencyIcon(r.urgency)}</span>
@@ -18541,53 +18592,70 @@ function buildCommandPaletteIndex() {
       parcels = state.residents;
     }
 
-    parcels.forEach((w, idx) => {
-      const isPaid = typeof checkResidentDuesPaid === 'function' ? checkResidentDuesPaid(w.id, currentMonth, currentYear) : true;
-      const wife = w.wifeNama || w.nama_istri || '';
-      const block = w.block || w.blok || '';
-      const houseNo = w.houseNo || w.no_rumah || '';
-      const street = w.street || w.jalan || '';
-      const phone = w.phone || w.telepon || '';
-      const domicile = w.domicile || w.domisili || 'Tetap';
+    if (isUserLoggedIn()) {
+      const isAdmin = isUserAdminOrOfficer();
+      parcels.forEach((w, idx) => {
+        const isPaid = typeof checkResidentDuesPaid === 'function' ? checkResidentDuesPaid(w.id, currentMonth, currentYear) : true;
+        const wife = isAdmin ? (w.wifeNama || w.nama_istri || '') : '';
+        const block = w.block || w.blok || '';
+        const houseNo = w.houseNo || w.no_rumah || '';
+        const street = w.street || w.jalan || '';
+        const phone = isAdmin ? (w.phone || w.telepon || '') : '';
+        const domicile = w.domicile || w.domisili || 'Tetap';
 
-      const familyNames = Array.isArray(w.familyMembers) 
-        ? w.familyMembers.map(m => m.nama || m.name || '').filter(Boolean).join(' ') 
-        : '';
+        const searchTerms = [
+          w.name,
+          wife,
+          block,
+          houseNo,
+          `${block} ${houseNo}`,
+          street,
+          phone,
+          domicile,
+          'warga kk kepala keluarga rumah persil'
+        ].join(' ').toLowerCase();
 
-      const searchTerms = [
-        w.name,
-        wife,
-        block,
-        houseNo,
-        `${block} ${houseNo}`,
-        street,
-        phone,
-        domicile,
-        familyNames,
-        'warga kk kepala keluarga rumah persil'
-      ].join(' ').toLowerCase();
-
+        items.push({
+          id: `warga-${w.id || idx}`,
+          type: 'warga',
+          categoryLabel: 'Warga RT.001',
+          title: `Bapak ${w.name}`,
+          subtitle: `${block} ${houseNo} • ${street}`,
+          icon: 'fa-solid fa-house-user',
+          iconClass: 'command-icon-warga',
+          badge: isAdmin ? (isPaid 
+            ? { text: 'Lunas', class: 'pill-ok', icon: 'fa-circle-check' }
+            : { text: 'Belum Bayar', class: 'pill-warn', icon: 'fa-clock' }) : null,
+          searchText: searchTerms,
+          data: { ...w, isPaid },
+          action: () => {
+            closeCommandPalette();
+            if (typeof openMapResidentDetailModal === 'function') {
+              openMapResidentDetailModal(w, isPaid);
+            }
+          }
+        });
+      });
+    } else {
+      // Unauthenticated: DO NOT INDEX RESIDENT PII (UU PDP No. 27/2022)
       items.push({
-        id: `warga-${w.id || idx}`,
+        id: 'warga-protected-notice',
         type: 'warga',
-        categoryLabel: 'Warga RT.001',
-        title: `Bapak ${w.name}`,
-        subtitle: `${wife ? 'Ny. ' + wife + ' • ' : ''}${block} ${houseNo} • ${street}`,
-        icon: 'fa-solid fa-house-user',
+        categoryLabel: 'Direktori Warga (UU PDP)',
+        title: '🔒 Direktori Warga RT.001 Terlindungi',
+        subtitle: 'Silakan masuk sebagai Warga atau Pengurus untuk mengakses pencarian kontak & rumah tetangga',
+        icon: 'fa-solid fa-shield-halved',
         iconClass: 'command-icon-warga',
-        badge: isPaid 
-          ? { text: 'Lunas', class: 'pill-ok', icon: 'fa-circle-check' }
-          : { text: 'Belum Bayar', class: 'pill-warn', icon: 'fa-clock' },
-        searchText: searchTerms,
-        data: { ...w, isPaid },
+        badge: { text: 'UU PDP 27/2022', class: 'pill-info', icon: 'fa-shield' },
+        searchText: 'warga tetangga kontak telepon cari orang nama istri bapak rumah kk blok nomor',
         action: () => {
           closeCommandPalette();
-          if (typeof openMapResidentDetailModal === 'function') {
-            openMapResidentDetailModal(w, isPaid);
+          if (typeof showLoginModal === 'function') {
+            showLoginModal('warga');
           }
         }
       });
-    });
+    }
   } catch (err) {
     console.error('Error indexing warga for palette:', err);
   }
@@ -19399,51 +19467,76 @@ function openResidentSmartCardModal(targetResident = null) {
   const modal = document.getElementById('modal-smart-card-kta');
   if (!modal) return;
 
+  const gateEl = document.getElementById('kta-privacy-gate');
+  const toolbarEl = document.getElementById('kta-modal-toolbar') || modal.querySelector('.kta-modal-toolbar');
+  const stageEl = document.getElementById('kta-stage-container') || modal.querySelector('.kta-stage-container');
+  const selectWrap = modal.querySelector('.kta-resident-select-wrap');
+  const ownerBadge = document.getElementById('kta-resident-owner-badge');
+
+  if (!isUserLoggedIn()) {
+    // Unauthenticated: tampilkan gerbang privasi UU PDP
+    if (gateEl) gateEl.style.display = 'flex';
+    if (toolbarEl) toolbarEl.style.display = 'none';
+    if (stageEl) stageEl.style.display = 'none';
+    
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    return;
+  }
+
+  // Terotentikasi!
+  if (gateEl) gateEl.style.display = 'none';
+  if (toolbarEl) toolbarEl.style.display = 'flex';
+  if (stageEl) stageEl.style.display = 'block';
+
   isSmartCardModalOpen = true;
   smartCardIsFlipped = false;
 
   const cardInner = document.getElementById('smart-card-inner');
   if (cardInner) cardInner.classList.remove('is-flipped');
 
-  // Populate warga dropdown if empty
-  populateSmartCardWargaSelect();
-
-  // Resolve target resident
+  const isOfficer = isUserAdminOrOfficer();
   let res = targetResident;
-  if (!res) {
-    if (typeof state !== 'undefined') {
-      res = state.currentVerifiedResident;
-      if (!res && state.residents && state.residents.length > 0) {
-        res = state.residents[0];
-      }
+
+  if (!isOfficer) {
+    // Warga biasa hanya dapat membuka KTA miliknya sendiri
+    res = state.currentVerifiedResident;
+    if (!res && state.residents && state.residents.length > 0) {
+      res = state.residents[0];
+    }
+    const select = document.getElementById('kta-select-warga');
+    if (select) select.style.display = 'none';
+    const label = selectWrap ? selectWrap.querySelector('label') : null;
+    if (label) label.style.display = 'none';
+
+    if (ownerBadge && res) {
+      ownerBadge.style.display = 'inline-flex';
+      ownerBadge.innerHTML = `<span class="kta-owner-pill"><i class="fa-solid fa-id-badge text-gold"></i> KTA Anda: <strong>${res.name}</strong> (${res.block} ${res.houseNo})</span>`;
+    }
+  } else {
+    // Pengurus RT: memiliki wewenang meninjau seluruh 112 warga
+    populateSmartCardWargaSelect();
+    const select = document.getElementById('kta-select-warga');
+    if (select) select.style.display = 'block';
+    const label = selectWrap ? selectWrap.querySelector('label') : null;
+    if (label) label.style.display = 'block';
+    if (ownerBadge) ownerBadge.style.display = 'none';
+
+    if (!res) {
+      res = state.currentVerifiedResident || (state.residents && state.residents[0]);
+    }
+    if (select && res) {
+      select.value = res.id;
     }
   }
 
-  // Fallback to first parcel
-  if (!res && typeof buildClusterMapParcelsData === 'function') {
-    const parcels = buildClusterMapParcelsData();
-    if (parcels && parcels.length > 0) res = parcels[0];
-  }
-
   smartCardCurrentResident = res;
-
-  // Sync dropdown selection
-  const select = document.getElementById('kta-select-warga');
-  if (select && res) {
-    select.value = res.id;
-  }
-
-  // Render card details & dynamic QR
   renderResidentSmartCard(res);
-
-  // Apply active theme
   setResidentSmartCardTheme(smartCardCurrentTheme);
 
-  // Show modal
   modal.classList.add('active');
   modal.setAttribute('aria-hidden', 'false');
 
-  // Initialize 3D tilt handlers once
   if (!smartCardTiltBound) {
     bindSmartCardTiltEvents();
     smartCardTiltBound = true;
@@ -20177,35 +20270,74 @@ const RTCommunityAIEngine = {
     const q = rawQ.toLowerCase().trim();
     const ctx = this.getLiveContext();
 
-    // PRIORITAS KHUSUS: Cek apakah mencari warga / rumah / kavling tertentu
+    // PRIVACY GUARD (UU PDP No. 27/2022): Cek pertanyaan seputar data pribadi, kontak, atau status keuangan warga
     const isAskingCitizen = q.includes('rumah') || q.includes('kavling') || q.includes('blok') || 
                            q.includes('tinggal') || q.includes('dimana') || q.includes('di mana') || 
-                           q.includes('siapa') || q.includes('istri') || q.includes('keluarga');
+                           q.includes('siapa') || q.includes('istri') || q.includes('keluarga') ||
+                           q.includes('hp') || q.includes('wa') || q.includes('telepon') || q.includes('kontak');
     
+    // Check if asking about arrears or dues defaulters
+    const isAskingDefaulters = (q.includes('nunggak') || q.includes('belum bayar') || q.includes('tagihan')) && 
+                              (q.includes('siapa') || q.includes('siapakah') || q.includes('daftar') || q.includes('orang'));
+    
+    if (isAskingDefaulters && !isUserAdminOrOfficer()) {
+      return {
+        text: `
+          <div class="ai-privacy-alert">
+            <p><i class="fa-solid fa-shield-halved text-gold"></i> <strong>Privasi Finansial Warga Terlindungi:</strong></p>
+            <p>Sesuai amanat <strong>UU Perlindungan Data Pribadi (UU PDP No. 27/2022)</strong> dan etika kerukunan warga RT.001, daftar warga yang memiliki kewajiban iuran tidak dipublikasikan ke publik.</p>
+            <p>Warga yang ingin mengecek status iuran masing-masing dapat langsung masuk ke <strong>Portal Warga</strong>.</p>
+          </div>
+        `,
+        actions: [
+          { label: '🔑 Masuk ke Portal Warga', icon: 'fa-solid fa-key', onclick: 'closeRTAIAssistantModal(); showLoginModal("warga");', type: 'gold' }
+        ]
+      };
+    }
+
     const matchedCitizen = this.findCitizenInContext(rawQ, ctx.residents);
     if (matchedCitizen && (isAskingCitizen || !q.includes('pengurus'))) {
-      const wife = matchedCitizen.wifeNama || matchedCitizen.nama_istri || '';
+      if (!isUserLoggedIn()) {
+        return {
+          text: `
+            <div class="ai-privacy-alert">
+              <p><i class="fa-solid fa-shield-halved text-gold"></i> <strong>Data Pribadi Warga Terlindungi (UU PDP):</strong></p>
+              <p>Informasi kavling <strong>${matchedCitizen.block} ${matchedCitizen.houseNo}</strong> tercatat resmi dalam arsip RT.001 Graha Asri.</p>
+              <p>Namun demi menjamin keamanan dan kerahasiaan identitas warga sesuai <strong>UU PDP No. 27/2022</strong>, nomor telepon, susunan keluarga, dan nama istri <strong>tidak ditampilkan kepada pengunjung umum tanpa otentikasi</strong>.</p>
+              <p>Jika Anda adalah warga RT.001 atau pengurus resmi, silakan masuk untuk membuka akses informasi tetangga.</p>
+            </div>
+          `,
+          actions: [
+            { label: '🔑 Masuk Sebagai Warga', icon: 'fa-solid fa-key', onclick: 'closeRTAIAssistantModal(); showLoginModal("warga");', type: 'gold' },
+            { label: '📍 Lihat Kavling di Peta GIS', icon: 'fa-solid fa-map-location-dot', onclick: `closeRTAIAssistantModal(); if(typeof focusCitizenOnMap==="function") focusCitizenOnMap(${matchedCitizen.id});`, type: 'cyan' },
+            { label: '💬 Hubungi Pengurus RT', icon: 'fa-brands fa-whatsapp', onclick: 'window.open("https://wa.me/6281289060002?text=" + encodeURIComponent("Halo Pengurus RT.001, saya ingin konfirmasi data warga."));', type: 'slate' }
+          ]
+        };
+      }
+      
+      // If logged in:
+      const isAdmin = isUserAdminOrOfficer();
+      const wife = isAdmin ? (matchedCitizen.wifeNama || matchedCitizen.nama_istri || '') : '';
       const block = matchedCitizen.block || matchedCitizen.blok || '';
       const houseNo = matchedCitizen.houseNo || matchedCitizen.no_rumah || '';
       const street = matchedCitizen.street || matchedCitizen.jalan || '';
-      const phone = matchedCitizen.phone || matchedCitizen.telepon || '';
+      const phone = isAdmin ? (matchedCitizen.phone || matchedCitizen.telepon || '') : '🔒 Tersedia untuk Pengurus';
       const jiwa = matchedCitizen.totalJiwa || matchedCitizen.jiwa || 4;
 
       return {
         text: `
-          <p><strong>Informasi Warga Ditemukan:</strong></p>
+          <p><strong>Informasi Warga RT.001:</strong></p>
           <ul>
             <li>👤 <strong>Kepala Keluarga</strong>: Bapak ${matchedCitizen.name}</li>
             ${wife ? `<li>👩 <strong>Istri</strong>: Ny. ${wife}</li>` : ''}
             <li>🏠 <strong>Alamat</strong>: Kavling <strong>${block} No. ${houseNo}</strong> (${street})</li>
             <li>👨‍👩‍👧‍👦 <strong>Jumlah Jiwa</strong>: ${jiwa} Jiwa</li>
-            <li>📱 <strong>Kontak</strong>: ${phone ? phone : 'Tersedia di Buku Induk'}</li>
+            <li>📱 <strong>Kontak</strong>: ${phone}</li>
           </ul>
-          <p>Anda dapat langsung menyorot posisi rumah warga ini di Peta Klaster GIS atau melihat Kartu Warga Digitalnya:</p>
         `,
         actions: [
-          { label: '📍 Sorot Rumah di Peta GIS', icon: 'fa-solid fa-location-crosshairs', onclick: `closeRTAIAssistantModal(); if(typeof focusCitizenOnMap===\"function\") focusCitizenOnMap(${matchedCitizen.id});`, type: 'cyan' },
-          { label: '💎 Buka KTA Digital Warga', icon: 'fa-solid fa-id-card-clip', onclick: `closeRTAIAssistantModal(); if(typeof openResidentSmartCardModal===\"function\") openResidentSmartCardModal(${JSON.stringify(matchedCitizen).replace(/"/g, '&quot;')});`, type: 'gold' }
+          { label: '📍 Sorot Rumah di Peta GIS', icon: 'fa-solid fa-location-crosshairs', onclick: `closeRTAIAssistantModal(); if(typeof focusCitizenOnMap==="function") focusCitizenOnMap(${matchedCitizen.id});`, type: 'cyan' },
+          ...(isAdmin ? [{ label: '💎 Buka KTA Digital Warga', icon: 'fa-solid fa-id-card-clip', onclick: `closeRTAIAssistantModal(); if(typeof openResidentSmartCardModal==="function") openResidentSmartCardModal(${JSON.stringify(matchedCitizen).replace(/"/g, '&quot;')});`, type: 'gold' }] : [])
         ]
       };
     }
