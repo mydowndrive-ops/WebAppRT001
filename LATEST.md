@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (15:45 WIB)
-**Versi Rilis Aktif:** `v2.9.95`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (16:55 WIB)
+**Versi Rilis Aktif:** `v2.9.96`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -18,7 +18,35 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🖼️ Transformasi Banner Event ke Format Landscape, Pembesaran Font Judul, Animasi Puls Sedang & Pancaran Cahaya Merah Putih (Update v2.9.95 - 1 Okt 2026)
+### 1. 🎯 Perbaikan Banner Event: Penghapusan Kotak Putih Berputar di Belakang, Cahaya Merah-Putih Khusus di Pinggiran Kotak Saja & Perbaikan Kapsul Cuaca/Jadwal Terpotong (Update v2.9.96 - 1 Okt 2026)
+- **Permintaan Pengguna**:
+  - *"Kotak kapsul prakiraan cuaca terpotong, Hilang efek kotak putih yang berputar di belakang, Maksud saya tadi efek cahaya yang mengelilingi pinggiran kotak event saja. Tolong diperbaikai"*
+- **Hasil Implementasi & Solusi Presisi**:
+  1. **Penghapusan Total Elemen Kotak Putih Berputar di Belakang**:
+     - Menghapus elemen `<div class="promo-card-flag-beam">` dari `index.html` dan aturan `@keyframes rotateFlagBeam` di `styles.css`.
+     - Tidak ada lagi bentuk kotak/belah ketupat putih berputar di latar belakang modal, tampilan kini bersih, fokus, dan rapi.
+  2. **Efek Cahaya Merah-Putih Khusus Mengelilingi Pinggiran Kotak Event Saja**:
+     - Mengalihkan pancaran cahaya (*radiant rim light*) secara eksklusif ke batas/pinggiran kartu event (`.hub-promo-banner-card` dengan kelengkungan sudut `border-radius: 28px`).
+     - Menggunakan kombinasi `border: 2px solid rgba(239, 68, 68, 0.9)` dan multi-layer `box-shadow` perimeter yang presisi:
+       - Lapisan pinggiran putih tajam: `0 0 0 1.5px rgba(255, 255, 255, 0.85)`
+       - Pendaran merah tengah: `0 0 16px rgba(239, 68, 68, 0.8)`
+       - Aura putih lembut: `0 0 32px rgba(255, 255, 255, 0.45)`
+       - Pendaran merah luar: `0 0 55px rgba(239, 68, 68, 0.35)`
+       - Bayangan kedalaman: `0 20px 60px rgba(0, 0, 0, 0.9)`
+     - Pada animasi denyut halus `@keyframes promoCardPulse` (3.2 detik), border dan pendaran cahaya merah-putih bertransisi lembut mengikuti bentuk kotak tanpa sedikit pun keluar melebar menjadi bentuk kotak lain di belakang.
+  3. **Perbaikan Tuntas Kapsul Cuaca & Kotak Jadwal yang Terpotong**:
+     - **Penyebab Sebelumnya**: Lebar kontainer `780px` dengan kokpit countdown di kolom kiri memakan ~390px, sementara teks cuaca pada satu baris memakan ~320px sehingga menabrak dan terpotong oleh `overflow: hidden` pada batas kanan kartu.
+     - **Solusi yang Diterapkan**:
+       - Memperluas lebar maksimal kontainer landscape dari `780px` menjadi **`860px`** untuk proporsi banner desktop/tablet yang lebih lapang dan seimbang.
+       - Menyesuaikan ukuran digit kartu countdown di kokpit kiri (`52px` x `48px`, font `1.42rem`) sehingga menghemat ~40px ruang horizontal tanpa mengurangi keterbacaan.
+       - Mengubah grid landscape menjadi `grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr)` dengan `width: 100% !important; box-sizing: border-box !important;`.
+       - Memberikan `min-width: 0` pada `.promo-grid-col-left` dan `.promo-grid-col-right` agar kolom kanan tidak pernah melampaui lebar grid.
+       - Menyederhanakan teks badge cuaca menjadi `PRAKIRAAN CUACA (BMKG)` dan menerapkan `white-space: normal` serta `justify-content: space-between` pada headline cuaca.
+       - Kedua kapsul (Cuaca BMKG dan Tanggal/Waktu) kini tampil utuh 100% dengan border melengkung kanan yang sempurna dan margin samping yang rapi.
+  4. **Pembaruan Cache & Versi Rilis**:
+     - Menaikkan versi aktif ke `v2.9.96` di `index.html`, `styles.css`, dan Service Worker `sw.js` (`rt-finsmart-cache-v2.9.96`).
+
+### 2. 🖼️ Transformasi Banner Event ke Format Landscape, Pembesaran Font Judul, Animasi Puls Sedang & Cahaya Merah Putih (Update v2.9.95 - 1 Okt 2026)
 - **Permintaan Pengguna**:
   - *"revisi lagi, bentuk kotaknya dibuat landscape saja, dan font judul acaranya dibuat lebih besar agar mudah dibaca.Berikan efek puls sedang di kotaknya ditambah efek sperti pancaran cahaya merah putih mengelilingi kotak eventnya."*
 - **Hasil Implementasi & Fitur Unggulan**:

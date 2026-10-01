@@ -19849,7 +19849,7 @@ mark.cmd-highlight {
 .hub-promo-popup-box {
   position: relative !important;
   width: 100% !important;
-  max-width: 780px !important;
+  max-width: 860px !important;
   margin: auto !important;
   animation: promoPopupBounceIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards !important;
 }
@@ -19857,35 +19857,6 @@ mark.cmd-highlight {
 @keyframes promoPopupBounceIn {
   0% { transform: scale(0.88) translateY(20px); opacity: 0; }
   100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-
-/* Pancaran Cahaya Merah Putih Mengelilingi Kotak Event (Aura Berputar) */
-.promo-card-flag-beam {
-  position: absolute !important;
-  inset: -6px !important;
-  border-radius: 34px !important;
-  background: conic-gradient(
-    from 0deg,
-    #ef4444 0deg,
-    #ffffff 45deg,
-    rgba(239, 68, 68, 0.1) 90deg,
-    #ffffff 135deg,
-    #dc2626 180deg,
-    #ffffff 225deg,
-    rgba(220, 38, 38, 0.1) 270deg,
-    #ffffff 315deg,
-    #ef4444 360deg
-  ) !important;
-  animation: rotateFlagBeam 4.5s linear infinite !important;
-  z-index: 1 !important;
-  filter: blur(8px) !important;
-  opacity: 0.95 !important;
-  pointer-events: none !important;
-}
-
-@keyframes rotateFlagBeam {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 /* Tombol Close Melayang Bulat Putih di Kanan Atas */
@@ -19921,30 +19892,36 @@ mark.cmd-highlight {
   transform: scale(0.95) !important;
 }
 
-/* Efek Puls Sedang pada Kotak Event dengan Halo Merah Putih */
+/* Efek Puls Sedang pada Kotak Event dengan Pancaran Cahaya Merah-Putih Mengelilingi Pinggiran Kotak Saja */
 @keyframes promoCardPulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 22px rgba(239, 68, 68, 0.55), 
-                0 0 45px rgba(255, 255, 255, 0.4), 
-                0 0 75px rgba(220, 38, 38, 0.3),
-                0 25px 65px rgba(0, 0, 0, 0.85);
+    border-color: rgba(239, 68, 68, 0.95);
+    box-shadow: 
+      0 0 0 1.5px rgba(255, 255, 255, 0.85),
+      0 0 16px rgba(239, 68, 68, 0.8),
+      0 0 32px rgba(255, 255, 255, 0.45),
+      0 0 55px rgba(239, 68, 68, 0.35),
+      0 20px 60px rgba(0, 0, 0, 0.9);
   }
   50% {
     transform: scale(1.018);
-    box-shadow: 0 0 38px rgba(239, 68, 68, 0.85), 
-                0 0 68px rgba(255, 255, 255, 0.65), 
-                0 0 100px rgba(220, 38, 38, 0.5),
-                0 30px 85px rgba(0, 0, 0, 0.95);
+    border-color: #ffffff;
+    box-shadow: 
+      0 0 0 2px rgba(239, 68, 68, 0.95),
+      0 0 24px rgba(255, 255, 255, 0.9),
+      0 0 45px rgba(239, 68, 68, 0.85),
+      0 0 75px rgba(255, 255, 255, 0.5),
+      0 26px 70px rgba(0, 0, 0, 0.95);
   }
 }
 
 /* Kartu Banner Promo Landscape */
 .hub-promo-banner-card {
   background: linear-gradient(168deg, #091122 0%, #0c1a2e 45%, #05261d 100%) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  border: 2px solid rgba(239, 68, 68, 0.9) !important;
   border-radius: 28px !important;
-  padding: 1.35rem 1.75rem 1.25rem !important;
+  padding: 1.35rem 1.85rem 1.25rem !important;
   position: relative !important;
   overflow: hidden !important;
   cursor: pointer !important;
@@ -20047,17 +20024,22 @@ mark.cmd-highlight {
 /* Landscape Grid 2-Kolom */
 .promo-landscape-grid {
   display: grid !important;
-  grid-template-columns: 1.12fr 0.88fr !important;
-  gap: 1rem !important;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
+  gap: 1.15rem !important;
   align-items: stretch !important;
   margin-bottom: 0.95rem !important;
   position: relative !important;
   z-index: 2 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .promo-grid-col-left {
   display: flex !important;
   flex-direction: column !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .promo-grid-col-left .promo-countdown-cockpit {
@@ -20066,6 +20048,8 @@ mark.cmd-highlight {
   flex-direction: column !important;
   justify-content: center !important;
   margin-bottom: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .promo-grid-col-right {
@@ -20073,6 +20057,9 @@ mark.cmd-highlight {
   flex-direction: column !important;
   gap: 0.65rem !important;
   justify-content: center !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .promo-grid-col-right .promo-weather-strip {
@@ -20117,6 +20104,29 @@ mark.cmd-highlight {
   box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3) !important;
   position: relative !important;
   z-index: 2 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.promo-countdown-cockpit .countdown-card {
+  width: 52px !important;
+  height: 48px !important;
+}
+
+.promo-countdown-cockpit .countdown-card.card-cs {
+  width: 44px !important;
+}
+
+.promo-countdown-cockpit .cd-num {
+  font-size: 1.42rem !important;
+}
+
+.promo-countdown-cockpit .cd-num.cd-num-cs {
+  font-size: 1.2rem !important;
+}
+
+.promo-countdown-cockpit .countdown-digits-board {
+  gap: 0.35rem !important;
 }
 
 .promo-weather-strip {
@@ -20124,12 +20134,15 @@ mark.cmd-highlight {
   align-items: center !important;
   gap: 0.75rem !important;
   background: rgba(14, 165, 233, 0.1) !important;
-  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
   border-radius: 14px !important;
-  padding: 0.55rem 0.85rem !important;
-  margin-bottom: 0.85rem !important;
+  padding: 0.6rem 0.85rem !important;
+  margin-bottom: 0 !important;
   position: relative !important;
   z-index: 2 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  max-width: 100% !important;
 }
 
 .promo-weather-icon {
@@ -20152,8 +20165,11 @@ mark.cmd-highlight {
 .promo-weather-headline {
   display: flex !important;
   align-items: center !important;
+  justify-content: space-between !important;
   gap: 0.45rem !important;
   flex-wrap: wrap !important;
+  min-width: 0 !important;
+  margin-bottom: 0.15rem !important;
 }
 
 .promo-weather-badge {
@@ -20173,9 +20189,9 @@ mark.cmd-highlight {
   display: block !important;
   font-size: 0.72rem !important;
   color: #94a3b8 !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  white-space: normal !important;
+  line-height: 1.25 !important;
+  word-break: break-word !important;
 }
 
 /* Strip Informasi Jadwal Langsung: Tanggal & Waktu (Tanpa Kata "Hari & Tanggal" & "Waktu Pelaksanaan") */
@@ -20184,13 +20200,16 @@ mark.cmd-highlight {
   align-items: center !important;
   gap: 0.85rem !important;
   background: rgba(15, 23, 42, 0.72) !important;
-  border: 1px solid rgba(52, 211, 153, 0.3) !important;
+  border: 1px solid rgba(52, 211, 153, 0.35) !important;
   border-radius: 16px !important;
   padding: 0.65rem 0.95rem !important;
-  margin-bottom: 0.85rem !important;
+  margin-bottom: 0 !important;
   position: relative !important;
   z-index: 2 !important;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 4px 14px rgba(0, 0, 0, 0.35) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  max-width: 100% !important;
 }
 
 .promo-schedule-icon {
@@ -20220,9 +20239,7 @@ mark.cmd-highlight {
   color: #ffffff !important;
   line-height: 1.25 !important;
   letter-spacing: 0.01em !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  white-space: normal !important;
 }
 
 .promo-schedule-time {
