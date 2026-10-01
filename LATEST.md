@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (15:05 WIB)
-**Versi Rilis Aktif:** `v2.9.93`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (15:15 WIB)
+**Versi Rilis Aktif:** `v2.9.94`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -18,7 +18,26 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
 
-### 1. 🎯 Penyesuaian Visual Banner "EVENT TERDEKAT": Perbaikan Tumpukan Z-Index Navbar, Pembesaran Font "EVENT", Eliminasi Teks Kategori Sejajar & Penyesuaian Ukuran Judul (Update v2.9.93 - 1 Okt 2026)
+### 1. 📅 Penyederhanaan Strip Jadwal Banner Event: Eliminasi Label "Hari & Tanggal" & "Waktu Pelaksanaan" Serta Tampilan Langsung Vertikal (Update v2.9.94 - 1 Okt 2026)
+- **Permintaan Pengguna**:
+  - *"hilangkan kata "Hari &Tanggal" juga kata "Waktu Pelaksanaan". Di tampilkan langsung saja, (Misalnya Minggu, 4 Oktober 2026 dibawahnya langsung 07:00~selesai)"*
+- **Hasil Implementasi & Fitur Unggulan**:
+  1. **Eliminasi Total Label Redundan**:
+     - Menghapus label teks *"Hari & Tanggal"* dan *"Waktu Pelaksanaan"* yang sebelumnya ditampilkan sebagai judul kecil di atas nilai masing-masing.
+  2. **Format Tampilan Jadwal Langsung Vertikal (`.promo-schedule-box`)**:
+     - Mengubah grid 2 kolom menjadi satu kotak jadwal terpadu (*unified schedule box*) yang sangat rapi dan ringkas:
+       - **Baris 1 (Atas)**: Tanggal pelaksanaan (`Minggu, 4 Oktober 2026`) dengan warna putih tegas (`font-weight: 800`).
+       - **Baris 2 (Bawahnya Langsung)**: Waktu pelaksanaan (`07:00 – Selesai`) berwarna biru muda cerah (*cyan* `#38bdf8`) dengan ikon jam (`fa-regular fa-clock`).
+     - Dilengkapi ikon kalender hijau emerald (`fa-regular fa-calendar-check`) di sebelah kiri sebagai penanda visual yang elegan.
+  3. **Pembaruan Data Waktu Event di `app.js`**:
+     - Waktu agenda di `UPCOMING_EVENTS` diperbarui menjadi format ringkas ramah warga:
+       - Agenda 1 (Kerja Bakti): `07:00 – Selesai` (persis sesuai contoh permintaan pengguna).
+       - Agenda 2 (Ronda & Jimpitan): `21:00 – Selesai`.
+       - Agenda 3 (Maulid Nabi): `19:30 – Selesai`.
+  4. **Sinkronisasi Versi & PWA**:
+     - Versi rilis ditingkatkan ke `v2.9.94` di `index.html`, `styles.css`, `app.js`, dan cache PWA `sw.js` (`rt-finsmart-cache-v2.9.94`).
+
+### 2. 🎯 Penyesuaian Visual Banner "EVENT TERDEKAT": Perbaikan Tumpukan Z-Index Navbar, Pembesaran Font "EVENT", Eliminasi Teks Kategori Sejajar & Penyesuaian Ukuran Judul (Update v2.9.93 - 1 Okt 2026)
 - **Permintaan Pengguna**:
   - *"judul tidak terlihat.Ganti ukurannya menjadi lebih kecil.Buat ukuran font "EVENT" menjadi lebih besar, dan hilang kan teks yang sejajar dengan EVENT."*
 - **Hasil Implementasi & Analisis Akar Masalah**:

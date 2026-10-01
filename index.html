@@ -36,7 +36,7 @@
   <!-- Custom Font Preload -->
   <link rel="preload" href="assets/MaskingRenta.otf" as="font" type="font/otf" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=2.9.93">
+  <link rel="stylesheet" href="styles.css?v=2.9.94">
 </head>
 
 <body>
@@ -10122,25 +10122,16 @@
           </div>
         </div>
 
-        <!-- Strip Informasi Ringkas: Hari, Tanggal, dan Waktu Saja -->
-        <div class="promo-datetime-grid">
-          <div class="promo-dt-item">
-            <div class="promo-dt-icon icon-date">
-              <i class="fa-regular fa-calendar-check text-emerald"></i>
-            </div>
-            <div class="promo-dt-content">
-              <span class="promo-dt-label">Hari &amp; Tanggal</span>
-              <strong class="promo-dt-value" id="event-banner-date">Minggu, 4 Oktober 2026</strong>
-            </div>
+        <!-- Informasi Jadwal Langsung: Tanggal & Waktu (Tanpa Kata "Hari & Tanggal" & "Waktu Pelaksanaan") -->
+        <div class="promo-schedule-box">
+          <div class="promo-schedule-icon">
+            <i class="fa-regular fa-calendar-check text-emerald"></i>
           </div>
-
-          <div class="promo-dt-item">
-            <div class="promo-dt-icon icon-time">
+          <div class="promo-schedule-content">
+            <div class="promo-schedule-date" id="event-banner-date">Minggu, 4 Oktober 2026</div>
+            <div class="promo-schedule-time">
               <i class="fa-regular fa-clock text-cyan"></i>
-            </div>
-            <div class="promo-dt-content">
-              <span class="promo-dt-label">Waktu Pelaksanaan</span>
-              <strong class="promo-dt-value" id="event-banner-time">07:00 &ndash; 10:30 WIB</strong>
+              <span id="event-banner-time">07:00 &ndash; Selesai</span>
             </div>
           </div>
         </div>
@@ -10192,7 +10183,7 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Main JavaScript Logic -->
-  <script src="app.js?v=2.9.93"></script>
+  <script src="app.js?v=2.9.94"></script>
 </body>
 
 </html>
