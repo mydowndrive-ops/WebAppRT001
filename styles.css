@@ -19818,3 +19818,382 @@ mark.cmd-highlight {
   font-size: 0.82rem;
   font-weight: 500;
 }
+
+
+/* ==================== EVENT POPUP PROMO BANNER (SEPERTI GAMBAR 2) ==================== */
+.hub-event-banner-wrap {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+  background: rgba(0, 0, 0, 0.78) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1.5rem 1rem !important;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.hub-event-banner-wrap.show-popup {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+.hub-promo-popup-box {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 440px !important;
+  margin: auto !important;
+  animation: promoPopupBounceIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.25) forwards !important;
+}
+
+@keyframes promoPopupBounceIn {
+  0% { transform: scale(0.85) translateY(24px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Tombol Close Melayang Bulat Putih di Kanan Atas (Persis Gambar 2) */
+.btn-promo-floating-close {
+  position: absolute !important;
+  top: -18px !important;
+  right: -10px !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 3px solid #f1f5f9 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.25rem !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+  z-index: 30 !important;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-promo-floating-close:hover {
+  transform: scale(1.15) rotate(90deg) !important;
+  background: #f8fafc !important;
+  color: #ef4444 !important;
+  box-shadow: 0 10px 28px rgba(239, 68, 68, 0.4) !important;
+}
+
+.btn-promo-floating-close:active {
+  transform: scale(0.95) !important;
+}
+
+/* Kartu Banner Promo */
+.hub-promo-banner-card {
+  background: linear-gradient(168deg, #0b1329 0%, #0f1d35 45%, #063124 100%) !important;
+  border: 1.5px solid rgba(245, 158, 11, 0.55) !important;
+  border-radius: 28px !important;
+  padding: 1.5rem 1.35rem 1.25rem !important;
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.85), 0 0 45px rgba(16, 185, 129, 0.25) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+}
+
+.hub-promo-banner-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(245, 158, 11, 0.85) !important;
+  box-shadow: 0 30px 75px rgba(0, 0, 0, 0.9), 0 0 55px rgba(16, 185, 129, 0.4) !important;
+}
+
+.promo-card-glow {
+  position: absolute !important;
+  top: -80px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 280px !important;
+  height: 140px !important;
+  background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.35) 0%, rgba(245, 158, 11, 0.15) 50%, transparent 80%) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+.promo-card-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.5rem !important;
+  margin-bottom: 0.85rem !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.promo-live-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  background: linear-gradient(135deg, #e11d48, #be123c) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(254, 240, 138, 0.6) !important;
+  padding: 0.25rem 0.75rem !important;
+  border-radius: 9999px !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.05em !important;
+  box-shadow: 0 0 14px rgba(225, 29, 72, 0.5) !important;
+}
+
+.promo-pulse-dot {
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+  background: #fef08a !important;
+  box-shadow: 0 0 8px #fef08a !important;
+  animation: fastPulseBeacon 1.2s infinite !important;
+}
+
+.promo-cat-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.35rem !important;
+  background: rgba(14, 165, 233, 0.15) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+  color: #38bdf8 !important;
+  font-size: 0.74rem !important;
+  font-weight: 600 !important;
+  padding: 0.25rem 0.75rem !important;
+  border-radius: 9999px !important;
+}
+
+.promo-title-wrap {
+  text-align: center !important;
+  margin-bottom: 0.85rem !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.promo-banner-title {
+  font-size: 1.22rem !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
+  color: #ffffff !important;
+  margin: 0 !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
+}
+
+.promo-countdown-cockpit {
+  margin: 0 0 0.85rem 0 !important;
+  background: rgba(15, 23, 42, 0.7) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  border-radius: 18px !important;
+  padding: 0.75rem 0.85rem !important;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.promo-weather-strip {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  background: rgba(14, 165, 233, 0.1) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  border-radius: 14px !important;
+  padding: 0.55rem 0.85rem !important;
+  margin-bottom: 0.85rem !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.promo-weather-icon {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  background: rgba(14, 165, 233, 0.15) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.2rem !important;
+  flex-shrink: 0 !important;
+}
+
+.promo-weather-text {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.promo-weather-headline {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  flex-wrap: wrap !important;
+}
+
+.promo-weather-badge {
+  font-size: 0.62rem !important;
+  font-weight: 700 !important;
+  color: #38bdf8 !important;
+  letter-spacing: 0.04em !important;
+}
+
+.promo-weather-temp {
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  color: #f8fafc !important;
+}
+
+.promo-weather-sub {
+  display: block !important;
+  font-size: 0.72rem !important;
+  color: #94a3b8 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.promo-datetime-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 0.65rem !important;
+  margin-bottom: 0.85rem !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.promo-dt-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.55rem !important;
+  background: rgba(15, 23, 42, 0.65) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  border-radius: 14px !important;
+  padding: 0.6rem 0.75rem !important;
+}
+
+.promo-dt-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1rem !important;
+  flex-shrink: 0 !important;
+}
+
+.promo-dt-content {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+}
+
+.promo-dt-label {
+  font-size: 0.65rem !important;
+  color: #94a3b8 !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+}
+
+.promo-dt-value {
+  font-size: 0.82rem !important;
+  color: #f8fafc !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.promo-carousel-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.5rem !important;
+  margin-bottom: 1rem !important;
+  padding: 0 0.25rem !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.promo-counter-text {
+  font-size: 0.72rem !important;
+  color: #94a3b8 !important;
+}
+
+.promo-dots-wrap {
+  display: flex !important;
+  gap: 6px !important;
+}
+
+.promo-nav-buttons {
+  display: flex !important;
+  gap: 6px !important;
+}
+
+.btn-promo-nav {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #e2e8f0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 0.72rem !important;
+  transition: all 0.18s ease !important;
+}
+
+.btn-promo-nav:hover {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #10b981 !important;
+}
+
+.promo-cta-wrapper {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.btn-promo-cta {
+  width: 100% !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  border: 2px solid rgba(255, 255, 255, 0.25) !important;
+  border-radius: 9999px !important;
+  padding: 0.85rem 1.5rem !important;
+  font-size: 1.05rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.65rem !important;
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-promo-cta:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.7) !important;
+}
+
+.btn-promo-cta:active {
+  transform: translateY(1px) scale(0.98) !important;
+}
+
+.promo-tap-hint {
+  display: block !important;
+  text-align: center !important;
+  margin-top: 0.5rem !important;
+  font-size: 0.68rem !important;
+  color: #94a3b8 !important;
+}

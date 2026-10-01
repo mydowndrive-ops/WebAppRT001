@@ -1,7 +1,7 @@
 # 📌 RT-FinSmart PRO — Status & Dokumentasi Proyek Terkini (LATEST)
 
-**Terakhir Diperbarui:** 1 Oktober 2026 (14:15 WIB)
-**Versi Rilis Aktif:** `v2.9.91`  
+**Terakhir Diperbarui:** 1 Oktober 2026 (14:38 WIB)
+**Versi Rilis Aktif:** `v2.9.92`  
 **Entitas:** Rukun Tetangga (RT) 001 / RW 013 – Graha Asri  
 **Aplikasi:** RT-FinSmart PRO (Sistem Keuangan, Portal Warga & Manajemen Ronda Eksekutif)  
 **Cabang Git (Branch):** `main`  
@@ -17,6 +17,30 @@ Dokumen ini dibuat khusus sebagai panduan handover utama (*single source of trut
 ---
 
 ## 🌟 Riwayat Rilis & Pembaruan Terkini (Changelog)
+
+### 1. 🎉 Redesain "EVENT TERDEKAT" Menjadi Pop-up Promo Banner Ringkas (Model Gambar 2 / In-App Promotional Card) (Update v2.9.92 - 1 Okt 2026)
+- **Latar Belakang & Permintaan Pengguna**:
+  - Pengguna meminta agar model pop-up event terdekat disederhanakan mengikuti gaya iklan promosi pop-up (seperti aplikasi Flip Deals di Gambar 2): *"saya ingin model event terdekatnya dibuat seperti iklan banner di gambar 2.Yang simpel saja, berisi judul event, hitung mundur,prakiraan cuaca, hari,tgl,waktu saja. Ditampilan ini tidak perlu ditampilkan : Google Calendar, Apple iCal,Unduh poster,Ingatkan di WA warga,baru nanti jika banner ini di klik baru menuju ke halaman/informasinya detailnya."*
+- **Hasil Implementasi & Fitur Unggulan**:
+  1. **Desain Pop-up Promo Banner Interstitial (Model Gambar 2)**:
+     - Mengubah tampilan modal acara yang sebelumnya padat menjadi bentuk **Pop-up Iklan Promosi Ringkas, Bersih & Elegan** yang terpusat di layar (`max-width: 440px`).
+     - Menghadirkan **Tombol Silang Bulat Putih Melayang (*Floating Circular Close Button `X`*)** di sudut kanan atas luar banner (`top: -18px; right: -10px`), persis seperti tombol close pop-up aplikasi di Gambar 2, dengan bayangan tegas dan animasi putar halus saat di-hover.
+  2. **Konten Fokus, Simpel & Informatif**:
+     - **Judul Event**: Ditampilkan jelas dan menonjol di bagian atas banner (`event-banner-title`).
+     - **Hitung Mundur (*Real-Time Scoreboard Countdown*)**: Timer digital dinamis presisi tinggi (Hari : Jam : Menit : Detik : Centidetik).
+     - **Prakiraan Cuaca**: Strip cuaca BMKG cerdas (suhu, ikon cuaca, dan status kelembapan).
+     - **Hari, Tanggal, & Waktu Pelaksanaan Saja**: Strip 2 kolom rapi yang memuat waktu dan tanggal acara.
+  3. **Elemen yang Dieliminasi dari Tampilan Pop-up**:
+     - ❌ Google Calendar
+     - ❌ Apple iCal
+     - ❌ Unduh Poster WA HD
+     - ❌ Ingatkan di WA Warga
+     - ❌ Narasi paragraf panjang, catatan konsumsi, titik kumpul detail, serta nomor seri barcode.
+  4. **Interaktivitas 1-Klik ke Halaman Detail Acara**:
+     - **Seluruh area kartu banner** dan tombol CTA utama **`[ Lihat Detail Acara → ]`** (bergaya tombol hijau melengkung seperti *"Belanja, yuk!"* di Gambar 2) dapat langsung diklik oleh warga untuk menutup banner dan secara otomatis berpindah ke halaman detail Agenda Kegiatan (`switchPublicView('kegiatan')`).
+     - Mengklik tombol close `(X)` melayang hanya menutup banner tanpa mengalihkan halaman.
+  5. **Sinkronisasi Versi & Cache**:
+     - Cache service worker diperbarui ke `rt-finsmart-cache-v2.9.92` dan asset bundler di `index.html` disinkronkan ke `v2.9.92`.
 
 ### 1. 🛡️ Rombak Total Sistem Keamanan & Kepatuhan Privasi Data Pribadi Warga (UU PDP No. 27/2022) — Privacy-by-Design Architecture (Update v2.9.91 - 1 Okt 2026)
 - **Latar Belakang & Perhatian Kritis Pengguna**:

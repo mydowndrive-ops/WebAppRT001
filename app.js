@@ -8045,9 +8045,29 @@ function setupUpcomingEventBanner() {
     window.openEventPopupBanner();
   });
 
-  // 3. Tombol Lihat Agenda Lengkap -> Buka subview kegiatan & tutup popup
-  document.getElementById('btn-event-view-detail')?.addEventListener('click', () => {
+  // 3. Klik pada Banner / Tombol CTA -> Menuju halaman informasi detail kegiatan (Gambar 2 Model)
+  function goToEventDetailPage() {
     window.closeEventPopupBanner();
+    if (typeof switchPublicView === 'function') {
+      switchPublicView('kegiatan');
+    }
+  }
+
+  document.getElementById('btn-event-view-detail')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    goToEventDetailPage();
+  });
+
+  document.getElementById('hub-event-pass-card')?.addEventListener('click', (e) => {
+    // Jangan redirect jika yang diklik adalah tombol close (X), nav button, atau dots
+    if (e.target.closest('#btn-close-event-banner') || 
+        e.target.closest('.promo-nav-buttons') || 
+        e.target.closest('.event-dots-wrap') ||
+        e.target.closest('.btn-event-nav')) {
+      return;
+    }
+    goToEventDetailPage();
   });
 
   // 4. Tombol Escape keyboard
